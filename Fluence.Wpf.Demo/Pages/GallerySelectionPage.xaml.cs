@@ -40,28 +40,28 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates\"\n" +
                                                         "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                         "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                        "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                        "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                         "    <StackPanel>\n" +
                                                         "        <WrapPanel Margin=\"0,0,0,16\">\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"TwoStateCheckBox\"\n" +
                                                         "                Margin=\"0,0,32,10\"\n" +
                                                         "                Content=\"Two-state checkbox\"\n" +
                                                         "                IsChecked=\"True\" />\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"ThreeStateCheckBox\"\n" +
                                                         "                Margin=\"0,0,32,10\"\n" +
                                                         "                Content=\"Three-state checkbox\"\n" +
                                                         "                IsChecked=\"{x:Null}\"\n" +
                                                         "                IsThreeState=\"True\" />\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                Margin=\"0,0,32,10\"\n" +
                                                         "                Content=\"Disabled\"\n" +
                                                         "                IsChecked=\"True\"\n" +
                                                         "                IsEnabled=\"False\" />\n" +
                                                         "        </WrapPanel>\n" +
                                                         "        <StackPanel>\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"SelectAllCheckBox\"\n" +
                                                         "                Margin=\"0,0,0,8\"\n" +
                                                         "                Checked=\"SelectAllCheckBox_Changed\"\n" +
@@ -69,19 +69,19 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "                Indeterminate=\"SelectAllCheckBox_Changed\"\n" +
                                                         "                IsThreeState=\"True\"\n" +
                                                         "                Unchecked=\"SelectAllCheckBox_Changed\" />\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"OptionOneCheckBox\"\n" +
                                                         "                Margin=\"24,0,0,8\"\n" +
                                                         "                Checked=\"OptionCheckBox_Changed\"\n" +
                                                         "                Content=\"Option 1\"\n" +
                                                         "                Unchecked=\"OptionCheckBox_Changed\" />\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"OptionTwoCheckBox\"\n" +
                                                         "                Margin=\"24,0,0,8\"\n" +
                                                         "                Checked=\"OptionCheckBox_Changed\"\n" +
                                                         "                Content=\"Option 2\"\n" +
                                                         "                Unchecked=\"OptionCheckBox_Changed\" />\n" +
-                                                        "            <ui:CheckBox\n" +
+                                                        "            <fluence:CheckBox\n" +
                                                         "                x:Name=\"OptionThreeCheckBox\"\n" +
                                                         "                Margin=\"24,0,0,0\"\n" +
                                                         "                Checked=\"OptionCheckBox_Changed\"\n" +
@@ -139,40 +139,40 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.RadioButtonGroups\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                            "    <StackPanel>\n" +
                                                            "        <TextBlock\n" +
                                                            "            Margin=\"0,0,0,8\"\n" +
                                                            "            FontWeight=\"SemiBold\"\n" +
                                                            "            Text=\"Basic group\" />\n" +
                                                            "        <StackPanel Margin=\"0,0,0,16\" Orientation=\"Horizontal\">\n" +
-                                                           "            <ui:RadioButton\n" +
+                                                           "            <fluence:RadioButton\n" +
                                                            "                Margin=\"0,0,16,0\"\n" +
                                                            "                Content=\"Option A\"\n" +
                                                            "                GroupName=\"BasicGroup\"\n" +
                                                            "                IsChecked=\"True\" />\n" +
-                                                           "            <ui:RadioButton\n" +
+                                                           "            <fluence:RadioButton\n" +
                                                            "                Margin=\"0,0,16,0\"\n" +
                                                            "                Content=\"Option B\"\n" +
                                                            "                GroupName=\"BasicGroup\" />\n" +
-                                                           "            <ui:RadioButton Content=\"Option C\" GroupName=\"BasicGroup\" />\n" +
+                                                           "            <fluence:RadioButton Content=\"Option C\" GroupName=\"BasicGroup\" />\n" +
                                                            "        </StackPanel>\n" +
                                                            "        <TextBlock\n" +
                                                            "            Margin=\"0,0,0,8\"\n" +
                                                            "            FontWeight=\"SemiBold\"\n" +
                                                            "            Text=\"With descriptions\" />\n" +
-                                                           "        <ui:RadioButton\n" +
+                                                           "        <fluence:RadioButton\n" +
                                                            "            Margin=\"0,0,0,8\"\n" +
                                                            "            Content=\"Standard\"\n" +
                                                            "            Description=\"Uses default application settings\"\n" +
                                                            "            GroupName=\"DescGroup\"\n" +
                                                            "            IsChecked=\"True\" />\n" +
-                                                           "        <ui:RadioButton\n" +
+                                                           "        <fluence:RadioButton\n" +
                                                            "            Margin=\"0,0,0,8\"\n" +
                                                            "            Content=\"Custom\"\n" +
                                                            "            Description=\"Allows manual configuration\"\n" +
                                                            "            GroupName=\"DescGroup\" />\n" +
-                                                           "        <ui:RadioButton\n" +
+                                                           "        <fluence:RadioButton\n" +
                                                            "            Content=\"Advanced\"\n" +
                                                            "            Description=\"Expert-level options\"\n" +
                                                            "            GroupName=\"DescGroup\" />\n" +
@@ -195,13 +195,13 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.ToggleSwitchStates\"\n" +
                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                            "    <ui:StackPanel Spacing=\"8\">\n" +
+                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                            "    <fluence:StackPanel Spacing=\"8\">\n" +
                                                             "        <TextBlock\n" +
                                                             "            x:Name=\"WorkToggleHeaderText\"\n" +
                                                             "            Text=\"Toggle work\" />\n" +
-                                                            "        <ui:StackPanel Orientation=\"Horizontal\">\n" +
-                                                            "            <ui:ToggleSwitch\n" +
+                                                            "        <fluence:StackPanel Orientation=\"Horizontal\">\n" +
+                                                            "            <fluence:ToggleSwitch\n" +
                                                             "                x:Name=\"WorkToggleSwitch\"\n" +
                                                             "                VerticalAlignment=\"Center\"\n" +
                                                             "                IsChecked=\"True\" />\n" +
@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "                Margin=\"12,0,0,0\"\n" +
                                                             "                VerticalAlignment=\"Center\"\n" +
                                                             "                Text=\"On\" />\n" +
-                                                            "            <ui:ProgressRing\n" +
+                                                            "            <fluence:ProgressRing\n" +
                                                             "                x:Name=\"WorkToggleProgressRing\"\n" +
                                                             "                Width=\"36\"\n" +
                                                             "                Height=\"36\"\n" +
@@ -218,8 +218,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "                VerticalAlignment=\"Center\"\n" +
                                                             "                IsActive=\"{Binding IsChecked, ElementName=WorkToggleSwitch}\"\n" +
                                                             "                IsIndeterminate=\"True\" />\n" +
-                                                            "        </ui:StackPanel>\n" +
-                                                            "    </ui:StackPanel>\n" +
+                                                            "        </fluence:StackPanel>\n" +
+                                                            "    </fluence:StackPanel>\n" +
                                                             "</UserControl>\n";
 
         private const string ToggleSwitchStatesCSharpSource = "using System.Windows.Controls;\n" +
@@ -238,18 +238,18 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.RatingControlSample\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                       "    <ui:StackPanel Spacing=\"14\">\n" +
-                                                       "        <ui:RatingControl\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                       "    <fluence:StackPanel Spacing=\"14\">\n" +
+                                                       "        <fluence:RatingControl\n" +
                                                        "            Caption=\"Rate the experience\"\n" +
                                                        "            MaxRating=\"5\"\n" +
                                                        "            Value=\"3\" />\n" +
-                                                       "        <ui:RatingControl\n" +
+                                                       "        <fluence:RatingControl\n" +
                                                        "            Caption=\"Read-only rating\"\n" +
                                                        "            IsReadOnly=\"True\"\n" +
                                                        "            MaxRating=\"5\"\n" +
                                                        "            Value=\"4\" />\n" +
-                                                       "    </ui:StackPanel>\n" +
+                                                       "    </fluence:StackPanel>\n" +
                                                        "</UserControl>\n";
 
         private const string RatingControlCSharpSource = "using System.Windows.Controls;\n" +
@@ -268,9 +268,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.ComboBoxSelection\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                           "    <ui:StackPanel Spacing=\"20\">\n" +
-                                                           "        <ui:ComboBox\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                           "    <fluence:StackPanel Spacing=\"20\">\n" +
+                                                           "        <fluence:ComboBox\n" +
                                                            "            Width=\"480\"\n" +
                                                            "            HorizontalAlignment=\"Left\"\n" +
                                                            "            PlaceholderText=\"Choose an option...\"\n" +
@@ -278,25 +278,25 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "            <ComboBoxItem Content=\"First item\" />\n" +
                                                            "            <ComboBoxItem Content=\"Second item\" />\n" +
                                                            "            <ComboBoxItem Content=\"Third item\" />\n" +
-                                                           "        </ui:ComboBox>\n" +
-                                                           "        <ui:ComboBox\n" +
+                                                           "        </fluence:ComboBox>\n" +
+                                                           "        <fluence:ComboBox\n" +
                                                            "            Width=\"480\"\n" +
                                                            "            HorizontalAlignment=\"Left\"\n" +
                                                            "            PlaceholderText=\"With icon\"\n" +
                                                            "            SelectedIndex=\"-1\">\n" +
-                                                           "            <ui:ComboBox.Icon>\n" +
-                                                           "                <ui:FontIcon Glyph=\"&#xE721;\" IconFontSize=\"14\" />\n" +
-                                                           "            </ui:ComboBox.Icon>\n" +
+                                                           "            <fluence:ComboBox.Icon>\n" +
+                                                           "                <fluence:FontIcon Glyph=\"&#xE721;\" IconFontSize=\"14\" />\n" +
+                                                           "            </fluence:ComboBox.Icon>\n" +
                                                            "            <ComboBoxItem Content=\"Alpha\" />\n" +
                                                            "            <ComboBoxItem Content=\"Beta\" />\n" +
                                                            "            <ComboBoxItem Content=\"Gamma\" />\n" +
-                                                           "        </ui:ComboBox>\n" +
-                                                           "        <ui:ComboBox\n" +
+                                                           "        </fluence:ComboBox>\n" +
+                                                           "        <fluence:ComboBox\n" +
                                                            "            Width=\"480\"\n" +
                                                            "            HorizontalAlignment=\"Left\"\n" +
                                                            "            IsEnabled=\"False\"\n" +
                                                            "            PlaceholderText=\"Disabled\" />\n" +
-                                                           "    </ui:StackPanel>\n" +
+                                                           "    </fluence:StackPanel>\n" +
                                                            "</UserControl>\n";
 
         private const string ComboBoxSelectionCSharpSource = "using System.Windows.Controls;\n" +

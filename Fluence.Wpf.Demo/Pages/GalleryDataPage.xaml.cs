@@ -37,7 +37,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListViewItems\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                        "    <Grid>\n" +
                                                        "        <Grid.ColumnDefinitions>\n" +
                                                        "            <ColumnDefinition Width=\"*\" />\n" +
@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "        <Border\n" +
                                                        "            x:Name=\"SimpleListViewBackground\"\n" +
                                                        "            CornerRadius=\"{DynamicResource ControlCornerRadius}\">\n" +
-                                                       "            <ui:ListView\n" +
+                                                       "            <fluence:ListView\n" +
                                                        "                x:Name=\"SimpleListView\"\n" +
                                                        "                Height=\"230\"\n" +
                                                        "                BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
@@ -57,13 +57,13 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                <ListViewItem Content=\"Oscar Ward\" />\n" +
                                                        "                <ListViewItem Content=\"Madison Butler\" />\n" +
                                                        "                <ListViewItem Content=\"Graham Barnes\" />\n" +
-                                                       "            </ui:ListView>\n" +
+                                                       "            </fluence:ListView>\n" +
                                                        "        </Border>\n" +
                                                        "        <Border\n" +
                                                        "            x:Name=\"RichListViewBackground\"\n" +
                                                        "            Grid.Column=\"2\"\n" +
                                                        "            CornerRadius=\"{DynamicResource ControlCornerRadius}\">\n" +
-                                                       "            <ui:ListView\n" +
+                                                       "            <fluence:ListView\n" +
                                                        "                x:Name=\"RichListView\"\n" +
                                                        "                Height=\"230\"\n" +
                                                        "                BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                            <ColumnDefinition Width=\"36\" />\n" +
                                                        "                            <ColumnDefinition Width=\"*\" />\n" +
                                                        "                        </Grid.ColumnDefinitions>\n" +
-                                                       "                        <ui:FontIcon\n" +
+                                                       "                        <fluence:FontIcon\n" +
                                                        "                            VerticalAlignment=\"Center\"\n" +
                                                        "                            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "                            Glyph=\"&#xE77B;\"\n" +
@@ -94,7 +94,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                            <ColumnDefinition Width=\"36\" />\n" +
                                                        "                            <ColumnDefinition Width=\"*\" />\n" +
                                                        "                        </Grid.ColumnDefinitions>\n" +
-                                                       "                        <ui:FontIcon\n" +
+                                                       "                        <fluence:FontIcon\n" +
                                                        "                            VerticalAlignment=\"Center\"\n" +
                                                        "                            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "                            Glyph=\"&#xE77B;\"\n" +
@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                            <ColumnDefinition Width=\"36\" />\n" +
                                                        "                            <ColumnDefinition Width=\"*\" />\n" +
                                                        "                        </Grid.ColumnDefinitions>\n" +
-                                                       "                        <ui:FontIcon\n" +
+                                                       "                        <fluence:FontIcon\n" +
                                                        "                            VerticalAlignment=\"Center\"\n" +
                                                        "                            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "                            Glyph=\"&#xE77B;\"\n" +
@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                        </StackPanel>\n" +
                                                        "                    </Grid>\n" +
                                                        "                </ListViewItem>\n" +
-                                                       "            </ui:ListView>\n" +
+                                                       "            </fluence:ListView>\n" +
                                                        "        </Border>\n" +
                                                        "    </Grid>\n" +
                                                        "</UserControl>\n";
@@ -149,35 +149,35 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListViewEmptyState\"\n" +
                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                             "    <StackPanel>\n" +
-                                                            "        <ui:ListView\n" +
+                                                            "        <fluence:ListView\n" +
                                                             "            x:Name=\"EmptyStateListView\"\n" +
                                                             "            Height=\"180\"\n" +
                                                             "            Margin=\"0,0,0,12\"\n" +
                                                             "            Background=\"{DynamicResource CardBackgroundFillColorDefaultBrush}\"\n" +
                                                             "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                             "            BorderThickness=\"1\">\n" +
-                                                            "            <ui:ListView.EmptyContent>\n" +
+                                                            "            <fluence:ListView.EmptyContent>\n" +
                                                             "                <TextBlock\n" +
                                                             "                    HorizontalAlignment=\"Center\"\n" +
                                                             "                    VerticalAlignment=\"Center\"\n" +
                                                             "                    Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                             "                    Text=\"No items. Add one to begin.\" />\n" +
-                                                            "            </ui:ListView.EmptyContent>\n" +
-                                                            "        </ui:ListView>\n" +
+                                                            "            </fluence:ListView.EmptyContent>\n" +
+                                                            "        </fluence:ListView>\n" +
                                                             "        <StackPanel\n" +
                                                             "            x:Name=\"EmptyStateActionsPanel\"\n" +
                                                             "            HorizontalAlignment=\"Center\"\n" +
                                                             "            VerticalAlignment=\"Center\"\n" +
                                                             "            Orientation=\"Horizontal\">\n" +
-                                                            "            <ui:Button\n" +
+                                                            "            <fluence:Button\n" +
                                                             "                Margin=\"0,0,8,0\"\n" +
                                                             "                Appearance=\"Accent\"\n" +
                                                             "                Click=\"AddListItem_Click\"\n" +
                                                             "                Content=\"Add item\"\n" +
                                                             "                MinWidth=\"140\" />\n" +
-                                                            "            <ui:Button\n" +
+                                                            "            <fluence:Button\n" +
                                                             "                Click=\"RemoveListItem_Click\"\n" +
                                                             "                Content=\"Remove item\"\n" +
                                                             "                MinWidth=\"140\" />\n" +
@@ -232,37 +232,37 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListBoxSelection\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                           "    <Grid>\n" +
                                                           "        <Grid.ColumnDefinitions>\n" +
                                                           "            <ColumnDefinition Width=\"*\" />\n" +
                                                           "            <ColumnDefinition Width=\"20\" />\n" +
                                                           "            <ColumnDefinition Width=\"*\" />\n" +
                                                           "        </Grid.ColumnDefinitions>\n" +
-                                                          "        <ui:ListBox\n" +
+                                                          "        <fluence:ListBox\n" +
                                                           "            x:Name=\"SingleSelectListBox\"\n" +
                                                           "            Height=\"180\"\n" +
                                                           "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                           "            BorderThickness=\"1\">\n" +
-                                                          "            <ui:ListBoxItem Content=\"Documents\" IsSelected=\"True\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Pictures\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Music\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Videos\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Downloads\" />\n" +
-                                                          "        </ui:ListBox>\n" +
-                                                          "        <ui:ListBox\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Documents\" IsSelected=\"True\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Pictures\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Music\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Videos\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Downloads\" />\n" +
+                                                          "        </fluence:ListBox>\n" +
+                                                          "        <fluence:ListBox\n" +
                                                           "            x:Name=\"MultiSelectListBox\"\n" +
                                                           "            Grid.Column=\"2\"\n" +
                                                           "            Height=\"180\"\n" +
                                                           "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                           "            BorderThickness=\"1\"\n" +
                                                           "            SelectionMode=\"Extended\">\n" +
-                                                          "            <ui:ListBoxItem Content=\"Critical\" IsSelected=\"True\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Error\" IsSelected=\"True\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Warning\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Information\" />\n" +
-                                                          "            <ui:ListBoxItem Content=\"Verbose\" />\n" +
-                                                          "        </ui:ListBox>\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Critical\" IsSelected=\"True\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Error\" IsSelected=\"True\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Warning\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Information\" />\n" +
+                                                          "            <fluence:ListBoxItem Content=\"Verbose\" />\n" +
+                                                          "        </fluence:ListBox>\n" +
                                                           "    </Grid>\n" +
                                                           "</UserControl>\n";
 
@@ -282,40 +282,39 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.CardVariants\"\n" +
                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                      "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
+                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                       "    <UniformGrid Columns=\"2\">\n" +
-                                                      "        <ui:Card\n" +
+                                                      "        <fluence:Card\n" +
                                                       "            MinHeight=\"110\"\n" +
                                                       "            Margin=\"0,0,16,16\"\n" +
                                                       "            Padding=\"18\"\n" +
                                                       "            Header=\"Default\"\n" +
-                                                      "            Variant=\"{x:Static uicore:CardVariant.Default}\">\n" +
+                                                      "            Variant=\"{x:Static fluence:CardVariant.Default}\">\n" +
                                                       "            <TextBlock Text=\"Standard surface for grouped content.\" TextWrapping=\"Wrap\" />\n" +
-                                                      "        </ui:Card>\n" +
-                                                      "        <ui:Card\n" +
+                                                      "        </fluence:Card>\n" +
+                                                      "        <fluence:Card\n" +
                                                       "            MinHeight=\"110\"\n" +
                                                       "            Margin=\"0,0,0,16\"\n" +
                                                       "            Padding=\"18\"\n" +
                                                       "            Header=\"Outlined\"\n" +
-                                                      "            Variant=\"{x:Static uicore:CardVariant.Outlined}\">\n" +
+                                                      "            Variant=\"{x:Static fluence:CardVariant.Outlined}\">\n" +
                                                       "            <TextBlock Text=\"Emphasizes the boundary over fill.\" TextWrapping=\"Wrap\" />\n" +
-                                                      "        </ui:Card>\n" +
-                                                      "        <ui:Card\n" +
+                                                      "        </fluence:Card>\n" +
+                                                      "        <fluence:Card\n" +
                                                       "            MinHeight=\"110\"\n" +
                                                       "            Margin=\"0,0,16,0\"\n" +
                                                       "            Padding=\"18\"\n" +
                                                       "            Header=\"Filled\"\n" +
-                                                      "            Variant=\"{x:Static uicore:CardVariant.Filled}\">\n" +
+                                                      "            Variant=\"{x:Static fluence:CardVariant.Filled}\">\n" +
                                                       "            <TextBlock Text=\"Adds stronger container presence.\" TextWrapping=\"Wrap\" />\n" +
-                                                      "        </ui:Card>\n" +
-                                                      "        <ui:Card\n" +
+                                                      "        </fluence:Card>\n" +
+                                                      "        <fluence:Card\n" +
                                                       "            MinHeight=\"110\"\n" +
                                                       "            Padding=\"18\"\n" +
                                                       "            Header=\"Subtle\"\n" +
-                                                      "            Variant=\"{x:Static uicore:CardVariant.Subtle}\">\n" +
+                                                      "            Variant=\"{x:Static fluence:CardVariant.Subtle}\">\n" +
                                                       "            <TextBlock Text=\"Keeps low-emphasis supporting content grouped.\" TextWrapping=\"Wrap\" />\n" +
-                                                      "        </ui:Card>\n" +
+                                                      "        </fluence:Card>\n" +
                                                       "    </UniformGrid>\n" +
                                                       "</UserControl>\n";
 
@@ -335,25 +334,25 @@ namespace Fluence.Wpf.Demo.Pages
                                                "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ImageSample\"\n" +
                                                "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                               "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                "    <WrapPanel\n" +
                                                "        HorizontalAlignment=\"Center\"\n" +
                                                "        VerticalAlignment=\"Center\">\n" +
-                                               "        <ui:Image\n" +
+                                               "        <fluence:Image\n" +
                                                "            Width=\"96\"\n" +
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
                                                "            CornerRadius=\"0\"\n" +
                                                "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
-                                               "        <ui:Image\n" +
+                                               "        <fluence:Image\n" +
                                                "            Width=\"96\"\n" +
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
                                                "            CornerRadius=\"8\"\n" +
                                                "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
-                                               "        <ui:Image\n" +
+                                               "        <fluence:Image\n" +
                                                "            Width=\"96\"\n" +
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
@@ -378,36 +377,36 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.PersonPictureSample\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                        "    <WrapPanel\n" +
                                                        "        HorizontalAlignment=\"Center\"\n" +
                                                        "        VerticalAlignment=\"Center\">\n" +
-                                                       "        <ui:PersonPicture\n" +
+                                                       "        <fluence:PersonPicture\n" +
                                                        "            Width=\"56\"\n" +
                                                        "            Height=\"56\"\n" +
                                                        "            Margin=\"0,0,12,12\"\n" +
                                                        "            DisplayName=\"Ana Bowman\"\n" +
                                                        "            ProfilePicture=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png\" />\n" +
-                                                       "        <ui:PersonPicture\n" +
+                                                       "        <fluence:PersonPicture\n" +
                                                        "            Width=\"56\"\n" +
                                                        "            Height=\"56\"\n" +
                                                        "            Margin=\"0,0,12,12\"\n" +
                                                        "            DisplayName=\"Shawn Hughes\"\n" +
                                                        "            ProfilePicture=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png\"\n" +
                                                        "            BadgeNumber=\"3\" />\n" +
-                                                       "        <ui:PersonPicture\n" +
+                                                       "        <fluence:PersonPicture\n" +
                                                        "            Width=\"56\"\n" +
                                                        "            Height=\"56\"\n" +
                                                        "            Margin=\"0,0,12,12\"\n" +
                                                        "            DisplayName=\"Priya Kapoor\"\n" +
                                                        "            ProfilePicture=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png\" />\n" +
-                                                       "        <ui:PersonPicture\n" +
+                                                       "        <fluence:PersonPicture\n" +
                                                        "            Width=\"56\"\n" +
                                                        "            Height=\"56\"\n" +
                                                        "            Margin=\"0,0,12,12\"\n" +
                                                        "            DisplayName=\"Mateo Rivera\"\n" +
                                                        "            ProfilePicture=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png\" />\n" +
-                                                       "        <ui:PersonPicture\n" +
+                                                       "        <fluence:PersonPicture\n" +
                                                        "            Width=\"56\"\n" +
                                                        "            Height=\"56\"\n" +
                                                        "            Margin=\"0,0,12,12\"\n" +

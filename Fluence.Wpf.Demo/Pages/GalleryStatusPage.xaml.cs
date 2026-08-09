@@ -39,10 +39,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarValue\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                          "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                           "    <StackPanel>\n" +
-                                                          "        <ui:ProgressBar\n" +
+                                                          "        <fluence:ProgressBar\n" +
                                                           "            x:Name=\"StandardProgressBar\"\n" +
                                                           "            Height=\"8\"\n" +
                                                           "            Margin=\"0,0,0,12\"\n" +
@@ -50,7 +49,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            Maximum=\"100\"\n" +
                                                           "            Minimum=\"0\"\n" +
                                                           "            Value=\"{Binding Value, Source={x:Reference ProgressValueNumberBox}}\" />\n" +
-                                                          "        <ui:NumberBox\n" +
+                                                          "        <fluence:NumberBox\n" +
                                                           "            x:Name=\"ProgressValueNumberBox\"\n" +
                                                           "            Header=\"Value\"\n" +
                                                           "            HorizontalAlignment=\"Center\"\n" +
@@ -58,7 +57,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            Maximum=\"100\"\n" +
                                                           "            Minimum=\"0\"\n" +
                                                           "            SmallChange=\"5\"\n" +
-                                                          "            SpinButtonPlacementMode=\"{x:Static uicore:SpinButtonPlacementMode.Inline}\"\n" +
+                                                          "            SpinButtonPlacementMode=\"{x:Static fluence:SpinButtonPlacementMode.Inline}\"\n" +
                                                           "            Value=\"50\" />\n" +
                                                           "        <Grid>\n" +
                                                           "            <Grid.ColumnDefinitions>\n" +
@@ -71,7 +70,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                    Margin=\"0,0,0,6\"\n" +
                                                           "                    Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                           "                    Text=\"Paused\" />\n" +
-                                                          "                <ui:ProgressBar\n" +
+                                                          "                <fluence:ProgressBar\n" +
                                                           "                    Height=\"8\"\n" +
                                                           "                    HorizontalAlignment=\"Stretch\"\n" +
                                                           "                    Maximum=\"100\"\n" +
@@ -84,7 +83,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                    Margin=\"0,0,0,6\"\n" +
                                                           "                    Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                           "                    Text=\"Failure\" />\n" +
-                                                          "                <ui:ProgressBar\n" +
+                                                          "                <fluence:ProgressBar\n" +
                                                           "                    Height=\"8\"\n" +
                                                           "                    HorizontalAlignment=\"Stretch\"\n" +
                                                           "                    Maximum=\"100\"\n" +
@@ -113,16 +112,16 @@ namespace Fluence.Wpf.Demo.Pages
                                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarIndeterminate\"\n" +
                                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                                  "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                                   "    <StackPanel>\n" +
-                                                                  "        <ui:ProgressBar\n" +
+                                                                  "        <fluence:ProgressBar\n" +
                                                                   "            x:Name=\"IndeterminateProgressBar\"\n" +
                                                                   "            Height=\"8\"\n" +
                                                                   "            Margin=\"0,0,0,12\"\n" +
                                                                   "            HorizontalAlignment=\"Stretch\"\n" +
                                                                   "            ProgressMode=\"Indeterminate\" />\n" +
                                                                   "        <StackPanel Orientation=\"Horizontal\">\n" +
-                                                                  "            <ui:ToggleSwitch\n" +
+                                                                  "            <fluence:ToggleSwitch\n" +
                                                                   "                x:Name=\"IndeterminateToggle\"\n" +
                                                                   "                Margin=\"0,0,12,0\"\n" +
                                                                   "                Checked=\"IndeterminateToggle_Toggled\"\n" +
@@ -166,9 +165,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarSteps\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                           "    <StackPanel>\n" +
-                                                          "        <ui:ProgressBar\n" +
+                                                          "        <fluence:ProgressBar\n" +
                                                           "            x:Name=\"StepProgressBar\"\n" +
                                                           "            Height=\"8\"\n" +
                                                           "            Margin=\"0,0,0,12\"\n" +
@@ -177,12 +176,12 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            ProgressMode=\"StepProgress\"\n" +
                                                           "            Steps=\"10\" />\n" +
                                                           "        <StackPanel Orientation=\"Horizontal\">\n" +
-                                                          "            <ui:Button\n" +
+                                                          "            <fluence:Button\n" +
                                                           "                Margin=\"0,0,12,0\"\n" +
                                                           "                Click=\"ProgressStep_Click\"\n" +
                                                           "                Content=\"Back\"\n" +
                                                           "                Tag=\"Back\" />\n" +
-                                                          "            <ui:Button\n" +
+                                                          "            <fluence:Button\n" +
                                                           "                Margin=\"0,0,16,0\"\n" +
                                                           "                Appearance=\"Accent\"\n" +
                                                           "                Click=\"ProgressStep_Click\"\n" +
@@ -234,8 +233,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressRings\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                       "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                        "    <Grid HorizontalAlignment=\"Stretch\">\n" +
                                                        "        <Grid.ColumnDefinitions>\n" +
                                                        "            <ColumnDefinition Width=\"*\" />\n" +
@@ -249,7 +247,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            <RowDefinition Height=\"Auto\" />\n" +
                                                        "        </Grid.RowDefinitions>\n" +
                                                        "\n" +
-                                                       "        <ui:ProgressRing\n" +
+                                                       "        <fluence:ProgressRing\n" +
                                                        "            x:Name=\"IndeterminateProgressRing\"\n" +
                                                        "            Grid.Row=\"0\"\n" +
                                                        "            Grid.Column=\"0\"\n" +
@@ -258,7 +256,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            HorizontalAlignment=\"Center\"\n" +
                                                        "            IsActive=\"True\"\n" +
                                                        "            IsIndeterminate=\"True\" />\n" +
-                                                       "        <ui:ToggleSwitch\n" +
+                                                       "        <fluence:ToggleSwitch\n" +
                                                        "            Grid.Row=\"1\"\n" +
                                                        "            Grid.Column=\"0\"\n" +
                                                        "            Margin=\"0,12,0,0\"\n" +
@@ -276,7 +274,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Indeterminate\" />\n" +
                                                        "\n" +
-                                                       "        <ui:ProgressRing\n" +
+                                                       "        <fluence:ProgressRing\n" +
                                                        "            x:Name=\"DeterminateProgressRing\"\n" +
                                                        "            Grid.Row=\"0\"\n" +
                                                        "            Grid.Column=\"1\"\n" +
@@ -288,7 +286,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Maximum=\"100\"\n" +
                                                        "            Minimum=\"0\"\n" +
                                                        "            Value=\"50\" />\n" +
-                                                       "        <ui:NumberBox\n" +
+                                                       "        <fluence:NumberBox\n" +
                                                        "            x:Name=\"ProgressRingValueBox\"\n" +
                                                        "            Grid.Row=\"1\"\n" +
                                                        "            Grid.Column=\"1\"\n" +
@@ -299,7 +297,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Maximum=\"100\"\n" +
                                                        "            Minimum=\"1\"\n" +
                                                        "            SmallChange=\"1\"\n" +
-                                                       "            SpinButtonPlacementMode=\"{x:Static uicore:SpinButtonPlacementMode.Inline}\"\n" +
+                                                       "            SpinButtonPlacementMode=\"{x:Static fluence:SpinButtonPlacementMode.Inline}\"\n" +
                                                        "            Value=\"{Binding Value, ElementName=DeterminateProgressRing, Mode=TwoWay}\" />\n" +
                                                        "        <TextBlock\n" +
                                                        "            x:Name=\"DeterminateProgressRingLabel\"\n" +
@@ -310,7 +308,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Determinate\" />\n" +
                                                        "\n" +
-                                                       "        <ui:ProgressRing\n" +
+                                                       "        <fluence:ProgressRing\n" +
                                                        "            x:Name=\"PausedProgressRing\"\n" +
                                                        "            Grid.Row=\"0\"\n" +
                                                        "            Grid.Column=\"2\"\n" +
@@ -321,7 +319,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            IsIndeterminate=\"False\"\n" +
                                                        "            Maximum=\"100\"\n" +
                                                        "            Minimum=\"0\"\n" +
-                                                       "            ProgressState=\"{x:Static uicore:ProgressRingState.Paused}\"\n" +
+                                                       "            ProgressState=\"{x:Static fluence:ProgressRingState.Paused}\"\n" +
                                                        "            Value=\"80\" />\n" +
                                                        "        <TextBlock\n" +
                                                        "            Grid.Row=\"2\"\n" +
@@ -331,7 +329,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Paused\" />\n" +
                                                        "\n" +
-                                                       "        <ui:ProgressRing\n" +
+                                                       "        <fluence:ProgressRing\n" +
                                                        "            x:Name=\"ErrorProgressRing\"\n" +
                                                        "            Grid.Row=\"0\"\n" +
                                                        "            Grid.Column=\"3\"\n" +
@@ -342,7 +340,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            IsIndeterminate=\"False\"\n" +
                                                        "            Maximum=\"100\"\n" +
                                                        "            Minimum=\"0\"\n" +
-                                                       "            ProgressState=\"{x:Static uicore:ProgressRingState.Error}\"\n" +
+                                                       "            ProgressState=\"{x:Static fluence:ProgressRingState.Error}\"\n" +
                                                        "            Value=\"80\" />\n" +
                                                        "        <TextBlock\n" +
                                                        "            Grid.Row=\"2\"\n" +
@@ -371,9 +369,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.InfoBars\"\n" +
                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                  "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                   "    <StackPanel>\n" +
-                                                  "        <ui:InfoBar\n" +
+                                                  "        <fluence:InfoBar\n" +
                                                   "            x:Name=\"InfoBarInformational\"\n" +
                                                   "            Title=\"Informational\"\n" +
                                                   "            Margin=\"0,0,0,8\"\n" +
@@ -381,7 +379,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "            IsOpen=\"True\"\n" +
                                                   "            Message=\"This is a general information message.\"\n" +
                                                   "            Severity=\"Informational\" />\n" +
-                                                  "        <ui:InfoBar\n" +
+                                                  "        <fluence:InfoBar\n" +
                                                   "            x:Name=\"InfoBarSuccess\"\n" +
                                                   "            Title=\"Success\"\n" +
                                                   "            Margin=\"0,0,0,8\"\n" +
@@ -389,7 +387,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "            IsOpen=\"True\"\n" +
                                                   "            Message=\"The operation completed successfully.\"\n" +
                                                   "            Severity=\"Success\" />\n" +
-                                                  "        <ui:InfoBar\n" +
+                                                  "        <fluence:InfoBar\n" +
                                                   "            x:Name=\"InfoBarWarning\"\n" +
                                                   "            Title=\"Warning\"\n" +
                                                   "            Margin=\"0,0,0,8\"\n" +
@@ -397,7 +395,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "            IsOpen=\"True\"\n" +
                                                   "            Message=\"Proceed with caution.\"\n" +
                                                   "            Severity=\"Warning\" />\n" +
-                                                  "        <ui:InfoBar\n" +
+                                                  "        <fluence:InfoBar\n" +
                                                   "            x:Name=\"InfoBarError\"\n" +
                                                   "            Title=\"Error\"\n" +
                                                   "            Margin=\"0,0,0,8\"\n" +
@@ -405,11 +403,11 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "            IsOpen=\"True\"\n" +
                                                   "            Message=\"Something went wrong.\"\n" +
                                                   "            Severity=\"Error\">\n" +
-                                                  "            <ui:InfoBar.ActionButton>\n" +
-                                                  "                <ui:Button Appearance=\"Accent\" Content=\"Retry\" />\n" +
-                                                  "            </ui:InfoBar.ActionButton>\n" +
-                                                  "        </ui:InfoBar>\n" +
-                                                  "        <ui:Button\n" +
+                                                  "            <fluence:InfoBar.ActionButton>\n" +
+                                                  "                <fluence:Button Appearance=\"Accent\" Content=\"Retry\" />\n" +
+                                                  "            </fluence:InfoBar.ActionButton>\n" +
+                                                  "        </fluence:InfoBar>\n" +
+                                                  "        <fluence:Button\n" +
                                                   "            Margin=\"0,4,0,0\"\n" +
                                                   "            HorizontalAlignment=\"Left\"\n" +
                                                   "            Click=\"ResetInfoBars_Click\"\n" +

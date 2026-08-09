@@ -37,29 +37,29 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                           "    <ui:TreeView\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                           "    <fluence:TreeView\n" +
                                                            "        x:Name=\"HierarchyTreeView\"\n" +
                                                            "        MaxHeight=\"260\"\n" +
                                                            "        BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                            "        BorderThickness=\"1\">\n" +
-                                                           "        <ui:TreeViewItem\n" +
+                                                           "        <fluence:TreeViewItem\n" +
                                                            "            Header=\"Workspace\"\n" +
                                                            "            IsExpanded=\"True\">\n" +
-                                                           "            <ui:TreeViewItem Header=\"Pages\" IsExpanded=\"True\">\n" +
-                                                           "                <ui:TreeViewItem Header=\"GalleryButtonsPage.xaml\" />\n" +
-                                                           "                <ui:TreeViewItem Header=\"GalleryTreesPage.xaml\" />\n" +
-                                                           "                <ui:TreeViewItem Header=\"GalleryDataPage.xaml\" />\n" +
-                                                           "            </ui:TreeViewItem>\n" +
-                                                           "            <ui:TreeViewItem Header=\"Samples\">\n" +
-                                                           "                <ui:TreeViewItem Header=\"Buttons\" />\n" +
-                                                           "                <ui:TreeViewItem Header=\"Trees\" />\n" +
-                                                           "            </ui:TreeViewItem>\n" +
-                                                           "        </ui:TreeViewItem>\n" +
-                                                           "        <ui:TreeViewItem Header=\"Resources\">\n" +
-                                                           "            <ui:TreeViewItem Header=\"DemoSharedStyles.xaml\" />\n" +
-                                                           "        </ui:TreeViewItem>\n" +
-                                                           "    </ui:TreeView>\n" +
+                                                           "            <fluence:TreeViewItem Header=\"Pages\" IsExpanded=\"True\">\n" +
+                                                           "                <fluence:TreeViewItem Header=\"GalleryButtonsPage.xaml\" />\n" +
+                                                           "                <fluence:TreeViewItem Header=\"GalleryTreesPage.xaml\" />\n" +
+                                                           "                <fluence:TreeViewItem Header=\"GalleryDataPage.xaml\" />\n" +
+                                                           "            </fluence:TreeViewItem>\n" +
+                                                           "            <fluence:TreeViewItem Header=\"Samples\">\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Buttons\" />\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Trees\" />\n" +
+                                                           "            </fluence:TreeViewItem>\n" +
+                                                           "        </fluence:TreeViewItem>\n" +
+                                                           "        <fluence:TreeViewItem Header=\"Resources\">\n" +
+                                                           "            <fluence:TreeViewItem Header=\"DemoSharedStyles.xaml\" />\n" +
+                                                           "        </fluence:TreeViewItem>\n" +
+                                                           "    </fluence:TreeView>\n" +
                                                            "</UserControl>\n";
 
         private const string TreeViewHierarchyCSharpSource = "using System.Windows.Controls;\n" +
@@ -78,31 +78,31 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewSelection\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                            "    <StackPanel>\n" +
-                                                           "        <ui:TreeView\n" +
+                                                           "        <fluence:TreeView\n" +
                                                            "            x:Name=\"SelectionTreeView\"\n" +
                                                            "            MaxHeight=\"260\"\n" +
                                                            "            Margin=\"0,0,0,12\"\n" +
                                                            "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                            "            BorderThickness=\"1\">\n" +
-                                                           "            <ui:TreeViewItem\n" +
+                                                           "            <fluence:TreeViewItem\n" +
                                                            "                Header=\"Inbox\"\n" +
                                                            "                IsExpanded=\"True\">\n" +
-                                                           "                <ui:TreeViewItem Header=\"Priority\" IsExpanded=\"True\">\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Contract review\" />\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Customer follow-up\" />\n" +
-                                                           "                </ui:TreeViewItem>\n" +
-                                                           "                <ui:TreeViewItem Header=\"Later\">\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Design notes\" />\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Release checklist\" />\n" +
-                                                           "                </ui:TreeViewItem>\n" +
-                                                           "            </ui:TreeViewItem>\n" +
-                                                           "            <ui:TreeViewItem Header=\"Archive\">\n" +
-                                                           "                <ui:TreeViewItem Header=\"March\" />\n" +
-                                                           "                <ui:TreeViewItem Header=\"April\" />\n" +
-                                                           "            </ui:TreeViewItem>\n" +
-                                                           "        </ui:TreeView>\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Priority\" IsExpanded=\"True\">\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Contract review\" />\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Customer follow-up\" />\n" +
+                                                           "                </fluence:TreeViewItem>\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Later\">\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Design notes\" />\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Release checklist\" />\n" +
+                                                           "                </fluence:TreeViewItem>\n" +
+                                                           "            </fluence:TreeViewItem>\n" +
+                                                           "            <fluence:TreeViewItem Header=\"Archive\">\n" +
+                                                           "                <fluence:TreeViewItem Header=\"March\" />\n" +
+                                                           "                <fluence:TreeViewItem Header=\"April\" />\n" +
+                                                           "            </fluence:TreeViewItem>\n" +
+                                                           "        </fluence:TreeView>\n" +
                                                            "    </StackPanel>\n" +
                                                            "</UserControl>\n";
 
@@ -122,28 +122,27 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect\"\n" +
                                                              "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                              "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                             "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                             "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
-                                                             "    <ui:TreeView\n" +
+                                                             "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                             "    <fluence:TreeView\n" +
                                                              "        x:Name=\"MultiSelectTreeView\"\n" +
                                                              "        MaxHeight=\"260\"\n" +
                                                              "        BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                              "        BorderThickness=\"1\"\n" +
-                                                             "        SelectionMode=\"{x:Static uicore:TreeViewSelectionMode.Multiple}\">\n" +
-                                                             "        <ui:TreeViewItem\n" +
+                                                             "        SelectionMode=\"{x:Static fluence:TreeViewSelectionMode.Multiple}\">\n" +
+                                                             "        <fluence:TreeViewItem\n" +
                                                              "            Header=\"Documents\"\n" +
                                                              "            IsExpanded=\"True\">\n" +
-                                                             "            <ui:TreeViewItem Header=\"Contracts\" />\n" +
-                                                             "            <ui:TreeViewItem Header=\"Invoices\" />\n" +
-                                                             "            <ui:TreeViewItem Header=\"Receipts\" />\n" +
-                                                             "        </ui:TreeViewItem>\n" +
-                                                             "        <ui:TreeViewItem\n" +
+                                                             "            <fluence:TreeViewItem Header=\"Contracts\" />\n" +
+                                                             "            <fluence:TreeViewItem Header=\"Invoices\" />\n" +
+                                                             "            <fluence:TreeViewItem Header=\"Receipts\" />\n" +
+                                                             "        </fluence:TreeViewItem>\n" +
+                                                             "        <fluence:TreeViewItem\n" +
                                                              "            Header=\"Pictures\"\n" +
                                                              "            IsExpanded=\"True\">\n" +
-                                                             "            <ui:TreeViewItem Header=\"Screenshots\" />\n" +
-                                                             "            <ui:TreeViewItem Header=\"Archive\" />\n" +
-                                                             "        </ui:TreeViewItem>\n" +
-                                                             "    </ui:TreeView>\n" +
+                                                             "            <fluence:TreeViewItem Header=\"Screenshots\" />\n" +
+                                                             "            <fluence:TreeViewItem Header=\"Archive\" />\n" +
+                                                             "        </fluence:TreeViewItem>\n" +
+                                                             "    </fluence:TreeView>\n" +
                                                              "</UserControl>\n";
 
         private const string TreeViewMultiSelectCSharpSource = "using System.Windows.Controls;\n" +
@@ -162,38 +161,38 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                            "    <StackPanel>\n" +
-                                                           "        <ui:TreeView\n" +
+                                                           "        <fluence:TreeView\n" +
                                                            "            x:Name=\"ExpansionTreeView\"\n" +
                                                            "            MaxHeight=\"260\"\n" +
                                                            "            Margin=\"0,0,0,12\"\n" +
                                                            "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                            "            BorderThickness=\"1\">\n" +
-                                                           "            <ui:TreeViewItem\n" +
+                                                           "            <fluence:TreeViewItem\n" +
                                                            "                Header=\"Project\"\n" +
                                                            "                IsExpanded=\"True\">\n" +
-                                                           "                <ui:TreeViewItem Header=\"Source\" IsExpanded=\"True\">\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Controls\" />\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Themes\" />\n" +
-                                                           "                </ui:TreeViewItem>\n" +
-                                                           "                <ui:TreeViewItem Header=\"Tests\">\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Control tests\" />\n" +
-                                                           "                    <ui:TreeViewItem Header=\"Demo tests\" />\n" +
-                                                           "                </ui:TreeViewItem>\n" +
-                                                           "            </ui:TreeViewItem>\n" +
-                                                           "        </ui:TreeView>\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Source\" IsExpanded=\"True\">\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Controls\" />\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Themes\" />\n" +
+                                                           "                </fluence:TreeViewItem>\n" +
+                                                           "                <fluence:TreeViewItem Header=\"Tests\">\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Control tests\" />\n" +
+                                                           "                    <fluence:TreeViewItem Header=\"Demo tests\" />\n" +
+                                                           "                </fluence:TreeViewItem>\n" +
+                                                           "            </fluence:TreeViewItem>\n" +
+                                                           "        </fluence:TreeView>\n" +
                                                            "        <StackPanel\n" +
                                                            "            x:Name=\"TreeExpansionActionsPanel\"\n" +
                                                            "            HorizontalAlignment=\"Center\"\n" +
                                                            "            VerticalAlignment=\"Center\"\n" +
                                                            "            Orientation=\"Horizontal\">\n" +
-                                                           "            <ui:Button\n" +
+                                                           "            <fluence:Button\n" +
                                                            "                Margin=\"0,0,8,0\"\n" +
                                                            "                Click=\"ExpandAll_Click\"\n" +
                                                            "                Content=\"Expand all\"\n" +
                                                            "                MinWidth=\"140\" />\n" +
-                                                           "            <ui:Button\n" +
+                                                           "            <fluence:Button\n" +
                                                            "                Click=\"CollapseAll_Click\"\n" +
                                                            "                Content=\"Collapse all\"\n" +
                                                            "                MinWidth=\"140\" />\n" +

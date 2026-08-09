@@ -37,35 +37,35 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.LeftNavigationView\"\n" +
                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                             "    <Border\n" +
                                                             "        Height=\"320\">\n" +
-                                                            "        <ui:NavigationView\n" +
+                                                            "        <fluence:NavigationView\n" +
                                                             "            PaneDisplayMode=\"Left\">\n" +
-                                                            "            <ui:NavigationView.PaneHeader>\n" +
+                                                            "            <fluence:NavigationView.PaneHeader>\n" +
                                                             "                <TextBlock\n" +
                                                             "                    Margin=\"12,8\"\n" +
                                                             "                    Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                             "                    Text=\"Navigation\" />\n" +
-                                                            "            </ui:NavigationView.PaneHeader>\n" +
-                                                            "            <ui:NavigationViewItem\n" +
+                                                            "            </fluence:NavigationView.PaneHeader>\n" +
+                                                            "            <fluence:NavigationViewItem\n" +
                                                             "                Content=\"Home\"\n" +
                                                             "                IsSelected=\"True\">\n" +
-                                                            "                <ui:NavigationViewItem.Icon>\n" +
-                                                            "                    <ui:FontIcon Glyph=\"&#xE80F;\" IconFontSize=\"16\" />\n" +
-                                                            "                </ui:NavigationViewItem.Icon>\n" +
-                                                            "            </ui:NavigationViewItem>\n" +
-                                                            "            <ui:NavigationViewItem Content=\"Files\">\n" +
-                                                            "                <ui:NavigationViewItem.Icon>\n" +
-                                                            "                    <ui:FontIcon Glyph=\"&#xE8B7;\" IconFontSize=\"16\" />\n" +
-                                                            "                </ui:NavigationViewItem.Icon>\n" +
-                                                            "            </ui:NavigationViewItem>\n" +
-                                                            "            <ui:NavigationViewItem Content=\"Reports\">\n" +
-                                                            "                <ui:NavigationViewItem.Icon>\n" +
-                                                            "                    <ui:FontIcon Glyph=\"&#xE9D9;\" IconFontSize=\"16\" />\n" +
-                                                            "                </ui:NavigationViewItem.Icon>\n" +
-                                                            "            </ui:NavigationViewItem>\n" +
-                                                            "        </ui:NavigationView>\n" +
+                                                            "                <fluence:NavigationViewItem.Icon>\n" +
+                                                            "                    <fluence:FontIcon Glyph=\"&#xE80F;\" IconFontSize=\"16\" />\n" +
+                                                            "                </fluence:NavigationViewItem.Icon>\n" +
+                                                            "            </fluence:NavigationViewItem>\n" +
+                                                            "            <fluence:NavigationViewItem Content=\"Files\">\n" +
+                                                            "                <fluence:NavigationViewItem.Icon>\n" +
+                                                            "                    <fluence:FontIcon Glyph=\"&#xE8B7;\" IconFontSize=\"16\" />\n" +
+                                                            "                </fluence:NavigationViewItem.Icon>\n" +
+                                                            "            </fluence:NavigationViewItem>\n" +
+                                                            "            <fluence:NavigationViewItem Content=\"Reports\">\n" +
+                                                            "                <fluence:NavigationViewItem.Icon>\n" +
+                                                            "                    <fluence:FontIcon Glyph=\"&#xE9D9;\" IconFontSize=\"16\" />\n" +
+                                                            "                </fluence:NavigationViewItem.Icon>\n" +
+                                                            "            </fluence:NavigationViewItem>\n" +
+                                                            "        </fluence:NavigationView>\n" +
                                                             "    </Border>\n" +
                                                             "</UserControl>\n";
 
@@ -85,30 +85,30 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.TopNavigationView\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                            "    <Border\n" +
                                                            "        Height=\"240\">\n" +
-                                                           "        <ui:NavigationView\n" +
+                                                           "        <fluence:NavigationView\n" +
                                                            "            Header=\"Insights\"\n" +
                                                            "            PaneDisplayMode=\"Top\">\n" +
-                                                           "            <ui:NavigationViewItem\n" +
+                                                           "            <fluence:NavigationViewItem\n" +
                                                            "                Content=\"Overview\"\n" +
                                                            "                IsSelected=\"True\">\n" +
-                                                           "                <ui:NavigationViewItem.Icon>\n" +
-                                                           "                    <ui:FontIcon Glyph=\"&#xE9D2;\" IconFontSize=\"16\" />\n" +
-                                                           "                </ui:NavigationViewItem.Icon>\n" +
-                                                           "            </ui:NavigationViewItem>\n" +
-                                                           "            <ui:NavigationViewItem Content=\"Activity\">\n" +
-                                                           "                <ui:NavigationViewItem.Icon>\n" +
-                                                           "                    <ui:FontIcon Glyph=\"&#xE7F4;\" IconFontSize=\"16\" />\n" +
-                                                           "                </ui:NavigationViewItem.Icon>\n" +
-                                                           "            </ui:NavigationViewItem>\n" +
-                                                           "            <ui:NavigationViewItem Content=\"Settings\">\n" +
-                                                           "                <ui:NavigationViewItem.Icon>\n" +
-                                                           "                    <ui:FontIcon Glyph=\"&#xE713;\" IconFontSize=\"16\" />\n" +
-                                                           "                </ui:NavigationViewItem.Icon>\n" +
-                                                           "            </ui:NavigationViewItem>\n" +
-                                                           "        </ui:NavigationView>\n" +
+                                                           "                <fluence:NavigationViewItem.Icon>\n" +
+                                                           "                    <fluence:FontIcon Glyph=\"&#xE9D2;\" IconFontSize=\"16\" />\n" +
+                                                           "                </fluence:NavigationViewItem.Icon>\n" +
+                                                           "            </fluence:NavigationViewItem>\n" +
+                                                           "            <fluence:NavigationViewItem Content=\"Activity\">\n" +
+                                                           "                <fluence:NavigationViewItem.Icon>\n" +
+                                                           "                    <fluence:FontIcon Glyph=\"&#xE7F4;\" IconFontSize=\"16\" />\n" +
+                                                           "                </fluence:NavigationViewItem.Icon>\n" +
+                                                           "            </fluence:NavigationViewItem>\n" +
+                                                           "            <fluence:NavigationViewItem Content=\"Settings\">\n" +
+                                                           "                <fluence:NavigationViewItem.Icon>\n" +
+                                                           "                    <fluence:FontIcon Glyph=\"&#xE713;\" IconFontSize=\"16\" />\n" +
+                                                           "                </fluence:NavigationViewItem.Icon>\n" +
+                                                           "            </fluence:NavigationViewItem>\n" +
+                                                           "        </fluence:NavigationView>\n" +
                                                            "    </Border>\n" +
                                                            "</UserControl>\n";
 
@@ -128,42 +128,42 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.CompactNavigationView\"\n" +
                                                                "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                                "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                               "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                                "    <StackPanel>\n" +
                                                                "        <Border\n" +
                                                                "            Height=\"300\"\n" +
                                                                "            Margin=\"0,0,0,12\"\n" +
                                                                "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                                "            BorderThickness=\"1\">\n" +
-                                                               "            <ui:NavigationView\n" +
+                                                               "            <fluence:NavigationView\n" +
                                                                "                x:Name=\"CompactNavigationDemo\"\n" +
                                                                "                IsBackButtonVisible=\"True\"\n" +
                                                                "                IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"\n" +
                                                                "                IsPaneToggleButtonVisible=\"True\"\n" +
                                                                "                IsPaneOpen=\"False\"\n" +
                                                                "                PaneDisplayMode=\"LeftCompact\">\n" +
-                                                               "                <ui:NavigationView.PaneFooter>\n" +
-                                                               "                    <ui:NavigationViewItem Content=\"Settings\">\n" +
-                                                               "                        <ui:NavigationViewItem.Icon>\n" +
-                                                               "                            <ui:FontIcon Glyph=\"&#xE713;\" IconFontSize=\"16\" />\n" +
-                                                               "                        </ui:NavigationViewItem.Icon>\n" +
-                                                               "                    </ui:NavigationViewItem>\n" +
-                                                               "                </ui:NavigationView.PaneFooter>\n" +
-                                                               "                <ui:NavigationViewItem\n" +
+                                                               "                <fluence:NavigationView.PaneFooter>\n" +
+                                                               "                    <fluence:NavigationViewItem Content=\"Settings\">\n" +
+                                                               "                        <fluence:NavigationViewItem.Icon>\n" +
+                                                               "                            <fluence:FontIcon Glyph=\"&#xE713;\" IconFontSize=\"16\" />\n" +
+                                                               "                        </fluence:NavigationViewItem.Icon>\n" +
+                                                               "                    </fluence:NavigationViewItem>\n" +
+                                                               "                </fluence:NavigationView.PaneFooter>\n" +
+                                                               "                <fluence:NavigationViewItem\n" +
                                                                "                    Content=\"Dashboard\"\n" +
                                                                "                    IsSelected=\"True\">\n" +
-                                                               "                    <ui:NavigationViewItem.Icon>\n" +
-                                                               "                        <ui:FontIcon Glyph=\"&#xE80F;\" IconFontSize=\"16\" />\n" +
-                                                               "                    </ui:NavigationViewItem.Icon>\n" +
-                                                               "                </ui:NavigationViewItem>\n" +
-                                                               "                <ui:NavigationViewItem Content=\"Messages\">\n" +
-                                                               "                    <ui:NavigationViewItem.Icon>\n" +
-                                                               "                        <ui:FontIcon Glyph=\"&#xE8BD;\" IconFontSize=\"16\" />\n" +
-                                                               "                    </ui:NavigationViewItem.Icon>\n" +
-                                                               "                </ui:NavigationViewItem>\n" +
-                                                               "            </ui:NavigationView>\n" +
+                                                               "                    <fluence:NavigationViewItem.Icon>\n" +
+                                                               "                        <fluence:FontIcon Glyph=\"&#xE80F;\" IconFontSize=\"16\" />\n" +
+                                                               "                    </fluence:NavigationViewItem.Icon>\n" +
+                                                               "                </fluence:NavigationViewItem>\n" +
+                                                               "                <fluence:NavigationViewItem Content=\"Messages\">\n" +
+                                                               "                    <fluence:NavigationViewItem.Icon>\n" +
+                                                               "                        <fluence:FontIcon Glyph=\"&#xE8BD;\" IconFontSize=\"16\" />\n" +
+                                                               "                    </fluence:NavigationViewItem.Icon>\n" +
+                                                               "                </fluence:NavigationViewItem>\n" +
+                                                               "            </fluence:NavigationView>\n" +
                                                                "        </Border>\n" +
-                                                               "            <ui:CheckBox\n" +
+                                                               "            <fluence:CheckBox\n" +
                                                                "                x:Name=\"BackEnabledToggle\"\n" +
                                                                "                Content=\"Back enabled\"\n" +
                                                                "                IsChecked=\"True\" />\n" +
@@ -186,40 +186,39 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.InfoBadgeNavigation\"\n" +
                                                              "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                              "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                             "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                             "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
+                                                             "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                              "    <Border Height=\"260\">\n" +
-                                                             "        <ui:NavigationView\n" +
+                                                             "        <fluence:NavigationView\n" +
                                                              "            Header=\"Inbox\"\n" +
                                                              "            IsPaneOpen=\"True\"\n" +
                                                              "            PaneDisplayMode=\"Left\">\n" +
-                                                             "            <ui:NavigationViewItem\n" +
+                                                             "            <fluence:NavigationViewItem\n" +
                                                              "                Content=\"Inbox\"\n" +
                                                              "                IsSelected=\"True\">\n" +
-                                                             "                <ui:NavigationViewItem.Icon>\n" +
-                                                             "                    <ui:FontIcon Glyph=\"&#xE715;\" IconFontSize=\"16\" />\n" +
-                                                             "                </ui:NavigationViewItem.Icon>\n" +
-                                                             "                <ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "                    <ui:InfoBadge Value=\"12\" />\n" +
-                                                             "                </ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "            </ui:NavigationViewItem>\n" +
-                                                             "            <ui:NavigationViewItem Content=\"Approvals\">\n" +
-                                                             "                <ui:NavigationViewItem.Icon>\n" +
-                                                             "                    <ui:FontIcon Glyph=\"&#xE73E;\" IconFontSize=\"16\" />\n" +
-                                                             "                </ui:NavigationViewItem.Icon>\n" +
-                                                             "                <ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "                    <ui:InfoBadge BadgeStyle=\"{x:Static uicore:InfoBadgeStyle.Caution}\" />\n" +
-                                                             "                </ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "            </ui:NavigationViewItem>\n" +
-                                                             "            <ui:NavigationViewItem Content=\"Alerts\">\n" +
-                                                             "                <ui:NavigationViewItem.Icon>\n" +
-                                                             "                    <ui:FontIcon Glyph=\"&#xE7BA;\" IconFontSize=\"16\" />\n" +
-                                                             "                </ui:NavigationViewItem.Icon>\n" +
-                                                             "                <ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "                    <ui:InfoBadge BadgeStyle=\"{x:Static uicore:InfoBadgeStyle.Critical}\" Value=\"2\" />\n" +
-                                                             "                </ui:NavigationViewItem.InfoBadge>\n" +
-                                                             "            </ui:NavigationViewItem>\n" +
-                                                             "        </ui:NavigationView>\n" +
+                                                             "                <fluence:NavigationViewItem.Icon>\n" +
+                                                             "                    <fluence:FontIcon Glyph=\"&#xE715;\" IconFontSize=\"16\" />\n" +
+                                                             "                </fluence:NavigationViewItem.Icon>\n" +
+                                                             "                <fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "                    <fluence:InfoBadge Value=\"12\" />\n" +
+                                                             "                </fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "            </fluence:NavigationViewItem>\n" +
+                                                             "            <fluence:NavigationViewItem Content=\"Approvals\">\n" +
+                                                             "                <fluence:NavigationViewItem.Icon>\n" +
+                                                             "                    <fluence:FontIcon Glyph=\"&#xE73E;\" IconFontSize=\"16\" />\n" +
+                                                             "                </fluence:NavigationViewItem.Icon>\n" +
+                                                             "                <fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "                    <fluence:InfoBadge BadgeStyle=\"{x:Static fluence:InfoBadgeStyle.Caution}\" />\n" +
+                                                             "                </fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "            </fluence:NavigationViewItem>\n" +
+                                                             "            <fluence:NavigationViewItem Content=\"Alerts\">\n" +
+                                                             "                <fluence:NavigationViewItem.Icon>\n" +
+                                                             "                    <fluence:FontIcon Glyph=\"&#xE7BA;\" IconFontSize=\"16\" />\n" +
+                                                             "                </fluence:NavigationViewItem.Icon>\n" +
+                                                             "                <fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "                    <fluence:InfoBadge BadgeStyle=\"{x:Static fluence:InfoBadgeStyle.Critical}\" Value=\"2\" />\n" +
+                                                             "                </fluence:NavigationViewItem.InfoBadge>\n" +
+                                                             "            </fluence:NavigationViewItem>\n" +
+                                                             "        </fluence:NavigationView>\n" +
                                                              "    </Border>\n" +
                                                              "</UserControl>\n";
 
@@ -240,8 +239,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.BreadcrumbTrail\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                       "    <ui:BreadcrumbBar x:Name=\"Trail\" ItemClicked=\"Trail_ItemClicked\" />\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                       "    <fluence:BreadcrumbBar x:Name=\"Trail\" ItemClicked=\"Trail_ItemClicked\" />\n" +
                                                        "</UserControl>\n";
 
         private const string BreadcrumbBarCSharpSource = "using System.Collections.ObjectModel;\n" +
@@ -297,8 +296,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                    "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.CarouselPager\"\n" +
                                                    "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                    "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                   "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                   "    <ui:PipsPager\n" +
+                                                   "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                   "    <fluence:PipsPager\n" +
                                                    "        x:Name=\"Pager\"\n" +
                                                    "        NextButtonVisibility=\"Visible\"\n" +
                                                    "        NumberOfPages=\"8\"\n" +

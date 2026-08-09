@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView\"\n" +
                                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                                      "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                                       "    <Grid>\n" +
                                                                       "        <Grid.RowDefinitions>\n" +
                                                                       "            <RowDefinition Height=\"Auto\" />\n" +
@@ -60,28 +60,28 @@ namespace Fluence.Wpf.Demo.Pages
                                                                       "                <ColumnDefinition Width=\"4\" />\n" +
                                                                       "                <ColumnDefinition Width=\"Auto\" />\n" +
                                                                       "            </Grid.ColumnDefinitions>\n" +
-                                                                      "            <ui:TextBox\n" +
+                                                                      "            <fluence:TextBox\n" +
                                                                       "                x:Name=\"NewItemBox\"\n" +
                                                                       "                KeyDown=\"NewItemBox_KeyDown\"\n" +
                                                                       "                PlaceholderText=\"New item name...\" />\n" +
-                                                                      "            <ui:Button\n" +
+                                                                      "            <fluence:Button\n" +
                                                                       "                Grid.Column=\"2\"\n" +
                                                                       "                Appearance=\"Accent\"\n" +
                                                                       "                Click=\"AddItem_Click\"\n" +
                                                                       "                Content=\"Add\" />\n" +
-                                                                      "            <ui:Button\n" +
+                                                                      "            <fluence:Button\n" +
                                                                       "                Grid.Column=\"4\"\n" +
                                                                       "                Click=\"RemoveItem_Click\"\n" +
                                                                       "                Content=\"Remove selected\" />\n" +
                                                                       "        </Grid>\n" +
                                                                       "\n" +
-                                                                      "        <ui:ListView\n" +
+                                                                      "        <fluence:ListView\n" +
                                                                       "            x:Name=\"BoundListView\"\n" +
                                                                       "            Grid.Row=\"2\"\n" +
                                                                       "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                                       "            BorderThickness=\"1\"\n" +
                                                                       "            SelectionMode=\"Single\">\n" +
-                                                                      "            <ui:ListView.ItemTemplate>\n" +
+                                                                      "            <fluence:ListView.ItemTemplate>\n" +
                                                                       "                <DataTemplate>\n" +
                                                                       "                    <Grid>\n" +
                                                                       "                        <Grid.ColumnDefinitions>\n" +
@@ -89,7 +89,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                       "                            <ColumnDefinition Width=\"12\" />\n" +
                                                                       "                            <ColumnDefinition Width=\"*\" />\n" +
                                                                       "                        </Grid.ColumnDefinitions>\n" +
-                                                                      "                        <ui:FontIcon\n" +
+                                                                      "                        <fluence:FontIcon\n" +
                                                                       "                            VerticalAlignment=\"Center\"\n" +
                                                                       "                            Foreground=\"{DynamicResource AccentTextFillColorPrimaryBrush}\"\n" +
                                                                       "                            Glyph=\"&#xE8A5;\"\n" +
@@ -111,8 +111,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                       "                        </StackPanel>\n" +
                                                                       "                    </Grid>\n" +
                                                                       "                </DataTemplate>\n" +
-                                                                      "            </ui:ListView.ItemTemplate>\n" +
-                                                                      "        </ui:ListView>\n" +
+                                                                      "            </fluence:ListView.ItemTemplate>\n" +
+                                                                      "        </fluence:ListView>\n" +
                                                                       "    </Grid>\n" +
                                                                       "</UserControl>\n";
 
@@ -196,29 +196,29 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.ListViewSelectionMode\"\n" +
                                                                "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                                "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                               "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                                "    <StackPanel>\n" +
                                                                "        <StackPanel Margin=\"0,0,0,12\" Orientation=\"Horizontal\">\n" +
-                                                               "            <ui:RadioButton\n" +
+                                                               "            <fluence:RadioButton\n" +
                                                                "                x:Name=\"SingleModeRadio\"\n" +
                                                                "                Margin=\"0,0,16,0\"\n" +
                                                                "                Checked=\"SelectionMode_Changed\"\n" +
                                                                "                Content=\"Single\"\n" +
                                                                "                GroupName=\"SelectionModeGroup\"\n" +
                                                                "                IsChecked=\"True\" />\n" +
-                                                               "            <ui:RadioButton\n" +
+                                                               "            <fluence:RadioButton\n" +
                                                                "                x:Name=\"MultipleModeRadio\"\n" +
                                                                "                Margin=\"0,0,16,0\"\n" +
                                                                "                Checked=\"SelectionMode_Changed\"\n" +
                                                                "                Content=\"Multiple\"\n" +
                                                                "                GroupName=\"SelectionModeGroup\" />\n" +
-                                                               "            <ui:RadioButton\n" +
+                                                               "            <fluence:RadioButton\n" +
                                                                "                x:Name=\"ExtendedModeRadio\"\n" +
                                                                "                Checked=\"SelectionMode_Changed\"\n" +
                                                                "                Content=\"Extended (Shift+Click)\"\n" +
                                                                "                GroupName=\"SelectionModeGroup\" />\n" +
                                                                "        </StackPanel>\n" +
-                                                               "        <ui:ListView\n" +
+                                                               "        <fluence:ListView\n" +
                                                                "            x:Name=\"SelectionModeListView\"\n" +
                                                                "            Height=\"200\"\n" +
                                                                "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "            <ListViewItem Content=\"Foxtrot\" />\n" +
                                                                "            <ListViewItem Content=\"Golf\" />\n" +
                                                                "            <ListViewItem Content=\"Hotel\" />\n" +
-                                                               "        </ui:ListView>\n" +
+                                                               "        </fluence:ListView>\n" +
                                                                "        <TextBlock\n" +
                                                                "            x:Name=\"SelectionCountLabel\"\n" +
                                                                "            Margin=\"0,8,0,0\"\n" +
@@ -308,15 +308,15 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.DataTemplateRow\"\n" +
                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                         "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                         "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                          "    <StackPanel>\n" +
-                                                         "        <ui:ListView\n" +
+                                                         "        <fluence:ListView\n" +
                                                          "            x:Name=\"DataTemplateListView\"\n" +
                                                          "            Height=\"180\"\n" +
                                                          "            BorderBrush=\"{DynamicResource CardStrokeColorDefaultBrush}\"\n" +
                                                          "            BorderThickness=\"1\"\n" +
                                                          "            SelectionMode=\"Single\">\n" +
-                                                         "            <ui:ListView.ItemTemplate>\n" +
+                                                         "            <fluence:ListView.ItemTemplate>\n" +
                                                          "                <DataTemplate>\n" +
                                                          "                    <Grid Margin=\"0,2\">\n" +
                                                          "                        <Grid.ColumnDefinitions>\n" +
@@ -324,7 +324,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "                            <ColumnDefinition Width=\"12\" />\n" +
                                                          "                            <ColumnDefinition Width=\"*\" />\n" +
                                                          "                        </Grid.ColumnDefinitions>\n" +
-                                                         "                        <ui:FontIcon\n" +
+                                                         "                        <fluence:FontIcon\n" +
                                                          "                            VerticalAlignment=\"Center\"\n" +
                                                          "                            Foreground=\"{DynamicResource AccentTextFillColorPrimaryBrush}\"\n" +
                                                          "                            Glyph=\"&#xE8A5;\"\n" +
@@ -346,8 +346,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "                        </StackPanel>\n" +
                                                          "                    </Grid>\n" +
                                                          "                </DataTemplate>\n" +
-                                                         "            </ui:ListView.ItemTemplate>\n" +
-                                                         "        </ui:ListView>\n" +
+                                                         "            </fluence:ListView.ItemTemplate>\n" +
+                                                         "        </fluence:ListView>\n" +
                                                          "        <TextBlock\n" +
                                                          "            Margin=\"0,8,0,0\"\n" +
                                                          "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +

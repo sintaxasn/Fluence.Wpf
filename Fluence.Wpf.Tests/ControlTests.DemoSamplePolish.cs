@@ -251,7 +251,7 @@ namespace Fluence.Wpf.Tests
                 AssertIconSidebarValue(window, "IconNameValueText", "CopyIconNameButton", "ZoomOut");
                 AssertIconSidebarValue(window, "IconTextGlyphValueText", "CopyTextGlyphButton", "&#xE71F;");
                 AssertIconSidebarValue(window, "IconCodeGlyphValueText", "CopyCodeGlyphButton", "\\uE71F");
-                AssertIconSidebarValue(window, "IconXamlValueText", "CopyXamlButton", "<ui:FontIcon Glyph=\"&#xE71F;\" />");
+                AssertIconSidebarValue(window, "IconXamlValueText", "CopyXamlButton", "<fluence:FontIcon Glyph=\"&#xE71F;\" />");
                 AssertIconSidebarValue(window, "IconCSharpValueText", "CopyCSharpButton",
                     "FontIcon icon = new FontIcon();" + Environment.NewLine + "icon.Glyph = \"\\uE71F\";");
             });

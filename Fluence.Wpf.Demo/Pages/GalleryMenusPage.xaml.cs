@@ -39,66 +39,66 @@ namespace Fluence.Wpf.Demo.Pages
                                                  "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.MenuBar\"\n" +
                                                  "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                  "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                 "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                 "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                  "    <StackPanel>\n" +
-                                                 "        <ui:Menu\n" +
+                                                 "        <fluence:Menu\n" +
                                                  "            Margin=\"0,0,0,12\">\n" +
-                                                 "            <ui:MenuItem Header=\"_File\">\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "            <fluence:MenuItem Header=\"_File\">\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"_New\"\n" +
                                                  "                    InputGestureText=\"Ctrl+N\"\n" +
                                                  "                    Tag=\"File - New\" />\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"_Open...\"\n" +
                                                  "                    InputGestureText=\"Ctrl+O\"\n" +
                                                  "                    Tag=\"File - Open\" />\n" +
-                                                 "                <ui:MenuItem Header=\"Open _Recent\">\n" +
-                                                 "                    <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem Header=\"Open _Recent\">\n" +
+                                                 "                    <fluence:MenuItem\n" +
                                                  "                        Click=\"MenuBar_Click\"\n" +
                                                  "                        Header=\"Roadmap.md\"\n" +
                                                  "                        Tag=\"File - Recent - Roadmap.md\" />\n" +
-                                                 "                    <ui:MenuItem\n" +
+                                                 "                    <fluence:MenuItem\n" +
                                                  "                        Click=\"MenuBar_Click\"\n" +
                                                  "                        Header=\"LaunchPlan.xlsx\"\n" +
                                                  "                        Tag=\"File - Recent - LaunchPlan.xlsx\" />\n" +
-                                                 "                </ui:MenuItem>\n" +
+                                                 "                </fluence:MenuItem>\n" +
                                                  "                <Separator />\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"_Save\"\n" +
                                                  "                    InputGestureText=\"Ctrl+S\"\n" +
                                                  "                    Tag=\"File - Save\" />\n" +
-                                                 "                <ui:MenuItem Header=\"Print\" IsEnabled=\"False\" />\n" +
-                                                 "            </ui:MenuItem>\n" +
-                                                 "            <ui:MenuItem Header=\"_View\">\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem Header=\"Print\" IsEnabled=\"False\" />\n" +
+                                                 "            </fluence:MenuItem>\n" +
+                                                 "            <fluence:MenuItem Header=\"_View\">\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"Status bar\"\n" +
                                                  "                    IsCheckable=\"True\"\n" +
                                                  "                    IsChecked=\"True\"\n" +
                                                  "                    Tag=\"View - Status bar\" />\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"Word wrap\"\n" +
                                                  "                    IsCheckable=\"True\"\n" +
                                                  "                    Tag=\"View - Word wrap\" />\n" +
                                                  "                <Separator />\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"Zoom in\"\n" +
                                                  "                    InputGestureText=\"Ctrl++\"\n" +
                                                  "                    Tag=\"View - Zoom in\" />\n" +
-                                                 "            </ui:MenuItem>\n" +
-                                                 "            <ui:MenuItem Header=\"_Help\">\n" +
-                                                 "                <ui:MenuItem\n" +
+                                                 "            </fluence:MenuItem>\n" +
+                                                 "            <fluence:MenuItem Header=\"_Help\">\n" +
+                                                 "                <fluence:MenuItem\n" +
                                                  "                    Click=\"MenuBar_Click\"\n" +
                                                  "                    Header=\"Documentation\"\n" +
                                                  "                    Tag=\"Help - Documentation\" />\n" +
-                                                 "                <ui:MenuItem Header=\"About\" IsEnabled=\"False\" />\n" +
-                                                 "            </ui:MenuItem>\n" +
-                                                 "        </ui:Menu>\n" +
+                                                 "                <fluence:MenuItem Header=\"About\" IsEnabled=\"False\" />\n" +
+                                                 "            </fluence:MenuItem>\n" +
+                                                 "        </fluence:Menu>\n" +
                                                  "        <TextBlock\n" +
                                                  "            x:Name=\"MenuBarResultLabel\"\n" +
                                                  "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
@@ -129,51 +129,50 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ContextMenuActions\"\n" +
                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\"\n" +
-                                                     "    xmlns:uicore=\"clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf\">\n" +
-                                                     "    <ui:Card Padding=\"16\" Variant=\"{x:Static uicore:CardVariant.Subtle}\">\n" +
-                                                     "        <ui:Card.ContextMenu>\n" +
-                                                     "            <ui:ContextMenu>\n" +
-                                                     "                <ui:MenuItem\n" +
+                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                     "    <fluence:Card Padding=\"16\" Variant=\"{x:Static fluence:CardVariant.Subtle}\">\n" +
+                                                     "        <fluence:Card.ContextMenu>\n" +
+                                                     "            <fluence:ContextMenu>\n" +
+                                                     "                <fluence:MenuItem\n" +
                                                      "                    Click=\"ContextMenu_Click\"\n" +
                                                      "                    Header=\"Cut\"\n" +
                                                      "                    InputGestureText=\"Ctrl+X\"\n" +
                                                      "                    Tag=\"Cut\">\n" +
-                                                     "                    <ui:MenuItem.Icon>\n" +
-                                                     "                        <ui:FontIcon Glyph=\"&#xE8C6;\" IconFontSize=\"16\" />\n" +
-                                                     "                    </ui:MenuItem.Icon>\n" +
-                                                     "                </ui:MenuItem>\n" +
-                                                     "                <ui:MenuItem\n" +
+                                                     "                    <fluence:MenuItem.Icon>\n" +
+                                                     "                        <fluence:FontIcon Glyph=\"&#xE8C6;\" IconFontSize=\"16\" />\n" +
+                                                     "                    </fluence:MenuItem.Icon>\n" +
+                                                     "                </fluence:MenuItem>\n" +
+                                                     "                <fluence:MenuItem\n" +
                                                      "                    Click=\"ContextMenu_Click\"\n" +
                                                      "                    Header=\"Copy\"\n" +
                                                      "                    InputGestureText=\"Ctrl+C\"\n" +
                                                      "                    Tag=\"Copy\">\n" +
-                                                     "                    <ui:MenuItem.Icon>\n" +
-                                                     "                        <ui:FontIcon Glyph=\"&#xE8C8;\" IconFontSize=\"16\" />\n" +
-                                                     "                    </ui:MenuItem.Icon>\n" +
-                                                     "                </ui:MenuItem>\n" +
-                                                     "                <ui:MenuItem\n" +
+                                                     "                    <fluence:MenuItem.Icon>\n" +
+                                                     "                        <fluence:FontIcon Glyph=\"&#xE8C8;\" IconFontSize=\"16\" />\n" +
+                                                     "                    </fluence:MenuItem.Icon>\n" +
+                                                     "                </fluence:MenuItem>\n" +
+                                                     "                <fluence:MenuItem\n" +
                                                      "                    Click=\"ContextMenu_Click\"\n" +
                                                      "                    Header=\"Paste\"\n" +
                                                      "                    InputGestureText=\"Ctrl+V\"\n" +
                                                      "                    Tag=\"Paste\">\n" +
-                                                     "                    <ui:MenuItem.Icon>\n" +
-                                                     "                        <ui:FontIcon Glyph=\"&#xE77F;\" IconFontSize=\"16\" />\n" +
-                                                     "                    </ui:MenuItem.Icon>\n" +
-                                                     "                </ui:MenuItem>\n" +
+                                                     "                    <fluence:MenuItem.Icon>\n" +
+                                                     "                        <fluence:FontIcon Glyph=\"&#xE77F;\" IconFontSize=\"16\" />\n" +
+                                                     "                    </fluence:MenuItem.Icon>\n" +
+                                                     "                </fluence:MenuItem>\n" +
                                                      "                <Separator />\n" +
-                                                     "                <ui:MenuItem\n" +
+                                                     "                <fluence:MenuItem\n" +
                                                      "                    Click=\"ContextMenu_Click\"\n" +
                                                      "                    Header=\"Add to favorites\"\n" +
                                                      "                    IsCheckable=\"True\"\n" +
                                                      "                    Tag=\"Add to favorites\" />\n" +
-                                                     "                <ui:MenuItem Header=\"Share\">\n" +
-                                                     "                    <ui:MenuItem Click=\"ContextMenu_Click\" Header=\"Copy link\" Tag=\"Share - Copy link\" />\n" +
-                                                     "                    <ui:MenuItem Click=\"ContextMenu_Click\" Header=\"Send email\" Tag=\"Share - Send email\" />\n" +
-                                                     "                    <ui:MenuItem Header=\"Export PDF\" IsEnabled=\"False\" />\n" +
-                                                     "                </ui:MenuItem>\n" +
-                                                     "            </ui:ContextMenu>\n" +
-                                                     "        </ui:Card.ContextMenu>\n" +
+                                                     "                <fluence:MenuItem Header=\"Share\">\n" +
+                                                     "                    <fluence:MenuItem Click=\"ContextMenu_Click\" Header=\"Copy link\" Tag=\"Share - Copy link\" />\n" +
+                                                     "                    <fluence:MenuItem Click=\"ContextMenu_Click\" Header=\"Send email\" Tag=\"Share - Send email\" />\n" +
+                                                     "                    <fluence:MenuItem Header=\"Export PDF\" IsEnabled=\"False\" />\n" +
+                                                     "                </fluence:MenuItem>\n" +
+                                                     "            </fluence:ContextMenu>\n" +
+                                                     "        </fluence:Card.ContextMenu>\n" +
                                                      "        <StackPanel>\n" +
                                                      "            <TextBlock\n" +
                                                      "                Foreground=\"{DynamicResource TextFillColorPrimaryBrush}\"\n" +
@@ -184,7 +183,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "                Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                      "                Text=\"Last action: None\" />\n" +
                                                      "        </StackPanel>\n" +
-                                                     "    </ui:Card>\n" +
+                                                     "    </fluence:Card>\n" +
                                                      "</UserControl>\n";
 
         private const string ContextMenuCSharpSource = "using System.Windows;\n" +
@@ -210,21 +209,21 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ToolTips\"\n" +
                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                  "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                   "    <WrapPanel>\n" +
-                                                  "        <ui:Button Margin=\"0,0,8,8\" Content=\"Save\">\n" +
-                                                  "            <ui:Button.ToolTip>\n" +
-                                                  "                <ui:ToolTip Content=\"Save changes (Ctrl+S)\" />\n" +
-                                                  "            </ui:Button.ToolTip>\n" +
-                                                  "        </ui:Button>\n" +
-                                                  "        <ui:Button Margin=\"0,0,8,8\" Content=\"Delete\">\n" +
-                                                  "            <ui:Button.ToolTip>\n" +
-                                                  "                <ui:ToolTip Content=\"Delete the selected item\" />\n" +
-                                                  "            </ui:Button.ToolTip>\n" +
-                                                  "        </ui:Button>\n" +
-                                                  "        <ui:Button Margin=\"0,0,8,8\" Content=\"Share\">\n" +
-                                                  "            <ui:Button.ToolTip>\n" +
-                                                  "                <ui:ToolTip>\n" +
+                                                  "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Save\">\n" +
+                                                  "            <fluence:Button.ToolTip>\n" +
+                                                  "                <fluence:ToolTip Content=\"Save changes (Ctrl+S)\" />\n" +
+                                                  "            </fluence:Button.ToolTip>\n" +
+                                                  "        </fluence:Button>\n" +
+                                                  "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Delete\">\n" +
+                                                  "            <fluence:Button.ToolTip>\n" +
+                                                  "                <fluence:ToolTip Content=\"Delete the selected item\" />\n" +
+                                                  "            </fluence:Button.ToolTip>\n" +
+                                                  "        </fluence:Button>\n" +
+                                                  "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Share\">\n" +
+                                                  "            <fluence:Button.ToolTip>\n" +
+                                                  "                <fluence:ToolTip>\n" +
                                                   "                    <StackPanel>\n" +
                                                   "                        <TextBlock\n" +
                                                   "                            FontWeight=\"SemiBold\"\n" +
@@ -234,18 +233,18 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "                            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                   "                            Text=\"Copy a link or send an email.\" />\n" +
                                                   "                    </StackPanel>\n" +
-                                                  "                </ui:ToolTip>\n" +
-                                                  "            </ui:Button.ToolTip>\n" +
-                                                  "        </ui:Button>\n" +
-                                                  "        <ui:Button\n" +
+                                                  "                </fluence:ToolTip>\n" +
+                                                  "            </fluence:Button.ToolTip>\n" +
+                                                  "        </fluence:Button>\n" +
+                                                  "        <fluence:Button\n" +
                                                   "            Margin=\"0,0,8,8\"\n" +
                                                   "            Content=\"Settings\"\n" +
                                                   "            IsEnabled=\"False\"\n" +
                                                   "            ToolTipService.ShowOnDisabled=\"True\">\n" +
-                                                  "            <ui:Button.ToolTip>\n" +
-                                                  "                <ui:ToolTip Content=\"Settings are disabled for this item\" />\n" +
-                                                  "            </ui:Button.ToolTip>\n" +
-                                                  "        </ui:Button>\n" +
+                                                  "            <fluence:Button.ToolTip>\n" +
+                                                  "                <fluence:ToolTip Content=\"Settings are disabled for this item\" />\n" +
+                                                  "            </fluence:Button.ToolTip>\n" +
+                                                  "        </fluence:Button>\n" +
                                                   "    </WrapPanel>\n" +
                                                   "</UserControl>\n";
 
@@ -266,11 +265,11 @@ namespace Fluence.Wpf.Demo.Pages
                                                 "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.FlyoutSample\"\n" +
                                                 "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                 "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                "    <ui:Button Click=\"FlyoutButton_Click\" Content=\"Show flyout\">\n" +
-                                                "        <ui:FlyoutBase.AttachedFlyout>\n" +
-                                                "            <ui:Flyout Placement=\"Bottom\">\n" +
-                                                "                <ui:Flyout.Content>\n" +
+                                                "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                "    <fluence:Button Click=\"FlyoutButton_Click\" Content=\"Show flyout\">\n" +
+                                                "        <fluence:FlyoutBase.AttachedFlyout>\n" +
+                                                "            <fluence:Flyout Placement=\"Bottom\">\n" +
+                                                "                <fluence:Flyout.Content>\n" +
                                                 "                    <StackPanel MaxWidth=\"260\">\n" +
                                                 "                        <TextBlock\n" +
                                                 "                            FontWeight=\"SemiBold\"\n" +
@@ -282,10 +281,10 @@ namespace Fluence.Wpf.Demo.Pages
                                                 "                            Text=\"A lightweight, light-dismiss popup anchored to its owner.\"\n" +
                                                 "                            TextWrapping=\"Wrap\" />\n" +
                                                 "                    </StackPanel>\n" +
-                                                "                </ui:Flyout.Content>\n" +
-                                                "            </ui:Flyout>\n" +
-                                                "        </ui:FlyoutBase.AttachedFlyout>\n" +
-                                                "    </ui:Button>\n" +
+                                                "                </fluence:Flyout.Content>\n" +
+                                                "            </fluence:Flyout>\n" +
+                                                "        </fluence:FlyoutBase.AttachedFlyout>\n" +
+                                                "    </fluence:Button>\n" +
                                                 "</UserControl>\n";
 
         private const string FlyoutCSharpSource = "using System.Windows;\n" +
@@ -315,8 +314,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ContentDialogSample\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                       "    <ui:Button Click=\"ShowDialogButton_Click\" Content=\"Show dialog\" />\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                       "    <fluence:Button Click=\"ShowDialogButton_Click\" Content=\"Show dialog\" />\n" +
                                                        "</UserControl>\n";
 
         private const string ContentDialogCSharpSource = "using System.Threading.Tasks;\n" +
@@ -359,10 +358,10 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.TeachingTipSample\"\n" +
                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                      "    <Grid>\n" +
-                                                     "        <ui:Button x:Name=\"TipButton\" Click=\"ShowTipButton_Click\" Content=\"Show teaching tip\" />\n" +
-                                                     "        <ui:TeachingTip\n" +
+                                                     "        <fluence:Button x:Name=\"TipButton\" Click=\"ShowTipButton_Click\" Content=\"Show teaching tip\" />\n" +
+                                                     "        <fluence:TeachingTip\n" +
                                                      "            x:Name=\"Tip\"\n" +
                                                      "            Title=\"Pro tip\"\n" +
                                                      "            Subtitle=\"A TeachingTip coaches the user from a target element without blocking.\"\n" +
@@ -449,23 +448,23 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.CommandBarSample\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
-                                                          "    <ui:Button Click=\"ShowCommandBarButton_Click\" Content=\"Show command bar\">\n" +
-                                                          "        <ui:FlyoutBase.AttachedFlyout>\n" +
-                                                          "            <ui:CommandBarFlyout>\n" +
-                                                          "                <ui:CommandBarFlyout.PrimaryCommands>\n" +
-                                                          "                    <ui:AppBarButton Click=\"Command_Click\" Label=\"Copy\" Tag=\"Copy\">\n" +
-                                                          "                        <ui:AppBarButton.Icon>\n" +
-                                                          "                            <ui:FontIcon Glyph=\"&#xE8C8;\" IconFontSize=\"16\" />\n" +
-                                                          "                        </ui:AppBarButton.Icon>\n" +
-                                                          "                    </ui:AppBarButton>\n" +
-                                                          "                </ui:CommandBarFlyout.PrimaryCommands>\n" +
-                                                          "                <ui:CommandBarFlyout.SecondaryCommands>\n" +
-                                                          "                    <ui:AppBarButton Click=\"Command_Click\" Label=\"Delete\" Tag=\"Delete\" />\n" +
-                                                          "                </ui:CommandBarFlyout.SecondaryCommands>\n" +
-                                                          "            </ui:CommandBarFlyout>\n" +
-                                                          "        </ui:FlyoutBase.AttachedFlyout>\n" +
-                                                          "    </ui:Button>\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+                                                          "    <fluence:Button Click=\"ShowCommandBarButton_Click\" Content=\"Show command bar\">\n" +
+                                                          "        <fluence:FlyoutBase.AttachedFlyout>\n" +
+                                                          "            <fluence:CommandBarFlyout>\n" +
+                                                          "                <fluence:CommandBarFlyout.PrimaryCommands>\n" +
+                                                          "                    <fluence:AppBarButton Click=\"Command_Click\" Label=\"Copy\" Tag=\"Copy\">\n" +
+                                                          "                        <fluence:AppBarButton.Icon>\n" +
+                                                          "                            <fluence:FontIcon Glyph=\"&#xE8C8;\" IconFontSize=\"16\" />\n" +
+                                                          "                        </fluence:AppBarButton.Icon>\n" +
+                                                          "                    </fluence:AppBarButton>\n" +
+                                                          "                </fluence:CommandBarFlyout.PrimaryCommands>\n" +
+                                                          "                <fluence:CommandBarFlyout.SecondaryCommands>\n" +
+                                                          "                    <fluence:AppBarButton Click=\"Command_Click\" Label=\"Delete\" Tag=\"Delete\" />\n" +
+                                                          "                </fluence:CommandBarFlyout.SecondaryCommands>\n" +
+                                                          "            </fluence:CommandBarFlyout>\n" +
+                                                          "        </fluence:FlyoutBase.AttachedFlyout>\n" +
+                                                          "    </fluence:Button>\n" +
                                                           "</UserControl>\n";
 
         private const string CommandBarFlyoutCSharpSource = "using System.Windows;\n" +

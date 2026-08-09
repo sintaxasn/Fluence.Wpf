@@ -6,16 +6,15 @@
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="980"
     mc:Ignorable="d">
-    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+    <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock Style="{StaticResource PageTitleStyle}" Text="Colors" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use Fluence theme brushes for text, fills, strokes, backgrounds, semantic states, and high contrast mappings." />
 
-            <ui:Border
+            <fluence:Border
                 x:Name="CodeSampleCard"
                 Margin="0,0,0,20"
                 Padding="16"
@@ -36,7 +35,7 @@
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="&lt;TextBlock Foreground=&quot;{DynamicResource TextFillColorPrimaryBrush}&quot; /&gt;"
                         TextWrapping="Wrap" />
-                    <ui:Button
+                    <fluence:Button
                         x:Name="CopyCodeSampleButton"
                         Grid.Column="1"
                         MinWidth="32"
@@ -45,12 +44,12 @@
                         Appearance="Subtle"
                         Click="CopyCodeSampleButton_Click"
                         ToolTip="Copy sample">
-                        <ui:Button.Icon>
-                            <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="14" />
-                        </ui:Button.Icon>
-                    </ui:Button>
+                        <fluence:Button.Icon>
+                            <fluence:FontIcon Glyph="&#xE8C8;" IconFontSize="14" />
+                        </fluence:Button.Icon>
+                    </fluence:Button>
                 </Grid>
-            </ui:Border>
+            </fluence:Border>
 
             <TabControl x:Name="ColorSectionTabs" Margin="0,12,0,0" />
 
@@ -60,7 +59,7 @@
                 Text="Theme dictionaries" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="ThemeDictionary supplies per-theme values that swap automatically on theme changes, and ThemeResource references theme-reactive tokens, matching WinUI 3 markup. Themes without an entry (here HighContrast) fall back to the Default table." />
 
-            <ui:Border
+            <fluence:Border
                 Margin="0,0,0,20"
                 Padding="16"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
@@ -84,21 +83,21 @@
                             </fluence:ThemeDictionary.ThemeDictionaries>
                         </fluence:ThemeDictionary>
                     </StackPanel.Resources>
-                    <ui:Border
+                    <fluence:Border
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Background="{DynamicResource SampleBackgroundBrush}"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <TextBlock Foreground="{DynamicResource SampleTextBrush}" Text="{DynamicResource SampleThemeString}" />
-                    </ui:Border>
+                    </fluence:Border>
                     <TextBlock
                         Margin="{DynamicResource DemoTextTopGapMargin}"
                         Foreground="{fluence:ThemeResource TextFillColorSecondaryBrush}"
                         Text="This caption uses ThemeResource against the canonical secondary text token, so it stays readable in every theme including high contrast."
                         TextWrapping="Wrap" />
                 </StackPanel>
-            </ui:Border>
+            </fluence:Border>
 
-            <ui:Border
+            <fluence:Border
                 Padding="16"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -116,7 +115,7 @@
                         FontSize="13"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         TextWrapping="Wrap" />
-                    <ui:Button
+                    <fluence:Button
                         x:Name="CopyThemeDictionarySampleButton"
                         Grid.Column="1"
                         MinWidth="32"
@@ -126,12 +125,12 @@
                         Appearance="Subtle"
                         Click="CopyThemeDictionarySampleButton_Click"
                         ToolTip="Copy sample">
-                        <ui:Button.Icon>
-                            <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="14" />
-                        </ui:Button.Icon>
-                    </ui:Button>
+                        <fluence:Button.Icon>
+                            <fluence:FontIcon Glyph="&#xE8C8;" IconFontSize="14" />
+                        </fluence:Button.Icon>
+                    </fluence:Button>
                 </Grid>
-            </ui:Border>
+            </fluence:Border>
         </StackPanel>
-    </ui:SmoothScrollViewer>
+    </fluence:SmoothScrollViewer>
 </UserControl>

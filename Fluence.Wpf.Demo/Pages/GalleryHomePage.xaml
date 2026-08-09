@@ -5,8 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
@@ -45,7 +43,7 @@
             </fluence:ThemeDictionary.ThemeDictionaries>
         </fluence:ThemeDictionary>
     </UserControl.Resources>
-    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+    <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <!--  Hero brand graphic  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">
@@ -74,51 +72,51 @@
 
             <!--  Action cards: use the standard Card.Header / Card.Icon contract (same pattern as GalleryDataPage's Card.Variant samples).  -->
             <UniformGrid Margin="0,8,0,16" Columns="2">
-                <ui:Card
+                <fluence:Card
                     Margin="0,0,10,10"
                     Padding="20"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="settings"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE790;"
                             IconFontSize="24" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Theming" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="10,0,0,10"
                     Padding="20"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="settings"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE737;"
                             IconFontSize="24" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Shell" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="Mica, Acrylic, and Tabbed DWM backdrops. Rounded corners, caption extension, and icon + title bar controls on FluenceWindow."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
             </UniformGrid>
 
             <!--  Featured controls  -->
@@ -129,213 +127,213 @@
                 Text="Featured controls" />
 
             <UniformGrid x:Name="FeaturedControlsGrid" Columns="3">
-                <ui:Card
+                <fluence:Card
                     Margin="0,0,6,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="buttons"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE8E5;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Buttons" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Primary, secondary, accent, hyperlink."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,6,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="selection"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE73E;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Selection" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Checkbox, radio, toggle switch."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,0,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="inputs"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE70F;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Inputs" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Text, password, combo, slider, number."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="0,0,6,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="status"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE916;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Status" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="InfoBar, progress ring, progress bar."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,6,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="data"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE80A;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Collections" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="List views, cards, layout panels."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,0,12"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="navigation"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE700;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Navigation" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Pane layouts, selection, header."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="0,0,6,0"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="tabs"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE748;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Tabs" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="TabView, tab strip, close buttons."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,6,0"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="buttons"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE712;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Menus" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="ContextMenu, MenuItem, flyout."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
 
-                <ui:Card
+                <fluence:Card
                     Margin="6,0,0,0"
                     Padding="16"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="data"
                     Variant="Default">
-                    <ui:Card.Icon>
-                        <ui:FontIcon
+                    <fluence:Card.Icon>
+                        <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE71C;"
                             IconFontSize="20" />
-                    </ui:Card.Icon>
-                    <ui:Card.Header>
+                    </fluence:Card.Icon>
+                    <fluence:Card.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Trees" />
-                    </ui:Card.Header>
+                    </fluence:Card.Header>
                     <TextBlock
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="TreeView, expand, indent, chevron."
                         TextWrapping="Wrap" />
-                </ui:Card>
+                </fluence:Card>
             </UniformGrid>
         </StackPanel>
-    </ui:SmoothScrollViewer>
+    </fluence:SmoothScrollViewer>
 </UserControl>

@@ -38,25 +38,25 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances\"\n" +
                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                            "    <StackPanel>\n" +
                                                            "        <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                           "            <ui:Button\n" +
+                                                           "            <fluence:Button\n" +
                                                            "                Margin=\"0,0,8,8\"\n" +
                                                            "                Content=\"Standard\"\n" +
                                                            "                IsEnabled=\"{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}\" />\n" +
-                                                           "            <ui:Button\n" +
+                                                           "            <fluence:Button\n" +
                                                            "                Margin=\"0,0,8,8\"\n" +
                                                            "                Appearance=\"Accent\"\n" +
                                                            "                Content=\"Accent\"\n" +
                                                            "                IsEnabled=\"{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}\" />\n" +
-                                                           "            <ui:Button\n" +
+                                                           "            <fluence:Button\n" +
                                                            "                Margin=\"0,0,8,8\"\n" +
                                                            "                Appearance=\"Subtle\"\n" +
                                                            "                Content=\"Subtle\"\n" +
                                                            "                IsEnabled=\"{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}\" />\n" +
                                                            "        </WrapPanel>\n" +
-                                                           "        <ui:CheckBox\n" +
+                                                           "        <fluence:CheckBox\n" +
                                                            "            x:Name=\"ButtonEnableCheckBox\"\n" +
                                                            "            Content=\"Enable buttons\"\n" +
                                                            "            IsChecked=\"True\" />\n" +
@@ -79,29 +79,29 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ButtonIcons\"\n" +
                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                      "    <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                     "        <ui:Button Margin=\"0,0,8,8\" Content=\"Icon Left\">\n" +
-                                                     "            <ui:Button.Icon>\n" +
-                                                     "                <ui:FontIcon Glyph=\"&#xE774;\" IconFontSize=\"14\" />\n" +
-                                                     "            </ui:Button.Icon>\n" +
-                                                     "        </ui:Button>\n" +
-                                                     "        <ui:Button\n" +
+                                                     "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Icon Left\">\n" +
+                                                     "            <fluence:Button.Icon>\n" +
+                                                     "                <fluence:FontIcon Glyph=\"&#xE774;\" IconFontSize=\"14\" />\n" +
+                                                     "            </fluence:Button.Icon>\n" +
+                                                     "        </fluence:Button>\n" +
+                                                     "        <fluence:Button\n" +
                                                      "            Margin=\"0,0,8,8\"\n" +
                                                      "            Content=\"Icon Right\"\n" +
                                                      "            IconPlacement=\"Right\">\n" +
-                                                     "            <ui:Button.Icon>\n" +
-                                                     "                <ui:FontIcon Glyph=\"&#xE8D6;\" IconFontSize=\"14\" />\n" +
-                                                     "            </ui:Button.Icon>\n" +
-                                                     "        </ui:Button>\n" +
-                                                     "        <ui:Button\n" +
+                                                     "            <fluence:Button.Icon>\n" +
+                                                     "                <fluence:FontIcon Glyph=\"&#xE8D6;\" IconFontSize=\"14\" />\n" +
+                                                     "            </fluence:Button.Icon>\n" +
+                                                     "        </fluence:Button>\n" +
+                                                     "        <fluence:Button\n" +
                                                      "            Margin=\"0,0,8,8\"\n" +
                                                      "            Appearance=\"Subtle\"\n" +
                                                      "            Content=\"Refresh\">\n" +
-                                                     "            <ui:Button.Icon>\n" +
-                                                     "                <ui:FontIcon Glyph=\"&#xE72C;\" IconFontSize=\"14\" />\n" +
-                                                     "            </ui:Button.Icon>\n" +
-                                                     "        </ui:Button>\n" +
+                                                     "            <fluence:Button.Icon>\n" +
+                                                     "                <fluence:FontIcon Glyph=\"&#xE72C;\" IconFontSize=\"14\" />\n" +
+                                                     "            </fluence:Button.Icon>\n" +
+                                                     "        </fluence:Button>\n" +
                                                      "    </WrapPanel>\n" +
                                                      "</UserControl>\n";
 
@@ -121,25 +121,25 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.HyperlinkButtons\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                           "    <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                          "        <ui:HyperlinkButton\n" +
+                                                          "        <fluence:HyperlinkButton\n" +
                                                           "            Margin=\"0,0,16,8\"\n" +
                                                           "            Content=\"Documentation\"\n" +
                                                           "            NavigateUri=\"https://github.com/sintaxasn/Fluence.Wpf\" />\n" +
-                                                          "        <ui:HyperlinkButton\n" +
+                                                          "        <fluence:HyperlinkButton\n" +
                                                           "            Margin=\"0,0,16,8\"\n" +
                                                           "            Content=\"Release notes\"\n" +
                                                           "            NavigateUri=\"https://github.com/sintaxasn/Fluence.Wpf/releases\" />\n" +
-                                                          "        <ui:HyperlinkButton\n" +
+                                                          "        <fluence:HyperlinkButton\n" +
                                                           "            Margin=\"0,0,16,8\"\n" +
                                                           "            Content=\"With icon\"\n" +
                                                           "            NavigateUri=\"https://github.com/sintaxasn/Fluence.Wpf\">\n" +
-                                                          "            <ui:HyperlinkButton.Icon>\n" +
-                                                          "                <ui:FontIcon Glyph=\"&#xE71B;\" IconFontSize=\"14\" />\n" +
-                                                          "            </ui:HyperlinkButton.Icon>\n" +
-                                                          "        </ui:HyperlinkButton>\n" +
-                                                          "        <ui:HyperlinkButton\n" +
+                                                          "            <fluence:HyperlinkButton.Icon>\n" +
+                                                          "                <fluence:FontIcon Glyph=\"&#xE71B;\" IconFontSize=\"14\" />\n" +
+                                                          "            </fluence:HyperlinkButton.Icon>\n" +
+                                                          "        </fluence:HyperlinkButton>\n" +
+                                                          "        <fluence:HyperlinkButton\n" +
                                                           "            Margin=\"0,0,16,8\"\n" +
                                                           "            Content=\"Disabled\"\n" +
                                                           "            IsEnabled=\"False\" />\n" +
@@ -162,31 +162,31 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.DropDownButtons\"\n" +
                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                         "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                         "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                          "    <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                         "        <ui:DropDownButton Margin=\"0,0,8,8\" Content=\"New\">\n" +
-                                                         "            <ui:DropDownButton.Flyout>\n" +
+                                                         "        <fluence:DropDownButton Margin=\"0,0,8,8\" Content=\"New\">\n" +
+                                                         "            <fluence:DropDownButton.Flyout>\n" +
                                                          "                <StackPanel MinWidth=\"180\" Margin=\"4\">\n" +
-                                                         "                    <ui:Button\n" +
+                                                         "                    <fluence:Button\n" +
                                                          "                        HorizontalAlignment=\"Stretch\"\n" +
                                                          "                        HorizontalContentAlignment=\"Left\"\n" +
                                                          "                        Appearance=\"Subtle\"\n" +
                                                          "                        Content=\"Document\" />\n" +
-                                                         "                    <ui:Button\n" +
+                                                         "                    <fluence:Button\n" +
                                                          "                        HorizontalAlignment=\"Stretch\"\n" +
                                                          "                        HorizontalContentAlignment=\"Left\"\n" +
                                                          "                        Appearance=\"Subtle\"\n" +
                                                          "                        Content=\"Spreadsheet\" />\n" +
-                                                         "                    <ui:Button\n" +
+                                                         "                    <fluence:Button\n" +
                                                          "                        HorizontalAlignment=\"Stretch\"\n" +
                                                          "                        HorizontalContentAlignment=\"Left\"\n" +
                                                          "                        Appearance=\"Subtle\"\n" +
                                                          "                        Content=\"Folder\" />\n" +
                                                          "                </StackPanel>\n" +
-                                                         "            </ui:DropDownButton.Flyout>\n" +
-                                                         "        </ui:DropDownButton>\n" +
-                                                         "        <ui:DropDownButton Margin=\"0,0,8,8\" Content=\"Details\">\n" +
-                                                         "            <ui:DropDownButton.Flyout>\n" +
+                                                         "            </fluence:DropDownButton.Flyout>\n" +
+                                                         "        </fluence:DropDownButton>\n" +
+                                                         "        <fluence:DropDownButton Margin=\"0,0,8,8\" Content=\"Details\">\n" +
+                                                         "            <fluence:DropDownButton.Flyout>\n" +
                                                          "                <StackPanel MaxWidth=\"260\" Margin=\"12\">\n" +
                                                          "                    <TextBlock\n" +
                                                          "                        Margin=\"0,0,0,6\"\n" +
@@ -197,16 +197,16 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "                        Text=\"Flyout content can be any WPF content.\"\n" +
                                                          "                        TextWrapping=\"Wrap\" />\n" +
                                                          "                </StackPanel>\n" +
-                                                         "            </ui:DropDownButton.Flyout>\n" +
-                                                         "        </ui:DropDownButton>\n" +
-                                                         "        <ui:DropDownButton\n" +
+                                                         "            </fluence:DropDownButton.Flyout>\n" +
+                                                         "        </fluence:DropDownButton>\n" +
+                                                         "        <fluence:DropDownButton\n" +
                                                          "            Margin=\"0,0,8,8\"\n" +
                                                          "            Content=\"Disabled\"\n" +
                                                          "            IsEnabled=\"False\">\n" +
-                                                         "            <ui:DropDownButton.Flyout>\n" +
+                                                         "            <fluence:DropDownButton.Flyout>\n" +
                                                          "                <TextBlock Margin=\"12\" Text=\"Unavailable\" />\n" +
-                                                         "            </ui:DropDownButton.Flyout>\n" +
-                                                         "        </ui:DropDownButton>\n" +
+                                                         "            </fluence:DropDownButton.Flyout>\n" +
+                                                         "        </fluence:DropDownButton>\n" +
                                                          "    </WrapPanel>\n" +
                                                          "</UserControl>\n";
 
@@ -226,56 +226,56 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.SplitButtons\"\n" +
                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                       "    <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                      "        <ui:SplitButton Margin=\"0,0,8,8\" Content=\"Save\">\n" +
-                                                      "            <ui:SplitButton.Flyout>\n" +
+                                                      "        <fluence:SplitButton Margin=\"0,0,8,8\" Content=\"Save\">\n" +
+                                                      "            <fluence:SplitButton.Flyout>\n" +
                                                       "                <StackPanel MinWidth=\"180\" Margin=\"4\">\n" +
-                                                      "                    <ui:Button\n" +
+                                                      "                    <fluence:Button\n" +
                                                       "                        HorizontalAlignment=\"Stretch\"\n" +
                                                       "                        HorizontalContentAlignment=\"Left\"\n" +
                                                       "                        Appearance=\"Subtle\"\n" +
                                                       "                        Content=\"Save as\" />\n" +
-                                                      "                    <ui:Button\n" +
+                                                      "                    <fluence:Button\n" +
                                                       "                        HorizontalAlignment=\"Stretch\"\n" +
                                                       "                        HorizontalContentAlignment=\"Left\"\n" +
                                                       "                        Appearance=\"Subtle\"\n" +
                                                       "                        Content=\"Save a copy\" />\n" +
-                                                      "                    <ui:Button\n" +
+                                                      "                    <fluence:Button\n" +
                                                       "                        HorizontalAlignment=\"Stretch\"\n" +
                                                       "                        HorizontalContentAlignment=\"Left\"\n" +
                                                       "                        Appearance=\"Subtle\"\n" +
                                                       "                        Content=\"Export\" />\n" +
                                                       "                </StackPanel>\n" +
-                                                      "            </ui:SplitButton.Flyout>\n" +
-                                                      "        </ui:SplitButton>\n" +
-                                                      "        <ui:SplitButton\n" +
+                                                      "            </fluence:SplitButton.Flyout>\n" +
+                                                      "        </fluence:SplitButton>\n" +
+                                                      "        <fluence:SplitButton\n" +
                                                       "            Margin=\"0,0,8,8\"\n" +
                                                       "            Appearance=\"Accent\"\n" +
                                                       "            Content=\"Publish\">\n" +
-                                                      "            <ui:SplitButton.Flyout>\n" +
+                                                      "            <fluence:SplitButton.Flyout>\n" +
                                                       "                <StackPanel MinWidth=\"180\" Margin=\"4\">\n" +
-                                                      "                    <ui:Button\n" +
+                                                      "                    <fluence:Button\n" +
                                                       "                        HorizontalAlignment=\"Stretch\"\n" +
                                                       "                        HorizontalContentAlignment=\"Left\"\n" +
                                                       "                        Appearance=\"Subtle\"\n" +
                                                       "                        Content=\"Publish draft\" />\n" +
-                                                      "                    <ui:Button\n" +
+                                                      "                    <fluence:Button\n" +
                                                       "                        HorizontalAlignment=\"Stretch\"\n" +
                                                       "                        HorizontalContentAlignment=\"Left\"\n" +
                                                       "                        Appearance=\"Subtle\"\n" +
                                                       "                        Content=\"Schedule publish\" />\n" +
                                                       "                </StackPanel>\n" +
-                                                      "            </ui:SplitButton.Flyout>\n" +
-                                                      "        </ui:SplitButton>\n" +
-                                                      "        <ui:SplitButton\n" +
+                                                      "            </fluence:SplitButton.Flyout>\n" +
+                                                      "        </fluence:SplitButton>\n" +
+                                                      "        <fluence:SplitButton\n" +
                                                       "            Margin=\"0,0,8,8\"\n" +
                                                       "            Content=\"Disabled\"\n" +
                                                       "            IsEnabled=\"False\">\n" +
-                                                      "            <ui:SplitButton.Flyout>\n" +
+                                                      "            <fluence:SplitButton.Flyout>\n" +
                                                       "                <TextBlock Margin=\"12\" Text=\"Unavailable\" />\n" +
-                                                      "            </ui:SplitButton.Flyout>\n" +
-                                                      "        </ui:SplitButton>\n" +
+                                                      "            </fluence:SplitButton.Flyout>\n" +
+                                                      "        </fluence:SplitButton>\n" +
                                                       "    </WrapPanel>\n" +
                                                       "</UserControl>\n";
 
@@ -295,9 +295,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.RepeatButtons\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                        "    <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                       "        <ui:RepeatButton\n" +
+                                                       "        <fluence:RepeatButton\n" +
                                                        "            x:Name=\"RepeatCounterButton\"\n" +
                                                        "            Margin=\"0,0,8,8\"\n" +
                                                        "            Click=\"RepeatCounterButton_Click\"\n" +
@@ -340,20 +340,20 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ToggleButtons\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                        "    <StackPanel>\n" +
                                                        "        <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                       "            <ui:ToggleButton\n" +
+                                                       "            <fluence:ToggleButton\n" +
                                                        "                x:Name=\"WrapToggleButton\"\n" +
                                                        "                Margin=\"0,0,8,8\"\n" +
                                                        "                Checked=\"WrapToggleButton_CheckedChanged\"\n" +
                                                        "                Content=\"Wrap text\"\n" +
                                                        "                Unchecked=\"WrapToggleButton_CheckedChanged\" />\n" +
-                                                       "            <ui:ToggleButton\n" +
+                                                       "            <fluence:ToggleButton\n" +
                                                        "                Margin=\"0,0,8,8\"\n" +
                                                        "                Content=\"Three-state\"\n" +
                                                        "                IsThreeState=\"True\" />\n" +
-                                                       "            <ui:ToggleButton\n" +
+                                                       "            <fluence:ToggleButton\n" +
                                                        "                Margin=\"0,0,8,8\"\n" +
                                                        "                Content=\"Disabled checked\"\n" +
                                                        "                IsChecked=\"True\"\n" +
@@ -390,46 +390,46 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ToggleSplitButtons\"\n" +
                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                             "    <StackPanel>\n" +
                                                             "        <WrapPanel VerticalAlignment=\"Center\">\n" +
-                                                            "            <ui:ToggleSplitButton\n" +
+                                                            "            <fluence:ToggleSplitButton\n" +
                                                             "                x:Name=\"ListToggleSplitButton\"\n" +
                                                             "                Margin=\"0,0,8,8\"\n" +
                                                             "                Content=\"Bulleted list\"\n" +
                                                             "                IsCheckedChanged=\"ListToggleSplitButton_IsCheckedChanged\">\n" +
-                                                            "                <ui:ToggleSplitButton.Flyout>\n" +
+                                                            "                <fluence:ToggleSplitButton.Flyout>\n" +
                                                             "                    <StackPanel MinWidth=\"180\" Margin=\"4\">\n" +
-                                                            "                        <ui:Button\n" +
+                                                            "                        <fluence:Button\n" +
                                                             "                            HorizontalAlignment=\"Stretch\"\n" +
                                                             "                            HorizontalContentAlignment=\"Left\"\n" +
                                                             "                            Appearance=\"Subtle\"\n" +
                                                             "                            Click=\"ListStyleButton_Click\"\n" +
                                                             "                            Content=\"Bulleted list\" />\n" +
-                                                            "                        <ui:Button\n" +
+                                                            "                        <fluence:Button\n" +
                                                             "                            HorizontalAlignment=\"Stretch\"\n" +
                                                             "                            HorizontalContentAlignment=\"Left\"\n" +
                                                             "                            Appearance=\"Subtle\"\n" +
                                                             "                            Click=\"ListStyleButton_Click\"\n" +
                                                             "                            Content=\"Numbered list\" />\n" +
-                                                            "                        <ui:Button\n" +
+                                                            "                        <fluence:Button\n" +
                                                             "                            HorizontalAlignment=\"Stretch\"\n" +
                                                             "                            HorizontalContentAlignment=\"Left\"\n" +
                                                             "                            Appearance=\"Subtle\"\n" +
                                                             "                            Click=\"ListStyleButton_Click\"\n" +
                                                             "                            Content=\"Checklist\" />\n" +
                                                             "                    </StackPanel>\n" +
-                                                            "                </ui:ToggleSplitButton.Flyout>\n" +
-                                                            "            </ui:ToggleSplitButton>\n" +
-                                                            "            <ui:ToggleSplitButton\n" +
+                                                            "                </fluence:ToggleSplitButton.Flyout>\n" +
+                                                            "            </fluence:ToggleSplitButton>\n" +
+                                                            "            <fluence:ToggleSplitButton\n" +
                                                             "                Margin=\"0,0,8,8\"\n" +
                                                             "                Content=\"Disabled\"\n" +
                                                             "                IsChecked=\"True\"\n" +
                                                             "                IsEnabled=\"False\">\n" +
-                                                            "                <ui:ToggleSplitButton.Flyout>\n" +
+                                                            "                <fluence:ToggleSplitButton.Flyout>\n" +
                                                             "                    <TextBlock Margin=\"12\" Text=\"Unavailable\" />\n" +
-                                                            "                </ui:ToggleSplitButton.Flyout>\n" +
-                                                            "            </ui:ToggleSplitButton>\n" +
+                                                            "                </fluence:ToggleSplitButton.Flyout>\n" +
+                                                            "            </fluence:ToggleSplitButton>\n" +
                                                             "        </WrapPanel>\n" +
                                                             "        <TextBlock\n" +
                                                             "            x:Name=\"ToggleSplitButtonStateText\"\n" +

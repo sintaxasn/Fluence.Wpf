@@ -57,14 +57,13 @@ namespace Fluence.Wpf.Demo.Pages
             "            </fluence:ThemeDictionary.ThemeDictionaries>\n" +
             "        </fluence:ThemeDictionary>\n" +
             "    </StackPanel.Resources>\n" +
-            "    <ui:Border Background=\"{DynamicResource SampleBackgroundBrush}\">\n" +
+            "    <fluence:Border Background=\"{DynamicResource SampleBackgroundBrush}\">\n" +
             "        <TextBlock Foreground=\"{DynamicResource SampleTextBrush}\" Text=\"{DynamicResource SampleThemeString}\" />\n" +
-            "    </ui:Border>\n" +
+            "    </fluence:Border>\n" +
             "    <TextBlock\n" +
             "        Foreground=\"{fluence:ThemeResource TextFillColorSecondaryBrush}\"\n" +
             "        Text=\"ThemeResource re-resolves canonical tokens on every theme change.\" />\n" +
             "</StackPanel>\n";
-
 
         private static readonly ColorSection[] Sections =
         [

@@ -138,20 +138,20 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Tabs.TabViewDocuments\"\n" +
                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
                                                           "    <StackPanel>\n" +
-                                                          "        <ui:TabView\n" +
+                                                          "        <fluence:TabView\n" +
                                                           "            x:Name=\"DemoTabView\"\n" +
                                                           "            Height=\"260\"\n" +
                                                           "            AddTabButtonClick=\"DemoTabView_AddTabButtonClick\"\n" +
                                                           "            CloseButtonOverlayMode=\"Auto\"\n" +
                                                           "            TabCloseRequested=\"DemoTabView_TabCloseRequested\">\n" +
-                                                          "            <ui:TabViewItem\n" +
+                                                          "            <fluence:TabViewItem\n" +
                                                           "                Header=\"Document 1\"\n" +
                                                           "                IsSelected=\"True\">\n" +
-                                                          "                <ui:TabViewItem.Icon>\n" +
-                                                          "                    <ui:FontIcon Glyph=\"&#xE8A5;\" IconFontSize=\"16\" />\n" +
-                                                          "                </ui:TabViewItem.Icon>\n" +
+                                                          "                <fluence:TabViewItem.Icon>\n" +
+                                                          "                    <fluence:FontIcon Glyph=\"&#xE8A5;\" IconFontSize=\"16\" />\n" +
+                                                          "                </fluence:TabViewItem.Icon>\n" +
                                                           "                <Border Background=\"{DynamicResource LayerFillColorDefaultBrush}\">\n" +
                                                           "                    <StackPanel Margin=\"20\">\n" +
                                                           "                        <TextBlock\n" +
@@ -166,11 +166,11 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                            TextWrapping=\"Wrap\" />\n" +
                                                           "                    </StackPanel>\n" +
                                                           "                </Border>\n" +
-                                                          "            </ui:TabViewItem>\n" +
-                                                          "            <ui:TabViewItem Header=\"Document 2\">\n" +
-                                                          "                <ui:TabViewItem.Icon>\n" +
-                                                          "                    <ui:FontIcon Glyph=\"&#xE8A5;\" IconFontSize=\"16\" />\n" +
-                                                          "                </ui:TabViewItem.Icon>\n" +
+                                                          "            </fluence:TabViewItem>\n" +
+                                                          "            <fluence:TabViewItem Header=\"Document 2\">\n" +
+                                                          "                <fluence:TabViewItem.Icon>\n" +
+                                                          "                    <fluence:FontIcon Glyph=\"&#xE8A5;\" IconFontSize=\"16\" />\n" +
+                                                          "                </fluence:TabViewItem.Icon>\n" +
                                                           "                <Border Background=\"{DynamicResource LayerFillColorDefaultBrush}\">\n" +
                                                           "                    <StackPanel Margin=\"20\">\n" +
                                                           "                        <TextBlock\n" +
@@ -185,13 +185,13 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                            TextWrapping=\"Wrap\" />\n" +
                                                           "                    </StackPanel>\n" +
                                                           "                </Border>\n" +
-                                                          "            </ui:TabViewItem>\n" +
-                                                          "            <ui:TabViewItem\n" +
+                                                          "            </fluence:TabViewItem>\n" +
+                                                          "            <fluence:TabViewItem\n" +
                                                           "                Header=\"Pinned\"\n" +
                                                           "                IsClosable=\"False\">\n" +
-                                                          "                <ui:TabViewItem.Icon>\n" +
-                                                          "                    <ui:FontIcon Glyph=\"&#xE718;\" IconFontSize=\"16\" />\n" +
-                                                          "                </ui:TabViewItem.Icon>\n" +
+                                                          "                <fluence:TabViewItem.Icon>\n" +
+                                                          "                    <fluence:FontIcon Glyph=\"&#xE718;\" IconFontSize=\"16\" />\n" +
+                                                          "                </fluence:TabViewItem.Icon>\n" +
                                                           "                <Border Background=\"{DynamicResource LayerFillColorDefaultBrush}\">\n" +
                                                           "                    <StackPanel Margin=\"20\">\n" +
                                                           "                        <TextBlock\n" +
@@ -206,8 +206,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                            TextWrapping=\"Wrap\" />\n" +
                                                           "                    </StackPanel>\n" +
                                                           "                </Border>\n" +
-                                                          "            </ui:TabViewItem>\n" +
-                                                          "        </ui:TabView>\n" +
+                                                          "            </fluence:TabViewItem>\n" +
+                                                          "        </fluence:TabView>\n" +
                                                           "        <TextBlock\n" +
                                                           "            x:Name=\"DemoTabViewStatus\"\n" +
                                                           "            Margin=\"0,12,0,0\"\n" +

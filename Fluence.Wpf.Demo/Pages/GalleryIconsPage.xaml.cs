@@ -453,7 +453,7 @@ namespace Fluence.Wpf.Demo.Pages
 
             public string CodeGlyph { get; } = "\\u" + code;
 
-            public string FontIconXaml { get; } = "<ui:FontIcon Glyph=\"&#x" + code + ";\" />";
+            public string FontIconXaml { get; } = "<fluence:FontIcon Glyph=\"&#x" + code + ";\" />";
 
             public string FontIconCSharp { get; } =
                 "FontIcon icon = new FontIcon();" + Environment.NewLine + "icon.Glyph = \"\\u" + code + "\";";

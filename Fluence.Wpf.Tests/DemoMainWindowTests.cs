@@ -1459,7 +1459,7 @@ namespace Fluence.Wpf.Tests
                 DemoSampleControl sample = new()
                 {
                     SampleDescription = "Snippet",
-                    XamlSource = "<ui:Button Content=\"Save\" />",
+                    XamlSource = "<fluence:Button Content=\"Save\" />",
                     CSharpSource = "private void Save_Click(object sender, RoutedEventArgs e) { }",
                     DemoContent = new System.Windows.Controls.TextBlock { Text = "Visible sample" },
                 };
@@ -1547,7 +1547,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 DemoSampleControl sample = new()
                 {
                     SampleDescription = "Snippet",
-                    XamlSource = "<ui:ToggleSwitch IsChecked=\"True\" />",
+                    XamlSource = "<fluence:ToggleSwitch IsChecked=\"True\" />",
                 };
 
                 Window window = CreateHostWindow(sample);
@@ -1722,7 +1722,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     string pausedRingSource = ringSample.XamlSource[pausedRingIndex..errorRingIndex];
 
                     StringAssert.Contains(pausedRingSource, "IsIndeterminate=\"False\"", StringComparison.Ordinal);
-                    StringAssert.Contains(pausedRingSource, "ProgressState=\"{x:Static uicore:ProgressRingState.Paused}\"", StringComparison.Ordinal);
+                    StringAssert.Contains(pausedRingSource, "ProgressState=\"{x:Static fluence:ProgressRingState.Paused}\"", StringComparison.Ordinal);
                     StringAssert.Contains(pausedRingSource, "Value=\"80\"", StringComparison.Ordinal);
                     StringAssert.Contains(ringSample.XamlSource, "Value=\"80\"", StringComparison.Ordinal);
                     Assert.AreEqual(-1, ringSample.XamlSource.IndexOf("Value=\"70\"", StringComparison.Ordinal),
@@ -1799,7 +1799,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                         "Compact Navigation source should use the built-in pane toggle only.");
                     Assert.AreEqual(-1, sample.CSharpSource.IndexOf("CompactPaneToggleButton_Click", StringComparison.Ordinal),
                         "Compact Navigation source should not contain a duplicate right-rail pane toggle handler.");
-                    StringAssert.Contains(sample.XamlSource, "<ui:NavigationViewItem", StringComparison.Ordinal);
+                    StringAssert.Contains(sample.XamlSource, "<fluence:NavigationViewItem", StringComparison.Ordinal);
                     StringAssert.Contains(sample.XamlSource, "Content=\"Settings\"", StringComparison.Ordinal);
                     Assert.AreEqual(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal),
                         "Compact Navigation source should not hard-code back availability.");
