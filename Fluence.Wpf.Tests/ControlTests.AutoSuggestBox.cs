@@ -124,7 +124,7 @@ namespace Fluence.Wpf.Tests
                     {
                         throw new AssertFailedException("PART_TextBox must be present in the template.");
                     }
-	                    Assert.AreEqual("fluent", textBox.Text, StringComparer.Ordinal, "A programmatic Text change must flow into the inner text box.");
+                    Assert.AreEqual("fluent", textBox.Text, StringComparer.Ordinal, "A programmatic Text change must flow into the inner text box.");
                 }
                 finally
                 {
