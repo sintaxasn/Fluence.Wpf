@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `{fluence:ThemeResource Key}` markup extension (`Fluence.Wpf.Markup.ThemeResourceExtension`) - WinUI 3 markup parity for theme-reactive resource references; derives from `DynamicResourceExtension` and works everywhere it does, including `Setter.Value`.
+- `Fluence.Wpf.Markup.ThemeDictionary` - the WinUI `ResourceDictionary.ThemeDictionaries` equivalent: per-theme `ThemeResourceDictionary` tables (`ThemeKey` of `Light` / `Dark` / `HighContrast` / `Default`, plus the WinUI high-contrast polarity keys `HighContrastBlack` / `HighContrastWhite` selected by live system window luminance) that swap automatically on theme changes; usable from XAML and code, weakly tracked so discarded instances never leak. Demonstrated on the gallery Colors page.
 - `ApplicationAccentColorManager.ApplyCustomAccent(Color light, Color dark)` - sticky per-theme accent seeds resolved inside the engine on every apply; high contrast follows the dark seed. Consumers that previously re-applied a custom accent from a `Changed` handler can delete the subscription and the duplicate palette rebuild it caused.
 
 ## [0.8.12-Preview] - 2026-08-09

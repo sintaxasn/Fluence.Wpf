@@ -26,15 +26,31 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Markup;
 
-[assembly: ComVisible(false)]
-[assembly: InternalsVisibleTo("Fluence.Wpf.Tests")]
-[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: XmlnsDefinition("http://schemas.fluencewpf.com", "Fluence.Wpf")]
-[assembly: XmlnsDefinition("http://schemas.fluencewpf.com", "Fluence.Wpf.Controls")]
-[assembly: XmlnsDefinition("http://schemas.fluencewpf.com", "Fluence.Wpf.Markup")]
-[assembly: XmlnsPrefix("http://schemas.fluencewpf.com", "fluence")]
+namespace Fluence.Wpf.Markup
+{
+    /// <summary>
+    /// A per-theme value table inside <see cref="ThemeDictionary.ThemeDictionaries"/>. The
+    /// <see cref="ThemeKey"/> names the theme the table serves: <c>Light</c>, <c>Dark</c>,
+    /// <c>HighContrast</c>, the high-contrast polarity keys <c>HighContrastBlack</c> and
+    /// <c>HighContrastWhite</c>, or <c>Default</c> (the fallback for themes without an exact
+    /// table).
+    /// </summary>
+    /// <remarks>
+    /// The key lives on this property rather than <c>x:Key</c> because the WPF markup compiler
+    /// cannot compile keyed children inside a dictionary-typed property of a
+    /// <see cref="ResourceDictionary"/> subclass. Set <see cref="ThemeKey"/> before adding the
+    /// table to a <see cref="ThemeDictionary"/>; changing it afterwards takes effect on the
+    /// next theme change or collection mutation.
+    /// </remarks>
+    public sealed class ThemeResourceDictionary : ResourceDictionary
+    {
+        /// <summary>
+        /// Gets or sets the theme this table serves: <c>Light</c>, <c>Dark</c>,
+        /// <c>HighContrast</c>, <c>HighContrastBlack</c>, <c>HighContrastWhite</c>, or
+        /// <c>Default</c>.
+        /// </summary>
+        public string ThemeKey { get; set; } = "Default";
+    }
+}

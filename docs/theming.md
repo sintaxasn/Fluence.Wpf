@@ -35,6 +35,53 @@ Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys you will ref
 
 Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example `ControlStrongStrokeColorDefaultBrush` - produced by `BrushFactory`. Reference the brush keys from XAML, not the raw color keys.
 
+## WinUI markup parity: ThemeResource and ThemeDictionary
+
+The `Fluence.Wpf.Markup` namespace (same `http://schemas.fluencewpf.com` xmlns) ships WPF equivalents of the WinUI 3 theme XAML extensions:
+
+- **`{fluence:ThemeResource Key}`** - a theme-reactive resource reference. It derives from `DynamicResourceExtension` and behaves identically (Fluence republishes its computed dictionary on every theme or accent change, so dynamic references re-resolve); use it to keep the theme-versus-static intent readable in markup ported from WinUI. Unlike WinUI, the xmlns prefix is mandatory - WPF has no prefix-free markup extensions. Works everywhere `DynamicResource` works, including `Setter.Value`.
+- **`ThemeDictionary`** - the `ResourceDictionary.ThemeDictionaries` equivalent: app-author per-theme value tables (brushes, strings, image sources) that swap automatically on theme changes, with `DynamicResource` / `ThemeResource` consumers re-resolving.
+
+```xaml
+<Grid.Resources>
+    <fluence:ThemeDictionary>
+        <fluence:ThemeDictionary.ThemeDictionaries>
+            <fluence:ThemeResourceDictionary ThemeKey="Light">
+                <SolidColorBrush x:Key="HeroBrush" Color="#EEEEEE" />
+            </fluence:ThemeResourceDictionary>
+            <fluence:ThemeResourceDictionary ThemeKey="Dark">
+                <SolidColorBrush x:Key="HeroBrush" Color="#333333" />
+            </fluence:ThemeResourceDictionary>
+        </fluence:ThemeDictionary.ThemeDictionaries>
+    </fluence:ThemeDictionary>
+</Grid.Resources>
+```
+
+Selection matches `ThemeKey` (`Light`, `Dark`, `HighContrast`) against `ApplicationThemeManager.ResolvedTheme` and falls back to a `Default` table when the exact key is absent. Under high contrast the WinUI polarity keys are tried first: `HighContrastBlack` for dark schemes (Aquatic-style white-on-black) and `HighContrastWhite` for light schemes (Desert-style black-on-white), judged from the live system window luminance so custom schemes classify by how their background reads; the generic `HighContrast` key is the next candidate, then `Default`. Matching is ordinal and case-sensitive; a table whose key matches nothing silently loses to the `Default` fallback. Tables carry their key on `ThemeKey` rather than `x:Key` because the WPF markup compiler cannot compile keyed children inside a dictionary-typed property of a `ResourceDictionary` subclass; the shipped collection shape compiles and loads on every TFM.
+
+The type is equally usable from code, which suits values only known at runtime:
+
+```csharp
+ThemeDictionary icons = new()
+{
+    ThemeDictionaries =
+    {
+        new ThemeResourceDictionary { ThemeKey = "Light", ["AppIconImageSource"] = lightIcon },
+        new ThemeResourceDictionary { ThemeKey = "Dark", ["AppIconImageSource"] = darkIcon },
+    },
+};
+window.Resources.MergedDictionaries.Add(icons);
+```
+
+Caveats:
+
+- Use `ThemeDictionary` in element, window, or `App.Resources` scope. It is not a replacement for the three application-level merged slots owned by `ApplicationThemeManager`.
+- The `ThemeDictionary`'s own `MergedDictionaries` collection belongs to the selection mechanism: it is cleared and repopulated on every swap, so never add entries to it directly - put shared values in the `ThemeDictionary` itself or in a sibling dictionary.
+- In a scope WPF seals read-only (`Style.Resources`, template resources) the dictionary keeps the selection made before sealing instead of swapping - prefer element or window scope for values that must track the live theme.
+- As in WinUI, `StaticResource` references into a theme dictionary stay stale after a theme change; always use `DynamicResource` or `{fluence:ThemeResource}`.
+- Mirror of the WinUI guideline: do not use `{fluence:ThemeResource}` or `DynamicResource` for values defined *inside* a theme table - a `Freezable` there has no inheritance context, so dynamic references resolve unreliably. Use literals or `StaticResource` inside tables; the per-theme swap itself provides the theme reactivity.
+- Instances are tracked weakly; discarded dictionaries are garbage-collectable despite the static theme-change subscription.
+
 ## Accent
 
 - `ApplicationAccentColorManager.ApplySystemAccent()` - sets the accent intent to System and re-runs the full pipeline, resolving the OS registry palette.
