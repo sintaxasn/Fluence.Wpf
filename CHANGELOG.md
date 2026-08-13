@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.13-Preview] - 2026-08-13
 
 ### Added
 
@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Demo: both demo apps consume Fluence through the single `xmlns:fluence="http://schemas.fluencewpf.com"` declaration instead of separate `ui` / `uicore` clr-namespace prefixes, and the displayed sample snippets teach the same form. Demo-local namespaces (converters, view models, pages) keep `clr-namespace` - WPF cannot resolve a URI namespace for types in the assembly being compiled.
 - Demo: sample pages build their displayed XAML source through `DemoSampleXaml.UserControl`, so the canonical root element and xmlns preamble live in one place instead of sixty-five hand-written copies.
 - Demo: monospace sample text unified behind the `DemoMonospaceFontFamily` token (Cascadia Mono with Consolas fallback) and the Colors page's inline size, margin, and font literals moved to shared demo tokens and the new `DemoCodeSampleTextStyle`; the source-code viewers pick up Cascadia Mono where installed.
+- Build: analyzer and test packages refreshed (Meziantou.Analyzer 3.0.150, Microsoft.Extensions.StaticAnalysis 10.9.0, Roslynator.Analyzers 4.16.0, Meziantou.Polyfill 1.0.159, Microsoft.NET.Test.Sdk 18.8.1). The Meziantou.Polyfill opt-in allowlist is centralized in `Directory.Build.props`, and the former net472 index/range (`IDE0056` / `IDE0057`) and string-comparison (`CA1307` / `CA1310` / `CA1847` / `CA1866`) suppressions are removed now that the polyfills cover them.
 
 ## [0.8.12-Preview] - 2026-08-09
 
