@@ -51,7 +51,6 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static readonly Lock IconCatalogLock = new();
         private static readonly char[] SearchTermSeparators = [' '];
-        private static readonly CompareInfo OrdinalIgnoreCaseCompareInfo = CultureInfo.InvariantCulture.CompareInfo;
         private static List<IconCatalogItem>? cachedIcons;
 
         private static readonly Uri KnownIconNamesResourceUri = new(
@@ -270,9 +269,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static bool ContainsIgnoreCase(string text, string term)
         {
-            // CompareInfo keeps the ordinal-ignore-case containment check available on
-            // net472, where string.Contains(string, StringComparison) does not exist.
-            return OrdinalIgnoreCaseCompareInfo.IndexOf(text, term, CompareOptions.OrdinalIgnoreCase) >= 0;
+            return text.Contains(term, StringComparison.OrdinalIgnoreCase);
         }
 
         private static List<IconCatalogRow> CreateIconRows(List<IconCatalogItem> icons, int columns)

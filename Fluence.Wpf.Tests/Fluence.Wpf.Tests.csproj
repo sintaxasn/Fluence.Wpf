@@ -41,13 +41,11 @@
 
   <PropertyGroup>
     <MeziantouPolyfill_IncludedPolyfills>
+      $(MeziantouPolyfill_IncludedPolyfills)
       M:System.Linq.Enumerable.Order|
-      M:System.String.Format|
       M:System.String.Join|
       M:System.String.Replace|
-      T:System.Threading.Lock|
     </MeziantouPolyfill_IncludedPolyfills>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
 </Project>

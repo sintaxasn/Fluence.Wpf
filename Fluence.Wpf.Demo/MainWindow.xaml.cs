@@ -430,11 +430,7 @@ namespace Fluence.Wpf.Demo
 
         private static bool ContainsOrdinalIgnoreCase(string value, string needle)
         {
-#if NET5_0_OR_GREATER
             return value.Contains(needle, StringComparison.OrdinalIgnoreCase);
-#else
-            return value.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0;
-#endif
         }
 
         private void ApplyNavSearchFilter()

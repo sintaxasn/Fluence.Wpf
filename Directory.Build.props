@@ -88,6 +88,24 @@
     <MeziantouAnalysisMode>all-errors</MeziantouAnalysisMode>
   </PropertyGroup>
 
+  <!--
+    Meziantou.Polyfill opt-in allowlist (prefix-matched XML doc IDs, pipe-separated). This is the
+    shared core every project needs on net472 (and net8 where the package is referenced); projects
+    append their own entries by prefixing $(MeziantouPolyfill_IncludedPolyfills). The two attribute
+    entries are the dependency closure of the generated Index/Range types.
+  -->
+  <PropertyGroup>
+    <MeziantouPolyfill_IncludedPolyfills>
+      M:System.String.Contains(System.String,System.StringComparison)|
+      T:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute|
+      T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute|
+      T:System.Index|
+      T:System.Range|
+      T:System.Threading.Lock|
+    </MeziantouPolyfill_IncludedPolyfills>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
   <!-- Common embedded resource for license -->
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)LICENSE" />

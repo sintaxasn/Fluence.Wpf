@@ -33,10 +33,9 @@
 
   <PropertyGroup>
     <MeziantouPolyfill_IncludedPolyfills>
+      $(MeziantouPolyfill_IncludedPolyfills)
       M:System.String.Replace|
-      T:System.Threading.Lock|
     </MeziantouPolyfill_IncludedPolyfills>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.0'">

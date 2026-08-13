@@ -64,19 +64,24 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 - **`CheckForOverflowUnderflow=True`**: arithmetic that overflows fails the build. Win32 bit-mask operations (HIWORD/LOWORD extractions from `lParam`) **must** be wrapped in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
 - **`Microsoft.CodeAnalysis.BannedApiAnalyzers`** (RS0030) reads `BannedSymbols.txt` at the solution root. **`string.IsNullOrEmpty()` is banned** - always use `string.IsNullOrWhiteSpace()`. Adding new banned symbols requires updating `BannedSymbols.txt`.
 - **`Microsoft.Extensions.StaticAnalysis`** (SonarAnalyzer): Sxxx rules run as errors; see `.editorconfig` for the suppressed subset.
+- **`Meziantou.Analyzer`** runs with `MeziantouAnalysisMode=all-errors`; the small excluded set and the opt-in strictness options (`MA0002` collection expressions, `MA0053` sealed exceptions, `MA0075` / `MA0076` nullable types, `MA0153` data classification) live in `.editorconfig`.
+- **`Roslynator.Analyzers`** runs with the `roslynator` category at error severity plus the explicit per-rule enables in `.editorconfig`.
+- **`Meziantou.Polyfill`** closes specific `net472` (and `net8.0-windows`) API gaps at compile time through the opt-in `MeziantouPolyfill_IncludedPolyfills` allowlist: the shared core (`string.Contains(string, StringComparison)`, `System.Index`, `System.Range`, `System.Threading.Lock`, and the `NotNullWhen` / `DoesNotReturn` attribute closure the generated types need) lives in `Directory.Build.props`; each project appends its own extras by prefixing `$(MeziantouPolyfill_IncludedPolyfills)`. Entries are prefix-matched XML documentation IDs; prefer the narrowest ID that compiles (the broad `M:System.String.Contains|` prefix, for example, drags in a `char` overload whose polyfill needs `IndexOf(char, StringComparison)` and creates an MA0001-versus-MA0089 conflict at `IndexOf(char, int)` call sites). Polyfills are `PrivateAssets=all` source generation, never a runtime dependency. `EmitCompilerGeneratedFiles` mirrors the generated sources under `obj/**/generated`, but that folder is never pruned: after an allowlist entry is removed, its stale `.g.cs` files linger until a clean, so treat the folder as evidence of past builds, not of the current allowlist.
 
 **Suppressions in `.editorconfig`** - do not re-enable without discussion:
 
-- `IDE0056` / `IDE0057` - index/range operators (net472 runtime gap)
-- `CA1307` / `CA1310` / `CA1847` / `CA1866` - string ordinal/span overloads (net472 API gap)
-- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
+- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1659`, `S3358`, `S3869`
+- Roslynator: `RCS1111`, `RCS1181`, `RCS1238`
+- Meziantou: `MA0009`, `MA0051`, `MA0104`, `MA0107`, `MA0110`, `MA0177`, `MA0181`
+
+The former `IDE0056` / `IDE0057` (index/range operators) and `CA1307` / `CA1310` / `CA1847` / `CA1866` (string comparison overloads) suppressions are gone. `System.Index` / `System.Range` and `string.Contains(string, StringComparison)` now compile on `net472` through the polyfill allowlist above, and the `StartsWith` / `EndsWith` / `IndexOf` string+`StringComparison` overloads are in-box on `net472`. The char overloads `CA1847` / `CA1866` suggest (`Contains(char)`, `StartsWith(char)`, `EndsWith(char)`) are still absent on `net472`, and array range slicing needs `RuntimeHelpers.GetSubArray`; a hit from those rules requires adding the matching allowlist entry before the suggested fix compiles.
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
 
 - `SYSLIB1045` - regex source generator (not available on `net472`)
-- `IDE0330` - `System.Threading.Lock` preference (not available on `net472`)
 - `S1244` - floating-point equality (necessary for pixel math)
 - `VSTHRD001` - task/thread analyzer (WPF dispatcher pattern conflict)
+- `RCS1255` (net8.0-windows / net10.0-windows lanes only) - suggests `ArgumentNullException.ThrowIfNull`, which sources shared with `net472` cannot use
 
 Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
 
