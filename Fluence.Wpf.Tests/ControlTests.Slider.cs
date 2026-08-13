@@ -84,8 +84,7 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.Grid? grid = FindVisualChild<System.Windows.Controls.Grid>(thumb);
                 Assert.NotNull(grid);
 
-                ScaleTransform? scale = grid.RenderTransform as ScaleTransform;
-                Assert.NotNull(scale);
+                ScaleTransform scale = Assert.IsType<ScaleTransform>(grid.RenderTransform);
                 Assert.Equal(1.0, scale.ScaleX, 0.001);
                 Assert.Equal(1.0, scale.ScaleY, 0.001);
                 w.Close();

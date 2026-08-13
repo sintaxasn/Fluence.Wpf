@@ -54,8 +54,7 @@ namespace Fluence.Wpf.Tests
 
         private static Color GetResolvedBrushColor(Application? application, string brushKey)
         {
-            SolidColorBrush? brush = application?.Resources[brushKey] as SolidColorBrush;
-            Assert.NotNull(brush);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application?.Resources[brushKey]);
             return brush.Color;
         }
 

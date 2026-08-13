@@ -50,8 +50,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Style? style = app?.TryFindResource(typeof(Controls.AppBarButton)) as Style;
-                Assert.NotNull(style);
+                Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.AppBarButton)));
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.FontIcon icon = new() { Glyph = "\uE8C8" };
@@ -117,13 +116,11 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(popup);
                     Assert.False(popup.StaysOpen, "CommandBarFlyout popups must be light-dismiss (StaysOpen=false).");
 
-                    Controls.CommandBarFlyoutPresenter? presenter = popup.Child as Controls.CommandBarFlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(popup.Child);
 
                     DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
-                    ItemsControl? primaryItems = presenter.Template.FindName("PART_PrimaryItemsControl", presenter) as ItemsControl;
-                    Assert.NotNull(primaryItems);
+                    ItemsControl primaryItems = Assert.IsAssignableFrom<ItemsControl>(presenter.Template.FindName("PART_PrimaryItemsControl", presenter));
                     Assert.Same(flyout.PrimaryCommands, primaryItems.ItemsSource);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => copyButton.IsVisible),
                         "Primary AppBarButtons must materialize in the opened bar.");
@@ -164,13 +161,11 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the command bar flyout popup.");
 
-                    Controls.CommandBarFlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.CommandBarFlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
                     DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
-                    ButtonBase? moreButton = presenter.Template.FindName("PART_MoreButton", presenter) as ButtonBase;
-                    Assert.NotNull(moreButton);
+                    ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
                     Assert.Equal(Visibility.Collapsed, moreButton.Visibility);
 
                     flyout.SecondaryCommands.Add(new Controls.AppBarButton
@@ -222,15 +217,12 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the command bar flyout popup.");
 
-                    Controls.CommandBarFlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.CommandBarFlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
                     DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
-                    ButtonBase? moreButton = presenter.Template.FindName("PART_MoreButton", presenter) as ButtonBase;
-                    FrameworkElement? secondaryHost = presenter.Template.FindName("PART_SecondaryHost", presenter) as FrameworkElement;
-                    Assert.NotNull(moreButton);
-                    Assert.NotNull(secondaryHost);
+                    ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
+                    FrameworkElement secondaryHost = Assert.IsAssignableFrom<FrameworkElement>(presenter.Template.FindName("PART_SecondaryHost", presenter));
                     Assert.False(presenter.IsExpanded, "The presenter must open collapsed (AlwaysExpanded is omitted for v1).");
                     Assert.Equal(Visibility.Collapsed, secondaryHost.Visibility);
 
@@ -353,20 +345,17 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the command bar flyout popup.");
 
-                    Controls.CommandBarFlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.CommandBarFlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
                     DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
-                    ButtonBase? moreButton = presenter.Template.FindName("PART_MoreButton", presenter) as ButtonBase;
-                    Assert.NotNull(moreButton);
+                    ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
 
                     moreButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => deleteButton.IsVisible),
                         "Expanding the overflow must materialize the secondary command.");
 
-                    Style? secondaryStyle = app?.TryFindResource("CommandBarFlyoutSecondaryAppBarButtonStyle") as Style;
-                    Assert.NotNull(secondaryStyle);
+                    Style secondaryStyle = Assert.IsType<Style>(app?.TryFindResource("CommandBarFlyoutSecondaryAppBarButtonStyle"));
                     Assert.NotNull(deleteButton.Style);
                     Assert.Same(secondaryStyle, deleteButton.Style.BasedOn);
 

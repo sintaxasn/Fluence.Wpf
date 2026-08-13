@@ -77,8 +77,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Style? style = app?.TryFindResource(typeof(Controls.BreadcrumbBar)) as Style;
-                Assert.NotNull(style);
+                Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.BreadcrumbBar)));
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new();
@@ -128,8 +127,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SolidColorBrush? primaryBrush = app?.TryFindResource("TextFillColorPrimaryBrush") as SolidColorBrush;
-                    Assert.NotNull(primaryBrush);
+                    SolidColorBrush primaryBrush = Assert.IsType<SolidColorBrush>(app?.TryFindResource("TextFillColorPrimaryBrush"));
 
                     for (int index = 0; index < crumbs.Length - 1; index++)
                     {
@@ -146,12 +144,10 @@ namespace Fluence.Wpf.Tests
                         // WinUI BreadcrumbBarChevronLeftToRight is E974 painted in
                         // BreadcrumbBarNormalForegroundBrush (TextFillColorPrimaryBrush).
                         Assert.Equal("", chevron.Glyph, StringComparer.Ordinal);
-                        SolidColorBrush? chevronForeground = chevron.Foreground as SolidColorBrush;
-                        Assert.NotNull(chevronForeground);
+                        SolidColorBrush chevronForeground = Assert.IsType<SolidColorBrush>(chevron.Foreground);
                         Assert.Equal(primaryBrush.Color, chevronForeground.Color);
 
-                        SolidColorBrush? ancestorForeground = ancestor.Foreground as SolidColorBrush;
-                        Assert.NotNull(ancestorForeground);
+                        SolidColorBrush ancestorForeground = Assert.IsType<SolidColorBrush>(ancestor.Foreground);
                         Assert.Equal(primaryBrush.Color, ancestorForeground.Color);
                     }
 
@@ -165,8 +161,7 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(lastChevron);
                     Assert.Equal(Visibility.Collapsed, lastChevron.Visibility);
 
-                    SolidColorBrush? lastForeground = last.Foreground as SolidColorBrush;
-                    Assert.NotNull(lastForeground);
+                    SolidColorBrush lastForeground = Assert.IsType<SolidColorBrush>(last.Foreground);
                     Assert.Equal(primaryBrush.Color, lastForeground.Color);
                 }
                 finally
@@ -439,8 +434,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.False(first.IsLastItem, "The pressed crumb must be an ancestor (non-last) item.");
 
-                    ScaleTransform? pressScale = first.Template.FindName("PressScale", first) as ScaleTransform;
-                    Assert.NotNull(pressScale);
+                    ScaleTransform pressScale = Assert.IsType<ScaleTransform>(first.Template.FindName("PressScale", first));
                     Assert.Equal(1.0, pressScale.ScaleX, 0.001);
 
                     // Press: the Button.xaml press-scale storyboard settles at 0.98.

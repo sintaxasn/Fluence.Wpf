@@ -169,8 +169,7 @@ namespace Fluence.Wpf.Tests
                     WaitForAnimationAndDrain(mw.Dispatcher, 300);
                     mw.UpdateLayout();
 
-                    ColumnDefinition? paneColumn = nav.Template.FindName("PaneColumn", nav) as ColumnDefinition;
-                    Assert.NotNull(paneColumn);
+                    ColumnDefinition paneColumn = Assert.IsType<ColumnDefinition>(nav.Template.FindName("PaneColumn", nav));
 
                     foreach (double width in new[] { 96.0, 160.0, 240.0, 320.0 })
                     {
@@ -508,10 +507,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(back);
-                    Assert.NotNull(paneToggle);
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
 
                     System.Windows.Controls.StackPanel? chrome = FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome");
                     Assert.NotNull(chrome);
@@ -702,8 +699,7 @@ namespace Fluence.Wpf.Tests
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(item1);
                     Assert.NotNull(peer);
-                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.NotNull(invokeProvider);
+                    IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
@@ -754,8 +750,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
-                    Assert.NotNull(container1);
+                    FrameworkElement container1 = Assert.IsAssignableFrom<FrameworkElement>(nav.ItemContainerGenerator.ContainerFromIndex(1));
                     _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
@@ -799,8 +794,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
-                    Assert.NotNull(container1);
+                    FrameworkElement container1 = Assert.IsAssignableFrom<FrameworkElement>(nav.ItemContainerGenerator.ContainerFromIndex(1));
                     _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
@@ -843,8 +837,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(back);
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
                     Assert.Equal(Visibility.Collapsed, back.Visibility);
                 }
                 finally
@@ -883,10 +876,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(back);
-                    Assert.NotNull(paneToggle);
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
                     Assert.Equal(Visibility.Collapsed, back.Visibility);
                     Assert.Equal(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5);
                 }
@@ -1421,8 +1412,7 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double parentX = translate.X;
                     double parentY = translate.Y;
-                    NavigationViewItem? parentItem = nav.Items[0] as NavigationViewItem;
-                    Assert.NotNull(parentItem);
+                    NavigationViewItem parentItem = Assert.IsType<NavigationViewItem>(nav.Items[0]);
                     Point departPosition = nav.CalculateDepartPositionForTesting(
                         new Point(parentX, parentY),
                         parentItem,
@@ -1494,8 +1484,7 @@ topMode: false,
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double childX = translate.X;
                     double childY = translate.Y;
-                    NavigationViewItem? childItem = nav.Items[1] as NavigationViewItem;
-                    Assert.NotNull(childItem);
+                    NavigationViewItem childItem = Assert.IsType<NavigationViewItem>(nav.Items[1]);
                     Point departPosition = nav.CalculateDepartPositionForTesting(
                         new Point(childX, childY),
                         childItem,
@@ -1592,8 +1581,7 @@ topMode: false,
 
                 try
                 {
-                    Style? style = application?.TryFindResource("NavigationViewItemFocusVisual") as Style;
-                    Assert.NotNull(style);
+                    Style style = Assert.IsType<Style>(application?.TryFindResource("NavigationViewItemFocusVisual"));
 
                     ControlTemplate? template = null;
                     foreach (SetterBase? setterBase in style.Setters)
@@ -2317,11 +2305,9 @@ topMode: false,
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.NotNull(back);
-                    Assert.NotNull(paneToggle);
                     Assert.NotNull(presenter);
                     Assert.Equal(Visibility.Visible, back.Visibility);
                     Assert.Equal(Visibility.Visible, paneToggle.Visibility);
@@ -2415,11 +2401,9 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SolidColorBrush? expected = application?.TryFindResource("NavigationViewContentBackgroundBrush") as SolidColorBrush;
-                    SolidColorBrush? actual = nav.ContentBackground as SolidColorBrush;
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
+                    SolidColorBrush actual = Assert.IsType<SolidColorBrush>(nav.ContentBackground);
 
-                    Assert.NotNull(expected);
-                    Assert.NotNull(actual);
                     Assert.Equal(expected.Color, actual.Color);
                 }
                 finally
@@ -2531,8 +2515,7 @@ topMode: false,
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(back);
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
                     Assert.Equal(Visibility.Visible, back.Visibility);
                 }
                 finally
@@ -2728,8 +2711,7 @@ topMode: false,
         private static void AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode mode, bool isPaneOpen)
         {
             Application? application = EnsureApplication();
-            Style? expected = application?.TryFindResource("ScrollViewerStyle") as Style;
-            Assert.NotNull(expected);
+            Style expected = Assert.IsType<Style>(application?.TryFindResource("ScrollViewerStyle"));
 
             Window window = new();
             try
@@ -2761,22 +2743,16 @@ topMode: false,
 
         private static TranslateTransform GetSelectionIndicatorTranslate(FrameworkElement indicator)
         {
-            TransformGroup? group = indicator.RenderTransform as TransformGroup;
-            Assert.NotNull(group);
+            TransformGroup group = Assert.IsType<TransformGroup>(indicator.RenderTransform);
             Assert.True(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
-            TranslateTransform? translate = group.Children[1] as TranslateTransform;
-            Assert.NotNull(translate);
-            return translate;
+            return Assert.IsType<TranslateTransform>(group.Children[1]);
         }
 
         private static ScaleTransform GetSelectionIndicatorScale(FrameworkElement indicator)
         {
-            TransformGroup? group = indicator.RenderTransform as TransformGroup;
-            Assert.NotNull(group);
+            TransformGroup group = Assert.IsType<TransformGroup>(indicator.RenderTransform);
             Assert.True(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
-            ScaleTransform? scale = group.Children[0] as ScaleTransform;
-            Assert.NotNull(scale);
-            return scale;
+            return Assert.IsType<ScaleTransform>(group.Children[0]);
         }
 
         [Fact]

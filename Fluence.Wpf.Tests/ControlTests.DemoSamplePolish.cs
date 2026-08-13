@@ -100,8 +100,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
 
-                    Controls.Expander? expander = sample.FindName("SourceExpander") as Controls.Expander;
-                    Assert.NotNull(expander);
+                    Controls.Expander expander = Assert.IsType<Controls.Expander>(sample.FindName("SourceExpander"));
 
                     expander.IsExpanded = true;
                     Assert.True(
@@ -286,8 +285,7 @@ namespace Fluence.Wpf.Tests
 
                 foreach (DemoSampleControl sample in samples)
                 {
-                    ContentPresenter? presenter = sample.FindName("DemoContentPresenter") as ContentPresenter;
-                    Assert.NotNull(presenter);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(sample.FindName("DemoContentPresenter"));
                     Assert.Equal(VerticalAlignment.Center, presenter.VerticalAlignment);
                     Assert.Equal(HorizontalAlignment.Stretch, presenter.HorizontalAlignment);
                 }
@@ -319,10 +317,9 @@ namespace Fluence.Wpf.Tests
             RunDemoPageTest(static () => new GalleryDataBindingPage(), static window =>
             {
                 Controls.TextBox? newItemBox = FindVisualChildByName<Controls.TextBox>(window, "NewItemBox");
-                StackPanel? rightRailStack = newItemBox?.Parent as StackPanel;
+                StackPanel rightRailStack = Assert.IsType<StackPanel>(newItemBox?.Parent);
 
                 Assert.NotNull(newItemBox);
-                Assert.NotNull(rightRailStack);
                 Assert.Equal(320.0, rightRailStack.MinWidth, 0.1);
                 Assert.Equal(320.0, newItemBox.Width, 0.1);
             });
@@ -343,10 +340,8 @@ namespace Fluence.Wpf.Tests
                 Assert.True(compact.IsPaneToggleButtonVisible,
                     "Compact navigation sample should explicitly show the pane toggle button.");
 
-                Button? back = compact.Template.FindName(Controls.NavigationView.PartBackButton, compact) as Button;
-                Button? paneToggle = compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact) as Button;
-                Assert.NotNull(back);
-                Assert.NotNull(paneToggle);
+                Button back = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PartBackButton, compact));
+                Button paneToggle = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact));
                 Assert.Equal(Visibility.Visible, back.Visibility);
                 Assert.Equal(Visibility.Visible, paneToggle.Visibility);
                 Assert.Null(FindVisualChildByName<Controls.Button>(window, "CompactPaneToggleButton"));
@@ -488,10 +483,9 @@ namespace Fluence.Wpf.Tests
                     "EmptyContent action buttons should be wider than the default compact command width.");
 
                 List<Controls.PersonPicture> personPictures = [.. FindVisualChildren<Controls.PersonPicture>(window)];
-                WrapPanel? personPicturePanel = personPictures.FirstOrDefault()?.Parent as WrapPanel;
+                WrapPanel personPicturePanel = Assert.IsType<WrapPanel>(personPictures.FirstOrDefault()?.Parent);
                 Assert.Equal(5, personPictures.Count);
                 Assert.Equal(5, personPictures.Count(static picture => picture.ProfilePicture is not null));
-                Assert.NotNull(personPicturePanel);
                 Assert.Equal(HorizontalAlignment.Center, personPicturePanel.HorizontalAlignment);
                 Assert.Equal(VerticalAlignment.Center, personPicturePanel.VerticalAlignment);
                 Assert.True(personPictures.Exists(static picture => picture.ProfilePicture?.ToString(CultureInfo.InvariantCulture).IndexOf("PersonPictureMadisonButler.png", StringComparison.Ordinal) >= 0),

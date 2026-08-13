@@ -137,11 +137,9 @@ namespace Fluence.Wpf.Tests
                 Border? indicator = FindVisualChildByName<Border>(item, "SelectionIndicator");
                 Assert.NotNull(indicator);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
 
-                SolidColorBrush? actual = indicator.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indicator.Background);
                 Assert.Equal(
                     expected.Color,
                     actual.Color);

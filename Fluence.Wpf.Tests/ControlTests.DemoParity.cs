@@ -112,8 +112,7 @@ namespace Fluence.Wpf.Tests
                 Assert.NotNull(stateText);
                 Assert.Equal("List formatting: Off", stateText.Text, StringComparer.Ordinal);
 
-                Button? primary = listToggle.Template?.FindName("PART_PrimaryButton", listToggle) as Button;
-                Assert.NotNull(primary);
+                Button primary = Assert.IsType<Button>(listToggle.Template?.FindName("PART_PrimaryButton", listToggle));
 
                 primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 DrainDispatcher(window.Dispatcher);

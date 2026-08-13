@@ -199,10 +199,8 @@ namespace Fluence.Wpf.Tests
                 item.IsSelected = true;
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? selectedBg = itemBorder.Background as SolidColorBrush;
-                SolidColorBrush? expectedBrush = app?.TryFindResource("SubtleFillColorSecondaryBrush") as SolidColorBrush;
-                Assert.NotNull(expectedBrush);
-                Assert.NotNull(selectedBg);
+                SolidColorBrush selectedBg = Assert.IsType<SolidColorBrush>(itemBorder.Background);
+                SolidColorBrush expectedBrush = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SubtleFillColorSecondaryBrush"));
                 Assert.Equal(expectedBrush.Color, selectedBg.Color);
 
                 w.Close();

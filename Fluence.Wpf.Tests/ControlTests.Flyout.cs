@@ -49,8 +49,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Style? style = app?.TryFindResource(typeof(Controls.FlyoutPresenter)) as Style;
-                Assert.NotNull(style);
+                Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.FlyoutPresenter)));
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.FlyoutPresenter presenter = new() { Content = "Surface" };
@@ -116,8 +115,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(PopupAnimation.None, popup.PopupAnimation);
                     Assert.Same(target, popup.PlacementTarget);
 
-                    Controls.FlyoutPresenter? presenter = popup.Child as Controls.FlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(popup.Child);
                     Assert.Equal("Flyout body", presenter.Content);
 
                     // The open reveal (a placement-aware slide with a fade, run by
@@ -128,8 +126,7 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Media.TranslateTransform? translate =
                         presenter.Template.FindName("PresenterTranslate", presenter) as System.Windows.Media.TranslateTransform;
                     Assert.NotNull(translate);
-                    Border? surface = presenter.Template.FindName("PresenterSurface", presenter) as Border;
-                    Assert.NotNull(surface);
+                    Border surface = Assert.IsType<Border>(presenter.Template.FindName("PresenterSurface", presenter));
                     Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
                         "The open reveal must settle at Y=0 and full opacity.");
@@ -254,8 +251,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the flyout popup before content is swapped.");
 
-                    Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(flyout.HostPopup?.Child);
                     Assert.Equal("First", presenter.Content);
 
                     flyout.Content = "Second";
@@ -399,8 +395,7 @@ namespace Fluence.Wpf.Tests
                         Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                             string.Format("ShowAt should open the flyout popup for placement {0}.", mode));
 
-                        Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
-                        Assert.NotNull(presenter);
+                        Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(flyout.HostPopup?.Child);
                         PlacementMode expectedSide = Controls.FlyoutBase.MapPlacementSide(mode);
                         Assert.Equal(expectedSide, presenter.RevealPlacement);
 
@@ -474,8 +469,7 @@ namespace Fluence.Wpf.Tests
                     bool closingRaised = false;
                     flyout.Closing += (_, _) => closingRaised = true;
 
-                    Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(flyout.HostPopup?.Child);
                     presenter.RaiseEvent(new KeyEventArgs(
                         Keyboard.PrimaryDevice,
                         PresentationSource.FromVisual(window),
@@ -521,8 +515,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the flyout popup before the DataContext is verified.");
 
-                    Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
-                    Assert.NotNull(presenter);
+                    Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(flyout.HostPopup?.Child);
                     Assert.Same(viewModel, presenter.DataContext);
 
                     flyout.Hide();

@@ -64,21 +64,17 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.NotNull(fill);
-                SolidColorBrush? initial = fill.Background as SolidColorBrush;
-                Assert.NotNull(initial);
+                SolidColorBrush initial = Assert.IsType<SolidColorBrush>(fill.Background);
                 Color initialColor = initial.Color;
 
-                SolidColorBrush? initialExpected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(initialExpected);
+                SolidColorBrush initialExpected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
                 Assert.Equal(initialExpected.Color, initialColor);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
-                SolidColorBrush? actual = fill.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(fill.Background);
                 Assert.Equal(expected.Color, actual.Color);
                 Assert.NotEqual(initialColor, actual.Color);
 
@@ -147,10 +143,8 @@ namespace Fluence.Wpf.Tests
                 progressBar.ProgressMode = ProgressBarMode.Standard;
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
-                SolidColorBrush? actual = fill.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(fill.Background);
                 Assert.Equal(expected.Color, actual.Color);
 
                 w.Close();
@@ -181,8 +175,7 @@ namespace Fluence.Wpf.Tests
                 // ClipToBounds only clips rectangularly, so the translating indeterminate bars would
                 // show square ends at the control edge. The control must install a rounded RectangleGeometry
                 // clip matching CornerRadius so every fill/indeterminate child conforms to the rounded indicator.
-                RectangleGeometry? clip = host.Clip as RectangleGeometry;
-                Assert.NotNull(clip);
+                RectangleGeometry clip = Assert.IsType<RectangleGeometry>(host.Clip);
                 Assert.Equal(progressBar.CornerRadius.TopLeft, clip.RadiusX, 0.01);
                 Assert.Equal(progressBar.CornerRadius.TopLeft, clip.RadiusY, 0.01);
                 Assert.True(clip.Rect.Width > 0 && clip.Rect.Height > 0,
@@ -425,10 +418,9 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.Border? track = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
                 System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
-                ScaleTransform? scale = progressBar.Template.FindName("PART_FillScale", progressBar) as ScaleTransform;
+                ScaleTransform scale = Assert.IsType<ScaleTransform>(progressBar.Template.FindName("PART_FillScale", progressBar));
                 Assert.NotNull(track);
                 Assert.NotNull(fill);
-                Assert.NotNull(scale);
 
                 progressBar.Value = 60;
                 Assert.True(WaitUntil(w.Dispatcher, 3000, () => !scale.HasAnimatedProperties && Math.Abs(scale.ScaleX - 0.6) < 0.01),
@@ -459,8 +451,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                ScaleTransform? scale = progressBar.Template.FindName("PART_FillScale", progressBar) as ScaleTransform;
-                Assert.NotNull(scale);
+                ScaleTransform scale = Assert.IsType<ScaleTransform>(progressBar.Template.FindName("PART_FillScale", progressBar));
 
                 progressBar.Value = 30;
                 progressBar.Value = 75;
@@ -493,10 +484,9 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.Border? track = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
                 System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
-                ScaleTransform? scale = progressBar.Template.FindName("PART_FillScale", progressBar) as ScaleTransform;
+                ScaleTransform scale = Assert.IsType<ScaleTransform>(progressBar.Template.FindName("PART_FillScale", progressBar));
                 Assert.NotNull(track);
                 Assert.NotNull(fill);
-                Assert.NotNull(scale);
 
                 progressBar.CurrentStep = 2;
                 Assert.True(WaitUntil(w.Dispatcher, 3000, () => !scale.HasAnimatedProperties && Math.Abs(scale.ScaleX - 0.5) < 0.01),
@@ -530,11 +520,9 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.NotNull(fill);
 
-                SolidColorBrush? expected = app?.TryFindResource(brushKey) as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource(brushKey));
 
-                SolidColorBrush? actual = fill.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(fill.Background);
                 Assert.Equal(expected.Color, actual.Color);
 
                 w.Close();
@@ -581,11 +569,9 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.NotNull(fill);
 
-                SolidColorBrush? expected = app?.TryFindResource(brushKey) as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource(brushKey));
 
-                SolidColorBrush? actual = fill.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(fill.Background);
                 Assert.Equal(expected.Color, actual.Color);
 
                 w.Close();

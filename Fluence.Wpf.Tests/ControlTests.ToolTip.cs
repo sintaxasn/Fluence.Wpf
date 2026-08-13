@@ -76,8 +76,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 // Default style is keyed to the Fluence ToolTip type.
-                Style? style = app?.TryFindResource(typeof(ToolTip)) as Style;
-                Assert.NotNull(style);
+                Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(ToolTip)));
 
                 // Apply manually so property setters are evaluated.
                 ToolTip tt = new()

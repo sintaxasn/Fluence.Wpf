@@ -67,10 +67,8 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(VerticalAlignment.Center, indicator.VerticalAlignment);
                 _ = Assert.IsAssignableFrom<TranslateTransform>(indicator.RenderTransform);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
-                SolidColorBrush? actual = indicator.Background as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indicator.Background);
                 Assert.Equal(expected.Color, actual.Color);
                 w.Close();
             });
@@ -101,8 +99,7 @@ namespace Fluence.Wpf.Tests
                 bool shown = WaitUntil(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99);
                 Assert.True(shown, "SelectionIndicator must animate to full opacity when the item is selected.");
 
-                TranslateTransform? translate = indicator.RenderTransform as TranslateTransform;
-                Assert.NotNull(translate);
+                TranslateTransform translate = Assert.IsType<TranslateTransform>(indicator.RenderTransform);
                 bool settled = WaitUntil(w.Dispatcher, 1000, () => System.Math.Abs(translate.X) < 0.01);
                 Assert.True(settled, "SelectionIndicator must slide to its resting position when selected.");
 

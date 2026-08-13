@@ -328,11 +328,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? mainBorder = textBox.Template.FindName("MainBorder", textBox) as Border;
-                    Button? clearButton = textBox.Template.FindName("PART_ClearButton", textBox) as Button;
+                    Border mainBorder = Assert.IsType<Border>(textBox.Template.FindName("MainBorder", textBox));
+                    Button clearButton = Assert.IsType<Button>(textBox.Template.FindName("PART_ClearButton", textBox));
 
-                    Assert.NotNull(mainBorder);
-                    Assert.NotNull(clearButton);
                     Assert.Equal(new Thickness(10, 5, 6, 6), textBox.Padding);
                     Assert.Equal(32.0, textBox.MinHeight);
                     _ = Assert.IsAssignableFrom<LinearGradientBrush>(mainBorder.BorderBrush);
@@ -369,9 +367,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? accentLine = textBox.Template.FindName("FocusAccentLine", textBox) as Border;
+                    Border accentLine = Assert.IsType<Border>(textBox.Template.FindName("FocusAccentLine", textBox));
 
-                    Assert.NotNull(accentLine);
                     Assert.Equal(1.0, accentLine.Opacity);
                     Assert.Equal(2.0, accentLine.Height);
                 }
@@ -404,11 +401,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? mainBorder = passwordBox.Template.FindName("MainBorder", passwordBox) as Border;
-                    Button? revealButton = passwordBox.Template.FindName("PART_RevealButton", passwordBox) as Button;
+                    Border mainBorder = Assert.IsType<Border>(passwordBox.Template.FindName("MainBorder", passwordBox));
+                    Button revealButton = Assert.IsType<Button>(passwordBox.Template.FindName("PART_RevealButton", passwordBox));
 
-                    Assert.NotNull(mainBorder);
-                    Assert.NotNull(revealButton);
                     Assert.Equal(new Thickness(10, 5, 6, 6), passwordBox.Padding);
                     Assert.Equal(32.0, passwordBox.MinHeight);
                     _ = Assert.IsAssignableFrom<LinearGradientBrush>(mainBorder.BorderBrush);
@@ -444,11 +439,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    PasswordBox? innerPasswordBox = passwordBox.Template.FindName("PART_PasswordBox", passwordBox) as PasswordBox;
-                    Border? accentLine = passwordBox.Template.FindName("FocusAccentLine", passwordBox) as Border;
+                    PasswordBox innerPasswordBox = Assert.IsType<PasswordBox>(passwordBox.Template.FindName("PART_PasswordBox", passwordBox));
+                    Border accentLine = Assert.IsType<Border>(passwordBox.Template.FindName("FocusAccentLine", passwordBox));
 
-                    Assert.NotNull(innerPasswordBox);
-                    Assert.NotNull(accentLine);
 
                     _ = innerPasswordBox.Focus();
                     DrainDispatcher(window.Dispatcher);
@@ -510,9 +503,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
 
-                    Assert.NotNull(item);
                     Assert.Equal(new Thickness(12, 0, 12, 0), item.Padding);
                     Assert.Equal(HorizontalAlignment.Left, item.HorizontalContentAlignment);
                     Assert.Equal(40.0, item.MinHeight);
@@ -548,13 +540,11 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
-                    Assert.NotNull(item);
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
 
                     _ = item.ApplyTemplate();
-                    Border? selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
+                    Border selectionIndicator = Assert.IsType<Border>(item.Template.FindName("SelectionIndicator", item));
 
-                    Assert.NotNull(selectionIndicator);
                     // WI-3 C20: canonical ListViewItemSelectionIndicatorCornerRadius = 1.5
                     Assert.Equal(new CornerRadius(1.5), selectionIndicator.CornerRadius);
                 }
@@ -601,19 +591,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
-                    Assert.NotNull(item);
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
 
                     _ = item.ApplyTemplate();
-                    Border? selectedOverlay = item.Template.FindName("SelectedOverlay", item) as Border;
-                    Border? selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
-                    SolidColorBrush? expectedSelectedBrush = application?.Resources["SubtleFillColorSecondaryBrush"] as SolidColorBrush;
-                    SolidColorBrush? expectedIndicatorBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    Border selectedOverlay = Assert.IsType<Border>(item.Template.FindName("SelectedOverlay", item));
+                    Border selectionIndicator = Assert.IsType<Border>(item.Template.FindName("SelectionIndicator", item));
+                    SolidColorBrush expectedSelectedBrush = Assert.IsType<SolidColorBrush>(application?.Resources["SubtleFillColorSecondaryBrush"]);
+                    SolidColorBrush expectedIndicatorBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorDefaultBrush"]);
 
-                    Assert.NotNull(selectedOverlay);
-                    Assert.NotNull(selectionIndicator);
-                    Assert.NotNull(expectedSelectedBrush);
-                    Assert.NotNull(expectedIndicatorBrush);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(selectedOverlay.Background);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(selectionIndicator.Background);
                     Assert.Equal(expectedSelectedBrush.Color, ((SolidColorBrush)selectedOverlay.Background).Color);
@@ -681,11 +666,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    FrameworkElement? placeholder = textBox.Template.FindName("PlaceholderTextBlock", textBox) as FrameworkElement;
-                    FrameworkElement? textView = FindVisualChildByTypeName(textBox, "TextBoxView") as FrameworkElement;
+                    FrameworkElement placeholder = Assert.IsAssignableFrom<FrameworkElement>(textBox.Template.FindName("PlaceholderTextBlock", textBox));
+                    FrameworkElement textView = Assert.IsAssignableFrom<FrameworkElement>(FindVisualChildByTypeName(textBox, "TextBoxView"));
 
-                    Assert.NotNull(placeholder);
-                    Assert.NotNull(textView);
 
                     double placeholderX = placeholder.TransformToAncestor(window).Transform(new Point(0, 0)).X;
                     double textViewX = textView.TransformToAncestor(window).Transform(new Point(0, 0)).X;
@@ -730,11 +713,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? restFill = button.Template.FindName("RestFill", button) as Border;
-                    SolidColorBrush? accentBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorDefaultBrush"]);
 
-                    Assert.NotNull(restFill);
-                    Assert.NotNull(accentBrush);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(restFill.Background);
                     Assert.Equal(accentBrush.Color, ((SolidColorBrush)restFill.Background).Color);
                 }
@@ -893,23 +874,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? restFill = button.Template.FindName("RestFill", button) as Border;
-                    Border? outerBorder = button.Template.FindName("OuterBorder", button) as Border;
-                    SolidColorBrush? accentDefaultBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
-                    LinearGradientBrush? accentBorderBrush = application?.Resources["AccentControlElevationBorderBrush"] as LinearGradientBrush;
-                    SolidColorBrush? accentSecondaryBrush = application?.Resources["AccentFillColorSecondaryBrush"] as SolidColorBrush;
-                    SolidColorBrush? accentTertiaryBrush = application?.Resources["AccentFillColorTertiaryBrush"] as SolidColorBrush;
-                    FontFamily? fluentFontFamily = application?.Resources["FluentFontFamily"] as FontFamily;
+                    Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
+                    Border outerBorder = Assert.IsType<Border>(button.Template.FindName("OuterBorder", button));
+                    SolidColorBrush accentDefaultBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorDefaultBrush"]);
+                    LinearGradientBrush accentBorderBrush = Assert.IsType<LinearGradientBrush>(application?.Resources["AccentControlElevationBorderBrush"]);
+                    SolidColorBrush accentSecondaryBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorSecondaryBrush"]);
+                    SolidColorBrush accentTertiaryBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorTertiaryBrush"]);
+                    FontFamily fluentFontFamily = Assert.IsType<FontFamily>(application?.Resources["FluentFontFamily"]);
                     TextBlock? contentText = FindVisualChildren<TextBlock>(button)
                         .FirstOrDefault(static tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal));
 
-                    Assert.NotNull(restFill);
-                    Assert.NotNull(outerBorder);
-                    Assert.NotNull(accentDefaultBrush);
-                    Assert.NotNull(accentBorderBrush);
-                    Assert.NotNull(accentSecondaryBrush);
-                    Assert.NotNull(accentTertiaryBrush);
-                    Assert.NotNull(fluentFontFamily);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(restFill.Background);
                     _ = Assert.IsAssignableFrom<LinearGradientBrush>(outerBorder.BorderBrush);
                     Assert.Equal(accentDefaultBrush.Color, ((SolidColorBrush)restFill.Background).Color);
@@ -1112,11 +1086,10 @@ namespace Fluence.Wpf.Tests
 
                     Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
                     Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
-                    SolidColorBrush? expectedBrush = application?.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
+                    SolidColorBrush expectedBrush = Assert.IsType<SolidColorBrush>(application?.Resources["TextFillColorPrimaryBrush"]);
 
                     Assert.NotNull(iconLeftButton);
                     Assert.NotNull(iconRightButton);
-                    Assert.NotNull(expectedBrush);
 
                     TextBlock? iconLeftGlyph = FindButtonIconTextBlock(iconLeftButton);
                     TextBlock? iconRightGlyph = FindButtonIconTextBlock(iconRightButton);
@@ -1162,11 +1135,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabItem? selectedTab = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as TabItem;
-                    FrameworkElement? contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
+                    TabItem selectedTab = Assert.IsType<TabItem>(tabControl.ItemContainerGenerator.ContainerFromIndex(1));
+                    FrameworkElement contentPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("ContentPanel", tabControl));
 
-                    Assert.NotNull(selectedTab);
-                    Assert.NotNull(contentPanel);
 
                     Point selectedOrigin = selectedTab.TransformToAncestor(window).Transform(new Point(0, 0));
                     Point contentOrigin = contentPanel.TransformToAncestor(window).Transform(new Point(0, 0));
@@ -1215,10 +1186,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     WaitForAnimationAndDrain(window.Dispatcher, 250);
 
-                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
-                    TabItem? selectedTab = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as TabItem;
-                    Assert.NotNull(headerPanel);
-                    Assert.NotNull(selectedTab);
+                    FrameworkElement headerPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("HeaderPanel", tabControl));
+                    TabItem selectedTab = Assert.IsType<TabItem>(tabControl.ItemContainerGenerator.ContainerFromIndex(1));
                     _ = Assert.IsAssignableFrom<StackPanel>(headerPanel);
                     Assert.False(headerPanel is TabPanel,
                         "TabControl should not use TabPanel for Fluent headers because its selection overlap can clip rounded corners.");
@@ -1268,19 +1237,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
-                    FrameworkElement? contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
+                    FrameworkElement headerPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("HeaderPanel", tabControl));
+                    FrameworkElement contentPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("ContentPanel", tabControl));
 
-                    Assert.NotNull(headerPanel);
-                    Assert.NotNull(contentPanel);
                     Assert.Equal(0, Grid.GetColumn(headerPanel));
                     Assert.Equal(1, Grid.GetColumn(contentPanel));
                     Assert.Equal(new Thickness(0, 0, 9, 0), headerPanel.Margin);
                     _ = Assert.IsAssignableFrom<StackPanel>(headerPanel);
                     Assert.Equal(Orientation.Vertical, ((StackPanel)headerPanel).Orientation);
 
-                    TabItem? firstItem = tabControl.Items[0] as TabItem;
-                    Assert.NotNull(firstItem);
+                    TabItem firstItem = Assert.IsType<TabItem>(tabControl.Items[0]);
                     Assert.Equal(new Thickness(0, 0, 8, 2), firstItem.Margin);
                 }
                 finally
@@ -1315,15 +1281,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
+                    FrameworkElement headerPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("HeaderPanel", tabControl));
 
-                    Assert.NotNull(headerPanel);
                     Assert.Equal(new Thickness(0, 8, 1, 0), headerPanel.Margin);
                     _ = Assert.IsAssignableFrom<StackPanel>(headerPanel);
                     Assert.Equal(Orientation.Horizontal, ((StackPanel)headerPanel).Orientation);
 
-                    TabItem? firstItem = tabControl.Items[0] as TabItem;
-                    Assert.NotNull(firstItem);
+                    TabItem firstItem = Assert.IsType<TabItem>(tabControl.Items[0]);
                     Assert.Equal(new Thickness(0, 0, 8, 2), firstItem.Margin);
                 }
                 finally
@@ -1393,8 +1357,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
-                    Assert.NotNull(nav);
+                    Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
                     List<string> pages = [];
                     foreach (object? obj in nav.Items)
                     {
@@ -1446,8 +1409,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(window.IsMaximizable);
                     Assert.True(window.IsClosable);
 
-                    Button? closeButton = window.Template.FindName("PART_CloseButton", window) as Button;
-                    Assert.NotNull(closeButton);
+                    Button closeButton = Assert.IsType<Button>(window.Template.FindName("PART_CloseButton", window));
                     Assert.Equal(Visibility.Visible, closeButton.Visibility);
                 }
                 finally
@@ -1637,8 +1599,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ContentPresenter? presenter = combo.Template.FindName("contentPresenter", combo) as ContentPresenter;
-                    Assert.NotNull(presenter);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(combo.Template.FindName("contentPresenter", combo));
                     Assert.Equal("Alpha", presenter.Content as string, StringComparer.Ordinal);
 
                     combo.SelectedIndex = 1;
@@ -1678,8 +1639,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ComboBoxItem? item = combo.ItemContainerGenerator.ContainerFromIndex(0) as ComboBoxItem;
-                    Assert.NotNull(item);
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(0));
                     _ = item.ApplyTemplate();
 
                     object outerBorder = item.Template.FindName("OuterBorder", item);
@@ -1717,8 +1677,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? border = combo.Template.FindName("PART_DropdownBorder", combo) as Border;
-                    Assert.NotNull(border);
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
                     TranslateTransform? translate =
                         border.RenderTransform as TranslateTransform;
                     Assert.NotNull(translate);
@@ -1771,8 +1730,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TextBlock? placeholder = combo.Template.FindName("PlaceholderTextBlock", combo) as TextBlock;
-                    Assert.NotNull(placeholder);
+                    TextBlock placeholder = Assert.IsType<TextBlock>(combo.Template.FindName("PlaceholderTextBlock", combo));
                     Assert.Equal(Visibility.Visible, placeholder.Visibility);
 
                     combo.SelectedIndex = 0;
@@ -1813,16 +1771,13 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = combo.ApplyTemplate();
-                    ToggleButton? toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
-                    Popup? popup = combo.Template.FindName("PART_Popup", combo) as Popup;
+                    ToggleButton toggle = Assert.IsAssignableFrom<ToggleButton>(combo.Template.FindName("ToggleButton", combo));
+                    Popup popup = Assert.IsType<Popup>(combo.Template.FindName("PART_Popup", combo));
 
-                    Assert.NotNull(toggle);
-                    Assert.NotNull(popup);
 
                     ToggleButtonAutomationPeer peer = new(toggle);
-                    IToggleProvider? toggleProvider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
+                    IToggleProvider toggleProvider = Assert.IsAssignableFrom<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle));
 
-                    Assert.NotNull(toggleProvider);
 
                     toggleProvider.Toggle();
                     DrainDispatcher(window.Dispatcher);
@@ -1862,9 +1817,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = combo.ApplyTemplate();
-                    ToggleButton? toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
+                    ToggleButton toggle = Assert.IsAssignableFrom<ToggleButton>(combo.Template.FindName("ToggleButton", combo));
 
-                    Assert.NotNull(toggle);
                     Assert.Equal(ClickMode.Release, toggle.ClickMode);
                 }
                 finally
@@ -1902,8 +1856,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ComboBoxItem? item = combo.ItemContainerGenerator.ContainerFromIndex(1) as ComboBoxItem;
-                    Assert.NotNull(item);
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(1));
 
                     item.IsSelected = true;
                     DrainDispatcher(window.Dispatcher);
@@ -2058,8 +2011,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    RotateTransform? rotate = icon.Template.FindName("PART_Rotate", icon) as RotateTransform;
-                    Assert.NotNull(rotate);
+                    RotateTransform rotate = Assert.IsType<RotateTransform>(icon.Template.FindName("PART_Rotate", icon));
                     Assert.True(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
 
                     icon.Visibility = Visibility.Collapsed;
@@ -2101,8 +2053,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    RotateTransform? rotate = icon.Template.FindName("PART_Rotate", icon) as RotateTransform;
-                    Assert.NotNull(rotate);
+                    RotateTransform rotate = Assert.IsType<RotateTransform>(icon.Template.FindName("PART_Rotate", icon));
                     Assert.True(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
 
                     window.Content = null;
@@ -2151,8 +2102,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TextBlock? counter = textBox.Template.FindName("PART_CharacterCounter", textBox) as TextBlock;
-                    Assert.NotNull(counter);
+                    TextBlock counter = Assert.IsType<TextBlock>(textBox.Template.FindName("PART_CharacterCounter", textBox));
                     Assert.Equal("2/40", counter.Text, StringComparer.Ordinal);
                 }
                 finally
@@ -2346,11 +2296,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
-                    Assert.NotNull(nav);
+                    Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
 
-                    DependencyObject? selectedContent = nav.Content as DependencyObject;
-                    Assert.NotNull(selectedContent);
+                    DependencyObject selectedContent = Assert.IsAssignableFrom<DependencyObject>(nav.Content);
 
                     List<Controls.ComboBox> comboBoxes = [.. FindVisualChildren<Controls.ComboBox>(selectedContent)];
                     Assert.True(comboBoxes.Count >= 2, "ComboBox page should display multiple ComboBox examples.");
@@ -2391,8 +2339,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SolidColorBrush? accentBrush = application?.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
-                    Assert.NotNull(accentBrush);
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentTextFillColorPrimaryBrush"]);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(button.Foreground);
                     Assert.Equal(accentBrush.Color, ((SolidColorBrush)button.Foreground).Color);
                 }
@@ -2464,12 +2411,10 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Brush? expectedBrush = application?.Resources["SystemFillColorCriticalBackgroundBrush"] as Brush;
-                    Assert.NotNull(expectedBrush);
+                    Brush expectedBrush = Assert.IsAssignableFrom<Brush>(application?.Resources["SystemFillColorCriticalBackgroundBrush"]);
 
                     _ = infoBar.ApplyTemplate();
-                    Border? rootBorder = infoBar.Template.FindName("RootBorder", infoBar) as Border;
-                    Assert.NotNull(rootBorder);
+                    Border rootBorder = Assert.IsType<Border>(infoBar.Template.FindName("RootBorder", infoBar));
                     Assert.NotNull(rootBorder.Background);
                 }
                 finally
@@ -2503,12 +2448,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = infoBar.ApplyTemplate();
-                    Button? closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
-                    Assert.NotNull(closeButton);
+                    Button closeButton = Assert.IsType<Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
 
                     ButtonAutomationPeer peer = new(closeButton);
-                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.NotNull(invokeProvider);
+                    IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
@@ -2548,12 +2491,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = infoBar.ApplyTemplate();
-                    Button? closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
-                    Assert.NotNull(closeButton);
+                    Button closeButton = Assert.IsType<Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
 
                     ButtonAutomationPeer peer = new(closeButton);
-                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.NotNull(invokeProvider);
+                    IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
@@ -2592,11 +2533,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
-                    Ellipse? checkedEllipse = radio.Template.FindName("CheckedEllipse", radio) as Ellipse;
-                    SolidColorBrush? accentBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    Ellipse checkedEllipse = Assert.IsType<Ellipse>(radio.Template.FindName("CheckedEllipse", radio));
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentFillColorDefaultBrush"]);
 
-                    Assert.NotNull(checkedEllipse);
-                    Assert.NotNull(accentBrush);
                     Assert.Equal(1.0, checkedEllipse.Opacity);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(checkedEllipse.Fill);
                     Assert.Equal(accentBrush.Color, ((SolidColorBrush)checkedEllipse.Fill).Color);
@@ -2714,10 +2653,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = toggle.ApplyTemplate();
-                    FrameworkElement? offPresenter = toggle.Template.FindName("OffContentPresenter", toggle) as FrameworkElement;
-                    FrameworkElement? onPresenter = toggle.Template.FindName("OnContentPresenter", toggle) as FrameworkElement;
-                    Assert.NotNull(offPresenter);
-                    Assert.NotNull(onPresenter);
+                    FrameworkElement offPresenter = Assert.IsAssignableFrom<FrameworkElement>(toggle.Template.FindName("OffContentPresenter", toggle));
+                    FrameworkElement onPresenter = Assert.IsAssignableFrom<FrameworkElement>(toggle.Template.FindName("OnContentPresenter", toggle));
                     Assert.Equal(Visibility.Visible, offPresenter.Visibility);
                     Assert.Equal(Visibility.Collapsed, onPresenter.Visibility);
 
@@ -2796,8 +2733,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = ring.ApplyTemplate();
-                    Path? arcPath = ring.Template.FindName("PART_DeterminateArc", ring) as Path;
-                    Assert.NotNull(arcPath);
+                    Path arcPath = Assert.IsType<Path>(ring.Template.FindName("PART_DeterminateArc", ring));
                     Assert.NotNull(arcPath.Data);
                 }
                 finally
@@ -2832,8 +2768,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = ring.ApplyTemplate();
-                    Path? indeterminateArc = ring.Template.FindName("PART_IndeterminateArc", ring) as Path;
-                    Assert.NotNull(indeterminateArc);
+                    Path indeterminateArc = Assert.IsType<Path>(ring.Template.FindName("PART_IndeterminateArc", ring));
                     Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
 
                     bool arcDataReady = WaitUntil(window.Dispatcher, 1000, delegate
@@ -2873,8 +2808,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     window.UpdateLayout();
 
-                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
-                    Assert.NotNull(nav);
+                    Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
                     Assert.NotNull(nav.SelectedItem);
@@ -2890,8 +2824,7 @@ namespace Fluence.Wpf.Tests
 
         private static void SelectMainWindowNavPage(MainWindow window, Dispatcher dispatcher, string itemContent)
         {
-            Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
-            Assert.NotNull(nav);
+            Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
 
             window.NavigateTo(itemContent);
             DrainDispatcher(dispatcher);

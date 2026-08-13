@@ -89,16 +89,12 @@ namespace Fluence.Wpf.Tests
 
         private static Button GetPrimaryButtonPart(Controls.ToggleSplitButton button)
         {
-            Button? primary = button.Template?.FindName("PART_PrimaryButton", button) as Button;
-            Assert.NotNull(primary);
-            return primary;
+            return Assert.IsType<Button>(button.Template?.FindName("PART_PrimaryButton", button));
         }
 
         private static ToggleButton GetSecondaryButtonPart(Controls.ToggleSplitButton button)
         {
-            ToggleButton? secondary = button.Template?.FindName("PART_SecondaryButton", button) as ToggleButton;
-            Assert.NotNull(secondary);
-            return secondary;
+            return Assert.IsAssignableFrom<ToggleButton>(button.Template?.FindName("PART_SecondaryButton", button));
         }
 
         [Fact]
@@ -136,10 +132,9 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(GetPrimaryButtonPart(button));
                     Assert.NotNull(GetSecondaryButtonPart(button));
 
-                    Popup? popup = button.Template?.FindName("PART_Popup", button) as Popup;
+                    Popup popup = Assert.IsType<Popup>(button.Template?.FindName("PART_Popup", button));
                     Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
 
-                    Assert.NotNull(popup);
                     Assert.False(popup.StaysOpen, "The flyout popup should light-dismiss.");
                     Assert.NotNull(divider);
                 });
@@ -260,8 +255,7 @@ namespace Fluence.Wpf.Tests
                 (_, button) =>
                 {
                     ToggleButton secondary = GetSecondaryButtonPart(button);
-                    Popup? popup = button.Template?.FindName("PART_Popup", button) as Popup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsType<Popup>(button.Template?.FindName("PART_Popup", button));
 
                     secondary.IsChecked = true;
                     DrainDispatcher(button.Dispatcher);
@@ -429,8 +423,7 @@ namespace Fluence.Wpf.Tests
                     button.IsCheckedChanged += (_, _) => raiseCount++;
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    IToggleProvider? toggleProvider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
-                    Assert.NotNull(toggleProvider);
+                    IToggleProvider toggleProvider = Assert.IsAssignableFrom<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle));
 
                     toggleProvider.Toggle();
                     Assert.True(button.IsChecked);
@@ -456,8 +449,7 @@ namespace Fluence.Wpf.Tests
                 (_, button) =>
                 {
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    IExpandCollapseProvider? expandProvider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-                    Assert.NotNull(expandProvider);
+                    IExpandCollapseProvider expandProvider = Assert.IsAssignableFrom<IExpandCollapseProvider>(peer.GetPattern(PatternInterface.ExpandCollapse));
                     Assert.Equal(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
 
                     expandProvider.Expand();
@@ -490,9 +482,8 @@ namespace Fluence.Wpf.Tests
                 {
                     Button primary = GetPrimaryButtonPart(button);
                     ToggleButton secondary = GetSecondaryButtonPart(button);
-                    Style? focusVisualStyle = application?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                    Style focusVisualStyle = Assert.IsType<Style>(application?.TryFindResource("DefaultControlFocusVisualStyle"));
 
-                    Assert.NotNull(focusVisualStyle);
                     Assert.Same(focusVisualStyle, primary.FocusVisualStyle);
                     Assert.Same(focusVisualStyle, secondary.FocusVisualStyle);
                     Assert.Null(FindVisualChildByName<Border>(button, "PrimaryFocusOuter"));

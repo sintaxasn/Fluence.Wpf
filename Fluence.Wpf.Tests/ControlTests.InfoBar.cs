@@ -120,22 +120,19 @@ namespace Fluence.Wpf.Tests
                     CornerRadius expectedRadius = (CornerRadius)(app?.FindResource("ControlCornerRadius")
                         ?? throw new Xunit.Sdk.XunitException("ControlCornerRadius must resolve."));
                     Assert.Equal(expectedRadius, plate.CornerRadius);
-                    SolidColorBrush? restFill = plate.Background as SolidColorBrush;
-                    Assert.NotNull(restFill);
+                    SolidColorBrush restFill = Assert.IsType<SolidColorBrush>(plate.Background);
                     Assert.Equal(0, restFill.Color.A);
 
                     // Foreground contract: TextFillColorPrimary at rest, flowing into the glyph.
                     SolidColorBrush primary = (SolidColorBrush)(app?.FindResource("TextFillColorPrimaryBrush")
                         ?? throw new Xunit.Sdk.XunitException("TextFillColorPrimaryBrush must resolve."));
-                    SolidColorBrush? buttonForeground = close.Foreground as SolidColorBrush;
-                    Assert.NotNull(buttonForeground);
+                    SolidColorBrush buttonForeground = Assert.IsType<SolidColorBrush>(close.Foreground);
                     Assert.Equal(primary.Color, buttonForeground.Color);
 
                     FontIcon? glyph = FindVisualChildren<FontIcon>(close).FirstOrDefault();
                     Assert.NotNull(glyph);
                     Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
-                    SolidColorBrush? glyphForeground = glyph.Foreground as SolidColorBrush;
-                    Assert.NotNull(glyphForeground);
+                    SolidColorBrush glyphForeground = Assert.IsType<SolidColorBrush>(glyph.Foreground);
                     Assert.Equal(primary.Color, glyphForeground.Color);
                 }
                 finally
@@ -182,19 +179,15 @@ namespace Fluence.Wpf.Tests
                 Assert.NotNull(indicator);
                 System.Windows.Controls.TextBlock? defaultIcon = FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "DefaultIcon");
                 Assert.NotNull(defaultIcon);
-                SolidColorBrush? initial = indicator.Background as SolidColorBrush;
-                Assert.NotNull(initial);
+                SolidColorBrush initial = Assert.IsType<SolidColorBrush>(indicator.Background);
                 Color initialColor = initial.Color;
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorAttentionBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
-                SolidColorBrush? indicatorBrush = indicator.Background as SolidColorBrush;
-                Assert.NotNull(indicatorBrush);
-                SolidColorBrush? iconBrush = defaultIcon.Foreground as SolidColorBrush;
-                Assert.NotNull(iconBrush);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorAttentionBrush"));
+                SolidColorBrush indicatorBrush = Assert.IsType<SolidColorBrush>(indicator.Background);
+                SolidColorBrush iconBrush = Assert.IsType<SolidColorBrush>(defaultIcon.Foreground);
                 Assert.Equal(expected.Color, indicatorBrush.Color);
                 Assert.Equal(expected.Color, iconBrush.Color);
                 Assert.NotEqual(initialColor, indicatorBrush.Color);

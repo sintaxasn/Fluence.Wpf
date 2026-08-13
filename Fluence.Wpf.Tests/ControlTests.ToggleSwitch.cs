@@ -382,18 +382,14 @@ namespace Fluence.Wpf.Tests
         {
             Ellipse? thumb = FindVisualChildByName<Ellipse>(toggleSwitch, "SwitchThumb");
             Assert.NotNull(thumb);
-            ScaleTransform? scale = thumb.RenderTransform as ScaleTransform;
-            Assert.NotNull(scale);
-            return scale;
+            return Assert.IsType<ScaleTransform>(thumb.RenderTransform);
         }
 
         private static TranslateTransform GetToggleSwitchKnobTranslate(ToggleSwitch toggleSwitch)
         {
             FrameworkElement? knob = FindVisualChildByName<FrameworkElement>(toggleSwitch, "SwitchKnob");
             Assert.NotNull(knob);
-            TranslateTransform? tx = knob.RenderTransform as TranslateTransform;
-            Assert.NotNull(tx);
-            return tx;
+            return Assert.IsType<TranslateTransform>(knob.RenderTransform);
         }
     }
 }

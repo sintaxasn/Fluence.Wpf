@@ -56,8 +56,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Style? style = app?.TryFindResource(typeof(Controls.PipsPager)) as Style;
-                Assert.NotNull(style);
+                Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.PipsPager)));
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new();

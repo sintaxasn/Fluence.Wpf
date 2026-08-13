@@ -154,10 +154,8 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Image? image = FindByName<System.Windows.Controls.Image>(page, "BrandHeroImage");
                     Assert.NotNull(image);
 
-                    DrawingImage? light = Application.Current.TryFindResource("FluenceHeaderLightDrawingImage") as DrawingImage;
-                    DrawingImage? dark = Application.Current.TryFindResource("FluenceHeaderDarkDrawingImage") as DrawingImage;
-                    Assert.NotNull(light);
-                    Assert.NotNull(dark);
+                    DrawingImage light = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderLightDrawingImage"));
+                    DrawingImage dark = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderDarkDrawingImage"));
 
                     // The hero shows the lockup drawn for the active theme and swaps on
                     // theme changes via the page's ThemeDictionary (no code-behind).
@@ -347,15 +345,11 @@ namespace Fluence.Wpf.Tests
             RunOnSta(static delegate
             {
                 EnsureTheme();
-                Style? scrollStyle = Application.Current?.TryFindResource("GalleryPageScrollViewerStyle") as Style;
-                Style? fluentScrollStyle = Application.Current?.TryFindResource("ScrollViewerStyle") as Style;
-                Style? contentStyle = Application.Current?.TryFindResource("GalleryPageContentStackStyle") as Style;
-                Style? contentGridStyle = Application.Current?.TryFindResource("GalleryPageContentGridStyle") as Style;
-                Assert.NotNull(scrollStyle);
-                Assert.NotNull(fluentScrollStyle);
+                Style scrollStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageScrollViewerStyle"));
+                Style fluentScrollStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("ScrollViewerStyle"));
+                Style contentStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageContentStackStyle"));
+                Style contentGridStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageContentGridStyle"));
                 Assert.Same(fluentScrollStyle, scrollStyle.BasedOn);
-                Assert.NotNull(contentStyle);
-                Assert.NotNull(contentGridStyle);
 
                 UserControl[] pages =
                 [
@@ -403,8 +397,7 @@ namespace Fluence.Wpf.Tests
                         Assert.NotNull(scrollViewer);
                         Assert.Same(scrollStyle, scrollViewer.Style);
 
-                        System.Windows.Controls.StackPanel? content = scrollViewer.Content as System.Windows.Controls.StackPanel;
-                        Assert.NotNull(content);
+                        System.Windows.Controls.StackPanel content = Assert.IsType<System.Windows.Controls.StackPanel>(scrollViewer.Content);
                         Assert.Same(contentStyle, content.Style);
                         Assert.Equal(new Thickness(36, 24, 36, 48), content.Margin);
                         Assert.True(double.IsPositiveInfinity(content.MaxWidth),
@@ -549,8 +542,7 @@ namespace Fluence.Wpf.Tests
                         "Title identity should start after the title-bar navigation slot.");
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(internalToggle);
+                    System.Windows.Controls.Button internalToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
                     Assert.Equal(Visibility.Collapsed, internalToggle.Visibility);
                 }
                 finally
@@ -699,9 +691,8 @@ namespace Fluence.Wpf.Tests
                     Assert.True((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(search, window) ?? double.MaxValue), "Top mode back should appear before centered title-bar content.");
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button internalBack = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
                     System.Windows.Controls.Button? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(internalBack);
                     Assert.Equal(Visibility.Collapsed, internalBack.Visibility);
                     Assert.Null(internalToggle);
 
@@ -784,8 +775,7 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(label);
                     Assert.Equal(Visibility.Collapsed, label.Visibility);
                     Assert.Equal(Visibility.Visible, settings.Visibility);
-                    FontIcon? settingsIcon = settings.Icon as FontIcon;
-                    Assert.NotNull(settingsIcon);
+                    FontIcon settingsIcon = Assert.IsType<FontIcon>(settings.Icon);
                 }
                 finally
                 {
@@ -1080,8 +1070,7 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(nav);
                     Assert.False(nav.IsPaneOpen, "Compact sample should start collapsed.");
 
-                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.NotNull(paneToggle);
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
 
                     Controls.Button? sampleToggle = FindByName<Controls.Button>(page, "CompactPaneToggleButton");
                     Assert.Null(sampleToggle);
@@ -1485,8 +1474,7 @@ namespace Fluence.Wpf.Tests
                         Drain(window.Dispatcher);
 
                         object content = GetSelectedPageContent(window);
-                        DependencyObject? root = content as DependencyObject;
-                        Assert.NotNull(root);
+                        DependencyObject root = Assert.IsAssignableFrom<DependencyObject>(content);
 
                         bool found = false;
                         foreach (DemoSampleControl sample in FindAllVisualChildren<DemoSampleControl>(root))
@@ -1711,16 +1699,14 @@ namespace Fluence.Wpf.Tests
                         AssertTabViewItemContentSurface(item);
                     }
 
-                    ButtonBase? addButton = tabView.Template.FindName("PART_AddTabButton", tabView) as ButtonBase;
-                    Assert.NotNull(addButton);
+                    ButtonBase addButton = Assert.IsAssignableFrom<ButtonBase>(tabView.Template.FindName("PART_AddTabButton", tabView));
                     addButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, addButton));
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
                     Assert.Equal(4, tabView.Items.Count);
-                    TabViewItem? selectedTab = tabView.SelectedItem as TabViewItem;
-                    Assert.NotNull(selectedTab);
+                    TabViewItem selectedTab = Assert.IsType<TabViewItem>(tabView.SelectedItem);
                     AssertTabViewItemContentSurface(selectedTab);
 
                     DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page)
@@ -1922,8 +1908,7 @@ namespace Fluence.Wpf.Tests
 
                     for (int i = 0; i < expected.Length; i++)
                     {
-                        FrameworkElement? swatch = accentRow.Children[i] as FrameworkElement;
-                        Assert.NotNull(swatch);
+                        FrameworkElement swatch = Assert.IsAssignableFrom<FrameworkElement>(accentRow.Children[i]);
                         Assert.Equal(expected[i], swatch.Tag as string, StringComparer.Ordinal);
 
                         object converted = ColorConverter.ConvertFromString(expected[i]);
@@ -1952,8 +1937,7 @@ namespace Fluence.Wpf.Tests
                     UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
                     Assert.NotNull(accentRow);
 
-                    Controls.Button? swatch = accentRow.Children[0] as Controls.Button;
-                    Assert.NotNull(swatch);
+                    Controls.Button swatch = Assert.IsType<Controls.Button>(accentRow.Children[0]);
 
                     Color originalAccent = Color.FromRgb(0x22, 0x44, 0x66);
                     ApplicationAccentColorManager.ApplyCustomAccent(originalAccent);
@@ -2094,18 +2078,15 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertTabViewItemContentSurface(TabViewItem item)
         {
-            System.Windows.Controls.Border? surface = item.Content as System.Windows.Controls.Border;
-            Assert.NotNull(surface);
+            System.Windows.Controls.Border surface = Assert.IsType<System.Windows.Controls.Border>(item.Content);
             AssertIconBrush(surface.Background, "LayerFillColorDefaultBrush");
         }
 
         private static void AssertIconBrush(Brush? actualBrush, string resourceKey)
         {
-            SolidColorBrush? actual = actualBrush as SolidColorBrush;
-            Assert.NotNull(actual);
+            SolidColorBrush actual = Assert.IsType<SolidColorBrush>(actualBrush);
 
-            SolidColorBrush? expected = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
-            Assert.NotNull(expected);
+            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(Application.Current?.TryFindResource(resourceKey));
             Assert.Equal(expected.Color, actual.Color);
         }
 
@@ -2366,8 +2347,7 @@ namespace Fluence.Wpf.Tests
             // The determinate fill is laid out at the full track width and animates
             // PART_FillScale.ScaleX in [0,1], so the visually rendered progress width is
             // the track width multiplied by the current (possibly animating) scale.
-            ScaleTransform? fillScale = fill.RenderTransform as ScaleTransform;
-            Assert.NotNull(fillScale);
+            ScaleTransform fillScale = Assert.IsType<ScaleTransform>(fill.RenderTransform);
             double animatedWidth = track.ActualWidth * fillScale.ScaleX;
             if (forward)
             {

@@ -694,8 +694,7 @@ namespace Fluence.Wpf.Tests
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
-                SolidColorBrush? smoke = app?.TryFindResource("SmokeFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(smoke);
+                SolidColorBrush smoke = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SmokeFillColorDefaultBrush"));
                 Assert.Equal(Color.FromArgb(0x4D, 0x00, 0x00, 0x00), smoke.Color);
 
                 Color? smokeColor = app?.TryFindResource("SmokeFillColorDefault") as Color?;
@@ -877,8 +876,7 @@ namespace Fluence.Wpf.Tests
 
                     // C2: the entrance animates opacity 0->1 and scale 1.05->1.0 around the center.
                     Assert.Equal(new Point(0.5, 0.5), dialog.RenderTransformOrigin);
-                    ScaleTransform? scale = dialog.RenderTransform as ScaleTransform;
-                    Assert.NotNull(scale);
+                    ScaleTransform scale = Assert.IsType<ScaleTransform>(dialog.RenderTransform);
                     Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => dialog.Opacity >= 1.0 && scale.ScaleX <= 1.0 && scale.ScaleY <= 1.0),
                         "The entrance animation must settle at full opacity and 1.0 scale.");

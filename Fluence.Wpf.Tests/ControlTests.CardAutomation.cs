@@ -191,8 +191,7 @@ namespace Fluence.Wpf.Tests
                     card.Click += (_, _) => clickRaised = true;
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
-                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.NotNull(invokeProvider);
+                    IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
 

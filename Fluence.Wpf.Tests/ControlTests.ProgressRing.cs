@@ -347,11 +347,9 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? fg = ring.Foreground as SolidColorBrush;
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                SolidColorBrush fg = Assert.IsType<SolidColorBrush>(ring.Foreground);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
 
-                Assert.NotNull(expected);
-                Assert.NotNull(fg);
                 Assert.Equal(expected.Color, fg.Color);
 
                 w.Close();
@@ -378,8 +376,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected);
@@ -418,22 +415,18 @@ namespace Fluence.Wpf.Tests
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.NotNull(indeterminateArc);
-                SolidColorBrush? initial = indeterminateArc.Stroke as SolidColorBrush;
-                Assert.NotNull(initial);
+                SolidColorBrush initial = Assert.IsType<SolidColorBrush>(indeterminateArc.Stroke);
                 Color initialColor = initial.Color;
 
-                SolidColorBrush? initialExpected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(initialExpected);
+                SolidColorBrush initialExpected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
                 Assert.Equal(initialExpected.Color, initialColor);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
                 AssertPathStroke(indeterminateArc, expected);
-                SolidColorBrush? actual = indeterminateArc.Stroke as SolidColorBrush;
-                Assert.NotNull(actual);
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indeterminateArc.Stroke);
                 Assert.NotEqual(initialColor, actual.Color);
 
                 w.Close();
@@ -544,8 +537,7 @@ namespace Fluence.Wpf.Tests
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCriticalBrush"));
 
                 Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 AssertPathStroke(determinateArc, expected);
@@ -586,8 +578,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.Equal(ProgressRingState.Normal, ring.ProgressState);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCriticalBrush"));
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected);
@@ -630,8 +621,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.Equal(ProgressRingState.Normal, ring.ProgressState);
 
-                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
-                Assert.NotNull(expected);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected);
@@ -720,8 +710,7 @@ namespace Fluence.Wpf.Tests
                 Assert.True(ring.ShowError, "ProgressState=Error must set ShowError.");
                 Assert.False(ring.ShowPaused, "ProgressState=Error must clear ShowPaused.");
 
-                SolidColorBrush? critical = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
-                Assert.NotNull(critical);
+                SolidColorBrush critical = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCriticalBrush"));
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, critical);
 
@@ -735,8 +724,7 @@ namespace Fluence.Wpf.Tests
                 Assert.False(ring.ShowPaused, "ProgressState=Normal must clear ShowPaused.");
                 Assert.False(ring.ShowError, "ProgressState=Normal must clear ShowError.");
 
-                SolidColorBrush? accent = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(accent);
+                SolidColorBrush accent = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
                 AssertPathStroke(indeterminateArc, accent);
 
                 w.Close();
@@ -792,8 +780,7 @@ namespace Fluence.Wpf.Tests
         private static void AssertPathStroke(Path? path, SolidColorBrush expected)
         {
             Assert.NotNull(path);
-            SolidColorBrush? actual = path.Stroke as SolidColorBrush;
-            Assert.NotNull(actual);
+            SolidColorBrush actual = Assert.IsType<SolidColorBrush>(path.Stroke);
             Assert.Equal(expected.Color, actual.Color);
         }
 
@@ -802,9 +789,7 @@ namespace Fluence.Wpf.Tests
         {
             MethodInfo? method = typeof(ProgressRing).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
             Assert.NotNull(method);
-            T? animation = method.Invoke(null, parameters: null) as T;
-            Assert.NotNull(animation);
-            return animation;
+            return Assert.IsAssignableFrom<T>(method.Invoke(null, parameters: null));
         }
 
         private static RotateTransform? GetIndeterminateRotateTransform(ProgressRing ring)
@@ -816,9 +801,7 @@ namespace Fluence.Wpf.Tests
         {
             FieldInfo? field = typeof(ProgressRing).GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
             Assert.NotNull(field);
-            DependencyProperty? property = field.GetValue(null) as DependencyProperty;
-            Assert.NotNull(property);
-            return property;
+            return Assert.IsType<DependencyProperty>(field.GetValue(null));
         }
 
         private static double GetPrivateDoubleDependencyPropertyValue(ProgressRing ring, string fieldName)

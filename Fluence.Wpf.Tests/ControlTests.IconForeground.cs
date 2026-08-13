@@ -355,8 +355,7 @@ namespace Fluence.Wpf.Tests
 
                     TextBlock? title = FindVisualChildByName<TextBlock>(custom, "TitleTextBlock");
                     Assert.NotNull(title);
-                    SolidColorBrush? titleBrush = title.Foreground as SolidColorBrush;
-                    Assert.NotNull(titleBrush);
+                    SolidColorBrush titleBrush = Assert.IsType<SolidColorBrush>(title.Foreground);
                     Assert.Equal(titleBrush.Color, GetIconForegroundColor(custom));
                     Assert.NotEqual(GetResourceColor("SystemFillColorCriticalBrush"), GetIconForegroundColor(custom));
 
@@ -366,8 +365,7 @@ namespace Fluence.Wpf.Tests
 
                     TextBlock? defaultIcon = FindVisualChildByName<TextBlock>(standard, "DefaultIcon");
                     Assert.NotNull(defaultIcon);
-                    SolidColorBrush? defaultIconBrush = defaultIcon.Foreground as SolidColorBrush;
-                    Assert.NotNull(defaultIconBrush);
+                    SolidColorBrush defaultIconBrush = Assert.IsType<SolidColorBrush>(defaultIcon.Foreground);
                     Assert.Equal(GetResourceColor("SystemFillColorCriticalBrush"), defaultIconBrush.Color);
                 }
                 finally
@@ -603,15 +601,13 @@ namespace Fluence.Wpf.Tests
 
         private static Color GetControlForegroundColor(Control control)
         {
-            SolidColorBrush? brush = control.Foreground as SolidColorBrush;
-            Assert.NotNull(brush);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(control.Foreground);
             return brush.Color;
         }
 
         private static Color GetResourceColor(string brushKey)
         {
-            SolidColorBrush? brush = Application.Current.TryFindResource(brushKey) as SolidColorBrush;
-            Assert.NotNull(brush);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource(brushKey));
             return brush.Color;
         }
 
@@ -619,8 +615,7 @@ namespace Fluence.Wpf.Tests
         {
             Controls.FontIcon? icon = FindVisualChildren<Controls.FontIcon>(root).FirstOrDefault();
             Assert.NotNull(icon);
-            SolidColorBrush? brush = icon.Foreground as SolidColorBrush;
-            Assert.NotNull(brush);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(icon.Foreground);
             return brush.Color;
         }
 
@@ -628,8 +623,7 @@ namespace Fluence.Wpf.Tests
         {
             ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(root, presenterName);
             Assert.NotNull(presenter);
-            SolidColorBrush? brush = TextElement.GetForeground(presenter) as SolidColorBrush;
-            Assert.NotNull(brush);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(TextElement.GetForeground(presenter));
             return brush.Color;
         }
 

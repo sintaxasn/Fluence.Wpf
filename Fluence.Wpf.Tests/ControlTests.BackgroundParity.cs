@@ -229,18 +229,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Border? sampleCard = sample.FindName("SampleCard") as Border;
-                    Controls.Expander? sourceExpander = sample.FindName("SourceExpander") as Controls.Expander;
-                    Assert.NotNull(sampleCard);
-                    Assert.NotNull(sourceExpander);
+                    Border sampleCard = Assert.IsType<Border>(sample.FindName("SampleCard"));
+                    Controls.Expander sourceExpander = Assert.IsType<Controls.Expander>(sample.FindName("SourceExpander"));
 
                     Assert.Equal(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius);
-                    Grid? demoRegionGrid = sample.FindName("DemoRegionGrid") as Grid;
-                    Border? rightRail = sample.FindName("RightRailBorder") as Border;
-                    Border? outputRegion = sample.FindName("OutputRegion") as Border;
-                    Assert.NotNull(demoRegionGrid);
-                    Assert.NotNull(rightRail);
-                    Assert.NotNull(outputRegion);
+                    Grid demoRegionGrid = Assert.IsType<Grid>(sample.FindName("DemoRegionGrid"));
+                    Border rightRail = Assert.IsType<Border>(sample.FindName("RightRailBorder"));
+                    Border outputRegion = Assert.IsType<Border>(sample.FindName("OutputRegion"));
 
                     AssertBrushColor(sampleCard.Background, "SolidBackgroundFillColorBaseBrush");
                     Assert.Equal(new Thickness(0), sampleCard.Padding);
@@ -302,8 +297,7 @@ namespace Fluence.Wpf.Tests
 
                     foreach (string key in GetNativeDemoSurfaceBrushKeys())
                     {
-                        SolidColorBrush? brush = application?.TryFindResource(key) as SolidColorBrush;
-                        Assert.NotNull(brush);
+                        SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application?.TryFindResource(key));
                         Assert.NotEqual(Color.FromRgb(0x27, 0x27, 0x27), brush.Color);
                     }
                 }
@@ -583,19 +577,16 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertBrushColor(Brush? actualBrush, string resourceKey)
         {
-            SolidColorBrush? actual = actualBrush as SolidColorBrush;
-            Assert.NotNull(actual);
+            SolidColorBrush actual = Assert.IsType<SolidColorBrush>(actualBrush);
 
-            SolidColorBrush? expected = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
-            Assert.NotNull(expected);
+            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(Application.Current?.TryFindResource(resourceKey));
 
             Assert.Equal(expected.Color, actual.Color);
         }
 
         private static void AssertBrushResolves(string resourceKey)
         {
-            SolidColorBrush? brush = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
-            Assert.NotNull(brush);
+            _ = Assert.IsType<SolidColorBrush>(Application.Current?.TryFindResource(resourceKey));
         }
 
         private static string[] GetNativeDemoSurfaceBrushKeys()

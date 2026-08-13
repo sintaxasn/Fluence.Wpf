@@ -145,8 +145,7 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.Border? outerBorder = FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder");
                 Assert.NotNull(outerBorder);
-                DropShadowEffect? shadow = outerBorder.Effect as DropShadowEffect;
-                Assert.NotNull(shadow);
+                DropShadowEffect shadow = Assert.IsType<DropShadowEffect>(outerBorder.Effect);
 
                 // WI-3 C21: subtle elevation - soft blur, low opacity, downward direction
                 Assert.True(shadow.BlurRadius is >= 4 and <= 16,

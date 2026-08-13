@@ -260,9 +260,7 @@ namespace Fluence.Wpf.Tests
 
         private static System.Windows.Controls.Button GetTemplateButton(Controls.TitleBar titleBar, string partName)
         {
-            System.Windows.Controls.Button? button = titleBar.Template.FindName(partName, titleBar) as System.Windows.Controls.Button;
-            Assert.NotNull(button);
-            return button;
+            return Assert.IsType<System.Windows.Controls.Button>(titleBar.Template.FindName(partName, titleBar));
         }
 
         private static T? FindVisualChild<T>(DependencyObject parent)

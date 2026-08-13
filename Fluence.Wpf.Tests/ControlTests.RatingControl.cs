@@ -134,13 +134,11 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.NotNull(panel);
 
-                SolidColorBrush? accentBrush = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.NotNull(accentBrush);
+                SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
 
                 // First two stars (filled) must use AccentFillColorDefaultBrush.
                 System.Windows.Controls.TextBlock? star1 = panel.Children[0] as System.Windows.Controls.TextBlock;
-                SolidColorBrush? star1Fg = star1?.Foreground as SolidColorBrush;
-                Assert.NotNull(star1Fg);
+                SolidColorBrush star1Fg = Assert.IsType<SolidColorBrush>(star1?.Foreground);
                 Assert.Equal(accentBrush.Color, star1Fg.Color);
                 w.Close();
             });
@@ -162,12 +160,10 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.NotNull(panel);
 
-                SolidColorBrush? secondaryBrush = app?.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
-                Assert.NotNull(secondaryBrush);
+                SolidColorBrush secondaryBrush = Assert.IsType<SolidColorBrush>(app?.TryFindResource("TextFillColorSecondaryBrush"));
 
                 System.Windows.Controls.TextBlock? star = panel.Children[0] as System.Windows.Controls.TextBlock;
-                SolidColorBrush? starFg = star?.Foreground as SolidColorBrush;
-                Assert.NotNull(starFg);
+                SolidColorBrush starFg = Assert.IsType<SolidColorBrush>(star?.Foreground);
                 Assert.Equal(secondaryBrush.Color, starFg.Color);
                 w.Close();
             });

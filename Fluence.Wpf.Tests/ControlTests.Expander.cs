@@ -81,11 +81,9 @@ namespace Fluence.Wpf.Tests
                 Assert.NotNull(chevron);
 
                 // Parent Border owns the RotateTransform.
-                Border? parent = VisualTreeHelper.GetParent(chevron) as Border;
-                Assert.NotNull(parent);
+                Border parent = Assert.IsType<Border>(VisualTreeHelper.GetParent(chevron));
 
-                RotateTransform? rt = parent.RenderTransform as RotateTransform;
-                Assert.NotNull(rt);
+                RotateTransform rt = Assert.IsType<RotateTransform>(parent.RenderTransform);
                 Assert.Equal(0.0, rt.Angle, 1.0);
                 w.Close();
             });
@@ -155,8 +153,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(contentBorder.ClipToBounds,
                         "PART_ContentBorder must clip its bounds so the content slides behind the clip.");
 
-                    Grid? grid = VisualTreeHelper.GetParent(contentBorder) as Grid;
-                    Assert.NotNull(grid);
+                    Grid grid = Assert.IsType<Grid>(VisualTreeHelper.GetParent(contentBorder));
                     Assert.Equal(2, grid.RowDefinitions.Count);
 
                     ContentPresenter? site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite");

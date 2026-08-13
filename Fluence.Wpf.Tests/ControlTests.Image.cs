@@ -125,8 +125,7 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.Image? inner = FindVisualChildByName<System.Windows.Controls.Image>(image, "PART_Image");
                 Assert.NotNull(inner);
 
-                RectangleGeometry? clip = inner.Clip as RectangleGeometry;
-                Assert.NotNull(clip);
+                RectangleGeometry clip = Assert.IsType<RectangleGeometry>(inner.Clip);
                 Assert.Equal(8.0, clip.RadiusX);
                 Assert.True(clip.IsFrozen, "The clip geometry must be frozen.");
 
