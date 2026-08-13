@@ -90,9 +90,9 @@ namespace Fluence.Wpf.Tests.Theming
         /// <returns>A dictionary mapping string keys to their resolved Color and Brush values.</returns>
         internal static IReadOnlyDictionary<string, (Color color, Color brush)> CaptureResolved(ApplicationTheme theme)
         {
-            WpfTestSta.Dispatcher!.Invoke(() =>
+            WpfTestSta.Dispatcher.Invoke(() =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
@@ -111,9 +111,9 @@ namespace Fluence.Wpf.Tests.Theming
             });
 
             Dictionary<string, (Color, Color)> map = new(StringComparer.Ordinal);
-            WpfTestSta.Dispatcher!.Invoke(() =>
+            WpfTestSta.Dispatcher.Invoke(() =>
             {
-                ResourceDictionary res = Application.Current!.Resources;
+                ResourceDictionary res = Application.Current.Resources;
                 foreach (object key in CollectKeys(res))
                 {
                     if (key is not string ks) { continue; }
@@ -243,9 +243,9 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
@@ -254,7 +254,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlight = SystemColors.HighlightColor;
-                ResourceDictionary res = Application.Current!.Resources;
+                ResourceDictionary res = Application.Current.Resources;
                 foreach (string key in HighContrastHighlightDerivedBrushKeys)
                 {
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(res[key]);
@@ -273,9 +273,9 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightText()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
@@ -284,7 +284,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlightText = SystemColors.HighlightTextColor;
-                ResourceDictionary res = Application.Current!.Resources;
+                ResourceDictionary res = Application.Current.Resources;
                 foreach (string key in HighContrastHighlightTextDerivedBrushKeys)
                 {
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(res[key]);
@@ -301,10 +301,10 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void ApplyTheme_Alone_UsesSystemAccentPalette()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                Application.Current!.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark); // no ApplySystemAccent call
@@ -327,10 +327,10 @@ namespace Fluence.Wpf.Tests.Theming
         public void FirstApply_RaisesAccentColorChanged_BeforeAnyOtherThemeAccess()
         {
             int raised = 0;
-            WpfTestSta.Dispatcher!.Invoke(() =>
+            WpfTestSta.Dispatcher.Invoke(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                Application.Current!.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
 

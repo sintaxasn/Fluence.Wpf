@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Theming
         [InlineData(ApplicationTheme.Dark)]
         public void ColorMap_Build_ContainsAccentFillColorDefault(ApplicationTheme theme)
         {
-            WpfTestSta.Dispatcher!.Invoke(() =>
+            WpfTestSta.Dispatcher.Invoke(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
@@ -78,7 +78,7 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void ColorMap_Build_Light_ContainsRawRampKeys()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
@@ -96,7 +96,7 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void ColorMap_Build_Light_ContainsTitleBarActiveColor()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void ColorMap_Build_HighContrast_ContainsSystemAccentColor()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
@@ -134,7 +134,7 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void BrushFactory_Build_ProducesFrozenBrushForColorKey()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Dictionary<string, Color> colors = new(StringComparer.Ordinal)
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void BrushFactory_Build_PreservesAlphaChannel()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Color semiTransparent = Color.FromArgb(0x80, 0xFF, 0x00, 0x00);
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Tests.Theming
         [InlineData(ApplicationTheme.HighContrast, 5)]
         public void BaseColorTables_Load_ReturnsColors(ApplicationTheme theme, int minimumCount)
         {
-            WpfTestSta.Dispatcher!.Invoke(() =>
+            WpfTestSta.Dispatcher.Invoke(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Dictionary<string, Color> m = BaseColorTables.Load(theme);
@@ -208,9 +208,9 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void FluenceThemeEngine_Apply_PublishesResourcesAndSetsState()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
@@ -245,9 +245,9 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void FluenceThemeEngine_Apply_ReplacesComputedSlotOnSecondCall()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
@@ -291,9 +291,9 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public void FluenceThemeEngine_Apply_DoesNotRaisePublished_WhenApplicationIsNull()
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication()!;
+                Application app = WpfTestSta.EnsureApplication();
                 FieldInfo appInstanceField = typeof(Application).GetField("_appInstance", BindingFlags.Static | BindingFlags.NonPublic)
                     ?? throw new InvalidOperationException("Application._appInstance field not found; WPF internals changed.");
 
