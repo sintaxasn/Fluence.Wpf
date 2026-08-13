@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -43,7 +43,6 @@ namespace Fluence.Wpf.Tests
     /// inside the DWM accent border on every edge. The fix re-arranges the root visual to the full
     /// client area whenever SizeToContent is active, while keeping SizeToContent's auto-grow behavior.
     /// </summary>
-    [TestClass]
     public class FluenceWindowSizeToContentTests
     {
         /// <summary>
@@ -112,7 +111,7 @@ namespace Fluence.Wpf.Tests
         /// Before the fix the border was inset several DIPs on every edge, which read as a second
         /// accent border floating inside the DWM border. This assertion fails on the pre-fix code.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SizeToContentWindow_TemplateBorder_FillsClientArea()
         {
             RunOnStaThread(static () =>
@@ -138,16 +137,14 @@ namespace Fluence.Wpf.Tests
 
                     Border border = FindWindowBorder(window);
 
-                    Assert.IsTrue(window.ActualWidth > 0 && window.ActualHeight > 0,
+                    Assert.True(window.ActualWidth > 0 && window.ActualHeight > 0,
                         "The window must have a realised non-zero size after Show() with SizeToContent.");
 
                     // The root border must coincide with the client area (window ActualWidth/Height
                     // equal the client area in DIPs). A larger gap is the inset that floated the
                     // template accent border inside the DWM accent border (the double-border bug).
-                    Assert.AreEqual(window.ActualWidth, border.ActualWidth, FillTolerance,
-                        "SizeToContent window: template root border width must fill the client area (no inset).");
-                    Assert.AreEqual(window.ActualHeight, border.ActualHeight, FillTolerance,
-                        "SizeToContent window: template root border height must fill the client area (no inset).");
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
                 }
                 finally
                 {
@@ -163,7 +160,7 @@ namespace Fluence.Wpf.Tests
         /// AND the template root border must still fill the new, larger client area (stay
         /// single-bordered after growing).
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SizeToContentWindow_StillGrowsAndStaysFilled_WhenContentGrows()
         {
             RunOnStaThread(static () =>
@@ -197,14 +194,12 @@ namespace Fluence.Wpf.Tests
                     _ = panel.Children.Add(new Border { Height = 120, Margin = new Thickness(0, 12, 0, 0) });
                     DrainDispatcher();
 
-                    Assert.IsTrue(window.ActualHeight > heightBeforeGrow,
+                    Assert.True(window.ActualHeight > heightBeforeGrow,
                         "SizeToContent must remain active so the window grows when its content grows.");
 
                     Border border = FindWindowBorder(window);
-                    Assert.AreEqual(window.ActualWidth, border.ActualWidth, FillTolerance,
-                        "After auto-grow the template root border width must still fill the client area.");
-                    Assert.AreEqual(window.ActualHeight, border.ActualHeight, FillTolerance,
-                        "After auto-grow the template root border height must still fill the client area (single border preserved).");
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
                 }
                 finally
                 {
@@ -219,7 +214,7 @@ namespace Fluence.Wpf.Tests
         /// be a no-op for it (its template root border fills the client area before and after the
         /// fix). This pins that the fix does not regress fixed-size windows.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FixedSizeWindow_TemplateBorder_FillsClientArea()
         {
             RunOnStaThread(static () =>
@@ -245,10 +240,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher();
 
                     Border border = FindWindowBorder(window);
-                    Assert.AreEqual(window.ActualWidth, border.ActualWidth, FillTolerance,
-                        "Fixed-size window: template root border width must fill the client area.");
-                    Assert.AreEqual(window.ActualHeight, border.ActualHeight, FillTolerance,
-                        "Fixed-size window: template root border height must fill the client area.");
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
                 }
                 finally
                 {

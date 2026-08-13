@@ -26,16 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
-    [TestClass]
     public class TypographyResourceContractTests
     {
-        [TestMethod]
+        [Fact]
         public void TextBlockExtensions_Typography_UsesNamedTextBlockStyleResource()
         {
             WpfTestSta.Invoke(static () =>
@@ -51,10 +50,9 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.TextBlock textBlock = new();
                     textBlock.SetTypography(FluentTypography.BodyLarge);
 
-                    Assert.AreSame(
+                    Assert.Same(
                         application?.TryFindResource("BodyLargeTextBlockStyle"),
-                        textBlock.Style,
-                        "Attached typography should use the named XAML style resource as its source of truth.");
+                        textBlock.Style);
                 }
                 finally
                 {

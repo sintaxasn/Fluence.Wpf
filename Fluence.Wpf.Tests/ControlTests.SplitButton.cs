@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Tests
         // WI-3 B17  SplitButton accent divider stroke
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void SplitButton_AppearanceProperty_DefaultIsStandard()
         {
             WpfTestSta.Invoke(static () =>
@@ -53,14 +53,13 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 SplitButton btn = new();
-                Assert.AreEqual(
+                Assert.Equal(
                     ControlAppearance.Standard,
-                    btn.Appearance,
-                    "SplitButton.Appearance must default to Standard.");
+                    btn.Appearance);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void SplitButton_AppearanceProperty_CanBeSetToAccent()
         {
             WpfTestSta.Invoke(static () =>
@@ -73,15 +72,14 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(
+                Assert.Equal(
                     ControlAppearance.Accent,
-                    btn.Appearance,
-                    "SplitButton.Appearance must reflect Accent after being set.");
+                    btn.Appearance);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void SplitButton_DividerRectangle_PresentInTemplate()
         {
             WpfTestSta.Invoke(static () =>
@@ -95,13 +93,13 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Rectangle? divider = FindVisualChildByName<Rectangle>(btn, "Divider");
-                Assert.IsNotNull(divider, "Divider (Rectangle) must be present in SplitButton template.");
-                Assert.IsNotNull(divider.Fill, "Divider.Fill must not be null.");
+                Assert.NotNull(divider);
+                Assert.NotNull(divider.Fill);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void SplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyle()
         {
             // The per-half focus rings previously lived in the template behind
@@ -132,17 +130,13 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Primitives.ToggleButton? secondaryButton = button.Template.FindName("PART_SecondaryButton", button) as System.Windows.Controls.Primitives.ToggleButton;
                     Style? focusVisualStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
 
-                    Assert.IsNotNull(primaryButton, "SplitButton template should expose PART_PrimaryButton.");
-                    Assert.IsNotNull(secondaryButton, "SplitButton template should expose PART_SecondaryButton.");
-                    Assert.IsNotNull(focusVisualStyle, "DefaultControlFocusVisualStyle should resolve from the computed dictionary.");
-                    Assert.AreSame(focusVisualStyle, primaryButton.FocusVisualStyle,
-                        "The primary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
-                    Assert.AreSame(focusVisualStyle, secondaryButton.FocusVisualStyle,
-                        "The secondary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
-                    Assert.IsNull(FindVisualChildByName<System.Windows.Controls.Border>(button, "PrimaryFocusOuter"),
-                        "The always-on in-template primary focus borders must be gone; they rendered on mouse click.");
-                    Assert.IsNull(FindVisualChildByName<System.Windows.Controls.Border>(button, "SecondaryFocusOuter"),
-                        "The always-on in-template secondary focus borders must be gone; they rendered on mouse click.");
+                    Assert.NotNull(primaryButton);
+                    Assert.NotNull(secondaryButton);
+                    Assert.NotNull(focusVisualStyle);
+                    Assert.Same(focusVisualStyle, primaryButton.FocusVisualStyle);
+                    Assert.Same(focusVisualStyle, secondaryButton.FocusVisualStyle);
+                    Assert.Null(FindVisualChildByName<System.Windows.Controls.Border>(button, "PrimaryFocusOuter"));
+                    Assert.Null(FindVisualChildByName<System.Windows.Controls.Border>(button, "SecondaryFocusOuter"));
                 }
                 finally
                 {
@@ -152,7 +146,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void SplitButton_Accent_DividerFillDiffersFromStandard()
         {
             WpfTestSta.Invoke(static () =>
@@ -167,9 +161,9 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(wStd.Dispatcher);
 
                 Rectangle? dividerStd = FindVisualChildByName<Rectangle>(btnStd, "Divider");
-                Assert.IsNotNull(dividerStd, "Divider must be in template.");
+                Assert.NotNull(dividerStd);
                 SolidColorBrush? stdBrush = dividerStd.Fill as SolidColorBrush;
-                Assert.IsNotNull(stdBrush, "Divider.Fill must be a SolidColorBrush in Standard mode.");
+                Assert.NotNull(stdBrush);
                 wStd.Close();
 
                 // Accent appearance - get divider color
@@ -179,15 +173,13 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(wAcc.Dispatcher);
 
                 Rectangle? dividerAcc = FindVisualChildByName<Rectangle>(btnAcc, "Divider");
-                Assert.IsNotNull(dividerAcc, "Divider must be in accent template.");
+                Assert.NotNull(dividerAcc);
                 SolidColorBrush? accBrush = dividerAcc.Fill as SolidColorBrush;
-                Assert.IsNotNull(accBrush, "Divider.Fill must be a SolidColorBrush in Accent mode.");
+                Assert.NotNull(accBrush);
 
-                Assert.AreNotEqual(
+                Assert.NotEqual(
                     stdBrush.Color,
-                    accBrush.Color,
-                    "Divider color must differ between Standard (ControlStrokeColorDefaultBrush) "
-                    + "and Accent (ControlStrokeColorOnAccentSecondaryBrush) states - WI-3 B17.");
+                    accBrush.Color);
                 wAcc.Close();
             });
         }

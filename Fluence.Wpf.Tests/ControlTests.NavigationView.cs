@@ -26,8 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -37,6 +35,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -99,8 +99,7 @@ namespace Fluence.Wpf.Tests
             Window window,
             FrameworkElement nav,
             FrameworkElement presenter,
-            double expectedOffset,
-            string message)
+            double expectedOffset)
         {
             _ = WaitUntil(window.Dispatcher, 3000, delegate
             {
@@ -109,7 +108,7 @@ namespace Fluence.Wpf.Tests
             });
 
             window.UpdateLayout();
-            Assert.AreEqual(expectedOffset, GetContentOffsetX(nav, presenter), 1.0, message);
+            Assert.Equal(expectedOffset, GetContentOffsetX(nav, presenter), 1.0);
         }
 
         private static double GetContentOffsetX(FrameworkElement nav, FrameworkElement presenter)
@@ -117,17 +116,17 @@ namespace Fluence.Wpf.Tests
             return presenter.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
         }
 
-        private static void AssertPaneToggleVisible(NavigationView nav, string message)
+        private static void AssertPaneToggleVisible(NavigationView nav)
         {
             _ = nav.ApplyTemplate();
             System.Windows.Controls.Button? paneToggle = nav.Template.FindName(
                 NavigationView.PartPaneToggleButton,
                 nav) as System.Windows.Controls.Button;
-            Assert.IsNotNull(paneToggle, "NavigationView template must expose PART_PaneToggleButton.");
-            Assert.AreEqual(Visibility.Visible, paneToggle.Visibility, message);
+            Assert.NotNull(paneToggle);
+            Assert.Equal(Visibility.Visible, paneToggle.Visibility);
         }
 
-        [TestMethod]
+        [Fact]
         public void DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsed()
         {
             // Regression: the Settings footer item must keep its icon at the pane's left edge at every
@@ -158,18 +157,18 @@ namespace Fluence.Wpf.Tests
                     mw.UpdateLayout();
 
                     NavigationView? nav = FindVisualChildByName<NavigationView>(mw, "DemoNav");
-                    Assert.IsNotNull(nav, "Gallery MainWindow must host the DemoNav NavigationView.");
+                    Assert.NotNull(nav);
                     NavigationViewItem? footer = nav!.FooterMenuItems.Count > 0 ? nav.FooterMenuItems[0] as NavigationViewItem : null;
-                    Assert.IsNotNull(footer, "DemoNav must expose the Settings footer NavigationViewItem in FooterMenuItems.");
+                    Assert.NotNull(footer);
                     ContentPresenter? footerIcon = FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter");
-                    Assert.IsNotNull(footerIcon, "Footer item must expose IconPresenter.");
+                    Assert.NotNull(footerIcon);
 
                     nav.IsPaneOpen = false;
                     WaitForAnimationAndDrain(mw.Dispatcher, 300);
                     mw.UpdateLayout();
 
                     ColumnDefinition? paneColumn = nav.Template.FindName("PaneColumn", nav) as ColumnDefinition;
-                    Assert.IsNotNull(paneColumn, "Left template must expose PaneColumn.");
+                    Assert.NotNull(paneColumn);
 
                     foreach (double width in new[] { 96.0, 160.0, 240.0, 320.0 })
                     {
@@ -177,8 +176,7 @@ namespace Fluence.Wpf.Tests
                         paneColumn.Width = new GridLength(width);
                         mw.UpdateLayout();
                         double footerIconX = footerIcon!.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
-                        Assert.IsLessThanOrEqualTo(28.0, footerIconX,
-                            "Collapsed footer icon must stay anchored near the pane left edge (not centered/sliding) at pane width " +
+                        Assert.True(footerIconX <= 28.0, "Collapsed footer icon must stay anchored near the pane left edge (not centered/sliding) at pane width " +
                             width.ToString(System.Globalization.CultureInfo.InvariantCulture) + "; measured x=" +
                             footerIconX.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".");
                     }
@@ -192,7 +190,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
             RunOnStaThread(static () =>
@@ -217,8 +215,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel? host = GetNavigationViewItemsHostPanel(nav);
-                    Assert.IsNotNull(host);
-                    Assert.AreEqual(Orientation.Vertical, host.Orientation);
+                    Assert.NotNull(host);
+                    Assert.Equal(Orientation.Vertical, host.Orientation);
                 }
                 finally
                 {
@@ -231,7 +229,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneDisplayMode_Top_RendersHorizontalPane()
         {
             RunOnStaThread(static () =>
@@ -256,8 +254,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel? host = GetNavigationViewItemsHostPanel(nav);
-                    Assert.IsNotNull(host);
-                    Assert.AreEqual(Orientation.Horizontal, host.Orientation);
+                    Assert.NotNull(host);
+                    Assert.Equal(Orientation.Horizontal, host.Orientation);
                 }
                 finally
                 {
@@ -270,7 +268,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyle()
         {
             RunOnStaThread(static () =>
@@ -293,7 +291,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_ClosedPaneKeepsIconFooterVisible()
         {
             RunOnStaThread(() =>
@@ -324,18 +322,15 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     System.Windows.Controls.Border? footerHost = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost");
-                    Assert.IsNotNull(footerHost, "LeftCompact template should expose PaneFooterHost.");
-                    Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
-                        "LeftCompact footer should remain visible while the compact pane is closed so icon-only Settings entries stay reachable.");
-                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, footer.ActualWidth,
-                        "LeftCompact footer navigation items should receive the full compact pane width so their icons are visible.");
+                    Assert.NotNull(footerHost);
+                    Assert.Equal(Visibility.Visible, footerHost.Visibility);
+                    Assert.True(footer.ActualWidth >= 48.0 - 0.5, "LeftCompact footer navigation items should receive the full compact pane width so their icons are visible.");
 
                     nav.IsPaneOpen = true;
                     // Settle until the footer host reaches the asserted Visible state.
                     _ = WaitUntil(window.Dispatcher, 2000, () => footerHost.Visibility is Visibility.Visible);
 
-                    Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
-                        "LeftCompact footer should be visible when the pane opens.");
+                    Assert.Equal(Visibility.Visible, footerHost.Visibility);
                 }
                 finally
                 {
@@ -348,7 +343,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftClosedPaneItemsKeepFullIconWidth()
         {
             RunOnStaThread(static () =>
@@ -378,18 +373,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
-                        "Closed Left pane should reserve the canonical 48px compact width.");
-                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, messages.ActualWidth,
-                        "Closed Left navigation items should receive the full compact pane width so icons are not clipped.");
+                    Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.01);
+                    Assert.True(messages.ActualWidth >= 48.0 - 0.5, "Closed Left navigation items should receive the full compact pane width so icons are not clipped.");
 
                     ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
-                    Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
+                    Assert.NotNull(iconPresenter);
                     Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
-                    Assert.IsGreaterThanOrEqualTo(4.0 - 0.5, iconOffset.X,
-                        "Closed Left icon should not be clipped on the left edge.");
-                    Assert.IsLessThanOrEqualTo(44.0 + 0.5, iconOffset.X + iconPresenter.ActualWidth,
-                        "Closed Left icon should stay inside the 40px icon slot.");
+                    Assert.True(iconOffset.X >= 4.0 - 0.5, "Closed Left icon should not be clipped on the left edge.");
+                    Assert.True(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5, "Closed Left icon should stay inside the 40px icon slot.");
                 }
                 finally
                 {
@@ -402,7 +393,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidth()
         {
             RunOnStaThread(static () =>
@@ -432,18 +423,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
-                        "Closed LeftCompact pane should reserve the canonical 48px compact width.");
-                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, messages.ActualWidth,
-                        "Closed LeftCompact navigation items should receive the full compact pane width so icons are not clipped.");
+                    Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.01);
+                    Assert.True(messages.ActualWidth >= 48.0 - 0.5, "Closed LeftCompact navigation items should receive the full compact pane width so icons are not clipped.");
 
                     ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
-                    Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
+                    Assert.NotNull(iconPresenter);
                     Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
-                    Assert.IsGreaterThanOrEqualTo(4.0 - 0.5, iconOffset.X,
-                        "Closed LeftCompact icon should not be clipped on the left edge.");
-                    Assert.IsLessThanOrEqualTo(44.0 + 0.5, iconOffset.X + iconPresenter.ActualWidth,
-                        "Closed LeftCompact icon should stay inside the 40px icon slot.");
+                    Assert.True(iconOffset.X >= 4.0 - 0.5, "Closed LeftCompact icon should not be clipped on the left edge.");
+                    Assert.True(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5, "Closed LeftCompact icon should stay inside the 40px icon slot.");
                 }
                 finally
                 {
@@ -456,7 +443,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemIcons()
         {
             RunOnStaThread(static () =>
@@ -480,9 +467,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     FontIcon? glyph = FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph");
-                    Assert.IsNotNull(glyph, "Left pane template should expose PaneToggleGlyph.");
-                    Assert.AreEqual(2.0, glyph.Margin.Left, 0.01,
-                        "Pane toggle glyph should be nudged right to align with navigation item icons.");
+                    Assert.NotNull(glyph);
+                    Assert.Equal(2.0, glyph.Margin.Left, 0.01);
                 }
                 finally
                 {
@@ -495,7 +481,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftChrome_BackPrecedesPaneToggle()
         {
             RunOnStaThread(static () =>
@@ -522,23 +508,19 @@ namespace Fluence.Wpf.Tests
 
                     System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.IsNotNull(back, "PART_BackButton must exist in Left template.");
-                    Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in Left template.");
+                    Assert.NotNull(back);
+                    Assert.NotNull(paneToggle);
 
                     System.Windows.Controls.StackPanel? chrome = FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome");
-                    Assert.IsNotNull(chrome, "Left template should expose the pane chrome host.");
-                    Assert.AreEqual(Orientation.Horizontal, chrome.Orientation,
-                        "Left pane chrome should arrange back and pane toggle in a horizontal row.");
-                    Assert.AreEqual(48.0, back.ActualWidth, 0.5,
-                        "Back button should occupy one 48px navigation rail slot.");
-                    Assert.AreEqual(48.0, paneToggle.ActualWidth, 0.5,
-                        "Pane toggle should occupy one 48px navigation rail slot.");
+                    Assert.NotNull(chrome);
+                    Assert.Equal(Orientation.Horizontal, chrome.Orientation);
+                    Assert.Equal(48.0, back.ActualWidth, 0.5);
+                    Assert.Equal(48.0, paneToggle.ActualWidth, 0.5);
 
                     Point backPoint = back.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Point paneTogglePoint = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.IsLessThan(paneTogglePoint.X, backPoint.X, "Back button should be the first glyph, before the pane toggle.");
-                    Assert.AreEqual(backPoint.Y, paneTogglePoint.Y, 0.5,
-                        "Back button and pane toggle should share the same pane chrome row.");
+                    Assert.True(backPoint.X < paneTogglePoint.X, "Back button should be the first glyph, before the pane toggle.");
+                    Assert.Equal(backPoint.Y, paneTogglePoint.Y, 0.5);
                 }
                 finally
                 {
@@ -551,7 +533,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_DefaultFontIconSizeIs16()
         {
             RunOnStaThread(static () =>
@@ -575,8 +557,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(16.0, icon.IconFontSize, 0.01,
-                        "NavigationView left-mode FontIcon content should default to the compact 16 px glyph size.");
+                    Assert.Equal(16.0, icon.IconFontSize, 0.01);
                 }
                 finally
                 {
@@ -589,7 +570,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationViewItem_Template_RendersInfoBadge()
         {
             RunOnStaThread(static () =>
@@ -616,13 +597,11 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
-                    Assert.IsNotNull(presenter, "NavigationViewItem template must render InfoBadge content.");
-                    Assert.AreSame(badge, presenter.Content,
-                        "NavigationViewItem InfoBadge presenter must bind to NavigationViewItem.InfoBadge.");
-                    Assert.IsTrue(double.IsNaN(presenter.Width) || presenter.Width >= 34.0,
+                    Assert.NotNull(presenter);
+                    Assert.Same(badge, presenter.Content);
+                    Assert.True(double.IsNaN(presenter.Width) || presenter.Width >= 34.0,
                         "NavigationViewItem must not constrain InfoBadge value pills to the old 24px slot.");
-                    Assert.AreEqual(HorizontalAlignment.Center, presenter.HorizontalAlignment,
-                        "NavigationViewItem InfoBadge presenter should center the badge in the trailing slot.");
+                    Assert.Equal(HorizontalAlignment.Center, presenter.HorizontalAlignment);
                 }
                 finally
                 {
@@ -635,7 +614,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_SelectedItem_UpdatesOnItemClick()
         {
             RunOnStaThread(static () =>
@@ -666,8 +645,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(1, nav.SelectedIndex);
-                    Assert.AreSame(item1, nav.SelectedItem, "SelectedItem should match the chosen NavigationViewItem.");
+                    Assert.Equal(1, nav.SelectedIndex);
+                    Assert.Same(item1, nav.SelectedItem);
                 }
                 finally
                 {
@@ -680,7 +659,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_ItemInvoked_FiresBeforeSelectionChanges()
         {
             RunOnStaThread(() =>
@@ -720,25 +699,21 @@ namespace Fluence.Wpf.Tests
                     };
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(item1);
-                    Assert.IsNotNull(peer, "NavigationViewItem should create an automation peer.");
+                    Assert.NotNull(peer);
                     IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.IsNotNull(invokeProvider, "NavigationViewItem automation peer must expose Invoke.");
+                    Assert.NotNull(invokeProvider);
 
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.IsNotNull(invokedArgs, "ItemInvoked should fire when a navigation item is invoked.");
-                    Assert.AreSame(item1, invokedArgs.InvokedItemContainer,
-                        "ItemInvoked should expose the invoked NavigationViewItem container.");
-                    Assert.AreSame(item1, invokedArgs.InvokedItem,
-                        "Inline NavigationViewItem invocation should report the item itself as InvokedItem.");
-                    Assert.IsFalse(invokedArgs.IsSettingsInvoked,
+                    Assert.NotNull(invokedArgs);
+                    Assert.Same(item1, invokedArgs.InvokedItemContainer);
+                    Assert.Same(item1, invokedArgs.InvokedItem);
+                    Assert.False(invokedArgs.IsSettingsInvoked,
                         "Regular pane item invocation should not be reported as settings invocation.");
-                    CollectionAssert.AreEqual(new[] { "invoked:One", "selection:One" }, calls,
-                        "ItemInvoked must be raised before SelectionChanged, matching WinUI NavigationView ordering.");
-                    Assert.AreSame(item1, nav.SelectedItem,
-                        "Invoking the item should select it after ItemInvoked has been raised.");
+                    Assert.Equal(["invoked:One", "selection:One"], calls, StringComparer.Ordinal);
+                    Assert.Same(item1, nav.SelectedItem);
                 }
                 finally
                 {
@@ -751,7 +726,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_SelectionFollowsFocus_True_SelectsOnFocus()
         {
             RunOnStaThread(static () =>
@@ -778,12 +753,12 @@ namespace Fluence.Wpf.Tests
 
                     nav.SelectedIndex = 0;
                     FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
-                    Assert.IsNotNull(container1);
+                    Assert.NotNull(container1);
                     _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(1, nav.SelectedIndex);
+                    Assert.Equal(1, nav.SelectedIndex);
                 }
                 finally
                 {
@@ -796,7 +771,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_SelectionFollowsFocus_False_DoesNotSelectOnFocus()
         {
             RunOnStaThread(static () =>
@@ -823,12 +798,12 @@ namespace Fluence.Wpf.Tests
 
                     nav.SelectedIndex = 0;
                     FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
-                    Assert.IsNotNull(container1);
+                    Assert.NotNull(container1);
                     _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(0, nav.SelectedIndex);
+                    Assert.Equal(0, nav.SelectedIndex);
                 }
                 finally
                 {
@@ -841,7 +816,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_IsBackButtonVisible_False_HidesBackButton()
         {
             RunOnStaThread(static () =>
@@ -867,8 +842,8 @@ namespace Fluence.Wpf.Tests
 
                     _ = nav.ApplyTemplate();
                     System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    Assert.IsNotNull(back);
-                    Assert.AreEqual(Visibility.Collapsed, back.Visibility);
+                    Assert.NotNull(back);
+                    Assert.Equal(Visibility.Collapsed, back.Visibility);
                 }
                 finally
                 {
@@ -881,7 +856,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_IsBackEnabled_False_CollapsesBackButton()
         {
             RunOnStaThread(static () =>
@@ -908,12 +883,10 @@ namespace Fluence.Wpf.Tests
                     _ = nav.ApplyTemplate();
                     System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.IsNotNull(back);
-                    Assert.IsNotNull(paneToggle);
-                    Assert.AreEqual(Visibility.Collapsed, back.Visibility,
-                        "Disabled back should collapse and stop reserving a 48px glyph slot.");
-                    Assert.AreEqual(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5,
-                        "Pane toggle should reflow into the first chrome slot when disabled back collapses.");
+                    Assert.NotNull(back);
+                    Assert.NotNull(paneToggle);
+                    Assert.Equal(Visibility.Collapsed, back.Visibility);
+                    Assert.Equal(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5);
                 }
                 finally
                 {
@@ -926,7 +899,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftModes_ForcePaneToggleVisible()
         {
             RunOnStaThread(static () =>
@@ -961,24 +934,24 @@ namespace Fluence.Wpf.Tests
                             DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
-                            Assert.IsFalse(nav.IsPaneToggleButtonVisible,
+                            Assert.False(nav.IsPaneToggleButtonVisible,
                                 "Top mode should keep the pane toggle hidden before switching to " + mode + ".");
 
                             nav.PaneDisplayMode = mode;
                             DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
-                            Assert.IsTrue(nav.IsPaneToggleButtonVisible,
+                            Assert.True(nav.IsPaneToggleButtonVisible,
                                 mode + " should coerce the pane toggle visible after switching from Top.");
-                            AssertPaneToggleVisible(nav, mode + " should show the pane toggle after switching from Top.");
+                            AssertPaneToggleVisible(nav);
 
                             nav.IsPaneToggleButtonVisible = false;
                             DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
-                            Assert.IsTrue(nav.IsPaneToggleButtonVisible,
+                            Assert.True(nav.IsPaneToggleButtonVisible,
                                 mode + " should coerce runtime attempts to hide the pane toggle back to visible.");
-                            AssertPaneToggleVisible(nav, mode + " should keep the pane toggle visible after runtime coercion.");
+                            AssertPaneToggleVisible(nav);
                         }
                         finally
                         {
@@ -996,7 +969,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_BackRequested_FiresOnBackClick()
         {
             RunOnStaThread(() =>
@@ -1027,7 +1000,7 @@ namespace Fluence.Wpf.Tests
                     nav.RaiseBackRequestedForTesting();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(fired);
+                    Assert.True(fired);
                 }
                 finally
                 {
@@ -1040,7 +1013,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_ThemeSwitch_UpdatesBrushes()
         {
             RunOnStaThread(static () =>
@@ -1065,15 +1038,14 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsTrue(application?.Resources.MergedDictionaries.Count > 0);
+                    Assert.True(application?.Resources.MergedDictionaries.Count > 0);
                     Color lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     DrainDispatcher(window.Dispatcher);
                     Color darkBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
-                    Assert.AreNotEqual(lightBase, darkBase,
-                        "Theme color SolidBackgroundFillColorBase should differ between light and dark.");
+                    Assert.NotEqual(lightBase, darkBase);
                     nav.UpdateLayout();
                 }
                 finally
@@ -1087,7 +1059,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_SharedIndicator_ExistsInTemplate_AndVisibleWhenSelected()
         {
             RunOnStaThread(static () =>
@@ -1115,15 +1087,15 @@ namespace Fluence.Wpf.Tests
 
                     _ = nav.ApplyTemplate();
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    Assert.AreEqual(0.0, indicator.Opacity, 0.01, "Indicator should be hidden when nothing is selected.");
+                    Assert.NotNull(indicator);
+                    Assert.Equal(0.0, indicator.Opacity, 0.01);
 
                     nav.SelectedIndex = 0;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should be visible when an item is selected.");
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1136,7 +1108,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PreTemplateSelection_PositionsSharedIndicatorAfterTemplateApplied()
         {
             RunOnStaThread(static () =>
@@ -1168,9 +1140,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
-                        "Selection made before template application should show the shared indicator after layout.");
+                    Assert.NotNull(indicator);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1183,7 +1154,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacement()
         {
             RunOnStaThread(() =>
@@ -1217,10 +1188,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(9.0, iconItemX, 0.5,
-                        "Icon item indicator should sit inside the selected item background.");
+                    Assert.Equal(9.0, iconItemX, 0.5);
 
                     nav.SelectedIndex = 1;
                     // Settle until the indicator slide reaches the asserted child-item offset.
@@ -1229,8 +1199,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     double childItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(53.0, childItemX, 0.5,
-                        "Iconless child item indicator should move inward without overlapping the content column.");
+                    Assert.Equal(53.0, childItemX, 0.5);
                 }
                 finally
                 {
@@ -1243,7 +1212,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelections()
         {
             RunOnStaThread(static () =>
@@ -1281,9 +1250,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
-                    Assert.IsFalse(translate.HasAnimatedProperties,
+                    Assert.False(translate.HasAnimatedProperties,
                         "Initial selection should snap before later changes animate.");
 
                     nav.SelectedIndex = 1;
@@ -1291,7 +1260,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(translate.HasAnimatedProperties,
+                    Assert.True(translate.HasAnimatedProperties,
                         "Changing selection should animate the shared indicator transform.");
                     WaitForAnimationAndDrain(window.Dispatcher, 600);
                 }
@@ -1306,7 +1275,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_RapidReselection_IndicatorSettlesOnFinalTarget()
         {
             RunOnStaThread(static () =>
@@ -1349,14 +1318,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     ScaleTransform scale = GetSelectionIndicatorScale(indicator);
                     double homeY = translate.Y;
 
                     // Reference pass: settle on the last item once to learn its resting slot.
                     nav.SelectedIndex = 2;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
                             return !translate.HasAnimatedProperties
@@ -1369,7 +1338,7 @@ namespace Fluence.Wpf.Tests
 
                     // Back to the first item so the rapid burst has to cross multiple slots.
                     nav.SelectedIndex = 0;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
                             return !translate.HasAnimatedProperties
@@ -1382,7 +1351,7 @@ namespace Fluence.Wpf.Tests
                     // item without draining, interrupting the in-flight depart/arrive sequence.
                     nav.SelectedIndex = 1;
                     nav.SelectedIndex = 2;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.Y - settingsY) <= 0.5
@@ -1391,16 +1360,11 @@ namespace Fluence.Wpf.Tests
                                 && Math.Abs(scale.ScaleY - 1.0) <= 0.01;
                         }),
                         "After a rapid mid-flight retarget, the indicator should settle on the final item's slot.");
-                    Assert.AreEqual(settingsX, translate.X, 0.5,
-                        "After a rapid mid-flight retarget, the indicator X should match the final item's slot.");
-                    Assert.AreEqual(settingsY, translate.Y, 0.5,
-                        "After a rapid mid-flight retarget, the indicator Y should match the final item's slot.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
-                        "After a rapid mid-flight retarget, the indicator should rest at full opacity.");
-                    Assert.AreEqual(1.0, scale.ScaleX, 0.01,
-                        "After a rapid mid-flight retarget, the indicator should rest at full horizontal scale.");
-                    Assert.AreEqual(1.0, scale.ScaleY, 0.01,
-                        "After a rapid mid-flight retarget, the indicator should rest at full vertical scale.");
+                    Assert.Equal(settingsX, translate.X, 0.5);
+                    Assert.Equal(settingsY, translate.Y, 0.5);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
+                    Assert.Equal(1.0, scale.ScaleX, 0.01);
+                    Assert.Equal(1.0, scale.ScaleY, 0.01);
                 }
                 finally
                 {
@@ -1413,7 +1377,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndent()
         {
             RunOnStaThread(() =>
@@ -1451,33 +1415,29 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double parentX = translate.X;
                     double parentY = translate.Y;
                     NavigationViewItem? parentItem = nav.Items[0] as NavigationViewItem;
-                    Assert.IsNotNull(parentItem, "Parent item should be a NavigationViewItem.");
+                    Assert.NotNull(parentItem);
                     Point departPosition = nav.CalculateDepartPositionForTesting(
                         new Point(parentX, parentY),
                         parentItem,
 topMode: false,
                         1.0);
-                    Assert.AreEqual(parentX, departPosition.X, 0.5,
-                        "The downward depart leg should keep the parent item's X until the indicator fades out.");
-                    Assert.IsGreaterThan(parentY, departPosition.Y,
-                        "The downward depart leg should move below the parent before the child inset X is applied.");
+                    Assert.Equal(parentX, departPosition.X, 0.5);
+                    Assert.True(departPosition.Y > parentY, "The downward depart leg should move below the parent before the child inset X is applied.");
 
                     nav.SelectedIndex = 1;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.X - 53.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }),
                         "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
-                    Assert.AreEqual(53.0, translate.X, 0.5,
-                        "After the depart/arrive animation completes, the child item indicator should sit at the child inset.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
-                        "After the depart/arrive animation completes, the indicator should be visible on the new item.");
+                    Assert.Equal(53.0, translate.X, 0.5);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1490,7 +1450,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAbove()
         {
             RunOnStaThread(() =>
@@ -1528,33 +1488,29 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double childX = translate.X;
                     double childY = translate.Y;
                     NavigationViewItem? childItem = nav.Items[1] as NavigationViewItem;
-                    Assert.IsNotNull(childItem, "Child item should be a NavigationViewItem.");
+                    Assert.NotNull(childItem);
                     Point departPosition = nav.CalculateDepartPositionForTesting(
                         new Point(childX, childY),
                         childItem,
 topMode: false,
                         -1.0);
-                    Assert.AreEqual(childX, departPosition.X, 0.5,
-                        "The upward depart leg should keep the child item's X until the indicator fades out.");
-                    Assert.IsLessThan(childY, departPosition.Y,
-                        "The upward depart leg should move above the child before the parent X is applied.");
+                    Assert.Equal(childX, departPosition.X, 0.5);
+                    Assert.True(departPosition.Y < childY, "The upward depart leg should move above the child before the parent X is applied.");
 
                     nav.SelectedIndex = 0;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.X - 9.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }),
                         "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
-                    Assert.AreEqual(9.0, translate.X, 0.5,
-                        "After the depart/arrive animation completes, the parent item indicator should sit at the parent inset.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
-                        "After the depart/arrive animation completes, the indicator should be visible on the new item.");
+                    Assert.Equal(9.0, translate.X, 0.5);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1567,7 +1523,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndent()
         {
             RunOnStaThread(() =>
@@ -1601,7 +1557,7 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.NotNull(indicator);
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
 
                     nav.SelectedIndex = 1;
@@ -1611,8 +1567,7 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     double noIconItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(iconItemX, noIconItemX, 0.5,
-                        "A top-level item without an icon should keep the top-level indicator position; child indentation must be explicit.");
+                    Assert.Equal(iconItemX, noIconItemX, 0.5);
                 }
                 finally
                 {
@@ -1625,7 +1580,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationViewItem_FocusVisual_StaysInsideItemBounds()
         {
             RunOnStaThread(static () =>
@@ -1636,7 +1591,7 @@ topMode: false,
                 try
                 {
                     Style? style = application?.TryFindResource("NavigationViewItemFocusVisual") as Style;
-                    Assert.IsNotNull(style, "NavigationViewItemFocusVisual should be present in Generic.xaml.");
+                    Assert.NotNull(style);
 
                     ControlTemplate? template = null;
                     foreach (SetterBase? setterBase in style.Setters)
@@ -1648,14 +1603,14 @@ topMode: false,
                         }
                     }
 
-                    Assert.IsNotNull(template, "NavigationViewItemFocusVisual should provide a ControlTemplate.");
+                    Assert.NotNull(template);
 
                     DependencyObject root = template.LoadContent();
-                    Assert.IsNotNull(root, "Focus visual template should load a visual tree.");
+                    Assert.NotNull(root);
 
                     foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
                     {
-                        Assert.IsTrue(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
+                        Assert.True(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
                             "Navigation item focus strokes should stay inside the selected item bounds horizontally.");
                     }
                 }
@@ -1669,7 +1624,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_SharedIndicator_HidesWhenSelectionCleared()
         {
             RunOnStaThread(static () =>
@@ -1698,14 +1653,14 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.AreEqual(1.0, indicator?.Opacity ?? 0.0, 0.01);
+                    Assert.Equal(1.0, indicator?.Opacity ?? 0.0, 0.01);
 
                     nav.SelectedItem = null;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(0.0, indicator?.Opacity ?? 1.0, 0.01, "Indicator should hide when selection is cleared.");
+                    Assert.Equal(0.0, indicator?.Opacity ?? 1.0, 0.01);
                 }
                 finally
                 {
@@ -1718,7 +1673,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_TopMode_SharedIndicator_VisibleWhenSelected()
         {
             RunOnStaThread(static () =>
@@ -1748,8 +1703,8 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in Top pane template.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should be visible in top mode.");
+                    Assert.NotNull(indicator);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1762,7 +1717,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_FullThemeCycle_NoExceptions()
         {
             RunOnStaThread(static () =>
@@ -1799,9 +1754,8 @@ topMode: false,
                         DrainDispatcher(window.Dispatcher);
                         nav.UpdateLayout();
 
-                        Assert.AreEqual(themes[i], ApplicationThemeManager.CurrentTheme,
-                            "Theme cycle should apply the requested theme.");
-                        Assert.IsTrue(nav.IsLoaded,
+                        Assert.Equal(themes[i], ApplicationThemeManager.CurrentTheme);
+                        Assert.True(nav.IsLoaded,
                             "NavigationView should remain loaded after a theme change.");
                     }
                 }
@@ -1816,7 +1770,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneModeSwitch_IndicatorSurvives()
         {
             RunOnStaThread(static () =>
@@ -1851,8 +1805,8 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "Indicator should exist after mode switch.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after mode switch.");
+                    Assert.NotNull(indicator);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1865,7 +1819,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneCollapse_IndicatorSurvives()
         {
             RunOnStaThread(static () =>
@@ -1900,15 +1854,15 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.IsNotNull(indicator, "Indicator should exist after pane collapse.");
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after pane collapse.");
+                    Assert.NotNull(indicator);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
 
                     nav.IsPaneOpen = true;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after pane re-expand.");
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {
@@ -1921,7 +1875,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationViewItem_DisabledState_ChangesForeground()
         {
             RunOnStaThread(static () =>
@@ -1952,8 +1906,7 @@ topMode: false,
                     window.UpdateLayout();
 
                     Brush disabledForeground = item.Foreground;
-                    Assert.AreNotEqual(enabledForeground, disabledForeground,
-                        "Foreground should change when item is disabled.");
+                    Assert.NotEqual(enabledForeground, disabledForeground);
                 }
                 finally
                 {
@@ -1966,7 +1919,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_Left_PaneClosedInitially_ContentStartsAt48px_Inline()
         {
             RunOnStaThread(static () =>
@@ -1992,11 +1945,10 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+                    Assert.NotNull(presenter);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(48.0, offset.X, 1.0,
-                        "When Left mode starts with IsPaneOpen=false, content must start at the 48px compact rail, not at the expanded pane width.");
+                    Assert.Equal(48.0, offset.X, 1.0);
                 }
                 finally
                 {
@@ -2009,7 +1961,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_Left_ContentStarts42pxBelowWindowTop()
         {
             RunOnStaThread(static () =>
@@ -2035,11 +1987,10 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+                    Assert.NotNull(presenter);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(42.0, offset.Y, 1.0,
-                        "Left NavigationView content should start 42px below the top of the window.");
+                    Assert.Equal(42.0, offset.Y, 1.0);
                 }
                 finally
                 {
@@ -2052,7 +2003,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_Left_HeaderContentUsesAutoHeight()
         {
             RunOnStaThread(static () =>
@@ -2079,11 +2030,10 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+                    Assert.NotNull(presenter);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(20.0, offset.Y, 1.0,
-                        "Left NavigationView should only reserve the 42px top gap when Header is empty.");
+                    Assert.Equal(20.0, offset.Y, 1.0);
                 }
                 finally
                 {
@@ -2096,7 +2046,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_Left_PaneToggle_ResizesPushingContent()
         {
             RunOnStaThread(static () =>
@@ -2122,19 +2072,17 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+                    Assert.NotNull(presenter);
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open Left pane: content begins at 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
 
                     nav.IsPaneOpen = false;
-                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
-                        "Closing Left mode should animate from the expanded width instead of snapping immediately to 48.");
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed Left pane: content begins at 48.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Closing Left mode should animate from the expanded width instead of snapping immediately to 48.");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
 
                     nav.IsPaneOpen = true;
-                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
-                        "Opening Left mode should animate from the compact width instead of snapping immediately to 320.");
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopened Left pane: content returns to 320.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Opening Left mode should animate from the compact width instead of snapping immediately to 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
                 }
                 finally
                 {
@@ -2149,7 +2097,7 @@ topMode: false,
 
         // Switching pane display mode between Left and LeftCompact animates the pane width with the
         // same GridLength flight as the collapse/expand toggle, instead of snapping.
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneDisplayModeChange_AnimatesPaneWidth_LeftAndLeftCompact()
         {
             RunOnStaThread(() =>
@@ -2174,29 +2122,24 @@ topMode: false,
                     // Settle until the open pane reaches the asserted 320px expanded width.
                     _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
                     window.UpdateLayout();
-                    Assert.AreEqual(320.0, nav.GetPaneColumnWidthForTesting(), 0.5,
-                        "An open Left pane should start at the 320px expanded width.");
+                    Assert.Equal(320.0, nav.GetPaneColumnWidthForTesting(), 0.5);
 
                     // Left -> LeftCompact: the control coerces IsPaneOpen=false; the pane width must
                     // animate down rather than snap straight to 48 (the bug the mode-change handler had).
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
-                        "Switching Left -> LeftCompact should animate the pane width, not snap immediately to 48.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Switching Left -> LeftCompact should animate the pane width, not snap immediately to 48.");
                     _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() <= 48.5);
-                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.5,
-                        "Left -> LeftCompact should settle at the 48px compact width.");
+                    Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.5);
 
                     // LeftCompact -> Left, reopened the way an app does it (open the pane, then switch
                     // mode): the pane width must animate back up rather than snap to 320.
                     nav.IsPaneOpen = true;
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
-                        "Switching LeftCompact -> Left (reopened) should animate the pane width, not snap immediately to 320.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Switching LeftCompact -> Left (reopened) should animate the pane width, not snap immediately to 320.");
                     _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() >= 319.5);
-                    Assert.AreEqual(320.0, nav.GetPaneColumnWidthForTesting(), 0.5,
-                        "LeftCompact -> Left (reopened) should settle at the 320px expanded width.");
+                    Assert.Equal(320.0, nav.GetPaneColumnWidthForTesting(), 0.5);
                 }
                 finally
                 {
@@ -2210,7 +2153,7 @@ topMode: false,
         }
 
         // LeftCompact pane still resizes inline and pushes sibling content.
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_Inline()
         {
             RunOnStaThread(() =>
@@ -2239,10 +2182,9 @@ topMode: false,
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+                    Assert.NotNull(presenter);
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0,
-                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
                 }
                 finally
                 {
@@ -2255,7 +2197,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_HeaderContentUsesAutoHeight()
         {
             RunOnStaThread(static () =>
@@ -2283,11 +2225,10 @@ topMode: false,
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+                    Assert.NotNull(presenter);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(20.0, offset.Y, 1.0,
-                        "LeftCompact NavigationView should only reserve the 42px top gap when Header is empty.");
+                    Assert.Equal(20.0, offset.Y, 1.0);
                 }
                 finally
                 {
@@ -2300,7 +2241,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_Inline()
         {
             RunOnStaThread(static () =>
@@ -2326,10 +2267,9 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+                    Assert.NotNull(presenter);
 
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0,
-                        "When IsPaneOpen=false in LeftCompact, content must start inline at pane width 48.");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
                 }
                 finally
                 {
@@ -2342,7 +2282,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_BackEnabledClosedPane_KeepsPaneToggleVisible()
         {
             RunOnStaThread(static () =>
@@ -2378,17 +2318,13 @@ topMode: false,
                     System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(back, "PART_BackButton must exist in LeftCompact template.");
-                    Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in LeftCompact template.");
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
-                    Assert.AreEqual(Visibility.Visible, back.Visibility,
-                        "Back should remain visible while enabled in compact chrome.");
-                    Assert.AreEqual(Visibility.Visible, paneToggle.Visibility,
-                        "Pane toggle should remain visible to the right of the enabled back button after collapse.");
-                    Assert.AreEqual(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0,
-                        "Pane toggle should occupy the second compact chrome slot.");
-                    AssertContentOffsetEventually(window, nav, presenter, 96.0,
-                        "Closed LeftCompact pane should reserve both 48px chrome slots when back and pane toggle are visible.");
+                    Assert.NotNull(back);
+                    Assert.NotNull(paneToggle);
+                    Assert.NotNull(presenter);
+                    Assert.Equal(Visibility.Visible, back.Visibility);
+                    Assert.Equal(Visibility.Visible, paneToggle.Visibility);
+                    Assert.Equal(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0);
+                    AssertContentOffsetEventually(window, nav, presenter, 96.0);
                 }
                 finally
                 {
@@ -2401,7 +2337,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_LeftCompact_PaneToggle_ResizesPushingContent()
         {
             RunOnStaThread(() =>
@@ -2430,19 +2366,17 @@ topMode: false,
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+                    Assert.NotNull(presenter);
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open state: content begins at 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
 
                     nav.IsPaneOpen = false;
-                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
-                        "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
 
                     nav.IsPaneOpen = true;
-                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
-                        "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 320.");
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopen state: content returns to 320.");
+                    Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
                 }
                 finally
                 {
@@ -2457,7 +2391,7 @@ topMode: false,
 
         // NavigationView.ContentBackground must default to NavigationViewContentBackgroundBrush
         // (semi-transparent tint that allows Mica/Acrylic backdrop to show through the content area).
-        [TestMethod]
+        [Fact]
         public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
             RunOnStaThread(static () =>
@@ -2482,10 +2416,9 @@ topMode: false,
                     SolidColorBrush? expected = application?.TryFindResource("NavigationViewContentBackgroundBrush") as SolidColorBrush;
                     SolidColorBrush? actual = nav.ContentBackground as SolidColorBrush;
 
-                    Assert.IsNotNull(expected, "NavigationViewContentBackgroundBrush must be present in merged resources.");
-                    Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
-                    Assert.AreEqual(expected.Color, actual.Color,
-                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (semi-transparent Mica tint).");
+                    Assert.NotNull(expected);
+                    Assert.NotNull(actual);
+                    Assert.Equal(expected.Color, actual.Color);
                 }
                 finally
                 {
@@ -2500,7 +2433,7 @@ topMode: false,
 
         // WI-1 F3 supporting guard: NavigationViewItemHeader must be a first-class pane child
         // (placed via Items), styled distinctly from NavigationViewItem, and not selectable.
-        [TestMethod]
+        [Fact]
         public void NavigationView_Header_InPane_IsRendered_NotSelectable()
         {
             RunOnStaThread(static () =>
@@ -2527,9 +2460,9 @@ topMode: false,
                     window.UpdateLayout();
 
                     NavigationViewItemHeader? renderedHeader = FindVisualChild<NavigationViewItemHeader>(nav);
-                    Assert.IsNotNull(renderedHeader, "NavigationViewItemHeader must render inside the pane.");
-                    Assert.IsFalse(renderedHeader.Focusable, "Header must not be focusable.");
-                    Assert.IsNull(nav.SelectedItem, "Header must not be auto-selected even when placed at index 0.");
+                    Assert.NotNull(renderedHeader);
+                    Assert.False(renderedHeader.Focusable, "Header must not be focusable.");
+                    Assert.Null(nav.SelectedItem);
                 }
                 finally
                 {
@@ -2546,7 +2479,7 @@ topMode: false,
         // WI-3 B15  NavigationView pane header LayerFillColorAltBrush + BackButtonStates VSM
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_BackButtonStates_BothStatesAccessible()
         {
             RunOnStaThread(static () =>
@@ -2566,8 +2499,8 @@ topMode: false,
                     bool okVisible = VisualStateManager.GoToState(nav, "BackButtonVisible", useTransitions: false);
                     bool okCollapsed = VisualStateManager.GoToState(nav, "BackButtonCollapsed", useTransitions: false);
 
-                    Assert.IsTrue(okVisible, "GoToState('BackButtonVisible') must succeed - BackButtonStates VSM group required.");
-                    Assert.IsTrue(okCollapsed, "GoToState('BackButtonCollapsed') must succeed.");
+                    Assert.True(okVisible, "GoToState('BackButtonVisible') must succeed - BackButtonStates VSM group required.");
+                    Assert.True(okCollapsed, "GoToState('BackButtonCollapsed') must succeed.");
                 }
                 finally
                 {
@@ -2580,7 +2513,7 @@ topMode: false,
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_IsBackButtonVisible_True_ShowsBackButton()
         {
             RunOnStaThread(static () =>
@@ -2597,9 +2530,8 @@ topMode: false,
                     DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    Assert.IsNotNull(back, "PART_BackButton must exist.");
-                    Assert.AreEqual(Visibility.Visible, back.Visibility,
-                        "PART_BackButton must be Visible when IsBackButtonVisible=True (WI-3 B15 VSM).");
+                    Assert.NotNull(back);
+                    Assert.Equal(Visibility.Visible, back.Visibility);
                 }
                 finally
                 {
@@ -2617,7 +2549,7 @@ topMode: false,
 
         // NavigationView.ContentBackground must resolve to NavigationViewContentBackgroundBrush
         // across all themes (semi-transparent tint; color changes per theme file).
-        [TestMethod]
+        [Fact]
         public void NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemes()
         {
             RunOnStaThread(static () =>
@@ -2641,24 +2573,18 @@ topMode: false,
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsNotNull(nav.ContentBackground,
-                        "ContentBackground must resolve under Light theme.");
-                    Assert.IsNotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"),
-                        "NavigationViewContentBackgroundBrush must resolve under Light theme.");
+                    Assert.NotNull(nav.ContentBackground);
+                    Assert.NotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsNotNull(nav.ContentBackground,
-                        "ContentBackground must resolve under Dark theme.");
-                    Assert.IsNotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"),
-                        "NavigationViewContentBackgroundBrush must resolve under Dark theme.");
+                    Assert.NotNull(nav.ContentBackground);
+                    Assert.NotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
 
                     ThemeTestHelpers.ApplyStandardThemeCycle();
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsNotNull(nav.ContentBackground,
-                        "ContentBackground must resolve after a full theme cycle.");
-                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
-                        "NavigationViewContentBackgroundBrush must resolve after a full theme cycle.");
+                    Assert.NotNull(nav.ContentBackground);
+                    Assert.NotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"));
                 }
                 finally
                 {
@@ -2675,7 +2601,7 @@ topMode: false,
         // NavigationView_LeftCompact_PaneBorder_UsesLayerFillColorAltBrush REMOVED (WI-3 B15 revert).
         // Both replaced by NavigationView_PaneBorders_AreTransparent below.
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneBorders_AreTransparent()
         {
             // Regression guard: pane borders (PaneBorder, CompactPane, PaneHeaderBorder) must
@@ -2704,7 +2630,7 @@ topMode: false,
                     winLeft.UpdateLayout();
 
                     System.Windows.Controls.Border? paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder");
-                    Assert.IsNotNull(paneBorder, "Left pane must expose Border named 'PaneBorder'.");
+                    Assert.NotNull(paneBorder);
                     AssertBrushIsTransparentOrNull(paneBorder.Background,
                         "PaneBorder.Background must be Transparent so DWM backdrop shows through.");
                 }
@@ -2730,7 +2656,7 @@ topMode: false,
                     winCompact.UpdateLayout();
 
                     System.Windows.Controls.Border? compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
-                    Assert.IsNotNull(compactPane, "LeftCompact pane must expose Border named 'CompactPane'.");
+                    Assert.NotNull(compactPane);
                     AssertBrushIsTransparentOrNull(compactPane.Background,
                         "CompactPane.Background must be Transparent so DWM backdrop shows through.");
                 }
@@ -2756,7 +2682,7 @@ topMode: false,
                     winTop.UpdateLayout();
 
                     System.Windows.Controls.Border? paneHeader = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder");
-                    Assert.IsNotNull(paneHeader, "Top pane must expose Border named 'PaneHeaderBorder'.");
+                    Assert.NotNull(paneHeader);
                     AssertBrushIsTransparentOrNull(paneHeader.Background,
                         "PaneHeaderBorder.Background must be Transparent so DWM backdrop shows through.");
                 }
@@ -2801,7 +2727,7 @@ topMode: false,
         {
             Application? application = EnsureApplication();
             Style? expected = application?.TryFindResource("ScrollViewerStyle") as Style;
-            Assert.IsNotNull(expected, "ScrollViewerStyle must be present in merged Fluence resources.");
+            Assert.NotNull(expected);
 
             Window window = new();
             try
@@ -2821,11 +2747,9 @@ topMode: false,
                 window.UpdateLayout();
 
                 ScrollViewer? scrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer);
-                Assert.IsNotNull(scrollViewer, "NavigationView template must expose PART_PaneItemsScrollViewer.");
-                Assert.IsInstanceOfType(scrollViewer, typeof(SmoothScrollViewer),
-                    "NavigationView pane items should use SmoothScrollViewer so the pane scrollbar uses the Fluent scrolling surface.");
-                Assert.AreSame(expected, scrollViewer.Style,
-                    "NavigationView pane items ScrollViewer must use the Fluence ScrollViewerStyle.");
+                Assert.NotNull(scrollViewer);
+                _ = Assert.IsAssignableFrom<SmoothScrollViewer>(scrollViewer);
+                Assert.Same(expected, scrollViewer.Style);
             }
             finally
             {
@@ -2836,24 +2760,24 @@ topMode: false,
         private static TranslateTransform GetSelectionIndicatorTranslate(FrameworkElement indicator)
         {
             TransformGroup? group = indicator.RenderTransform as TransformGroup;
-            Assert.IsNotNull(group, "Selection indicator must use a TransformGroup.");
-            Assert.IsGreaterThanOrEqualTo(2, group.Children.Count, "Selection indicator TransformGroup must contain scale and translate transforms.");
+            Assert.NotNull(group);
+            Assert.True(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
             TranslateTransform? translate = group.Children[1] as TranslateTransform;
-            Assert.IsNotNull(translate, "Selection indicator transform index 1 must be a TranslateTransform.");
+            Assert.NotNull(translate);
             return translate;
         }
 
         private static ScaleTransform GetSelectionIndicatorScale(FrameworkElement indicator)
         {
             TransformGroup? group = indicator.RenderTransform as TransformGroup;
-            Assert.IsNotNull(group, "Selection indicator must use a TransformGroup.");
-            Assert.IsGreaterThanOrEqualTo(2, group.Children.Count, "Selection indicator TransformGroup must contain scale and translate transforms.");
+            Assert.NotNull(group);
+            Assert.True(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
             ScaleTransform? scale = group.Children[0] as ScaleTransform;
-            Assert.IsNotNull(scale, "Selection indicator transform index 0 must be a ScaleTransform.");
+            Assert.NotNull(scale);
             return scale;
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationViewItem_Template_HasNoInnerSelectionIndicator()
         {
             // Regression: per-item Border named "SelectionIndicator" was duplicating the
@@ -2882,9 +2806,7 @@ topMode: false,
                     window.UpdateLayout();
 
                     System.Windows.Controls.Border? inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");
-                    Assert.IsNull(inner,
-                        "NavigationViewItem template must not contain a per-item Border named 'SelectionIndicator'. " +
-                        "The pane-level PART_SelectionIndicator owns the selection visual.");
+                    Assert.Null(inner);
                 }
                 finally
                 {

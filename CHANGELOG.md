@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Tests: `Fluence.Wpf.Tests` migrated from MSTest 4.x to xunit.v3 3.2.2 (with `xunit.runner.visualstudio` 3.1.5). Fixtures use constructor/`IDisposable` lifecycle instead of `[TestInitialize]`/`[TestCleanup]`, diagnostic probes log through `ITestOutputHelper` instead of `TestContext`, and the non-parallel execution model is preserved via `xunit.runner.json` and an assembly-level `CollectionBehavior(DisableTestParallelization = true)`. The shared `WpfTestSta` STA dispatcher harness is unchanged. Both `net472` and `net10.0-windows10.0.26100.0` pass the full suite.
+
 ## [0.8.13-Preview] - 2026-08-13
 
 ### Added

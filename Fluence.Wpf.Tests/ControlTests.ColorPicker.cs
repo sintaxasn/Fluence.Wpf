@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
@@ -36,6 +35,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
     /// </summary>
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void ColorPicker_DefaultStyle_AppliesTemplateParts()
         {
             RunOnStaThread(static () =>
@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? style = app?.TryFindResource(typeof(Controls.ColorPicker)) as Style;
-                Assert.IsNotNull(style, "A default Style must be registered for Fluence.Wpf.Controls.ColorPicker.");
+                Assert.NotNull(style);
 
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
 
                     Image? spectrumImage = template.FindName("PART_SpectrumImage", picker) as Image;
                     FrameworkElement? spectrumArea = template.FindName("PART_SpectrumArea", picker) as FrameworkElement;
@@ -80,25 +80,23 @@ namespace Fluence.Wpf.Tests
                     RangeBase? alphaSlider = template.FindName("PART_AlphaSlider", picker) as RangeBase;
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
 
-                    Assert.IsNotNull(spectrumImage, "PART_SpectrumImage must be an Image hosting the spectrum bitmap.");
-                    Assert.IsNotNull(spectrumArea, "PART_SpectrumArea must be present as the spectrum input surface.");
-                    Assert.IsNotNull(spectrumThumb, "PART_SpectrumThumb must be present as the selection ellipse.");
-                    Assert.IsNotNull(hueSlider, "PART_HueSlider must be a RangeBase hosting the hue channel.");
-                    Assert.IsNotNull(alphaSlider, "PART_AlphaSlider must be a RangeBase hosting the alpha channel.");
-                    Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be a TextBox hosting the hex input.");
-                    _ = Assert.IsInstanceOfType<Controls.TextBox>(hexTextBox,
-                        "The default template should present the hex input through the Fluence TextBox.");
+                    Assert.NotNull(spectrumImage);
+                    Assert.NotNull(spectrumArea);
+                    Assert.NotNull(spectrumThumb);
+                    Assert.NotNull(hueSlider);
+                    Assert.NotNull(alphaSlider);
+                    Assert.NotNull(hexTextBox);
+                    _ = Assert.IsAssignableFrom<Controls.TextBox>(hexTextBox);
 
-                    Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), picker.Color,
-                        "The default Color must be opaque red (#FFFF0000).");
-                    Assert.AreEqual(0d, hueSlider.Minimum, "The hue slider must span 0 to 360 degrees.");
-                    Assert.AreEqual(360d, hueSlider.Maximum, "The hue slider must span 0 to 360 degrees.");
-                    Assert.AreEqual(0d, alphaSlider.Minimum, "The alpha slider must span 0 to 255.");
-                    Assert.AreEqual(255d, alphaSlider.Maximum, "The alpha slider must span 0 to 255.");
-                    Assert.IsNull(picker.PreviousColor, "PreviousColor must default to null.");
-                    Assert.IsFalse(picker.IsAlphaEnabled, "IsAlphaEnabled must default to false.");
-                    Assert.IsTrue(picker.IsColorSpectrumVisible, "IsColorSpectrumVisible must default to true.");
-                    Assert.IsTrue(picker.IsColorChannelTextInputVisible,
+                    Assert.Equal(Color.FromArgb(255, 255, 0, 0), picker.Color);
+                    Assert.Equal(0d, hueSlider.Minimum);
+                    Assert.Equal(360d, hueSlider.Maximum);
+                    Assert.Equal(0d, alphaSlider.Minimum);
+                    Assert.Equal(255d, alphaSlider.Maximum);
+                    Assert.Null(picker.PreviousColor);
+                    Assert.False(picker.IsAlphaEnabled, "IsAlphaEnabled must default to false.");
+                    Assert.True(picker.IsColorSpectrumVisible, "IsColorSpectrumVisible must default to true.");
+                    Assert.True(picker.IsColorChannelTextInputVisible,
                         "IsColorChannelTextInputVisible must default to true.");
                 }
                 finally
@@ -108,7 +106,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SpectrumBitmap_IsGenerated256x256AfterTemplateApply()
         {
             RunOnStaThread(static () =>
@@ -127,14 +125,14 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     Image? spectrumImage = template.FindName("PART_SpectrumImage", picker) as Image;
-                    Assert.IsNotNull(spectrumImage, "PART_SpectrumImage must be present in the template.");
+                    Assert.NotNull(spectrumImage);
 
                     WriteableBitmap? bitmap = spectrumImage.Source as WriteableBitmap;
-                    Assert.IsNotNull(bitmap, "The spectrum image must be backed by a WriteableBitmap after template apply.");
-                    Assert.AreEqual(256, bitmap.PixelWidth, "The spectrum bitmap must be 256 pixels wide.");
-                    Assert.AreEqual(256, bitmap.PixelHeight, "The spectrum bitmap must be 256 pixels tall.");
+                    Assert.NotNull(bitmap);
+                    Assert.Equal(256, bitmap.PixelWidth);
+                    Assert.Equal(256, bitmap.PixelHeight);
                 }
                 finally
                 {
@@ -143,7 +141,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SetColor_RaisesColorChangedAndUpdatesHexText()
         {
             RunOnStaThread(() =>
@@ -162,11 +160,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
-                    Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be present in the template.");
-                    Assert.AreEqual("#FF0000", hexTextBox.Text, StringComparer.Ordinal,
-                        "The hex box must show the six-digit default color while alpha is disabled.");
+                    Assert.NotNull(hexTextBox);
+                    Assert.Equal("#FF0000", hexTextBox.Text, StringComparer.Ordinal);
 
                     ColorPickerColorChangedEventArgs? changed = null;
                     int raiseCount = 0;
@@ -180,13 +177,11 @@ namespace Fluence.Wpf.Tests
                     picker.Color = target;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(1, raiseCount, "A single Color assignment must raise ColorChanged exactly once.");
-                    Assert.IsNotNull(changed, "ColorChanged must supply event args.");
-                    Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), changed.OldColor,
-                        "ColorChanged must report the previous color as OldColor.");
-                    Assert.AreEqual(target, changed.NewColor, "ColorChanged must report the assigned color as NewColor.");
-                    Assert.AreEqual("#0078D4", hexTextBox.Text, StringComparer.Ordinal,
-                        "A programmatic Color assignment must refresh the hex box text.");
+                    Assert.Equal(1, raiseCount);
+                    Assert.NotNull(changed);
+                    Assert.Equal(Color.FromArgb(255, 255, 0, 0), changed.OldColor);
+                    Assert.Equal(target, changed.NewColor);
+                    Assert.Equal("#0078D4", hexTextBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -195,7 +190,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_HexEntry_CommitsOnEnterAndInvalidInputReverts()
         {
             RunOnStaThread(static () =>
@@ -214,12 +209,12 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
-                    Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be present in the template.");
+                    Assert.NotNull(hexTextBox);
 
                     PresentationSource? source = PresentationSource.FromVisual(hexTextBox);
-                    Assert.IsNotNull(source, "The hex box must have a presentation source once the window is shown.");
+                    Assert.NotNull(source);
 
                     hexTextBox.Text = "#FF0078D4";
                     hexTextBox.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Enter)
@@ -228,10 +223,8 @@ namespace Fluence.Wpf.Tests
                     });
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 120, 212), picker.Color,
-                        "An eight-digit hex entry must commit on Enter; with alpha disabled it stays opaque.");
-                    Assert.AreEqual("#0078D4", hexTextBox.Text, StringComparer.Ordinal,
-                        "Committed input must normalize to the six-digit display while alpha is disabled.");
+                    Assert.Equal(Color.FromArgb(255, 0, 120, 212), picker.Color);
+                    Assert.Equal("#0078D4", hexTextBox.Text, StringComparer.Ordinal);
 
                     hexTextBox.Text = "00b294";
                     hexTextBox.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Enter)
@@ -240,9 +233,8 @@ namespace Fluence.Wpf.Tests
                     });
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 178, 148), picker.Color,
-                        "Six-digit lowercase input without a leading # must still commit.");
-                    Assert.AreEqual("#00B294", hexTextBox.Text, StringComparer.Ordinal, "Committed input must normalize to uppercase with a #.");
+                    Assert.Equal(Color.FromArgb(255, 0, 178, 148), picker.Color);
+                    Assert.Equal("#00B294", hexTextBox.Text, StringComparer.Ordinal);
 
                     hexTextBox.Text = "not-a-color";
                     hexTextBox.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Enter)
@@ -251,10 +243,8 @@ namespace Fluence.Wpf.Tests
                     });
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 178, 148), picker.Color,
-                        "Invalid hex input must not change the color.");
-                    Assert.AreEqual("#00B294", hexTextBox.Text, StringComparer.Ordinal,
-                        "Invalid hex input must revert the text to the current color.");
+                    Assert.Equal(Color.FromArgb(255, 0, 178, 148), picker.Color);
+                    Assert.Equal("#00B294", hexTextBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -263,7 +253,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_HueSlider_UpdatesColorAtFullSaturationAndValue()
         {
             RunOnStaThread(() =>
@@ -282,11 +272,11 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     RangeBase? hueSlider = template.FindName("PART_HueSlider", picker) as RangeBase;
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
-                    Assert.IsNotNull(hueSlider, "PART_HueSlider must be present in the template.");
-                    Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be present in the template.");
+                    Assert.NotNull(hueSlider);
+                    Assert.NotNull(hexTextBox);
 
                     ColorPickerColorChangedEventArgs? changed = null;
                     picker.ColorChanged += (sender, e) => changed = e;
@@ -296,14 +286,11 @@ namespace Fluence.Wpf.Tests
                     hueSlider.Value = 120;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 255, 0), picker.Color,
-                        "Hue 120 at S=1, V=1 must produce pure green.");
-                    Assert.IsNotNull(changed, "A hue slider change must raise ColorChanged.");
-                    Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), changed.OldColor,
-                        "ColorChanged must report the pre-drag color as OldColor.");
-                    Assert.AreEqual(Color.FromArgb(255, 0, 255, 0), changed.NewColor,
-                        "ColorChanged must report the post-drag color as NewColor.");
-                    Assert.AreEqual("#00FF00", hexTextBox.Text, StringComparer.Ordinal, "The hex box must follow hue slider edits.");
+                    Assert.Equal(Color.FromArgb(255, 0, 255, 0), picker.Color);
+                    Assert.NotNull(changed);
+                    Assert.Equal(Color.FromArgb(255, 255, 0, 0), changed.OldColor);
+                    Assert.Equal(Color.FromArgb(255, 0, 255, 0), changed.NewColor);
+                    Assert.Equal("#00FF00", hexTextBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -312,7 +299,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_AlphaSlider_CollapsedByDefaultAndFunctionalWhenEnabled()
         {
             RunOnStaThread(static () =>
@@ -331,42 +318,34 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     FrameworkElement? alphaSection = template.FindName("AlphaSection", picker) as FrameworkElement;
                     RangeBase? alphaSlider = template.FindName("PART_AlphaSlider", picker) as RangeBase;
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
-                    Assert.IsNotNull(alphaSection, "AlphaSection must be present in the default template.");
-                    Assert.IsNotNull(alphaSlider, "PART_AlphaSlider must be present in the template.");
-                    Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be present in the template.");
+                    Assert.NotNull(alphaSection);
+                    Assert.NotNull(alphaSlider);
+                    Assert.NotNull(hexTextBox);
 
-                    Assert.AreEqual(Visibility.Collapsed, alphaSection.Visibility,
-                        "The alpha row must be collapsed while IsAlphaEnabled is false.");
+                    Assert.Equal(Visibility.Collapsed, alphaSection.Visibility);
 
                     picker.IsAlphaEnabled = true;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Visible, alphaSection.Visibility,
-                        "The alpha row must show once IsAlphaEnabled is true.");
-                    Assert.AreEqual("#FFFF0000", hexTextBox.Text, StringComparer.Ordinal,
-                        "Enabling alpha must switch the hex box to the eight-digit format.");
+                    Assert.Equal(Visibility.Visible, alphaSection.Visibility);
+                    Assert.Equal("#FFFF0000", hexTextBox.Text, StringComparer.Ordinal);
 
                     alphaSlider.Value = 128;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(128, 255, 0, 0), picker.Color,
-                        "An alpha slider edit must flow into Color.A while RGB is preserved.");
-                    Assert.AreEqual("#80FF0000", hexTextBox.Text, StringComparer.Ordinal,
-                        "The hex box must show the edited alpha in the eight-digit format.");
+                    Assert.Equal(Color.FromArgb(128, 255, 0, 0), picker.Color);
+                    Assert.Equal("#80FF0000", hexTextBox.Text, StringComparer.Ordinal);
 
                     picker.IsAlphaEnabled = false;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, alphaSection.Visibility,
-                        "The alpha row must collapse again when IsAlphaEnabled returns to false.");
-                    Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), picker.Color,
-                        "Disabling alpha must pin the picker back to a fully opaque color.");
-                    Assert.AreEqual("#FF0000", hexTextBox.Text, StringComparer.Ordinal,
-                        "Disabling alpha must switch the hex box back to the six-digit format.");
+                    Assert.Equal(Visibility.Collapsed, alphaSection.Visibility);
+                    Assert.Equal(Color.FromArgb(255, 255, 0, 0), picker.Color);
+                    Assert.Equal("#FF0000", hexTextBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -375,7 +354,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SpectrumPoint_UpdatesSaturationAndValuePreservingHue()
         {
             RunOnStaThread(static () =>
@@ -394,12 +373,12 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     FrameworkElement? spectrumArea = template.FindName("PART_SpectrumArea", picker) as FrameworkElement;
                     RangeBase? hueSlider = template.FindName("PART_HueSlider", picker) as RangeBase;
-                    Assert.IsNotNull(spectrumArea, "PART_SpectrumArea must be present in the template.");
-                    Assert.IsNotNull(hueSlider, "PART_HueSlider must be present in the template.");
-                    Assert.IsTrue(spectrumArea.ActualWidth > 0 && spectrumArea.ActualHeight > 0,
+                    Assert.NotNull(spectrumArea);
+                    Assert.NotNull(hueSlider);
+                    Assert.True(spectrumArea.ActualWidth > 0 && spectrumArea.ActualHeight > 0,
                         "The spectrum area must have a layout size once the window is shown.");
 
                     hueSlider.Value = 120;
@@ -411,24 +390,20 @@ namespace Fluence.Wpf.Tests
                     picker.ApplySpectrumPoint(new Point(0, 0));
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 255, 255, 255), picker.Color,
-                        "The top-left spectrum corner must map to white (S=0, V=1).");
-                    Assert.AreEqual(120d, hueSlider.Value,
-                        "Moving onto the grey axis must not reset the hue channel.");
+                    Assert.Equal(Color.FromArgb(255, 255, 255, 255), picker.Color);
+                    Assert.Equal(120d, hueSlider.Value);
 
                     // Top-right corner: saturation 1, value 1 - the retained hue reappears.
                     picker.ApplySpectrumPoint(new Point(spectrumArea.ActualWidth, 0));
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 255, 0), picker.Color,
-                        "The top-right spectrum corner must restore the retained hue at S=1, V=1.");
+                    Assert.Equal(Color.FromArgb(255, 0, 255, 0), picker.Color);
 
                     // Bottom edge: value 0 - black.
                     picker.ApplySpectrumPoint(new Point(spectrumArea.ActualWidth, spectrumArea.ActualHeight));
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 0, 0, 0), picker.Color,
-                        "The bottom spectrum edge must map to black (V=0).");
+                    Assert.Equal(Color.FromArgb(255, 0, 0, 0), picker.Color);
                 }
                 finally
                 {
@@ -437,7 +412,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_PreviousColor_TogglesPreviousSwatch()
         {
             RunOnStaThread(static () =>
@@ -456,35 +431,30 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     Border? currentSwatch = template.FindName("CurrentSwatchBorder", picker) as Border;
                     Border? previousSwatch = template.FindName("PreviousSwatchBorder", picker) as Border;
-                    Assert.IsNotNull(currentSwatch, "CurrentSwatchBorder must be present in the default template.");
-                    Assert.IsNotNull(previousSwatch, "PreviousSwatchBorder must be present in the default template.");
+                    Assert.NotNull(currentSwatch);
+                    Assert.NotNull(previousSwatch);
 
-                    Assert.AreEqual(Visibility.Collapsed, previousSwatch.Visibility,
-                        "The previous swatch must be collapsed while PreviousColor is null.");
+                    Assert.Equal(Visibility.Collapsed, previousSwatch.Visibility);
 
                     SolidColorBrush? currentBrush = currentSwatch.Background as SolidColorBrush;
-                    Assert.IsNotNull(currentBrush, "The current swatch must show the current color.");
-                    Assert.AreEqual(picker.Color, currentBrush.Color,
-                        "The current swatch brush must match the current color.");
+                    Assert.NotNull(currentBrush);
+                    Assert.Equal(picker.Color, currentBrush.Color);
 
                     picker.PreviousColor = Colors.Blue;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Visible, previousSwatch.Visibility,
-                        "The previous swatch must show once PreviousColor is set.");
+                    Assert.Equal(Visibility.Visible, previousSwatch.Visibility);
                     SolidColorBrush? previousBrush = previousSwatch.Background as SolidColorBrush;
-                    Assert.IsNotNull(previousBrush, "The previous swatch must show the previous color.");
-                    Assert.AreEqual(Colors.Blue, previousBrush.Color,
-                        "The previous swatch brush must match PreviousColor.");
+                    Assert.NotNull(previousBrush);
+                    Assert.Equal(Colors.Blue, previousBrush.Color);
 
                     picker.PreviousColor = null;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, previousSwatch.Visibility,
-                        "Clearing PreviousColor must collapse the previous swatch again.");
+                    Assert.Equal(Visibility.Collapsed, previousSwatch.Visibility);
                 }
                 finally
                 {
@@ -493,7 +463,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_AutomationPeer_ReportsClassTypeAndHexName()
         {
             RunOnStaThread(static () =>
@@ -512,23 +482,19 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     AutomationPeer? peer = UIElementAutomationPeer.CreatePeerForElement(picker);
-                    Assert.IsNotNull(peer, "ColorPicker must create an automation peer.");
-                    _ = Assert.IsInstanceOfType<Automation.ColorPickerAutomationPeer>(peer,
-                        "ColorPicker must expose the ColorPickerAutomationPeer.");
-                    Assert.AreEqual("ColorPicker", peer.GetClassName(), StringComparer.Ordinal, "The peer must report the ColorPicker class name.");
-                    Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
-                        "The peer must report the Group control type.");
-                    Assert.AreEqual("#FF0000", peer.GetName(), StringComparer.Ordinal,
-                        "The peer name must fall back to the hex string of the current color.");
+                    Assert.NotNull(peer);
+                    _ = Assert.IsAssignableFrom<Automation.ColorPickerAutomationPeer>(peer);
+                    Assert.Equal("ColorPicker", peer.GetClassName(), StringComparer.Ordinal);
+                    Assert.Equal(AutomationControlType.Group, peer.GetAutomationControlType());
+                    Assert.Equal("#FF0000", peer.GetName(), StringComparer.Ordinal);
 
                     picker.Color = Color.FromArgb(255, 0, 120, 212);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("#0078D4", peer.GetName(), StringComparer.Ordinal, "The peer name must track the current color.");
+                    Assert.Equal("#0078D4", peer.GetName(), StringComparer.Ordinal);
 
                     AutomationProperties.SetName(picker, "Accent color");
-                    Assert.AreEqual("Accent color", peer.GetName(), StringComparer.Ordinal,
-                        "An explicit AutomationProperties.Name must win over the hex fallback.");
+                    Assert.Equal("Accent color", peer.GetName(), StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -537,7 +503,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
             RunOnStaThread(static () =>
@@ -547,14 +513,10 @@ namespace Fluence.Wpf.Tests
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
-                Assert.IsNotNull(app?.TryFindResource("ControlStrokeColorDefaultBrush"),
-                    "ControlStrokeColorDefaultBrush (spectrum, track, and swatch outlines) must resolve after a full theme cycle.");
-                Assert.IsNotNull(app?.TryFindResource("TextFillColorPrimaryBrush"),
-                    "TextFillColorPrimaryBrush (control foreground) must resolve after a full theme cycle.");
-                Assert.IsNotNull(app?.TryFindResource("AccentFillColorDefaultBrush"),
-                    "AccentFillColorDefaultBrush (channel slider thumb fill) must resolve after a full theme cycle.");
-                Assert.IsNotNull(app?.TryFindResource("ControlFillColorDefaultBrush"),
-                    "ControlFillColorDefaultBrush (hex text box fill) must resolve after a full theme cycle.");
+                Assert.NotNull(app?.TryFindResource("ControlStrokeColorDefaultBrush"));
+                Assert.NotNull(app?.TryFindResource("TextFillColorPrimaryBrush"));
+                Assert.NotNull(app?.TryFindResource("AccentFillColorDefaultBrush"));
+                Assert.NotNull(app?.TryFindResource("ControlFillColorDefaultBrush"));
             });
         }
 
@@ -578,7 +540,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
+                    Assert.NotNull(template);
                     verify(picker, template, window);
                 }
                 finally
@@ -591,7 +553,7 @@ namespace Fluence.Wpf.Tests
         private static void RaiseEnterKey(TextBox textBox)
         {
             PresentationSource? source = PresentationSource.FromVisual(textBox);
-            Assert.IsNotNull(source, "The text box must have a presentation source once the window is shown.");
+            Assert.NotNull(source);
             textBox.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Enter)
             {
                 RoutedEvent = Keyboard.KeyDownEvent,
@@ -601,27 +563,27 @@ namespace Fluence.Wpf.Tests
         private static T GetTemplateElement<T>(ControlTemplate template, Controls.ColorPicker picker, string name) where T : class
         {
             T? element = template.FindName(name, picker) as T;
-            Assert.IsNotNull(element, name + " must be present in the default template.");
+            Assert.NotNull(element);
             return element;
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_OptionSurfaceDefaults_MatchWinUi()
         {
             RunColorPickerOptionTest(
                 () => new Controls.ColorPicker(),
                 (picker, _, _) =>
                 {
-                    Assert.IsTrue(picker.IsColorPreviewVisible, "IsColorPreviewVisible must default to true.");
-                    Assert.IsTrue(picker.IsColorSliderVisible, "IsColorSliderVisible must default to true.");
-                    Assert.IsTrue(picker.IsHexInputVisible, "IsHexInputVisible must default to true.");
-                    Assert.IsFalse(picker.IsMoreButtonVisible, "IsMoreButtonVisible must default to false.");
-                    Assert.IsTrue(picker.IsAlphaSliderVisible, "IsAlphaSliderVisible must default to true.");
-                    Assert.IsTrue(picker.IsAlphaTextInputVisible, "IsAlphaTextInputVisible must default to true.");
+                    Assert.True(picker.IsColorPreviewVisible, "IsColorPreviewVisible must default to true.");
+                    Assert.True(picker.IsColorSliderVisible, "IsColorSliderVisible must default to true.");
+                    Assert.True(picker.IsHexInputVisible, "IsHexInputVisible must default to true.");
+                    Assert.False(picker.IsMoreButtonVisible, "IsMoreButtonVisible must default to false.");
+                    Assert.True(picker.IsAlphaSliderVisible, "IsAlphaSliderVisible must default to true.");
+                    Assert.True(picker.IsAlphaTextInputVisible, "IsAlphaTextInputVisible must default to true.");
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_IsColorPreviewVisible_TogglesSwatchSection()
         {
             RunColorPickerOptionTest(
@@ -629,20 +591,19 @@ namespace Fluence.Wpf.Tests
                 (picker, template, window) =>
                 {
                     FrameworkElement swatchSection = GetTemplateElement<FrameworkElement>(template, picker, "SwatchSection");
-                    Assert.AreEqual(Visibility.Visible, swatchSection.Visibility);
+                    Assert.Equal(Visibility.Visible, swatchSection.Visibility);
 
                     picker.IsColorPreviewVisible = false;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(Visibility.Collapsed, swatchSection.Visibility,
-                        "Turning IsColorPreviewVisible off must collapse the swatch row.");
+                    Assert.Equal(Visibility.Collapsed, swatchSection.Visibility);
 
                     picker.IsColorPreviewVisible = true;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(Visibility.Visible, swatchSection.Visibility);
+                    Assert.Equal(Visibility.Visible, swatchSection.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_IsColorSliderVisible_TogglesHueSection()
         {
             RunColorPickerOptionTest(
@@ -656,16 +617,13 @@ namespace Fluence.Wpf.Tests
                     picker.IsColorSliderVisible = false;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, hueSection.Visibility,
-                        "Turning IsColorSliderVisible off must collapse the third-dimension hue slider row.");
-                    Assert.AreEqual(Visibility.Visible, spectrumSection.Visibility,
-                        "Hiding the color slider must not affect the spectrum.");
-                    Assert.AreEqual(Visibility.Visible, hexTextBox.Visibility,
-                        "Hiding the color slider must not affect the hex input.");
+                    Assert.Equal(Visibility.Collapsed, hueSection.Visibility);
+                    Assert.Equal(Visibility.Visible, spectrumSection.Visibility);
+                    Assert.Equal(Visibility.Visible, hexTextBox.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_IsHexInputVisible_TogglesHexTextBoxOnly()
         {
             RunColorPickerOptionTest(
@@ -679,16 +637,13 @@ namespace Fluence.Wpf.Tests
                     picker.IsHexInputVisible = false;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, hexTextBox.Visibility,
-                        "Turning IsHexInputVisible off must collapse the hex box.");
-                    Assert.AreEqual(Visibility.Visible, representationComboBox.Visibility,
-                        "Hiding the hex input must not affect the representation selector.");
-                    Assert.AreEqual(Visibility.Visible, channelPanel.Visibility,
-                        "Hiding the hex input must not affect the channel inputs.");
+                    Assert.Equal(Visibility.Collapsed, hexTextBox.Visibility);
+                    Assert.Equal(Visibility.Visible, representationComboBox.Visibility);
+                    Assert.Equal(Visibility.Visible, channelPanel.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_AlphaVisibilityFlags_AndWithIsAlphaEnabled()
         {
             RunColorPickerOptionTest(
@@ -698,35 +653,29 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement alphaSection = GetTemplateElement<FrameworkElement>(template, picker, "AlphaSection");
                     FrameworkElement alphaInputPanel = GetTemplateElement<FrameworkElement>(template, picker, "AlphaInputPanel");
 
-                    Assert.AreEqual(Visibility.Visible, alphaSection.Visibility, "Alpha enabled: the slider row shows.");
-                    Assert.AreEqual(Visibility.Visible, alphaInputPanel.Visibility, "Alpha enabled: the alpha input shows.");
+                    Assert.Equal(Visibility.Visible, alphaSection.Visibility);
+                    Assert.Equal(Visibility.Visible, alphaInputPanel.Visibility);
 
                     picker.IsAlphaSliderVisible = false;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(Visibility.Collapsed, alphaSection.Visibility,
-                        "IsAlphaSliderVisible=false must collapse the slider row even while alpha is enabled.");
-                    Assert.AreEqual(Visibility.Visible, alphaInputPanel.Visibility,
-                        "IsAlphaSliderVisible must not affect the alpha text input.");
+                    Assert.Equal(Visibility.Collapsed, alphaSection.Visibility);
+                    Assert.Equal(Visibility.Visible, alphaInputPanel.Visibility);
 
                     picker.IsAlphaSliderVisible = true;
                     picker.IsAlphaTextInputVisible = false;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(Visibility.Visible, alphaSection.Visibility,
-                        "IsAlphaTextInputVisible must not affect the alpha slider row.");
-                    Assert.AreEqual(Visibility.Collapsed, alphaInputPanel.Visibility,
-                        "IsAlphaTextInputVisible=false must collapse the alpha text input.");
+                    Assert.Equal(Visibility.Visible, alphaSection.Visibility);
+                    Assert.Equal(Visibility.Collapsed, alphaInputPanel.Visibility);
 
                     picker.IsAlphaTextInputVisible = true;
                     picker.IsAlphaEnabled = false;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(Visibility.Collapsed, alphaSection.Visibility,
-                        "Disabling alpha must collapse the slider row regardless of the visibility flags.");
-                    Assert.AreEqual(Visibility.Collapsed, alphaInputPanel.Visibility,
-                        "Disabling alpha must collapse the alpha text input regardless of the visibility flags.");
+                    Assert.Equal(Visibility.Collapsed, alphaSection.Visibility);
+                    Assert.Equal(Visibility.Collapsed, alphaInputPanel.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_MoreButton_DefaultCollapsedWithTextEntryVisible()
         {
             RunColorPickerOptionTest(
@@ -736,14 +685,12 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement moreButton = GetTemplateElement<FrameworkElement>(template, picker, "MoreButton");
                     FrameworkElement textEntryGrid = GetTemplateElement<FrameworkElement>(template, picker, "TextEntryGrid");
 
-                    Assert.AreEqual(Visibility.Collapsed, moreButton.Visibility,
-                        "With IsMoreButtonVisible false (the default) no More toggle is shown.");
-                    Assert.AreEqual(Visibility.Visible, textEntryGrid.Visibility,
-                        "With IsMoreButtonVisible false the text-entry area is always visible.");
+                    Assert.Equal(Visibility.Collapsed, moreButton.Visibility);
+                    Assert.Equal(Visibility.Visible, textEntryGrid.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_MoreButton_TogglesTextEntryGridAndLabel()
         {
             RunColorPickerOptionTest(
@@ -754,28 +701,25 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement textEntryGrid = GetTemplateElement<FrameworkElement>(template, picker, "TextEntryGrid");
                     TextBlock moreButtonLabel = GetTemplateElement<TextBlock>(template, picker, "MoreButtonLabel");
 
-                    Assert.AreEqual(Visibility.Visible, moreButton.Visibility, "IsMoreButtonVisible must show the toggle.");
-                    Assert.AreEqual(Visibility.Collapsed, textEntryGrid.Visibility,
-                        "In More mode the text-entry grid stays collapsed until the toggle is checked.");
-                    Assert.AreEqual("More", moreButtonLabel.Text, StringComparer.Ordinal);
+                    Assert.Equal(Visibility.Visible, moreButton.Visibility);
+                    Assert.Equal(Visibility.Collapsed, textEntryGrid.Visibility);
+                    Assert.Equal("More", moreButtonLabel.Text, StringComparer.Ordinal);
 
                     moreButton.IsChecked = true;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Visible, textEntryGrid.Visibility,
-                        "Checking the More toggle must reveal the text-entry grid.");
-                    Assert.AreEqual("Less", moreButtonLabel.Text, StringComparer.Ordinal, "The checked toggle must read Less.");
+                    Assert.Equal(Visibility.Visible, textEntryGrid.Visibility);
+                    Assert.Equal("Less", moreButtonLabel.Text, StringComparer.Ordinal);
 
                     moreButton.IsChecked = false;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, textEntryGrid.Visibility,
-                        "Unchecking the More toggle must collapse the text-entry grid again.");
-                    Assert.AreEqual("More", moreButtonLabel.Text, StringComparer.Ordinal);
+                    Assert.Equal(Visibility.Collapsed, textEntryGrid.Visibility);
+                    Assert.Equal("More", moreButtonLabel.Text, StringComparer.Ordinal);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_ColorRepresentationComboBox_SwapsRgbAndHsvPanels()
         {
             RunColorPickerOptionTest(
@@ -786,21 +730,19 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement rgbPanel = GetTemplateElement<FrameworkElement>(template, picker, "RgbChannelPanel");
                     FrameworkElement hsvPanel = GetTemplateElement<FrameworkElement>(template, picker, "HsvChannelPanel");
 
-                    Assert.AreEqual(0, representationComboBox.SelectedIndex, "The selector must default to RGB.");
-                    Assert.AreEqual(Visibility.Visible, rgbPanel.Visibility);
-                    Assert.AreEqual(Visibility.Collapsed, hsvPanel.Visibility);
+                    Assert.Equal(0, representationComboBox.SelectedIndex);
+                    Assert.Equal(Visibility.Visible, rgbPanel.Visibility);
+                    Assert.Equal(Visibility.Collapsed, hsvPanel.Visibility);
 
                     representationComboBox.SelectedIndex = 1;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, rgbPanel.Visibility,
-                        "Selecting HSV must collapse the RGB channel panel.");
-                    Assert.AreEqual(Visibility.Visible, hsvPanel.Visibility,
-                        "Selecting HSV must reveal the HSV channel panel.");
+                    Assert.Equal(Visibility.Collapsed, rgbPanel.Visibility);
+                    Assert.Equal(Visibility.Visible, hsvPanel.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_RgbTextEntry_CommitsLivePreservingExactRgb()
         {
             RunColorPickerOptionTest(
@@ -811,21 +753,19 @@ namespace Fluence.Wpf.Tests
                     TextBox greenTextBox = GetTemplateElement<TextBox>(template, picker, "PART_GreenTextBox");
                     TextBox hexTextBox = GetTemplateElement<TextBox>(template, picker, "PART_HexTextBox");
 
-                    Assert.AreEqual("255", redTextBox.Text, StringComparer.Ordinal, "The red box must show the default color's channel.");
-                    Assert.AreEqual("0", greenTextBox.Text, StringComparer.Ordinal, "The green box must show the default color's channel.");
+                    Assert.Equal("255", redTextBox.Text, StringComparer.Ordinal);
+                    Assert.Equal("0", greenTextBox.Text, StringComparer.Ordinal);
 
                     redTextBox.Text = "10";
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 10, 0, 0), picker.Color,
-                        "A red channel edit must commit live with the typed value preserved exactly, no Enter needed.");
-                    Assert.AreEqual("10", redTextBox.Text, StringComparer.Ordinal,
-                        "The live commit must not rewrite the box the user is typing in.");
-                    Assert.AreEqual("#0A0000", hexTextBox.Text, StringComparer.Ordinal, "The hex box must follow the live channel commit.");
+                    Assert.Equal(Color.FromArgb(255, 10, 0, 0), picker.Color);
+                    Assert.Equal("10", redTextBox.Text, StringComparer.Ordinal);
+                    Assert.Equal("#0A0000", hexTextBox.Text, StringComparer.Ordinal);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_HsvTextEntry_GoesThroughHsvModelWithoutQuantizingSiblings()
         {
             RunColorPickerOptionTest(
@@ -850,15 +790,13 @@ namespace Fluence.Wpf.Tests
                     Color quantized = Helpers.HsvColorHelper.WithAlpha(
                         Helpers.HsvColorHelper.HsvToRgb(240, 0.50, 1.0), 255);
 
-                    Assert.AreEqual(expected, picker.Color,
-                        "A hue text edit must replace only the hue component, keeping the fractional saturation.");
-                    Assert.AreNotEqual(quantized, picker.Color,
-                        "The untouched saturation must not be quantized to the displayed integer percentage.");
-                    Assert.AreEqual(240d, hueSlider.Value, "The hue slider must follow the hue text edit.");
+                    Assert.Equal(expected, picker.Color);
+                    Assert.NotEqual(quantized, picker.Color);
+                    Assert.Equal(240d, hueSlider.Value);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_ChannelTextEntry_InvalidInputRestoredOnEnter()
         {
             RunColorPickerOptionTest(
@@ -870,18 +808,16 @@ namespace Fluence.Wpf.Tests
                     redTextBox.Text = "999";
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), picker.Color,
-                        "An out-of-range channel entry must not change the color.");
+                    Assert.Equal(Color.FromArgb(255, 255, 0, 0), picker.Color);
 
                     RaiseEnterKey(redTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("255", redTextBox.Text, StringComparer.Ordinal,
-                        "Enter must restore invalid channel text from the current color.");
+                    Assert.Equal("255", redTextBox.Text, StringComparer.Ordinal);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_AlphaTextEntry_ParsesPercentAndNormalizes()
         {
             RunColorPickerOptionTest(
@@ -890,31 +826,31 @@ namespace Fluence.Wpf.Tests
                 {
                     TextBox alphaTextBox = GetTemplateElement<TextBox>(template, picker, "PART_AlphaTextBox");
 
-                    Assert.AreEqual("100%", alphaTextBox.Text, StringComparer.Ordinal, "The alpha box must display a percentage with a percent sign.");
+                    Assert.Equal("100%", alphaTextBox.Text, StringComparer.Ordinal);
 
                     alphaTextBox.Text = "50";
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(128, picker.Color.A, "A 50 percent alpha entry must map to alpha byte 128.");
+                    Assert.Equal(128, picker.Color.A);
 
                     RaiseEnterKey(alphaTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("50%", alphaTextBox.Text, StringComparer.Ordinal, "Enter must normalize the alpha text with the percent sign.");
+                    Assert.Equal("50%", alphaTextBox.Text, StringComparer.Ordinal);
 
                     alphaTextBox.Text = "200";
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(128, picker.Color.A, "An out-of-range alpha entry must not change the alpha.");
+                    Assert.Equal(128, picker.Color.A);
 
                     RaiseEnterKey(alphaTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("50%", alphaTextBox.Text, StringComparer.Ordinal, "Enter must restore invalid alpha text from the model.");
+                    Assert.Equal("50%", alphaTextBox.Text, StringComparer.Ordinal);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_IsColorChannelTextInputVisible_CollapsesChannelPanelNotHexOrAlpha()
         {
             RunColorPickerOptionTest(
@@ -929,20 +865,15 @@ namespace Fluence.Wpf.Tests
                     picker.IsColorChannelTextInputVisible = false;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, representationComboBox.Visibility,
-                        "Hiding the channel input must collapse the representation selector.");
-                    Assert.AreEqual(Visibility.Collapsed, channelPanel.Visibility,
-                        "Hiding the channel input must collapse the channel panel.");
-                    Assert.AreEqual(Visibility.Visible, hexTextBox.Visibility,
-                        "Hiding the channel input must leave the hex input visible (governed by IsHexInputVisible).");
-                    Assert.AreEqual(0, Grid.GetColumn(hexTextBox),
-                        "With the channel input hidden the hex box shifts into the freed left column, matching WinUI.");
-                    Assert.AreEqual(Visibility.Visible, alphaInputPanel.Visibility,
-                        "Hiding the channel input must leave the alpha input visible, matching WinUI.");
+                    Assert.Equal(Visibility.Collapsed, representationComboBox.Visibility);
+                    Assert.Equal(Visibility.Collapsed, channelPanel.Visibility);
+                    Assert.Equal(Visibility.Visible, hexTextBox.Visibility);
+                    Assert.Equal(0, Grid.GetColumn(hexTextBox));
+                    Assert.Equal(Visibility.Visible, alphaInputPanel.Visibility);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_HexMaxLength_TracksIsAlphaEnabled()
         {
             RunColorPickerOptionTest(
@@ -951,18 +882,16 @@ namespace Fluence.Wpf.Tests
                 {
                     TextBox hexTextBox = GetTemplateElement<TextBox>(template, picker, "PART_HexTextBox");
 
-                    Assert.AreEqual(7, hexTextBox.MaxLength,
-                        "With alpha disabled the hex box must cap at seven characters (#RRGGBB).");
+                    Assert.Equal(7, hexTextBox.MaxLength);
 
                     picker.IsAlphaEnabled = true;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(9, hexTextBox.MaxLength,
-                        "With alpha enabled the hex box must cap at nine characters (#AARRGGBB).");
+                    Assert.Equal(9, hexTextBox.MaxLength);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SpectrumArea_IsFocusableTabStop()
         {
             RunColorPickerOptionTest(
@@ -972,19 +901,18 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement spectrumArea = GetTemplateElement<FrameworkElement>(
                         template, picker, "PART_SpectrumArea");
 
-                    Assert.IsTrue(spectrumArea.Focusable,
+                    Assert.True(spectrumArea.Focusable,
                         "PART_SpectrumArea must be Focusable so keyboard users can reach the spectrum.");
-                    Assert.IsTrue(KeyboardNavigation.GetIsTabStop(spectrumArea),
+                    Assert.True(KeyboardNavigation.GetIsTabStop(spectrumArea),
                         "PART_SpectrumArea must be a tab stop so it is reachable via Tab.");
                     string automationName = AutomationProperties.GetName(spectrumArea);
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(automationName),
+                    Assert.False(string.IsNullOrWhiteSpace(automationName),
                         "PART_SpectrumArea must have a non-empty AutomationProperties.Name.");
-                    Assert.AreEqual("Color spectrum", automationName, StringComparer.Ordinal,
-                        "The AutomationProperties.Name on PART_SpectrumArea must be \"Color spectrum\".");
+                    Assert.Equal("Color spectrum", automationName, StringComparer.Ordinal);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SpectrumKeyboard_RightKeyIncreasesSaturation()
         {
             // Start with a mid-saturation color: FromRgb(128, 64, 64) has saturation ~0.5
@@ -1001,8 +929,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     PresentationSource? source = PresentationSource.FromVisual(spectrumArea);
-                    Assert.IsNotNull(source,
-                        "PART_SpectrumArea must have a PresentationSource once the window is shown.");
+                    Assert.NotNull(source);
 
                     spectrumArea.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Right)
                     {
@@ -1011,17 +938,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     Color colorAfter = picker.Color;
-                    Assert.AreNotEqual(colorBefore, colorAfter,
-                        "Key.Right on the focused spectrum must change the color.");
+                    Assert.NotEqual(colorBefore, colorAfter);
 
                     // For this orange hue saturation steps right -> R channel brightens.
-                    Assert.IsTrue(
+                    Assert.True(
                         colorAfter.R >= colorBefore.R,
                         "Pressing Right on the spectrum must increase saturation, brightening the hue channel.");
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ColorPicker_SpectrumKeyboard_UpKeyIncreasesValue()
         {
             // Start dark so Value (brightness) has room to increase.
@@ -1037,8 +963,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     PresentationSource? source = PresentationSource.FromVisual(spectrumArea);
-                    Assert.IsNotNull(source,
-                        "PART_SpectrumArea must have a PresentationSource once the window is shown.");
+                    Assert.NotNull(source);
 
                     spectrumArea.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Up)
                     {
@@ -1047,11 +972,10 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     Color colorAfter = picker.Color;
-                    Assert.AreNotEqual(colorBefore, colorAfter,
-                        "Key.Up on the focused spectrum must change the color.");
+                    Assert.NotEqual(colorBefore, colorAfter);
 
                     // Value (brightness) increases: at least one channel brightens.
-                    Assert.IsTrue(
+                    Assert.True(
                         colorAfter.R > colorBefore.R || colorAfter.G > colorBefore.G || colorAfter.B > colorBefore.B,
                         "Pressing Up on the spectrum must increase Value, making channels brighter.");
                 });

@@ -26,8 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Theming;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,6 +33,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Theming;
+using Xunit;
 
 namespace Fluence.Wpf.Tests.Theming
 {
@@ -42,7 +42,6 @@ namespace Fluence.Wpf.Tests.Theming
     /// Characterization (golden) snapshot tests that record the resolved Color and Brush values
     /// produced by the current theme engine for Light, Dark, and HighContrast with a pinned accent.
     /// </summary>
-    [TestClass]
     public class ThemeParityTests
     {
         /// <summary>
@@ -165,7 +164,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// Writes golden baseline files to <c>data/theme-golden/</c> for every theme variant.
         /// Run once to produce the baseline; subsequent runs verify parity.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Golden_WriteCurrentResolvedValues()
         {
             foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
@@ -177,7 +176,7 @@ namespace Fluence.Wpf.Tests.Theming
                     .Select(k => string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}",
                         k, Hex(map[k].color), Hex(map[k].brush)))];
                 File.WriteAllLines(Path.Combine(dir, theme + ".txt"), lines);
-                Assert.IsGreaterThan(50, map.Count, "Expected many resolved theme keys for " + theme);
+                Assert.True(map.Count > 50, "Expected many resolved theme keys for " + theme);
             }
         }
 
@@ -185,26 +184,26 @@ namespace Fluence.Wpf.Tests.Theming
         /// Verifies that AccentResolver.Resolve produces structurally sound palettes for both
         /// System and Custom intents, and that the Custom path uses the generator ramp.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void AccentResolver_System_PrefersOsPaletteThenGenerates()
         {
             // System intent must resolve to 7 opaque colors regardless of path taken.
             AccentPalette sys = AccentResolver.Resolve(AccentIntent.System, ApplicationTheme.Light);
-            Assert.AreEqual((byte)0xFF, sys.Accent.A, "Accent rung must be opaque.");
+            Assert.Equal((byte)0xFF, sys.Accent.A);
 
             // Custom(#0078D4) must use the generated ramp: Light2 must equal what the generator produces.
             Color customBase = Color.FromRgb(0x00, 0x78, 0xD4);
             AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustom(customBase), ApplicationTheme.Light);
             Helpers.HsvColorHelper.GenerateAccentRampWinaccent(customBase,
                 out _, out Color l2, out _, out _, out _, out _);
-            Assert.AreEqual(l2, custom.Light2, "Custom accent must use the generated ramp, unchanged.");
+            Assert.Equal(l2, custom.Light2);
         }
 
         /// <summary>
         /// Verifies that the rebuilt engine reproduces every golden resolved Color and Brush value
         /// (accent pinned to #0078D4) for Light, Dark, and HighContrast with zero drift.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Rebuilt_MatchesGoldenResolvedValues()
         {
             foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
@@ -231,7 +230,7 @@ namespace Fluence.Wpf.Tests.Theming
                             kv.Key, kv.Value.Item1, kv.Value.Item2, gc, gb));
                     }
                 }
-                Assert.AreEqual(0, drift.Count, theme + " drift:\n" + string.Join('\n', drift));
+                Assert.Empty(drift);
             }
         }
 
@@ -241,7 +240,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// from the frozen golden snapshot; this verifies the binding contract directly against the
         /// live highlight color, which holds on any machine.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -258,10 +257,9 @@ namespace Fluence.Wpf.Tests.Theming
                 ResourceDictionary res = Application.Current!.Resources;
                 foreach (string key in HighContrastHighlightDerivedBrushKeys)
                 {
-                    Assert.IsInstanceOfType(res[key], typeof(SolidColorBrush), key + " must resolve to a SolidColorBrush in HighContrast.");
+                    _ = Assert.IsAssignableFrom<SolidColorBrush>(res[key]);
                     SolidColorBrush brush = (SolidColorBrush)res[key];
-                    Assert.AreEqual(highlight, brush.Color,
-                        key + " must bind to the live SystemColors.HighlightColor in HighContrast.");
+                    Assert.Equal(highlight, brush.Color);
                 }
             });
         }
@@ -272,7 +270,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// excluded from the frozen golden snapshot; this verifies the binding contract directly
         /// against the live highlight text color, which holds on any machine.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightText()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -289,10 +287,9 @@ namespace Fluence.Wpf.Tests.Theming
                 ResourceDictionary res = Application.Current!.Resources;
                 foreach (string key in HighContrastHighlightTextDerivedBrushKeys)
                 {
-                    Assert.IsInstanceOfType(res[key], typeof(SolidColorBrush), key + " must resolve to a SolidColorBrush in HighContrast.");
+                    _ = Assert.IsAssignableFrom<SolidColorBrush>(res[key]);
                     SolidColorBrush brush = (SolidColorBrush)res[key];
-                    Assert.AreEqual(highlightText, brush.Color,
-                        key + " must bind to the live SystemColors.HighlightTextColor in HighContrast.");
+                    Assert.Equal(highlightText, brush.Color);
                 }
             });
         }
@@ -301,7 +298,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// Footgun regression guard: applying a theme alone (without an explicit accent call) must
         /// resolve the OS accent palette, not a stale or default value.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ApplyTheme_Alone_UsesSystemAccentPalette()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -314,7 +311,7 @@ namespace Fluence.Wpf.Tests.Theming
                 if (Helpers.RegistryHelper.TryGetAccentPalette(out Color[]? p) && p is not null)
                 {
                     SolidColorBrush brush = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];
-                    Assert.AreEqual(p[1], brush.Color, "Apply(theme) alone must use the OS palette Light2 in Dark.");
+                    Assert.Equal(p[1], brush.Color);
                 }
             });
         }
@@ -326,7 +323,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// still fire at least once because <see cref="ApplicationThemeManager.Apply"/> calls
         /// <see cref="ApplicationAccentColorManager.EnsureInitialized"/> before the engine publishes.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FirstApply_RaisesAccentColorChanged_BeforeAnyOtherThemeAccess()
         {
             int raised = 0;
@@ -351,7 +348,7 @@ namespace Fluence.Wpf.Tests.Theming
                 }
             });
 
-            Assert.IsGreaterThan(0, raised, "AccentColorChanged must fire on the first Apply.");
+            Assert.True(raised > 0, "AccentColorChanged must fire on the first Apply.");
 
             void OnChanged(object? sender, EventArgs e)
             {

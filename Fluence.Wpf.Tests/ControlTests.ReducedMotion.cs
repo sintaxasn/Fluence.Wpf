@@ -26,14 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Fluence.Wpf.Helpers;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
         /// <c>ProgressBar.StartIndeterminate</c>.
         /// </para>
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating()
         {
             WpfTestSta.Invoke(static () =>
@@ -94,13 +94,13 @@ namespace Fluence.Wpf.Tests
 
                     TranslateTransform? translate =
                         bar.Template.FindName("PART_IndeterminateTranslate", bar) as TranslateTransform;
-                    Assert.IsNotNull(translate, "ProgressBar template must expose PART_IndeterminateTranslate.");
+                    Assert.NotNull(translate);
 
-                    Assert.IsTrue(translate.HasAnimatedProperties,
+                    Assert.True(translate.HasAnimatedProperties,
                         "An indeterminate ProgressBar must animate with motion disabled: the movement is the only status signal it has.");
 
                     double first = translate.X;
-                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(translate.X - first) > 0.5),
+                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(translate.X - first) > 0.5),
                         "The indeterminate bar must actually travel, not merely hold an animation clock.");
                 }
                 finally
@@ -111,7 +111,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocks()
         {
             WpfTestSta.Invoke(static () =>
@@ -134,18 +134,15 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
-                    Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
-                    Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
-                        "An active indeterminate ring must stay visible with motion disabled.");
-                    Assert.IsNotNull(indeterminateArc.Data,
-                        "With motion disabled the ring must render its static resting arc, not nothing.");
+                    Assert.NotNull(indeterminateArc);
+                    Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
+                    Assert.NotNull(indeterminateArc.Data);
 
                     RotateTransform? rotate = GetIndeterminateRotateTransform(ring);
-                    Assert.IsNotNull(rotate, "ProgressRing template must contain PART_IndeterminateRotate.");
-                    Assert.IsFalse(rotate.HasAnimatedProperties,
+                    Assert.NotNull(rotate);
+                    Assert.False(rotate.HasAnimatedProperties,
                         "With motion disabled the indeterminate rotation must not run.");
-                    Assert.AreEqual(90.0, rotate.Angle, 0.01,
-                        "With motion disabled the rotate transform must park at its 90 degree reset angle.");
+                    Assert.Equal(90.0, rotate.Angle, 0.01);
                 }
                 finally
                 {
@@ -155,7 +152,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotation()
         {
             WpfTestSta.Invoke(static () =>
@@ -176,11 +173,10 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     RotateTransform? rotate = icon.Template.FindName("PART_Rotate", icon) as RotateTransform;
-                    Assert.IsNotNull(rotate, "FontIcon template must contain PART_Rotate.");
-                    Assert.IsFalse(rotate.HasAnimatedProperties,
+                    Assert.NotNull(rotate);
+                    Assert.False(rotate.HasAnimatedProperties,
                         "With motion disabled the spin animation must not run even while IsSpinning is true.");
-                    Assert.AreEqual(icon.Rotation, rotate.Angle, 0.01,
-                        "With motion disabled the angle must rest at the static Rotation value.");
+                    Assert.Equal(icon.Rotation, rotate.Angle, 0.01);
                 }
                 finally
                 {
@@ -190,7 +186,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_ToggleSwitch_Toggle_SnapsKnobToFinalOffsetSynchronously()
         {
             WpfTestSta.Invoke(static () =>
@@ -210,9 +206,8 @@ namespace Fluence.Wpf.Tests
                     ts.IsChecked = true;
 
                     // No drain: the knob must land at its final offset synchronously.
-                    Assert.AreEqual(20.0, tx.X, 0.01,
-                        "With motion disabled the knob must snap to the on offset (20) synchronously.");
-                    Assert.IsFalse(tx.HasAnimatedProperties,
+                    Assert.Equal(20.0, tx.X, 0.01);
+                    Assert.False(tx.HasAnimatedProperties,
                         "With motion disabled the knob translate must carry no animation clock.");
                 }
                 finally
@@ -223,7 +218,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_Expander_Expand_OpensContentAtRestWithoutSlideClock()
         {
             WpfTestSta.Invoke(static () =>
@@ -248,22 +243,20 @@ namespace Fluence.Wpf.Tests
 
                     // No drain: the steady state must apply synchronously (no deferred slide).
                     ContentPresenter? expandSite = expander.Template.FindName("ExpandSite", expander) as ContentPresenter;
-                    Assert.IsNotNull(expandSite, "Expander template must contain the ExpandSite presenter.");
+                    Assert.NotNull(expandSite);
                     TranslateTransform? translate = expandSite.RenderTransform as TranslateTransform;
-                    Assert.IsNotNull(translate, "ExpandSite must carry the mutable slide TranslateTransform.");
-                    Assert.IsFalse(translate.HasAnimatedProperties,
+                    Assert.NotNull(translate);
+                    Assert.False(translate.HasAnimatedProperties,
                         "With motion disabled the expand slide must not run.");
-                    Assert.AreEqual(0.0, translate.Y, 0.001,
-                        "With motion disabled the content must rest at offset 0 immediately.");
+                    Assert.Equal(0.0, translate.Y, 0.001);
 
                     RowDefinition? contentRow = expander.Template.FindName("Row1Def", expander) as RowDefinition;
-                    Assert.IsNotNull(contentRow, "Expander template must contain Row1Def (the content row when expanding down).");
-                    Assert.IsTrue(contentRow.Height.IsStar,
+                    Assert.NotNull(contentRow);
+                    Assert.True(contentRow.Height.IsStar,
                         "With motion disabled the content row must open to its star height immediately.");
 
                     DrainDispatcher(w.Dispatcher);
-                    Assert.AreEqual(0.0, translate.Y, 0.001,
-                        "The content must stay at rest after layout with motion disabled.");
+                    Assert.Equal(0.0, translate.Y, 0.001);
                 }
                 finally
                 {
@@ -273,7 +266,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_Flyout_ShowAt_PresentsSurfaceAtRestWithoutClocks()
         {
             RunOnStaThread(() =>
@@ -293,31 +286,28 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
-                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
+                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the flyout popup.");
 
                     Popup? popup = flyout.HostPopup;
-                    Assert.IsNotNull(popup, "ShowAt should lazily create the host popup.");
+                    Assert.NotNull(popup);
                     Controls.FlyoutPresenter? presenter = popup.Child as Controls.FlyoutPresenter;
-                    Assert.IsNotNull(presenter, "The popup child must be a FlyoutPresenter.");
-                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => presenter.IsLoaded),
+                    Assert.NotNull(presenter);
+                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => presenter.IsLoaded),
                         "The presenter must load inside the open popup.");
 
                     TranslateTransform? translate =
                         presenter.Template.FindName("PresenterTranslate", presenter) as TranslateTransform;
-                    Assert.IsNotNull(translate, "The presenter template must expose the PresenterTranslate transform.");
+                    Assert.NotNull(translate);
                     Border? surface = presenter.Template.FindName("PresenterSurface", presenter) as Border;
-                    Assert.IsNotNull(surface, "The presenter template must expose the PresenterSurface root.");
+                    Assert.NotNull(surface);
 
-                    Assert.AreEqual(0.0, translate.X, 0.001,
-                        "With motion disabled the presenter must rest at X=0 with no reveal slide.");
-                    Assert.AreEqual(0.0, translate.Y, 0.001,
-                        "With motion disabled the presenter must rest at Y=0 with no reveal slide.");
-                    Assert.AreEqual(1.0, surface.Opacity, 0.001,
-                        "With motion disabled the surface must show at full opacity immediately.");
-                    Assert.IsFalse(translate.HasAnimatedProperties,
+                    Assert.Equal(0.0, translate.X, 0.001);
+                    Assert.Equal(0.0, translate.Y, 0.001);
+                    Assert.Equal(1.0, surface.Opacity, 0.001);
+                    Assert.False(translate.HasAnimatedProperties,
                         "With motion disabled the reveal slide must not leave an animation clock.");
-                    Assert.IsFalse(surface.HasAnimatedProperties,
+                    Assert.False(surface.HasAnimatedProperties,
                         "With motion disabled the reveal fade must not leave an animation clock.");
 
                     flyout.Hide();
@@ -331,7 +321,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_TeachingTip_Open_PresentsTipAtRestWithoutClocks()
         {
             RunOnStaThread(() =>
@@ -355,24 +345,21 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
+                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
                         "IsOpen=true should open the host popup and load the tip.");
 
                     TranslateTransform? translate =
                         tip.Template.FindName("TipTranslate", tip) as TranslateTransform;
-                    Assert.IsNotNull(translate, "The tip template must expose the TipTranslate transform.");
+                    Assert.NotNull(translate);
                     Grid? tipRoot = tip.Template.FindName("TipRoot", tip) as Grid;
-                    Assert.IsNotNull(tipRoot, "The tip template must expose the TipRoot layout root.");
+                    Assert.NotNull(tipRoot);
 
-                    Assert.AreEqual(0.0, translate.X, 0.001,
-                        "With motion disabled the tip must rest at X=0 with no reveal slide.");
-                    Assert.AreEqual(0.0, translate.Y, 0.001,
-                        "With motion disabled the tip must rest at Y=0 with no reveal slide.");
-                    Assert.AreEqual(1.0, tipRoot.Opacity, 0.001,
-                        "With motion disabled the tip must show at full opacity immediately.");
-                    Assert.IsFalse(translate.HasAnimatedProperties,
+                    Assert.Equal(0.0, translate.X, 0.001);
+                    Assert.Equal(0.0, translate.Y, 0.001);
+                    Assert.Equal(1.0, tipRoot.Opacity, 0.001);
+                    Assert.False(translate.HasAnimatedProperties,
                         "With motion disabled the reveal slide must not leave an animation clock.");
-                    Assert.IsFalse(tipRoot.HasAnimatedProperties,
+                    Assert.False(tipRoot.HasAnimatedProperties,
                         "With motion disabled the reveal fade must not leave an animation clock.");
 
                     tip.IsOpen = false;
@@ -386,7 +373,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_ContentDialog_Hide_TearsDownSynchronouslyWithoutClocks()
         {
             RunOnStaThread(() =>
@@ -406,23 +393,23 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     System.Threading.Tasks.Task<ContentDialogResult> task = dialog.ShowAsync();
-                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                    Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => FindVisualChildByName<System.Windows.Controls.Primitives.ButtonBase>(dialog, "PART_CloseButton") is not null),
                         "The dialog template must apply before Hide is called.");
 
                     dialog.Hide();
 
-                    Assert.IsTrue(task.IsCompleted,
+                    Assert.True(task.IsCompleted,
                         "With motion disabled Hide must tear the dialog down synchronously.");
-                    Assert.IsFalse(dialog.HasAnimatedProperties,
+                    Assert.False(dialog.HasAnimatedProperties,
                         "With motion disabled the close must not leave an opacity animation clock.");
                     if (dialog.RenderTransform is ScaleTransform scale)
                     {
-                        Assert.IsFalse(scale.HasAnimatedProperties,
+                        Assert.False(scale.HasAnimatedProperties,
                             "With motion disabled the close must not leave scale animation clocks.");
                     }
 
-                    Assert.IsTrue(dialog.IsHitTestVisible,
+                    Assert.True(dialog.IsHitTestVisible,
                         "The synchronous teardown must restore hit testing for the next show.");
                 }
                 finally
@@ -434,7 +421,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocks()
         {
             RunOnStaThread(static () =>
@@ -458,17 +445,15 @@ namespace Fluence.Wpf.Tests
 
                     System.Windows.Controls.Border? border =
                         combo.Template.FindName("PART_DropdownBorder", combo) as System.Windows.Controls.Border;
-                    Assert.IsNotNull(border, "PART_DropdownBorder must exist in the template.");
+                    Assert.NotNull(border);
                     TranslateTransform? translate = border.RenderTransform as TranslateTransform;
-                    Assert.IsNotNull(translate, "PART_DropdownBorder must carry the DropdownTranslate transform.");
+                    Assert.NotNull(translate);
 
-                    Assert.AreEqual(0.0, translate.Y, 0.001,
-                        "With motion disabled the dropdown must rest at Y=0 with no reveal slide.");
-                    Assert.AreEqual(1.0, border.Opacity, 0.001,
-                        "With motion disabled the dropdown must show at full opacity immediately.");
-                    Assert.IsFalse(translate.HasAnimatedProperties,
+                    Assert.Equal(0.0, translate.Y, 0.001);
+                    Assert.Equal(1.0, border.Opacity, 0.001);
+                    Assert.False(translate.HasAnimatedProperties,
                         "With motion disabled the reveal slide must not leave an animation clock.");
-                    Assert.IsFalse(border.HasAnimatedProperties,
+                    Assert.False(border.HasAnimatedProperties,
                         "With motion disabled the reveal fade must not leave an animation clock.");
 
                     combo.IsDropDownOpen = false;
@@ -481,7 +466,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnob()
         {
             WpfTestSta.Invoke(static () =>
@@ -500,9 +485,9 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
                     ts.IsChecked = true;
 
-                    Assert.IsTrue(tx.HasAnimatedProperties,
+                    Assert.True(tx.HasAnimatedProperties,
                         "With motion enabled the knob slide must animate, proving the gate is the only change.");
-                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(tx.X - 20.0) < 0.01),
+                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(tx.X - 20.0) < 0.01),
                         "The animated knob must settle at the on offset.");
                 }
                 finally

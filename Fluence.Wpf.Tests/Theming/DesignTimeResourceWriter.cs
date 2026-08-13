@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Theming;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,6 +33,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Theming;
 
 namespace Fluence.Wpf.Tests.Theming
 {

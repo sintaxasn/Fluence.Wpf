@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
@@ -37,6 +36,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // Constructs the control inside the STA action (FrameworkElement creation on
-        // the MSTest worker thread throws) and shows it so the template applies.
+        // the xUnit worker thread throws) and shows it so the template applies.
         private static void RunToggleSplitButtonTest(Func<Controls.ToggleSplitButton> createButton, Action<Application?, Controls.ToggleSplitButton> verify)
         {
             RunOnStaThread(() =>
@@ -90,18 +90,18 @@ namespace Fluence.Wpf.Tests
         private static System.Windows.Controls.Button GetPrimaryButtonPart(Controls.ToggleSplitButton button)
         {
             System.Windows.Controls.Button? primary = button.Template?.FindName("PART_PrimaryButton", button) as System.Windows.Controls.Button;
-            Assert.IsNotNull(primary, "PART_PrimaryButton should exist in the template.");
+            Assert.NotNull(primary);
             return primary;
         }
 
         private static ToggleButton GetSecondaryButtonPart(Controls.ToggleSplitButton button)
         {
             ToggleButton? secondary = button.Template?.FindName("PART_SecondaryButton", button) as ToggleButton;
-            Assert.IsNotNull(secondary, "PART_SecondaryButton should exist in the template.");
+            Assert.NotNull(secondary);
             return secondary;
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_Defaults_AreWinUiCanon()
         {
             RunToggleSplitButtonTest(
@@ -112,17 +112,17 @@ namespace Fluence.Wpf.Tests
                 },
                 (_, button) =>
                 {
-                    Assert.IsFalse(button.IsChecked);
-                    Assert.AreEqual(new CornerRadius(4), button.CornerRadius);
-                    Assert.AreEqual(new CornerRadius(8), button.DropdownCornerRadius);
-                    Assert.IsFalse(button.IsFlyoutOpen);
-                    Assert.AreEqual(ControlAppearance.Standard, button.Appearance);
-                    Assert.IsNull(button.Command);
-                    Assert.IsNull(button.Flyout);
+                    Assert.False(button.IsChecked);
+                    Assert.Equal(new CornerRadius(4), button.CornerRadius);
+                    Assert.Equal(new CornerRadius(8), button.DropdownCornerRadius);
+                    Assert.False(button.IsFlyoutOpen);
+                    Assert.Equal(ControlAppearance.Standard, button.Appearance);
+                    Assert.Null(button.Command);
+                    Assert.Null(button.Flyout);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_DefaultStyle_ExposesTemplateParts()
         {
             RunToggleSplitButtonTest(
@@ -133,19 +133,19 @@ namespace Fluence.Wpf.Tests
                 },
                 (_, button) =>
                 {
-                    Assert.IsNotNull(GetPrimaryButtonPart(button));
-                    Assert.IsNotNull(GetSecondaryButtonPart(button));
+                    Assert.NotNull(GetPrimaryButtonPart(button));
+                    Assert.NotNull(GetSecondaryButtonPart(button));
 
                     Popup? popup = button.Template?.FindName("PART_Popup", button) as Popup;
                     Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
 
-                    Assert.IsNotNull(popup, "PART_Popup should exist in the template.");
-                    Assert.IsFalse(popup.StaysOpen, "The flyout popup should light-dismiss.");
-                    Assert.IsNotNull(divider, "The divider rectangle should exist in the template.");
+                    Assert.NotNull(popup);
+                    Assert.False(popup.StaysOpen, "The flyout popup should light-dismiss.");
+                    Assert.NotNull(divider);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_PrimaryClick_TogglesThenRaisesClick()
         {
             RunToggleSplitButtonTest(
@@ -166,14 +166,13 @@ namespace Fluence.Wpf.Tests
                     GetPrimaryButtonPart(button).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.AreEqual(1, clickCount, "A primary click should raise Click exactly once.");
-                    Assert.AreEqual(true, checkedInsideHandler,
-                        "The Click handler must observe the already-toggled state (WinUI toggles before raising Click).");
-                    Assert.IsTrue(button.IsChecked);
+                    Assert.Equal(1, clickCount);
+                    Assert.Equal(true, checkedInsideHandler);
+                    Assert.True(button.IsChecked);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_PrimaryClick_SecondClickTogglesOff()
         {
             RunToggleSplitButtonTest(
@@ -191,12 +190,12 @@ namespace Fluence.Wpf.Tests
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.AreEqual(2, clickCount);
-                    Assert.IsFalse(button.IsChecked, "A second primary click should toggle back off.");
+                    Assert.Equal(2, clickCount);
+                    Assert.False(button.IsChecked, "A second primary click should toggle back off.");
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_PrimaryClick_StillExecutesCommand()
         {
             RunToggleSplitButtonTest(
@@ -212,12 +211,12 @@ namespace Fluence.Wpf.Tests
                     GetPrimaryButtonPart(button).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.AreEqual(1, executeCount, "The inherited command plumbing must still execute.");
-                    Assert.IsTrue(button.IsChecked, "The primary click must also toggle the checked state.");
+                    Assert.Equal(1, executeCount);
+                    Assert.True(button.IsChecked, "The primary click must also toggle the checked state.");
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_IsCheckedChanged_RaisesWithNewValue()
         {
             RunToggleSplitButtonTest(
@@ -239,17 +238,17 @@ namespace Fluence.Wpf.Tests
                     };
 
                     button.IsChecked = true;
-                    Assert.AreEqual(1, raiseCount);
-                    Assert.AreSame(button, lastSender);
-                    Assert.AreEqual(true, lastValue);
+                    Assert.Equal(1, raiseCount);
+                    Assert.Same(button, lastSender);
+                    Assert.Equal(true, lastValue);
 
                     button.IsChecked = false;
-                    Assert.AreEqual(2, raiseCount);
-                    Assert.AreEqual(false, lastValue);
+                    Assert.Equal(2, raiseCount);
+                    Assert.Equal(false, lastValue);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_SecondaryToggle_OpensFlyoutWithoutToggling()
         {
             RunToggleSplitButtonTest(
@@ -262,24 +261,24 @@ namespace Fluence.Wpf.Tests
                 {
                     ToggleButton secondary = GetSecondaryButtonPart(button);
                     Popup? popup = button.Template?.FindName("PART_Popup", button) as Popup;
-                    Assert.IsNotNull(popup);
+                    Assert.NotNull(popup);
 
                     secondary.IsChecked = true;
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.IsTrue(popup.IsOpen, "Checking the secondary half should open the flyout popup.");
-                    Assert.IsTrue(button.IsFlyoutOpen);
-                    Assert.IsFalse(button.IsChecked, "Opening the flyout must not toggle the primary checked state.");
+                    Assert.True(popup.IsOpen, "Checking the secondary half should open the flyout popup.");
+                    Assert.True(button.IsFlyoutOpen);
+                    Assert.False(button.IsChecked, "Opening the flyout must not toggle the primary checked state.");
 
                     secondary.IsChecked = false;
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.IsFalse(popup.IsOpen, "Unchecking the secondary half should close the flyout popup.");
-                    Assert.IsFalse(button.IsFlyoutOpen);
+                    Assert.False(popup.IsOpen, "Unchecking the secondary half should close the flyout popup.");
+                    Assert.False(button.IsFlyoutOpen);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_Checked_AccentFillsBothHalvesAndBackdrops()
         {
             RunToggleSplitButtonTest(
@@ -296,21 +295,21 @@ namespace Fluence.Wpf.Tests
                     Border? primaryBackdrop = FindVisualChildByName<Border>(button, "PrimaryAccentFillBackdrop");
                     Border? secondaryBackdrop = FindVisualChildByName<Border>(button, "SecondaryAccentFillBackdrop");
 
-                    Assert.IsNotNull(primaryFill);
-                    Assert.IsNotNull(secondaryFill);
-                    Assert.IsNotNull(primaryBackdrop);
-                    Assert.IsNotNull(secondaryBackdrop);
+                    Assert.NotNull(primaryFill);
+                    Assert.NotNull(secondaryFill);
+                    Assert.NotNull(primaryBackdrop);
+                    Assert.NotNull(secondaryBackdrop);
 
                     Color accentDefault = GetResolvedBrushColor(application, "AccentFillColorDefaultBrush");
-                    Assert.AreEqual(accentDefault, GetSolidColor(primaryFill.Background, "Checked PrimaryFill"));
-                    Assert.AreEqual(accentDefault, GetSolidColor(secondaryFill.Background, "Checked SecondaryFill"));
-                    Assert.AreEqual(1.0, primaryBackdrop.Opacity, "Checked state should reveal the primary accent backdrop.");
-                    Assert.AreEqual(1.0, secondaryBackdrop.Opacity, "Checked state should reveal the secondary accent backdrop.");
-                    Assert.AreEqual(GetResolvedBrushColor(application, "TextOnAccentFillColorPrimaryBrush"), GetSolidColor(button.Foreground, "Checked foreground"));
+                    Assert.Equal(accentDefault, GetSolidColor(primaryFill.Background));
+                    Assert.Equal(accentDefault, GetSolidColor(secondaryFill.Background));
+                    Assert.Equal(1.0, primaryBackdrop.Opacity);
+                    Assert.Equal(1.0, secondaryBackdrop.Opacity);
+                    Assert.Equal(GetResolvedBrushColor(application, "TextOnAccentFillColorPrimaryBrush"), GetSolidColor(button.Foreground));
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_Checked_DividerUsesCheckedDividerBrush()
         {
             RunToggleSplitButtonTest(
@@ -322,24 +321,22 @@ namespace Fluence.Wpf.Tests
                 (application, button) =>
                 {
                     Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
-                    Assert.IsNotNull(divider);
+                    Assert.NotNull(divider);
 
-                    Color uncheckedDivider = GetSolidColor(divider.Fill, "Unchecked divider");
+                    Color uncheckedDivider = GetSolidColor(divider.Fill);
 
                     button.IsChecked = true;
                     DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
-                    Color checkedDivider = GetSolidColor(divider.Fill, "Checked divider");
+                    Color checkedDivider = GetSolidColor(divider.Fill);
 
-                    Assert.AreEqual(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), checkedDivider,
-                        "The checked divider must use the WinUI SplitButtonBorderBrushCheckedDivider mapping.");
-                    Assert.AreNotEqual(uncheckedDivider, checkedDivider,
-                        "The checked divider color must differ from the unchecked ControlStrokeColorDefaultBrush divider.");
+                    Assert.Equal(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), checkedDivider);
+                    Assert.NotEqual(uncheckedDivider, checkedDivider);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_CheckedFlyoutOpen_TintsBothHalvesPressedFill()
         {
             RunToggleSplitButtonTest(
@@ -359,19 +356,19 @@ namespace Fluence.Wpf.Tests
                     Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
                     Border? secondaryFill = FindVisualChildByName<Border>(button, "SecondaryFill");
 
-                    Assert.IsNotNull(primaryFill);
-                    Assert.IsNotNull(secondaryFill);
+                    Assert.NotNull(primaryFill);
+                    Assert.NotNull(secondaryFill);
 
                     Color accentTertiary = GetResolvedBrushColor(application, "AccentFillColorTertiaryBrush");
-                    Assert.AreEqual(accentTertiary, GetSolidColor(primaryFill.Background, "CheckedFlyoutOpen PrimaryFill"));
-                    Assert.AreEqual(accentTertiary, GetSolidColor(secondaryFill.Background, "CheckedFlyoutOpen SecondaryFill"));
+                    Assert.Equal(accentTertiary, GetSolidColor(primaryFill.Background));
+                    Assert.Equal(accentTertiary, GetSolidColor(secondaryFill.Background));
 
                     secondary.IsChecked = false;
                     DrainDispatcher(button.Dispatcher);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_CheckedDisabled_UsesAccentDisabledPalette()
         {
             RunToggleSplitButtonTest(
@@ -386,17 +383,17 @@ namespace Fluence.Wpf.Tests
                     Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
                     Border? secondaryFill = FindVisualChildByName<Border>(button, "SecondaryFill");
 
-                    Assert.IsNotNull(primaryFill);
-                    Assert.IsNotNull(secondaryFill);
+                    Assert.NotNull(primaryFill);
+                    Assert.NotNull(secondaryFill);
 
                     Color accentDisabled = GetResolvedBrushColor(application, "AccentFillColorDisabledBrush");
-                    Assert.AreEqual(accentDisabled, GetSolidColor(primaryFill.Background, "Checked disabled PrimaryFill"));
-                    Assert.AreEqual(accentDisabled, GetSolidColor(secondaryFill.Background, "Checked disabled SecondaryFill"));
-                    Assert.AreEqual(GetResolvedBrushColor(application, "TextFillColorDisabledBrush"), GetSolidColor(button.Foreground, "Checked disabled foreground"));
+                    Assert.Equal(accentDisabled, GetSolidColor(primaryFill.Background));
+                    Assert.Equal(accentDisabled, GetSolidColor(secondaryFill.Background));
+                    Assert.Equal(GetResolvedBrushColor(application, "TextFillColorDisabledBrush"), GetSolidColor(button.Foreground));
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_AutomationPeer_ExposesToggleAndExpandCollapse()
         {
             RunToggleSplitButtonTest(
@@ -409,16 +406,15 @@ namespace Fluence.Wpf.Tests
                 {
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
 
-                    Assert.AreEqual("ToggleSplitButton", peer.GetClassName(), StringComparer.Ordinal);
-                    Assert.AreEqual(AutomationControlType.SplitButton, peer.GetAutomationControlType());
-                    Assert.IsNotNull(peer.GetPattern(PatternInterface.Toggle), "The peer must expose the Toggle pattern.");
-                    Assert.IsNotNull(peer.GetPattern(PatternInterface.ExpandCollapse), "The peer must expose the ExpandCollapse pattern.");
-                    Assert.IsNull(peer.GetPattern(PatternInterface.Invoke),
-                        "The peer must not expose Invoke (WinUI parity; Invoke would raise Click without toggling).");
+                    Assert.Equal("ToggleSplitButton", peer.GetClassName(), StringComparer.Ordinal);
+                    Assert.Equal(AutomationControlType.SplitButton, peer.GetAutomationControlType());
+                    Assert.NotNull(peer.GetPattern(PatternInterface.Toggle));
+                    Assert.NotNull(peer.GetPattern(PatternInterface.ExpandCollapse));
+                    Assert.Null(peer.GetPattern(PatternInterface.Invoke));
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_TogglePattern_TogglesStateAndRaisesEvent()
         {
             RunToggleSplitButtonTest(
@@ -434,21 +430,21 @@ namespace Fluence.Wpf.Tests
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
                     IToggleProvider? toggleProvider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
-                    Assert.IsNotNull(toggleProvider);
+                    Assert.NotNull(toggleProvider);
 
                     toggleProvider.Toggle();
-                    Assert.IsTrue(button.IsChecked);
-                    Assert.AreEqual(ToggleState.On, toggleProvider.ToggleState);
-                    Assert.AreEqual(1, raiseCount);
+                    Assert.True(button.IsChecked);
+                    Assert.Equal(ToggleState.On, toggleProvider.ToggleState);
+                    Assert.Equal(1, raiseCount);
 
                     toggleProvider.Toggle();
-                    Assert.IsFalse(button.IsChecked);
-                    Assert.AreEqual(ToggleState.Off, toggleProvider.ToggleState);
-                    Assert.AreEqual(2, raiseCount);
+                    Assert.False(button.IsChecked);
+                    Assert.Equal(ToggleState.Off, toggleProvider.ToggleState);
+                    Assert.Equal(2, raiseCount);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_ExpandCollapsePattern_OpensAndClosesFlyout()
         {
             RunToggleSplitButtonTest(
@@ -461,24 +457,24 @@ namespace Fluence.Wpf.Tests
                 {
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
                     IExpandCollapseProvider? expandProvider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-                    Assert.IsNotNull(expandProvider);
-                    Assert.AreEqual(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
+                    Assert.NotNull(expandProvider);
+                    Assert.Equal(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
 
                     expandProvider.Expand();
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.IsTrue(button.IsFlyoutOpen, "Expand must open the flyout.");
-                    Assert.AreEqual(ExpandCollapseState.Expanded, expandProvider.ExpandCollapseState);
+                    Assert.True(button.IsFlyoutOpen, "Expand must open the flyout.");
+                    Assert.Equal(ExpandCollapseState.Expanded, expandProvider.ExpandCollapseState);
 
                     expandProvider.Collapse();
                     DrainDispatcher(button.Dispatcher);
 
-                    Assert.IsFalse(button.IsFlyoutOpen, "Collapse must close the flyout.");
-                    Assert.AreEqual(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
+                    Assert.False(button.IsFlyoutOpen, "Collapse must close the flyout.");
+                    Assert.Equal(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyle()
         {
             // Mirrors the SplitButton contract: focus rings come from the
@@ -496,19 +492,15 @@ namespace Fluence.Wpf.Tests
                     ToggleButton secondary = GetSecondaryButtonPart(button);
                     Style? focusVisualStyle = application?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
 
-                    Assert.IsNotNull(focusVisualStyle, "DefaultControlFocusVisualStyle should resolve from the computed dictionary.");
-                    Assert.AreSame(focusVisualStyle, primary.FocusVisualStyle,
-                        "The primary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
-                    Assert.AreSame(focusVisualStyle, secondary.FocusVisualStyle,
-                        "The secondary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
-                    Assert.IsNull(FindVisualChildByName<Border>(button, "PrimaryFocusOuter"),
-                        "The always-on in-template primary focus borders must be gone; they rendered on mouse click.");
-                    Assert.IsNull(FindVisualChildByName<Border>(button, "SecondaryFocusOuter"),
-                        "The always-on in-template secondary focus borders must be gone; they rendered on mouse click.");
+                    Assert.NotNull(focusVisualStyle);
+                    Assert.Same(focusVisualStyle, primary.FocusVisualStyle);
+                    Assert.Same(focusVisualStyle, secondary.FocusVisualStyle);
+                    Assert.Null(FindVisualChildByName<Border>(button, "PrimaryFocusOuter"));
+                    Assert.Null(FindVisualChildByName<Border>(button, "SecondaryFocusOuter"));
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void ToggleSplitButton_ThemeCycle_CheckedBrushesReResolve()
         {
             RunToggleSplitButtonTest(
@@ -527,10 +519,10 @@ namespace Fluence.Wpf.Tests
                     Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
                     Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
 
-                    Assert.IsNotNull(primaryFill);
-                    Assert.IsNotNull(divider);
-                    Assert.AreEqual(GetResolvedBrushColor(application, "AccentFillColorDefaultBrush"), GetSolidColor(primaryFill.Background, "Checked PrimaryFill after theme cycle"));
-                    Assert.AreEqual(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), GetSolidColor(divider.Fill, "Checked divider after theme cycle"));
+                    Assert.NotNull(primaryFill);
+                    Assert.NotNull(divider);
+                    Assert.Equal(GetResolvedBrushColor(application, "AccentFillColorDefaultBrush"), GetSolidColor(primaryFill.Background));
+                    Assert.Equal(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), GetSolidColor(divider.Fill));
                     ThemeTestHelpers.AssertKeyThemeBrushesResolve(application);
                 });
         }

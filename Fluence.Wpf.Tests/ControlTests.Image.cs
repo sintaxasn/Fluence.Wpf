@@ -26,13 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -63,7 +63,7 @@ namespace Fluence.Wpf.Tests
             return bitmap;
         }
 
-        [TestMethod]
+        [Fact]
         public void Image_DefaultStyle_TemplatePartsPresent()
         {
             WpfTestSta.Invoke(static () =>
@@ -77,15 +77,15 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Image? inner = FindVisualChildByName<System.Windows.Controls.Image>(image, "PART_Image");
-                Assert.IsNotNull(inner, "PART_Image must be present.");
+                Assert.NotNull(inner);
 
                 System.Windows.Controls.Border? frame = FindVisualChildByName<System.Windows.Controls.Border>(image, "PART_ImageBorder");
-                Assert.IsNotNull(frame, "PART_ImageBorder must be present.");
+                Assert.NotNull(frame);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Image_SourceAndStretch_FlowToInnerImage()
         {
             WpfTestSta.Invoke(static () =>
@@ -100,16 +100,14 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Image? inner = FindVisualChildByName<System.Windows.Controls.Image>(image, "PART_Image");
-                Assert.IsNotNull(inner);
-                Assert.AreSame(probe, inner.Source,
-                    "Source must flow to PART_Image via TemplateBinding.");
-                Assert.AreEqual(Stretch.UniformToFill, inner.Stretch,
-                    "Stretch must flow to PART_Image via TemplateBinding.");
+                Assert.NotNull(inner);
+                Assert.Same(probe, inner.Source);
+                Assert.Equal(Stretch.UniformToFill, inner.Stretch);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Image_CornerRadius_SetsAndClearsInnerClip()
         {
             WpfTestSta.Invoke(static () =>
@@ -125,21 +123,21 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Image? inner = FindVisualChildByName<System.Windows.Controls.Image>(image, "PART_Image");
-                Assert.IsNotNull(inner);
+                Assert.NotNull(inner);
 
                 RectangleGeometry? clip = inner.Clip as RectangleGeometry;
-                Assert.IsNotNull(clip, "CornerRadius > 0 must set a RectangleGeometry clip on PART_Image.");
-                Assert.AreEqual(8.0, clip.RadiusX, "The clip must use the top-left corner radius uniformly.");
-                Assert.IsTrue(clip.IsFrozen, "The clip geometry must be frozen.");
+                Assert.NotNull(clip);
+                Assert.Equal(8.0, clip.RadiusX);
+                Assert.True(clip.IsFrozen, "The clip geometry must be frozen.");
 
                 image.CornerRadius = new CornerRadius(0);
                 DrainDispatcher(w.Dispatcher);
-                Assert.IsNull(inner.Clip, "CornerRadius = 0 must clear the clip on PART_Image.");
+                Assert.Null(inner.Clip);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Image_ThemeCycle_StyleRemainsApplied()
         {
             WpfTestSta.Invoke(static () =>
@@ -156,13 +154,13 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border? frame = FindVisualChildByName<System.Windows.Controls.Border>(image, "PART_ImageBorder");
-                Assert.IsNotNull(frame, "PART_ImageBorder must still be present after theme cycle.");
-                Assert.IsNotNull(frame.BorderBrush, "The stroke brush must re-resolve after theme cycle.");
+                Assert.NotNull(frame);
+                Assert.NotNull(frame.BorderBrush);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Image_AutomationPeer_IsImageAutomationPeer()
         {
             RunOnStaThread(static () =>
@@ -177,12 +175,9 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
-                _ = Assert.IsInstanceOfType<Automation.ImageAutomationPeer>(peer,
-                    "Image must create a Fluence ImageAutomationPeer.");
-                Assert.AreEqual(AutomationControlType.Image, peer.GetAutomationControlType(),
-                    "Image automation peer must report control type Image.");
-                Assert.AreEqual("Image", peer.GetClassName(), StringComparer.Ordinal,
-                    "Image automation peer must report class name 'Image'.");
+                _ = Assert.IsAssignableFrom<Automation.ImageAutomationPeer>(peer);
+                Assert.Equal(AutomationControlType.Image, peer.GetAutomationControlType());
+                Assert.Equal("Image", peer.GetClassName(), StringComparer.Ordinal);
                 w.Close();
             });
         }
@@ -192,7 +187,7 @@ namespace Fluence.Wpf.Tests
         /// entirely, matching WinUI's AccessibilityView=Raw default and FontIcon's treatment. If it
         /// stayed in the content view a screen reader would announce an empty image element.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Image_AutomationPeer_UnnamedImageIsExcludedFromBothViews()
         {
             RunOnStaThread(static () =>
@@ -207,9 +202,9 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
-                Assert.IsFalse(peer.IsControlElement(),
+                Assert.False(peer.IsControlElement(),
                     "An unnamed Image is decorative and must be excluded from the UI Automation control view.");
-                Assert.IsFalse(peer.IsContentElement(),
+                Assert.False(peer.IsContentElement(),
                     "An unnamed Image must be excluded from the UI Automation content view so nothing announces an empty image.");
                 w.Close();
             });
@@ -219,7 +214,7 @@ namespace Fluence.Wpf.Tests
         /// Setting <c>AutomationProperties.Name</c> makes the image meaningful, so it must appear in
         /// both automation views and report that name.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Image_AutomationPeer_NamedImageIsIncludedInBothViews()
         {
             RunOnStaThread(static () =>
@@ -235,12 +230,11 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
-                Assert.IsTrue(peer.IsControlElement(),
+                Assert.True(peer.IsControlElement(),
                     "A named Image conveys meaning and must appear in the UI Automation control view.");
-                Assert.IsTrue(peer.IsContentElement(),
+                Assert.True(peer.IsContentElement(),
                     "A named Image must appear in the UI Automation content view so a screen reader reads it.");
-                Assert.AreEqual("Company logo", peer.GetName(), StringComparer.Ordinal,
-                    "The peer must surface the accessible name the consumer set.");
+                Assert.Equal("Company logo", peer.GetName(), StringComparer.Ordinal);
                 w.Close();
             });
         }
@@ -250,7 +244,7 @@ namespace Fluence.Wpf.Tests
         /// already resolves its name through it, so a LabeledBy image must not be dropped from the
         /// tree. This is why the peer checks LabeledBy as well as Name.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Image_AutomationPeer_LabeledByImageIsIncludedInBothViews()
         {
             RunOnStaThread(static () =>
@@ -270,9 +264,9 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
-                Assert.IsTrue(peer.IsControlElement(),
+                Assert.True(peer.IsControlElement(),
                     "An Image named through AutomationProperties.LabeledBy must appear in the control view.");
-                Assert.IsTrue(peer.IsContentElement(),
+                Assert.True(peer.IsContentElement(),
                     "An Image named through AutomationProperties.LabeledBy must appear in the content view.");
                 w.Close();
             });

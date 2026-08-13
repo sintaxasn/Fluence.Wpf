@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Text;
@@ -36,6 +35,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -53,8 +53,7 @@ namespace Fluence.Wpf.Tests
     /// <see cref="RenderTargetBitmap"/> output, which is intended: the screenshots document control
     /// surfaces and theme resources, not DWM composition.
     /// </remarks>
-    [TestClass]
-    [TestCategory("Screenshots")]
+    [Trait("Category", "Screenshots")]
     public class GalleryScreenshotHarness
     {
         private const string OptInEnvironmentVariable = "FLUENCE_CAPTURE_SCREENSHOTS";
@@ -93,7 +92,7 @@ namespace Fluence.Wpf.Tests
                 || string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
             if (!enabled)
             {
-                Assert.Inconclusive(
+                Assert.Skip(
                     "Screenshot capture is opt-in; set " + OptInEnvironmentVariable
                     + "=1 to regenerate docs/screenshots.");
             }
@@ -174,7 +173,7 @@ namespace Fluence.Wpf.Tests
             double dpi = BaseDpi * scale;
 
             SaveFlattenedPng(element, pixelWidth, pixelHeight, dpi, fullPath);
-            Assert.IsTrue(File.Exists(fullPath), Invariant("Expected to write {0}", fullPath));
+            Assert.True(File.Exists(fullPath), Invariant("Expected to write {0}", fullPath));
         }
 
         private static Application ResetApplication(ApplicationTheme theme, bool includeDemoSharedStyles)
@@ -417,7 +416,7 @@ namespace Fluence.Wpf.Tests
         }
 #endif
 
-        [TestMethod]
+        [Fact]
         public void CaptureGalleryShellNavigationModes()
         {
             RequireScreenshotOptIn();
@@ -433,7 +432,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void CapturePowerShellControlsTour()
         {
             RequireScreenshotOptIn();
@@ -448,7 +447,7 @@ namespace Fluence.Wpf.Tests
         }
 
 #if NET10_0_OR_GREATER
-        [TestMethod]
+        [Fact]
         public void CaptureMvvmTaskManager()
         {
             RequireScreenshotOptIn();

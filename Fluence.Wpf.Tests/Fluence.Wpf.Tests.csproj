@@ -2,19 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net10.0-windows10.0.26100.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf.Tests</RootNamespace>
     <AssemblyName>Fluence.Wpf.Tests</AssemblyName>
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TestTfmsInParallel>false</TestTfmsInParallel>
-    <NoWarn>$(NoWarn);CA1031;CA1707;CA2263;CS1591;VSTHRD001;MA0045</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;CA1031;CA1707;CA2263;VSTHRD001;MA0045;xUnit1004</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="4.3.3" />
-    <PackageReference Include="MSTest.TestFramework" Version="4.3.3" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Theming\golden\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

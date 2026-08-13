@@ -33,7 +33,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Tests
         // WI-6  RatingControl
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_DefaultStyle_Applies()
         {
             WpfTestSta.Invoke(static () =>
@@ -62,12 +62,12 @@ namespace Fluence.Wpf.Tests
 
                 // PART_StarsPanel must be present after template is applied.
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel, "PART_StarsPanel must be present in RatingControl template.");
+                Assert.NotNull(panel);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_DefaultMaxRating_GeneratesFiveStars()
         {
             WpfTestSta.Invoke(static () =>
@@ -81,14 +81,13 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel);
-                Assert.AreEqual(5, panel.Children.Count,
-                    "Default MaxRating=5 must generate 5 star TextBlocks.");
+                Assert.NotNull(panel);
+                Assert.Equal(5, panel.Children.Count);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_Value_UpdatesFilledStars()
         {
             WpfTestSta.Invoke(static () =>
@@ -102,7 +101,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel);
+                Assert.NotNull(panel);
 
                 // Stars 1-3 must be filled (U+E735), stars 4-5 must be empty (U+E734).
                 int filledCount = 0;
@@ -114,13 +113,12 @@ namespace Fluence.Wpf.Tests
                     }
                 }
 
-                Assert.AreEqual(3, filledCount,
-                    "Value=3 must fill exactly 3 stars with U+E735 (StarFilled).");
+                Assert.Equal(3, filledCount);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_FilledStars_UseAccentBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -134,22 +132,21 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel);
+                Assert.NotNull(panel);
 
                 SolidColorBrush? accentBrush = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.IsNotNull(accentBrush, "AccentFillColorDefaultBrush must resolve.");
+                Assert.NotNull(accentBrush);
 
                 // First two stars (filled) must use AccentFillColorDefaultBrush.
                 System.Windows.Controls.TextBlock? star1 = panel.Children[0] as System.Windows.Controls.TextBlock;
                 SolidColorBrush? star1Fg = star1?.Foreground as SolidColorBrush;
-                Assert.IsNotNull(star1Fg, "First filled star Foreground must be a SolidColorBrush.");
-                Assert.AreEqual(accentBrush.Color, star1Fg.Color,
-                    "Filled stars must use AccentFillColorDefaultBrush per WinUI 3 RatingControl.");
+                Assert.NotNull(star1Fg);
+                Assert.Equal(accentBrush.Color, star1Fg.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_EmptyStars_UseSecondaryTextBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -163,21 +160,20 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel);
+                Assert.NotNull(panel);
 
                 SolidColorBrush? secondaryBrush = app?.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
-                Assert.IsNotNull(secondaryBrush, "TextFillColorSecondaryBrush must resolve.");
+                Assert.NotNull(secondaryBrush);
 
                 System.Windows.Controls.TextBlock? star = panel.Children[0] as System.Windows.Controls.TextBlock;
                 SolidColorBrush? starFg = star?.Foreground as SolidColorBrush;
-                Assert.IsNotNull(starFg, "Empty star Foreground must be a SolidColorBrush.");
-                Assert.AreEqual(secondaryBrush.Color, starFg.Color,
-                    "Empty stars must use TextFillColorSecondaryBrush per WinUI 3 RatingControl.");
+                Assert.NotNull(starFg);
+                Assert.Equal(secondaryBrush.Color, starFg.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_Caption_ShowsWhenSet()
         {
             WpfTestSta.Invoke(static () =>
@@ -191,16 +187,14 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.TextBlock? caption = FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption");
-                Assert.IsNotNull(caption, "PART_Caption must be present.");
-                Assert.AreEqual(Visibility.Visible, caption.Visibility,
-                    "PART_Caption must be Visible when Caption is set.");
-                Assert.AreEqual("4.0", caption.Text, StringComparer.Ordinal,
-                    "PART_Caption.Text must match the Caption property.");
+                Assert.NotNull(caption);
+                Assert.Equal(Visibility.Visible, caption.Visibility);
+                Assert.Equal("4.0", caption.Text, StringComparer.Ordinal);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_Caption_CollapsedWhenEmpty()
         {
             WpfTestSta.Invoke(static () =>
@@ -214,14 +208,13 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.TextBlock? caption = FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption");
-                Assert.IsNotNull(caption, "PART_Caption must be present.");
-                Assert.AreEqual(Visibility.Collapsed, caption.Visibility,
-                    "PART_Caption must be Collapsed when Caption is empty.");
+                Assert.NotNull(caption);
+                Assert.Equal(Visibility.Collapsed, caption.Visibility);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_Value_CoercedToMaxRating()
         {
             WpfTestSta.Invoke(static () =>
@@ -238,13 +231,12 @@ namespace Fluence.Wpf.Tests
                 rc.Value = 10.0;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(3.0, rc.Value,
-                    "Value must be coerced to MaxRating when set above MaxRating.");
+                Assert.Equal(3.0, rc.Value);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_ThemeCycle_StyleRemainsApplied()
         {
             WpfTestSta.Invoke(static () =>
@@ -261,13 +253,12 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
-                Assert.IsNotNull(panel,
-                    "PART_StarsPanel must still be present after theme cycle.");
+                Assert.NotNull(panel);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_AutomationPeer_ExposesRangeValueAndIsKeyboardSettable()
         {
             RunOnStaThread(static () =>
@@ -281,32 +272,32 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(window.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
-                Assert.IsInstanceOfType(peer, typeof(Automation.RatingControlAutomationPeer));
-                Assert.AreEqual(AutomationControlType.Slider, peer.GetAutomationControlType());
+                _ = Assert.IsAssignableFrom<Automation.RatingControlAutomationPeer>(peer);
+                Assert.Equal(AutomationControlType.Slider, peer.GetAutomationControlType());
 
                 IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
-                Assert.AreEqual(2.0, range.Value, 0.001);
+                Assert.Equal(2.0, range.Value, 0.001);
 
                 // Keyboard: Right arrow raises the rating.
-                Assert.IsTrue(rating.Focusable, "RatingControl must be focusable.");
-                Assert.IsTrue(rating.IsTabStop, "RatingControl must be a tab stop.");
+                Assert.True(rating.Focusable, "RatingControl must be focusable.");
+                Assert.True(rating.IsTabStop, "RatingControl must be a tab stop.");
                 _ = rating.Focus();
                 DrainDispatcher(window.Dispatcher);
 
                 PresentationSource? source = PresentationSource.FromVisual(rating);
-                Assert.IsNotNull(source, "RatingControl must have a presentation source once the window is shown.");
+                Assert.NotNull(source);
                 rating.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Right)
                 {
                     RoutedEvent = Keyboard.KeyDownEvent,
                 });
                 DrainDispatcher(window.Dispatcher);
-                Assert.AreEqual(3.0, rating.Value, 0.001, "Right arrow should increase the rating by one.");
+                Assert.Equal(3.0, rating.Value, 0.001);
 
                 window.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabled()
         {
             RunOnStaThread(static () =>
@@ -325,22 +316,22 @@ namespace Fluence.Wpf.Tests
                 // Read-only: SetValue must throw and leave the value unchanged.
                 rating.IsReadOnly = true;
                 DrainDispatcher(window.Dispatcher);
-                Assert.IsTrue(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
-                _ = Assert.ThrowsExactly<InvalidOperationException>(() => range.SetValue(4.0));
-                Assert.AreEqual(2.0, rating.Value, 0.001, "A read-only control's value must not change via UIA.");
+                Assert.True(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
+                _ = Assert.Throws<InvalidOperationException>(() => range.SetValue(4.0));
+                Assert.Equal(2.0, rating.Value, 0.001);
 
                 // Disabled: SetValue must throw ElementNotEnabledException.
                 rating.IsReadOnly = false;
                 rating.IsEnabled = false;
                 DrainDispatcher(window.Dispatcher);
-                _ = Assert.ThrowsExactly<System.Windows.Automation.ElementNotEnabledException>(() => range.SetValue(4.0));
-                Assert.AreEqual(2.0, rating.Value, 0.001, "A disabled control's value must not change via UIA.");
+                _ = Assert.Throws<System.Windows.Automation.ElementNotEnabledException>(() => range.SetValue(4.0));
+                Assert.Equal(2.0, rating.Value, 0.001);
 
                 // Enabled and writable: SetValue applies.
                 rating.IsEnabled = true;
                 DrainDispatcher(window.Dispatcher);
                 range.SetValue(4.0);
-                Assert.AreEqual(4.0, rating.Value, 0.001, "An enabled, writable control should accept the new value.");
+                Assert.Equal(4.0, rating.Value, 0.001);
 
                 window.Close();
             });

@@ -30,22 +30,22 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void InfoBar_GetSeverityGlyph_MatchesTemplateGlyphs()
         {
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
+            Assert.Equal("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
+            Assert.Equal("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
+            Assert.Equal("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
+            Assert.Equal("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
         }
 
-        [TestMethod]
+        [Fact]
         public void InfoBar_GetSeverityBrushKey_ResolvesToThemeBrush()
         {
             RunOnStaThread(static delegate
@@ -59,8 +59,7 @@ namespace Fluence.Wpf.Tests
                 })
                 {
                     string key = InfoBar.GetSeverityBrushKey(severity);
-                    Assert.IsInstanceOfType(Application.Current.TryFindResource(key), typeof(Brush),
-                        $"Brush key '{key}' for severity {severity} must resolve to a theme Brush.");
+                    _ = Assert.IsAssignableFrom<Brush>(Application.Current.TryFindResource(key));
                 }
             });
         }

@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -38,25 +37,23 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
-    [TestClass]
-    public class TitleBarTests
+    public sealed class TitleBarTests : IDisposable
     {
-        [TestInitialize]
-        public void Initialize()
+        public TitleBarTests()
         {
             WpfTestSta.Invoke(ResetSharedWpfState);
         }
 
-        [TestCleanup]
-        public void Cleanup()
+        public void Dispose()
         {
             WpfTestSta.Invoke(ResetSharedWpfState);
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleBar_Template_ExposesNavigationButtons()
         {
             RunWithTitleBar(
@@ -74,18 +71,16 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
                     System.Windows.Controls.Button paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
 
-                    Assert.AreEqual(Visibility.Visible, backButton.Visibility,
-                        "PART_BackButton must be visible when IsBackButtonVisible is true.");
-                    Assert.AreEqual(Visibility.Visible, paneToggleButton.Visibility,
-                        "PART_PaneToggleButton must be visible when IsPaneToggleButtonVisible is true.");
-                    Assert.IsTrue(WindowChrome.GetIsHitTestVisibleInChrome(backButton),
+                    Assert.Equal(Visibility.Visible, backButton.Visibility);
+                    Assert.Equal(Visibility.Visible, paneToggleButton.Visibility);
+                    Assert.True(WindowChrome.GetIsHitTestVisibleInChrome(backButton),
                         "PART_BackButton must opt into WindowChrome hit testing.");
-                    Assert.IsTrue(WindowChrome.GetIsHitTestVisibleInChrome(paneToggleButton),
+                    Assert.True(WindowChrome.GetIsHitTestVisibleInChrome(paneToggleButton),
                         "PART_PaneToggleButton must opt into WindowChrome hit testing.");
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleBar_BackButton_UsesCompactSlot()
         {
             RunWithTitleBar(
@@ -103,25 +98,19 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
                     System.Windows.Controls.Button paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
 
-                    Assert.AreEqual(36.0, backButton.ActualWidth, 0.5,
-                        "The title-bar back button should use a smaller slot than the pane toggle.");
-                    Assert.AreEqual(32.0, backButton.ActualHeight, 0.5,
-                        "The title-bar back button should use a smaller height than the pane toggle.");
-                    Assert.AreEqual(40.0, paneToggleButton.ActualWidth, 0.5,
-                        "The title-bar pane toggle should use the WinUI-canonical 40 px glyph button width.");
-                    Assert.AreEqual(36.0, paneToggleButton.ActualHeight, 0.5,
-                        "The title-bar pane toggle should keep the compact title-bar glyph height.");
+                    Assert.Equal(36.0, backButton.ActualWidth, 0.5);
+                    Assert.Equal(32.0, backButton.ActualHeight, 0.5);
+                    Assert.Equal(40.0, paneToggleButton.ActualWidth, 0.5);
+                    Assert.Equal(36.0, paneToggleButton.ActualHeight, 0.5);
 
                     System.Windows.Controls.TextBlock? backGlyph = FindVisualChild<System.Windows.Controls.TextBlock>(backButton);
-                    Assert.IsNotNull(backGlyph, "Back button should render a glyph text block.");
-                    Assert.AreEqual(16.0, backGlyph.ActualWidth, 0.5,
-                        "Back glyph should occupy a 16px visual box.");
-                    Assert.AreEqual(16.0, backGlyph.ActualHeight, 0.5,
-                        "Back glyph should occupy a 16px visual box.");
+                    Assert.NotNull(backGlyph);
+                    Assert.Equal(16.0, backGlyph.ActualWidth, 0.5);
+                    Assert.Equal(16.0, backGlyph.ActualHeight, 0.5);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequested()
         {
             object parameter = new();
@@ -149,18 +138,14 @@ namespace Fluence.Wpf.Tests
 
                     InvokeButton(GetTemplateButton(titleBar, "PART_PaneToggleButton"));
 
-                    Assert.AreEqual(1, command.ExecuteCount,
-                        "PaneToggleCommand must execute once when PART_PaneToggleButton is invoked.");
-                    Assert.AreSame(parameter, command.LastParameter,
-                        "PaneToggleCommandParameter must be passed to PaneToggleCommand.");
-                    Assert.AreEqual(1, eventCount,
-                        "PaneToggleRequested must be raised once when PART_PaneToggleButton is invoked.");
-                    Assert.AreEqual(1, commandCountObservedByEvent,
-                        "PaneToggleRequested must be raised after PaneToggleCommand executes.");
+                    Assert.Equal(1, command.ExecuteCount);
+                    Assert.Same(parameter, command.LastParameter);
+                    Assert.Equal(1, eventCount);
+                    Assert.Equal(1, commandCountObservedByEvent);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleBar_BackButtonVisibilityAndCommand_Work()
         {
             object parameter = new();
@@ -179,29 +164,24 @@ namespace Fluence.Wpf.Tests
                 titleBar =>
                 {
                     System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
-                    Assert.AreEqual(Visibility.Collapsed, backButton.Visibility,
-                        "PART_BackButton must default to collapsed.");
+                    Assert.Equal(Visibility.Collapsed, backButton.Visibility);
 
                     titleBar.BackRequested += delegate { eventCount++; };
                     titleBar.IsBackButtonVisible = true;
                     titleBar.UpdateLayout();
                     DrainDispatcher(titleBar.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Visible, backButton.Visibility,
-                        "PART_BackButton must become visible when IsBackButtonVisible is true.");
+                    Assert.Equal(Visibility.Visible, backButton.Visibility);
 
                     InvokeButton(backButton);
 
-                    Assert.AreEqual(1, command.ExecuteCount,
-                        "BackCommand must execute once when PART_BackButton is invoked.");
-                    Assert.AreSame(parameter, command.LastParameter,
-                        "BackCommandParameter must be passed to BackCommand.");
-                    Assert.AreEqual(1, eventCount,
-                        "BackRequested must be raised once when PART_BackButton is invoked.");
+                    Assert.Equal(1, command.ExecuteCount);
+                    Assert.Same(parameter, command.LastParameter);
+                    Assert.Equal(1, eventCount);
                 });
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlers()
         {
             RecordingCommand backCommand = new(canExecute: true);
@@ -220,18 +200,14 @@ namespace Fluence.Wpf.Tests
                 },
                 titleBar =>
                 {
-                    Assert.AreEqual(1, backCommand.CanExecuteSubscriptionCount,
-                        "TitleBar should subscribe to BackCommand.CanExecuteChanged once.");
-                    Assert.AreEqual(1, paneToggleCommand.CanExecuteSubscriptionCount,
-                        "TitleBar should subscribe to PaneToggleCommand.CanExecuteChanged once.");
+                    Assert.Equal(1, backCommand.CanExecuteSubscriptionCount);
+                    Assert.Equal(1, paneToggleCommand.CanExecuteSubscriptionCount);
 
                     titleBar.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, titleBar));
                     DrainDispatcher(titleBar.Dispatcher);
 
-                    Assert.AreEqual(1, backCommand.CanExecuteUnsubscriptionCount,
-                        "TitleBar must unsubscribe from BackCommand.CanExecuteChanged when unloaded.");
-                    Assert.AreEqual(1, paneToggleCommand.CanExecuteUnsubscriptionCount,
-                        "TitleBar must unsubscribe from PaneToggleCommand.CanExecuteChanged when unloaded.");
+                    Assert.Equal(1, backCommand.CanExecuteUnsubscriptionCount);
+                    Assert.Equal(1, paneToggleCommand.CanExecuteUnsubscriptionCount);
                 });
         }
 
@@ -285,7 +261,7 @@ namespace Fluence.Wpf.Tests
         private static System.Windows.Controls.Button GetTemplateButton(Controls.TitleBar titleBar, string partName)
         {
             System.Windows.Controls.Button? button = titleBar.Template.FindName(partName, titleBar) as System.Windows.Controls.Button;
-            Assert.IsNotNull(button, partName + " must exist in the TitleBar template.");
+            Assert.NotNull(button);
             return button;
         }
 

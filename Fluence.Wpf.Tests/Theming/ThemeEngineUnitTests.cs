@@ -26,13 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Theming;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Theming;
+using Xunit;
 
 namespace Fluence.Wpf.Tests.Theming
 {
@@ -42,7 +42,6 @@ namespace Fluence.Wpf.Tests.Theming
     /// These tests exercise every engine class directly so that unused-member diagnostics do not
     /// fire during Stage 1 (before the engine is wired to the public facades).
     /// </summary>
-    [TestClass]
     public class ThemeEngineUnitTests
     {
         private static readonly Color TestBlue = Color.FromRgb(0x00, 0x78, 0xD4);
@@ -57,7 +56,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// <summary>
         /// ColorMap.Build for Light must contain the core accent-derived keys with non-default colors.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ColorMap_Build_Light_ContainsAccentFillColorDefault()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -65,15 +64,15 @@ namespace Fluence.Wpf.Tests.Theming
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
                 Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Light, p);
-                Assert.IsTrue(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Light.");
-                Assert.AreNotEqual(default, m["AccentFillColorDefault"], "AccentFillColorDefault must be non-default.");
+                Assert.True(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Light.");
+                Assert.NotEqual(default, m["AccentFillColorDefault"]);
             });
         }
 
         /// <summary>
         /// ColorMap.Build for Dark must contain the core accent-derived keys.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ColorMap_Build_Dark_ContainsAccentFillColorDefault()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -81,14 +80,14 @@ namespace Fluence.Wpf.Tests.Theming
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
                 Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Dark, p);
-                Assert.IsTrue(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Dark.");
+                Assert.True(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Dark.");
             });
         }
 
         /// <summary>
         /// ColorMap.Build must emit the SystemAccentColor raw-ramp keys.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ColorMap_Build_Light_ContainsRawRampKeys()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -96,17 +95,17 @@ namespace Fluence.Wpf.Tests.Theming
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
                 Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Light, p);
-                Assert.IsTrue(m.ContainsKey("SystemAccentColor"), "SystemAccentColor missing.");
-                Assert.IsTrue(m.ContainsKey("SystemAccentColorLight1"), "SystemAccentColorLight1 missing.");
-                Assert.IsTrue(m.ContainsKey("SystemAccentColorDark3"), "SystemAccentColorDark3 missing.");
-                Assert.AreEqual(TestBlue, m["SystemAccentColor"], "SystemAccentColor must equal the base accent.");
+                Assert.True(m.ContainsKey("SystemAccentColor"), "SystemAccentColor missing.");
+                Assert.True(m.ContainsKey("SystemAccentColorLight1"), "SystemAccentColorLight1 missing.");
+                Assert.True(m.ContainsKey("SystemAccentColorDark3"), "SystemAccentColorDark3 missing.");
+                Assert.Equal(TestBlue, m["SystemAccentColor"]);
             });
         }
 
         /// <summary>
         /// ColorMap.Build must emit TitleBarActiveColor.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ColorMap_Build_Light_ContainsTitleBarActiveColor()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -114,7 +113,7 @@ namespace Fluence.Wpf.Tests.Theming
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
                 Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Light, p);
-                Assert.IsTrue(m.ContainsKey("TitleBarActiveColor"), "TitleBarActiveColor must be present.");
+                Assert.True(m.ContainsKey("TitleBarActiveColor"), "TitleBarActiveColor must be present.");
             });
         }
 
@@ -123,7 +122,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// (the HC guard skips both AccentFillColorDisabled and SystemFillColorAttention overrides).
         /// The test verifies the HC build produces a result and contains SystemAccentColor.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ColorMap_Build_HighContrast_ContainsSystemAccentColor()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -131,11 +130,11 @@ namespace Fluence.Wpf.Tests.Theming
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
                 Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.HighContrast, p);
-                Assert.IsGreaterThan(5, m.Count, "ColorMap.Build(HighContrast) must return a non-trivial map.");
-                Assert.IsTrue(m.ContainsKey("SystemAccentColor"), "SystemAccentColor must be present even in HC.");
+                Assert.True(m.Count > 5, "ColorMap.Build(HighContrast) must return a non-trivial map.");
+                Assert.True(m.ContainsKey("SystemAccentColor"), "SystemAccentColor must be present even in HC.");
                 // The HC C# path does NOT inject AccentFillColorDisabled or SystemFillColorAttention
                 // via the guard; those may come from base XAML instead.
-                Assert.AreEqual(TestBlue, m["SystemAccentColor"], "SystemAccentColor must equal the pinned custom accent.");
+                Assert.Equal(TestBlue, m["SystemAccentColor"]);
             });
         }
 
@@ -144,7 +143,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// <summary>
         /// BrushFactory.Build must produce a frozen SolidColorBrush for each color key.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void BrushFactory_Build_ProducesFrozenBrushForColorKey()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -157,18 +156,18 @@ namespace Fluence.Wpf.Tests.Theming
                 };
                 ResourceDictionary d = BrushFactory.Build(colors);
 
-                Assert.IsTrue(d.Contains("TestColorA"), "Color key must be present.");
-                Assert.IsTrue(d.Contains("TestColorABrush"), "Brush key must be present.");
+                Assert.True(d.Contains("TestColorA"), "Color key must be present.");
+                Assert.True(d.Contains("TestColorABrush"), "Brush key must be present.");
                 SolidColorBrush brush = (SolidColorBrush)d["TestColorABrush"];
-                Assert.AreEqual(Colors.Red, brush.Color, "Brush color must match input.");
-                Assert.IsTrue(brush.IsFrozen, "Brush must be frozen.");
+                Assert.Equal(Colors.Red, brush.Color);
+                Assert.True(brush.IsFrozen, "Brush must be frozen.");
             });
         }
 
         /// <summary>
         /// BrushFactory.Build must emit both the Color token and the Brush twin for semi-transparent colors.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void BrushFactory_Build_PreservesAlphaChannel()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -179,9 +178,9 @@ namespace Fluence.Wpf.Tests.Theming
                 ResourceDictionary d = BrushFactory.Build(colors);
 
                 Color stored = (Color)d["AlphaColor"];
-                Assert.AreEqual(semiTransparent, stored, "Color token must preserve alpha.");
+                Assert.Equal(semiTransparent, stored);
                 SolidColorBrush brush = (SolidColorBrush)d["AlphaColorBrush"];
-                Assert.AreEqual((byte)0x80, brush.Color.A, "Brush alpha must match.");
+                Assert.Equal((byte)0x80, brush.Color.A);
             });
         }
 
@@ -190,43 +189,43 @@ namespace Fluence.Wpf.Tests.Theming
         /// <summary>
         /// BaseColorTables.Load for Light must return a non-empty map containing known tokens.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void BaseColorTables_Load_Light_ReturnsColors()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.Light);
-                Assert.IsGreaterThan(10, m.Count, "BaseColorTables.Load(Light) must return many color entries.");
-                Assert.IsTrue(m.ContainsKey("TextFillColorPrimary"), "TextFillColorPrimary must be present.");
+                Assert.True(m.Count > 10, "BaseColorTables.Load(Light) must return many color entries.");
+                Assert.True(m.ContainsKey("TextFillColorPrimary"), "TextFillColorPrimary must be present.");
             });
         }
 
         /// <summary>
         /// BaseColorTables.Load for Dark must return entries distinct from Light where expected.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void BaseColorTables_Load_Dark_ReturnsColors()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.Dark);
-                Assert.IsGreaterThan(10, m.Count, "BaseColorTables.Load(Dark) must return many color entries.");
+                Assert.True(m.Count > 10, "BaseColorTables.Load(Dark) must return many color entries.");
             });
         }
 
         /// <summary>
         /// BaseColorTables.Load for HighContrast must return entries.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void BaseColorTables_Load_HighContrast_ReturnsColors()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.HighContrast);
-                Assert.IsGreaterThan(5, m.Count, "BaseColorTables.Load(HighContrast) must return color entries.");
+                Assert.True(m.Count > 5, "BaseColorTables.Load(HighContrast) must return color entries.");
             });
         }
 
@@ -237,7 +236,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// and populate ResolvedTheme and CurrentPalette. The test resets state before and after
         /// to avoid leaking into other fixtures.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FluenceThemeEngine_Apply_PublishesResourcesAndSetsState()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -251,13 +250,13 @@ namespace Fluence.Wpf.Tests.Theming
                 FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustom(TestBlue));
                 FluenceThemeEngine.Apply(ApplicationTheme.Light);
 
-                Assert.AreEqual(ApplicationTheme.Light, FluenceThemeEngine.ResolvedTheme, "ResolvedTheme must be Light.");
-                Assert.AreEqual(TestBlue, FluenceThemeEngine.CurrentPalette.Accent, "Palette accent must match custom color.");
-                Assert.IsGreaterThan(0, app.Resources.MergedDictionaries.Count, "MergedDictionaries must be non-empty after Apply.");
+                Assert.Equal(ApplicationTheme.Light, FluenceThemeEngine.ResolvedTheme);
+                Assert.Equal(TestBlue, FluenceThemeEngine.CurrentPalette.Accent);
+                Assert.True(app.Resources.MergedDictionaries.Count > 0, "MergedDictionaries must be non-empty after Apply.");
 
                 // Verify at least one color key is present in the published dictionary
                 object? accentFill = app.Resources.MergedDictionaries[0]["AccentFillColorDefault"];
-                Assert.IsNotNull(accentFill, "AccentFillColorDefault must be present in the computed slot.");
+                Assert.NotNull(accentFill);
             });
 
             // Tear down after the smoke test so other fixtures see a clean state
@@ -274,7 +273,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// <summary>
         /// FluenceThemeEngine.Apply called twice must replace slot [0] rather than inserting a second entry.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FluenceThemeEngine_Apply_ReplacesComputedSlotOnSecondCall()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -294,9 +293,9 @@ namespace Fluence.Wpf.Tests.Theming
                 int countAfterSecond = app.Resources.MergedDictionaries.Count;
                 ResourceDictionary slotZeroSecond = app.Resources.MergedDictionaries[0];
 
-                Assert.AreEqual(countAfterFirst, countAfterSecond, "Dictionary count must not grow on second Apply.");
-                Assert.AreNotSame(slotZeroFirst, slotZeroSecond, "Slot [0] must be replaced (not same reference) on second Apply.");
-                Assert.AreEqual(ApplicationTheme.Dark, FluenceThemeEngine.ResolvedTheme, "ResolvedTheme must be Dark after second Apply.");
+                Assert.Equal(countAfterFirst, countAfterSecond);
+                Assert.NotSame(slotZeroFirst, slotZeroSecond);
+                Assert.Equal(ApplicationTheme.Dark, FluenceThemeEngine.ResolvedTheme);
             });
 
             // Tear down
@@ -320,7 +319,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// Application instance is detached from the private static backing field for the duration of
         /// the Apply call and restored immediately afterward, leaving the shared instance untouched.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FluenceThemeEngine_Apply_DoesNotRaisePublished_WhenApplicationIsNull()
         {
             WpfTestSta.Dispatcher!.Invoke(static () =>
@@ -338,7 +337,7 @@ namespace Fluence.Wpf.Tests.Theming
                 try
                 {
                     appInstanceField.SetValue(obj: null, value: null);
-                    Assert.IsNull(Application.Current, "Test precondition: Application.Current must be null.");
+                    Assert.Null(Application.Current);
 
                     FluenceThemeEngine.Apply(ApplicationTheme.Light);
                 }
@@ -348,9 +347,9 @@ namespace Fluence.Wpf.Tests.Theming
                     FluenceThemeEngine.Published -= OnPublished;
                 }
 
-                Assert.AreEqual(0, raised, "Published must not fire when Application.Current is null.");
-                Assert.IsNotNull(Application.Current, "Application.Current must be restored for subsequent tests.");
-                Assert.AreSame(app, Application.Current, "The restored Application must be the same shared instance.");
+                Assert.Equal(0, raised);
+                Assert.NotNull(Application.Current);
+                Assert.Same(app, Application.Current);
             });
 
             // Tear down

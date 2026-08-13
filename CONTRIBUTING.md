@@ -29,7 +29,7 @@ All source and text files are UTF-8 with BOM and LF; `string.IsNullOrEmpty()` is
 
 ## Adding or changing a control
 
-Follow the control-authoring checklist in [AGENTS.md](AGENTS.md) Section 5. In short: subclass the closest WPF control and override `DefaultStyleKey`; add a standalone `Themes/Controls/<ControlName>.xaml` merged from `Themes/Generic.xaml`; reuse canonical WinUI-style resource keys with `DynamicResource` for anything theme-, accent-, or high-contrast-bound (never inline hex colors); add a design-time preview entry; extend the gallery demo; and add MSTest coverage.
+extend the gallery demo; and add xUnit test coverage.
 
 ## Reference authority
 

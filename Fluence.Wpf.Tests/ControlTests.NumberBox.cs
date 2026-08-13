@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
@@ -35,12 +34,13 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void NumberBox_UpButton_Click_IncrementsValueBySmallChange()
         {
             RunOnStaThread(static () =>
@@ -67,7 +67,7 @@ namespace Fluence.Wpf.Tests
 
                     _ = numberBox.ApplyTemplate();
                     RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
-                    Assert.IsNotNull(upButton, "NumberBox template must expose PART_UpButton.");
+                    Assert.NotNull(upButton);
 
                     // Use the UI Automation peer's IInvokeProvider.Invoke, which calls the
                     // button's protected OnClick() and raises ClickEvent through the proper
@@ -77,10 +77,8 @@ namespace Fluence.Wpf.Tests
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(6.0, numberBox.Value,
-                        "PART_UpButton.Click must increment NumberBox.Value by SmallChange.");
-                    Assert.AreEqual("6", numberBox.Text, StringComparer.Ordinal,
-                        "NumberBox.Text must mirror Value after an increment.");
+                    Assert.Equal(6.0, numberBox.Value);
+                    Assert.Equal("6", numberBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -93,7 +91,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_DownButton_Click_DecrementsValueBySmallChange()
         {
             RunOnStaThread(static () =>
@@ -120,17 +118,15 @@ namespace Fluence.Wpf.Tests
 
                     _ = numberBox.ApplyTemplate();
                     RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
-                    Assert.IsNotNull(downButton, "NumberBox template must expose PART_DownButton.");
+                    Assert.NotNull(downButton);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(downButton);
                     IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(4.0, numberBox.Value,
-                        "PART_DownButton.Click must decrement NumberBox.Value by SmallChange.");
-                    Assert.AreEqual("4", numberBox.Text, StringComparer.Ordinal,
-                        "NumberBox.Text must mirror Value after a decrement.");
+                    Assert.Equal(4.0, numberBox.Value);
+                    Assert.Equal("4", numberBox.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -143,7 +139,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_SpinButton_UsesClickModePress()
         {
             // Regression: the spin buttons must fire Click immediately on MouseDown so
@@ -174,13 +170,11 @@ namespace Fluence.Wpf.Tests
                     _ = numberBox.ApplyTemplate();
                     RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
                     RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
-                    Assert.IsNotNull(upButton);
-                    Assert.IsNotNull(downButton);
+                    Assert.NotNull(upButton);
+                    Assert.NotNull(downButton);
 
-                    Assert.AreEqual(ClickMode.Press, upButton.ClickMode,
-                        "PART_UpButton must use ClickMode=Press so a quick press-release fires Click immediately.");
-                    Assert.AreEqual(ClickMode.Press, downButton.ClickMode,
-                        "PART_DownButton must use ClickMode=Press so a quick press-release fires Click immediately.");
+                    Assert.Equal(ClickMode.Press, upButton.ClickMode);
+                    Assert.Equal(ClickMode.Press, downButton.ClickMode);
                 }
                 finally
                 {
@@ -193,7 +187,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_SpinButtons_AreNotTabStops()
         {
             RunOnStaThread(static () =>
@@ -220,11 +214,11 @@ namespace Fluence.Wpf.Tests
 
                     RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
                     RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
-                    Assert.IsNotNull(upButton, "NumberBox template must expose PART_UpButton.");
-                    Assert.IsNotNull(downButton, "NumberBox template must expose PART_DownButton.");
-                    Assert.IsFalse(upButton.IsTabStop,
+                    Assert.NotNull(upButton);
+                    Assert.NotNull(downButton);
+                    Assert.False(upButton.IsTabStop,
                         "Inline spin increment button should not become a separate tab stop.");
-                    Assert.IsFalse(downButton.IsTabStop,
+                    Assert.False(downButton.IsTabStop,
                         "Inline spin decrement button should not become a separate tab stop.");
                 }
                 finally
@@ -238,7 +232,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_SpinPanel_HasWinUiCanonicalMargin()
         {
             // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from
@@ -267,15 +261,11 @@ namespace Fluence.Wpf.Tests
                     _ = numberBox.ApplyTemplate();
 
                     StackPanel? spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
-                    Assert.IsNotNull(spinPanel, "NumberBox template must expose SpinPanel.");
-                    Assert.AreEqual(0.0, spinPanel.Margin.Left,
-                        "SpinPanel.Margin.Left must be 0.");
-                    Assert.AreEqual(1.0, spinPanel.Margin.Top,
-                        "SpinPanel.Margin.Top must be 1 (WinUI canonical vertical inset).");
-                    Assert.AreEqual(2.0, spinPanel.Margin.Right,
-                        "SpinPanel.Margin.Right must be 2 (WinUI canonical right inset from border edge).");
-                    Assert.AreEqual(1.0, spinPanel.Margin.Bottom,
-                        "SpinPanel.Margin.Bottom must be 1 (WinUI canonical vertical inset).");
+                    Assert.NotNull(spinPanel);
+                    Assert.Equal(0.0, spinPanel.Margin.Left);
+                    Assert.Equal(1.0, spinPanel.Margin.Top);
+                    Assert.Equal(2.0, spinPanel.Margin.Right);
+                    Assert.Equal(1.0, spinPanel.Margin.Bottom);
                 }
                 finally
                 {
@@ -288,7 +278,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_CompactSpinPanel_ReservesLayoutWhenHidden()
         {
             RunOnStaThread(static () =>
@@ -314,17 +304,15 @@ namespace Fluence.Wpf.Tests
                     _ = numberBox.ApplyTemplate();
                     StackPanel? spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
                     TextBox? textBox = numberBox.Template.FindName("PART_TextBox", numberBox) as TextBox;
-                    Assert.IsNotNull(spinPanel, "NumberBox template must expose SpinPanel.");
-                    Assert.IsNotNull(textBox, "NumberBox template must expose PART_TextBox.");
-                    Assert.AreEqual(Visibility.Visible, spinPanel.Visibility,
-                        "Compact mode should reserve spin-panel layout space while the buttons are hidden.");
-                    Assert.AreEqual(0.0, spinPanel.Opacity,
-                        "Compact mode should hide the reserved spin panel visually before hover or focus.");
-                    Assert.IsFalse(spinPanel.IsHitTestVisible,
+                    Assert.NotNull(spinPanel);
+                    Assert.NotNull(textBox);
+                    Assert.Equal(Visibility.Visible, spinPanel.Visibility);
+                    Assert.Equal(0.0, spinPanel.Opacity);
+                    Assert.False(spinPanel.IsHitTestVisible,
                         "Invisible compact spin buttons should not receive pointer input.");
 
                     double heightBeforeFocus = numberBox.ActualHeight;
-                    Assert.IsTrue(spinPanel.ActualWidth > 0.0,
+                    Assert.True(spinPanel.ActualWidth > 0.0,
                         "Compact mode should reserve the spin-button width to avoid layout shifts.");
 
                     _ = textBox.Focus();
@@ -332,11 +320,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(heightBeforeFocus, numberBox.ActualHeight, 0.1,
-                        "Showing compact spin buttons on focus should not change NumberBox height.");
-                    Assert.AreEqual(1.0, spinPanel.Opacity,
-                        "Compact spin buttons should become visible while the NumberBox has keyboard focus.");
-                    Assert.IsTrue(spinPanel.IsHitTestVisible,
+                    Assert.Equal(heightBeforeFocus, numberBox.ActualHeight, 0.1);
+                    Assert.Equal(1.0, spinPanel.Opacity);
+                    Assert.True(spinPanel.IsHitTestVisible,
                         "Visible compact spin buttons should receive pointer input.");
                 }
                 finally
@@ -350,7 +336,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_DirectValue_ClampsPositiveInfinityToMaximum()
         {
             RunOnStaThread(static () =>
@@ -362,12 +348,11 @@ namespace Fluence.Wpf.Tests
                     Value = double.PositiveInfinity,
                 };
 
-                Assert.AreEqual(5.0, numberBox.Value,
-                    "Direct Value assignment must use the same maximum clamp as spin-button changes.");
+                Assert.Equal(5.0, numberBox.Value);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_DirectValue_NormalizesReversedRangeBeforeClamping()
         {
             RunOnStaThread(static () =>
@@ -379,12 +364,11 @@ namespace Fluence.Wpf.Tests
                     Value = 12,
                 };
 
-                Assert.AreEqual(10.0, numberBox.Value,
-                    "Direct Value assignment must normalize reversed Minimum/Maximum before clamping.");
+                Assert.Equal(10.0, numberBox.Value);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_Click_ClampsToMaximum()
         {
             RunOnStaThread(static () =>
@@ -413,15 +397,14 @@ namespace Fluence.Wpf.Tests
 
                     _ = numberBox.ApplyTemplate();
                     RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
-                    Assert.IsNotNull(upButton);
+                    Assert.NotNull(upButton);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
                     IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(5.0, numberBox.Value,
-                        "Up-click at Maximum must clamp Value to Maximum (no overshoot).");
+                    Assert.Equal(5.0, numberBox.Value);
                 }
                 finally
                 {
@@ -434,7 +417,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_Header_BecomesAccessibleName()
         {
             RunOnStaThread(static () =>
@@ -454,12 +437,12 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Quantity", peer.GetName(), StringComparison.Ordinal),
                         "NumberBox Header must be the accessible name when no explicit AutomationProperties.Name is set.");
 
                     numberBox.SetValue(AutomationProperties.NameProperty, "Explicit");
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
                         "Explicit AutomationProperties.Name must win over Header.");
                 }
@@ -474,7 +457,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_Peer_LargeChange_MatchesControl()
         {
             RunOnStaThread(static () =>
@@ -501,16 +484,14 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
 
-                    Assert.AreEqual(
+                    Assert.Equal(
                         10.0,
                         range.LargeChange,
-                        0.001,
-                        "IRangeValueProvider.LargeChange must reflect NumberBox.LargeChange, not SmallChange.");
-                    Assert.AreEqual(
+                        0.001);
+                    Assert.Equal(
                         1.0,
                         range.SmallChange,
-                        0.001,
-                        "IRangeValueProvider.SmallChange must reflect NumberBox.SmallChange.");
+                        0.001);
                 }
                 finally
                 {

@@ -26,16 +26,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Automation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Automation.Peers;
+using Fluence.Wpf.Automation;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void HyperlinkButton_Peer_IsHyperlinkButtonAutomationPeer()
         {
             RunOnStaThread(static () =>
@@ -55,10 +55,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    Assert.IsInstanceOfType(
-                        peer,
-                        typeof(HyperlinkButtonAutomationPeer),
-                        "HyperlinkButton must create a HyperlinkButtonAutomationPeer.");
+                    _ = Assert.IsAssignableFrom<HyperlinkButtonAutomationPeer>(peer);
                 }
                 finally
                 {
@@ -71,7 +68,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void HyperlinkButton_Peer_ReportsHyperlinkControlType()
         {
             RunOnStaThread(static () =>
@@ -91,10 +88,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    Assert.AreEqual(
+                    Assert.Equal(
                         AutomationControlType.Hyperlink,
-                        peer.GetAutomationControlType(),
-                        "HyperlinkButton peer must report AutomationControlType.Hyperlink, not Button.");
+                        peer.GetAutomationControlType());
                 }
                 finally
                 {

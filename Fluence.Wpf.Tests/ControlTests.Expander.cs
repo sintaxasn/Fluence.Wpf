@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Tests
         // WI-3 B13  Expander chevron rotation easing
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void Expander_StyleApplies_RootBorderFound()
         {
             WpfTestSta.Invoke(static () =>
@@ -59,12 +59,12 @@ namespace Fluence.Wpf.Tests
 
                 // RootBorder is the template root - proves Fluence style applied.
                 Border? rootBorder = FindVisualChildByName<Border>(expander, "RootBorder");
-                Assert.IsNotNull(rootBorder, "RootBorder must exist in Expander template (Fluence style applied).");
+                Assert.NotNull(rootBorder);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_ChevronPath_ExistsWithRotateTransformOnParent()
         {
             WpfTestSta.Invoke(static () =>
@@ -78,22 +78,20 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Path? chevron = FindVisualChildByName<Path>(expander, "Chevron");
-                Assert.IsNotNull(chevron, "Chevron Path must exist in Expander header template.");
+                Assert.NotNull(chevron);
 
                 // Parent Border owns the RotateTransform.
                 Border? parent = VisualTreeHelper.GetParent(chevron) as Border;
-                Assert.IsNotNull(parent, "Chevron parent must be a Border.");
+                Assert.NotNull(parent);
 
                 RotateTransform? rt = parent.RenderTransform as RotateTransform;
-                Assert.IsNotNull(rt,
-                    "Border containing Chevron must have RenderTransform=RotateTransform (ChevronRotation).");
-                Assert.AreEqual(0.0, rt.Angle, 1.0,
-                    "ChevronRotation.Angle must be 0 when Expander is collapsed (WinUI Expander_themeresources.xaml).");
+                Assert.NotNull(rt);
+                Assert.Equal(0.0, rt.Angle, 1.0);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_Expanded_ContentVisibilityIsVisible()
         {
             WpfTestSta.Invoke(static () =>
@@ -108,12 +106,12 @@ namespace Fluence.Wpf.Tests
 
                 // Structural check: ExpandSite ContentPresenter is present.
                 ContentPresenter? site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite");
-                Assert.IsNotNull(site, "ExpandSite ContentPresenter must exist in Expander template.");
+                Assert.NotNull(site);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_HeaderBorder_CornerRadius4()
         {
             WpfTestSta.Invoke(static () =>
@@ -127,9 +125,8 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Border? headerBorder = FindVisualChildByName<Border>(expander, "HeaderBorder");
-                Assert.IsNotNull(headerBorder, "HeaderBorder must exist in ExpanderHeaderToggleButton template.");
-                Assert.AreEqual(new CornerRadius(4), headerBorder.CornerRadius,
-                    "HeaderBorder CornerRadius must be 4 (matching WinUI Expander corner spec).");
+                Assert.NotNull(headerBorder);
+                Assert.Equal(new CornerRadius(4), headerBorder.CornerRadius);
                 w.Close();
             });
         }
@@ -138,7 +135,7 @@ namespace Fluence.Wpf.Tests
         // WinUI content slide: expand/collapse translate the content behind the clip
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void Expander_ContentSlideParts_PresentWithClipAndInlineTranslate()
         {
             WpfTestSta.Invoke(static () =>
@@ -154,19 +151,17 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Border? contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder");
-                    Assert.IsNotNull(contentBorder, "PART_ContentBorder must exist in the Expander template.");
-                    Assert.IsTrue(contentBorder.ClipToBounds,
+                    Assert.NotNull(contentBorder);
+                    Assert.True(contentBorder.ClipToBounds,
                         "PART_ContentBorder must clip its bounds so the content slides behind the clip.");
 
                     Grid? grid = VisualTreeHelper.GetParent(contentBorder) as Grid;
-                    Assert.IsNotNull(grid, "PART_ContentBorder must sit inside the row-swap Grid.");
-                    Assert.AreEqual(2, grid.RowDefinitions.Count,
-                        "The Expander template Grid must keep its header/content row pair.");
+                    Assert.NotNull(grid);
+                    Assert.Equal(2, grid.RowDefinitions.Count);
 
                     ContentPresenter? site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite");
-                    Assert.IsNotNull(site, "ExpandSite ContentPresenter must exist in the Expander template.");
-                    Assert.IsInstanceOfType(site.RenderTransform, typeof(TranslateTransform),
-                        "ExpandSite must carry the inline TranslateTransform installed by OnApplyTemplate.");
+                    Assert.NotNull(site);
+                    _ = Assert.IsAssignableFrom<TranslateTransform>(site.RenderTransform);
                 }
                 finally
                 {
@@ -175,7 +170,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_ExpandSlide_RestsAtZeroWithStarContentRow()
         {
             WpfTestSta.Invoke(static () =>
@@ -191,19 +186,18 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
-                        ?? throw new AssertFailedException("PART_ContentBorder must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
                     Grid grid = (Grid)VisualTreeHelper.GetParent(contentBorder);
                     ContentPresenter site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite")
-                        ?? throw new AssertFailedException("ExpandSite must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("ExpandSite must exist.");
                     TranslateTransform translate = (TranslateTransform)site.RenderTransform;
 
-                    Assert.AreEqual(0.0, grid.RowDefinitions[1].Height.Value, 0.001,
-                        "The content row must be closed at collapsed rest.");
+                    Assert.Equal(0.0, grid.RowDefinitions[1].Height.Value, 0.001);
 
                     expander.IsExpanded = true;
-                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
+                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
                         "The expand slide must start from a negative offset (content behind the clip).");
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(w.Dispatcher, 4000,
                             () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[1].Height.IsStar),
                         "The content must rest at translate 0 with a star content row after the expand slide.");
@@ -215,7 +209,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_CollapseSlide_ClosesRowAndResetsTranslate()
         {
             WpfTestSta.Invoke(static () =>
@@ -231,17 +225,17 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
-                        ?? throw new AssertFailedException("PART_ContentBorder must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
                     Grid grid = (Grid)VisualTreeHelper.GetParent(contentBorder);
                     ContentPresenter site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite")
-                        ?? throw new AssertFailedException("ExpandSite must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("ExpandSite must exist.");
                     TranslateTransform translate = (TranslateTransform)site.RenderTransform;
 
-                    Assert.IsTrue(grid.RowDefinitions[1].Height.IsStar,
+                    Assert.True(grid.RowDefinitions[1].Height.IsStar,
                         "Initial IsExpanded=true must open the content row without animation.");
 
                     expander.IsExpanded = false;
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(w.Dispatcher, 4000,
                             () => !grid.RowDefinitions[1].Height.IsStar
                                 && grid.RowDefinitions[1].Height.Value < 0.001
@@ -255,7 +249,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_RapidToggleMidFlight_SettlesCollapsedWithoutStuckOffset()
         {
             WpfTestSta.Invoke(static () =>
@@ -271,19 +265,19 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
-                        ?? throw new AssertFailedException("PART_ContentBorder must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
                     Grid grid = (Grid)VisualTreeHelper.GetParent(contentBorder);
                     ContentPresenter site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite")
-                        ?? throw new AssertFailedException("ExpandSite must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("ExpandSite must exist.");
                     TranslateTransform translate = (TranslateTransform)site.RenderTransform;
 
                     // Interrupt the 333 ms expand slide mid-flight with a collapse.
                     expander.IsExpanded = true;
-                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
+                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
                         "The expand slide must be in flight before the interrupting collapse.");
                     expander.IsExpanded = false;
 
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(w.Dispatcher, 4000,
                             () => !grid.RowDefinitions[1].Height.IsStar
                                 && grid.RowDefinitions[1].Height.Value < 0.001
@@ -297,7 +291,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Expander_ExpandUp_SlidesFromBelowIntoTopContentRow()
         {
             WpfTestSta.Invoke(static () =>
@@ -319,21 +313,19 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
-                        ?? throw new AssertFailedException("PART_ContentBorder must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
                     Grid grid = (Grid)VisualTreeHelper.GetParent(contentBorder);
                     ContentPresenter site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite")
-                        ?? throw new AssertFailedException("ExpandSite must exist.");
+                        ?? throw new Xunit.Sdk.XunitException("ExpandSite must exist.");
                     TranslateTransform translate = (TranslateTransform)site.RenderTransform;
 
-                    Assert.AreEqual(0, Grid.GetRow(contentBorder),
-                        "ExpandDirection=Up must place the content border in the top row.");
-                    Assert.AreEqual(0.0, grid.RowDefinitions[0].Height.Value, 0.001,
-                        "The Up content row must be closed at collapsed rest.");
+                    Assert.Equal(0, Grid.GetRow(contentBorder));
+                    Assert.Equal(0.0, grid.RowDefinitions[0].Height.Value, 0.001);
 
                     expander.IsExpanded = true;
-                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.Y > 0),
+                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y > 0),
                         "The Up expand slide must start from a positive offset (content below the header).");
-                    Assert.IsTrue(
+                    Assert.True(
                         WaitUntil(w.Dispatcher, 4000,
                             () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[0].Height.IsStar),
                         "The Up content must rest at translate 0 with a star top row after the expand slide.");

@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
@@ -35,6 +34,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Tests
 {

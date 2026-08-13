@@ -33,7 +33,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
         // WI-3 C19  TextBox + PasswordBox PlaceholderText brush fix
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void TextBox_PlaceholderTextBlock_UsesTertiaryBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -62,22 +62,21 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 TextBlock? placeholder = FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock");
-                Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in TextBox template.");
+                Assert.NotNull(placeholder);
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "TextFillColorTertiaryBrush resource must resolve.");
+                Assert.NotNull(expected);
 
                 SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
-                Assert.IsNotNull(actual, "PlaceholderTextBlock.Foreground must be a SolidColorBrush.");
-                Assert.AreEqual(
+                Assert.NotNull(actual);
+                Assert.Equal(
                     expected.Color,
-                    actual.Color,
-                    "TextBox PlaceholderTextBlock.Foreground must be TextFillColorTertiaryBrush per WI-3 C19.");
+                    actual.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void PasswordBox_PlaceholderTextBlock_UsesTertiaryBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -91,22 +90,21 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 TextBlock? placeholder = FindVisualChildByName<TextBlock>(pb, "PlaceholderTextBlock");
-                Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in PasswordBox template.");
+                Assert.NotNull(placeholder);
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "TextFillColorTertiaryBrush resource must resolve.");
+                Assert.NotNull(expected);
 
                 SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
-                Assert.IsNotNull(actual, "PlaceholderTextBlock.Foreground must be a SolidColorBrush.");
-                Assert.AreEqual(
+                Assert.NotNull(actual);
+                Assert.Equal(
                     expected.Color,
-                    actual.Color,
-                    "PasswordBox PlaceholderTextBlock.Foreground must be TextFillColorTertiaryBrush per WI-3 C19.");
+                    actual.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void PasswordBox_Unloaded_StopsCapsLockPollingTimer()
         {
             WpfTestSta.Invoke(static () =>
@@ -125,21 +123,21 @@ namespace Fluence.Wpf.Tests
                 FieldInfo? capsPollTimer = typeof(Controls.PasswordBox).GetField(
                     "_capsPollTimer",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                Assert.IsNotNull(startCapsPoll, "PasswordBox must expose the expected internal caps-poll start method.");
-                Assert.IsNotNull(capsPollTimer, "PasswordBox must keep the expected caps-poll timer field.");
+                Assert.NotNull(startCapsPoll);
+                Assert.NotNull(capsPollTimer);
 
                 _ = startCapsPoll.Invoke(pb, parameters: null);
-                Assert.IsNotNull(capsPollTimer.GetValue(pb), "The caps-poll timer should be active after polling starts.");
+                Assert.NotNull(capsPollTimer.GetValue(pb));
 
                 pb.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, pb));
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.IsNull(capsPollTimer.GetValue(pb), "PasswordBox must stop caps-polling when unloaded.");
+                Assert.Null(capsPollTimer.GetValue(pb));
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_PlaceholderTextBlock_ThemeCycle_StillTertiaryBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -156,22 +154,21 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 TextBlock? placeholder = FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock");
-                Assert.IsNotNull(placeholder, "PlaceholderTextBlock must remain present after theme cycle.");
+                Assert.NotNull(placeholder);
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "TextFillColorTertiaryBrush must resolve after theme cycle.");
+                Assert.NotNull(expected);
 
                 SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
-                Assert.IsNotNull(actual);
-                Assert.AreEqual(
+                Assert.NotNull(actual);
+                Assert.Equal(
                     expected.Color,
-                    actual.Color,
-                    "PlaceholderTextBlock.Foreground must track TextFillColorTertiaryBrush after theme cycle.");
+                    actual.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationLine_IsHiddenUntilFocused()
         {
             WpfTestSta.Invoke(static () =>
@@ -190,25 +187,25 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Border? validationLine = FindVisualChildByName<Border>(tb, "PART_ValidationLine");
-                Assert.IsNotNull(validationLine, "TextBox template must expose PART_ValidationLine.");
-                Assert.AreEqual(0.0, validationLine.Opacity, 0.001, "Validation underline should be hidden before focus.");
+                Assert.NotNull(validationLine);
+                Assert.Equal(0.0, validationLine.Opacity, 0.001);
 
                 FocusManager.SetFocusedElement(w, tb);
                 _ = Keyboard.Focus(tb);
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(1.0, validationLine.Opacity, 0.001, "Validation underline should appear while focused.");
+                Assert.Equal(1.0, validationLine.Opacity, 0.001);
                 SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "SystemFillColorCriticalBrush must resolve.");
+                Assert.NotNull(expected);
                 SolidColorBrush? actual = validationLine.Background as SolidColorBrush;
-                Assert.IsNotNull(actual, "Validation underline should use a brush background.");
-                Assert.AreEqual(expected.Color, actual.Color, "Error validation underline should use the critical brush.");
+                Assert.NotNull(actual);
+                Assert.Equal(expected.Color, actual.Color);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_HelperAndValidationText_UsesNinePixelTopMarginAndCenteredContent()
         {
             WpfTestSta.Invoke(static () =>
@@ -227,18 +224,15 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 TextBlock? helper = FindVisualChildByName<TextBlock>(tb, "PART_HelperText");
-                Assert.IsNotNull(helper, "TextBox template must expose PART_HelperText.");
+                Assert.NotNull(helper);
                 TextBlock? icon = FindVisualChildByName<TextBlock>(tb, "PART_ValidationIcon");
-                Assert.IsNotNull(icon, "TextBox template must expose PART_ValidationIcon.");
+                Assert.NotNull(icon);
 
                 StackPanel? helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
-                Assert.IsNotNull(helperRow, "Helper text should be hosted in the validation/helper row.");
-                Assert.AreEqual(new Thickness(12, 9, 12, 0), helperRow.Margin,
-                    "Helper and validation text should sit 9px below the input chrome.");
-                Assert.AreEqual(VerticalAlignment.Center, helper.VerticalAlignment,
-                    "Helper text should be vertically centered with the validation icon.");
-                Assert.AreEqual(VerticalAlignment.Center, icon.VerticalAlignment,
-                    "Validation icon should be vertically centered with helper text.");
+                Assert.NotNull(helperRow);
+                Assert.Equal(new Thickness(12, 9, 12, 0), helperRow.Margin);
+                Assert.Equal(VerticalAlignment.Center, helper.VerticalAlignment);
+                Assert.Equal(VerticalAlignment.Center, icon.VerticalAlignment);
 
                 w.Close();
             });
@@ -248,7 +242,7 @@ namespace Fluence.Wpf.Tests
         // Task 9 -- HelpText a11y: validation message surfaced via AutomationProperties
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationError_SetsHelpText()
         {
             WpfTestSta.Invoke(static () =>
@@ -267,16 +261,15 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 string helpText = AutomationProperties.GetHelpText(tb);
-                Assert.AreEqual(
+                Assert.Equal(
                     "Value is required",
-                    helpText, StringComparer.Ordinal,
-                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Error.");
+                    helpText, StringComparer.Ordinal);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationNone_ClearsHelpText()
         {
             WpfTestSta.Invoke(static () =>
@@ -299,16 +292,15 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 string helpText = AutomationProperties.GetHelpText(tb);
-                Assert.AreEqual(
+                Assert.Equal(
                     string.Empty,
-                    helpText, StringComparer.Ordinal,
-                    "AutomationProperties.HelpText must be cleared when ValidationState returns to None.");
+                    helpText, StringComparer.Ordinal);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationWarning_SetsHelpText()
         {
             WpfTestSta.Invoke(static () =>
@@ -327,16 +319,15 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 string helpText = AutomationProperties.GetHelpText(tb);
-                Assert.AreEqual(
+                Assert.Equal(
                     "Check the value",
-                    helpText, StringComparer.Ordinal,
-                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Warning.");
+                    helpText, StringComparer.Ordinal);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationSuccess_ClearsHelpText()
         {
             WpfTestSta.Invoke(static () =>
@@ -355,19 +346,17 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // Error state must have set HelpText first (precondition).
-                Assert.AreEqual(
+                Assert.Equal(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "Precondition: Error state must set HelpText.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 // Transition to Success -- HelpText must be cleared.
                 tb.ValidationState = ValidationState.Success;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(
+                Assert.Equal(
                     string.Empty,
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "AutomationProperties.HelpText must be cleared when ValidationState transitions to Success.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 w.Close();
             });
@@ -388,7 +377,7 @@ namespace Fluence.Wpf.Tests
         /// net472 without the COM server running; therefore, this test validates observable
         /// state invariants rather than raw event counts.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TextBox_ValidationError_HelpText_StableAfterAdditionalKeystrokes()
         {
             WpfTestSta.Invoke(static () =>
@@ -407,10 +396,9 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // Precondition: HelpText is set after the initial Error transition.
-                Assert.AreEqual(
+                Assert.Equal(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "Precondition: HelpText must be set after entering Error state.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 // Simulate repeated keystrokes while staying in Error with the same message.
                 // Each Text assignment triggers OnTextChanged -> UpdateHelperText without
@@ -423,27 +411,24 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // HelpText must remain stable -- UpdateHelperText is idempotent for SetHelpText.
-                Assert.AreEqual(
+                Assert.Equal(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "HelpText must remain stable while ValidationState and ValidationMessage are unchanged.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 // Transition to None resets tracked state, then re-entering Error fires fresh.
                 tb.ValidationState = ValidationState.None;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(
+                Assert.Equal(
                     string.Empty,
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "HelpText must be cleared after transitioning to None.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 tb.ValidationState = ValidationState.Error;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(
+                Assert.Equal(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
-                    "HelpText must be set again after re-entering Error state following a None reset.");
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 w.Close();
             });

@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Automation;
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Automation.Peers;
+using Fluence.Wpf.Automation;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DropDownButton_AutomationPeer_ReportsButtonControlType()
         {
             RunOnStaThread(static () =>
@@ -93,8 +93,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dropDownButton);
-                    Assert.AreEqual(AutomationControlType.Button, peer.GetAutomationControlType(),
-                        "DropDownButton is not a split control; WinUI reports it as Button.");
+                    Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
                 }
                 finally
                 {
@@ -107,7 +106,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NumberBox_ValueChanged_RaisesAutomationPeerValueChanged()
         {
             RunOnStaThread(static () =>
@@ -134,17 +133,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
-                    _ = Assert.IsInstanceOfType<NumberBoxValueChangedSpyPeer>(peer,
-                        "Test double peer must be installed so the wiring can be observed.");
+                    _ = Assert.IsAssignableFrom<NumberBoxValueChangedSpyPeer>(peer);
 
                     numberBox.Value = 42;
 
-                    Assert.AreEqual(1, numberBox.SpyPeer!.RaiseValueChangedCallCount,
-                        "Changing NumberBox.Value must raise a UIA ValueChanged notification through the automation peer.");
-                    Assert.AreEqual(10d, numberBox.SpyPeer.LastOldValue,
-                        "The automation peer must be notified of the previous value.");
-                    Assert.AreEqual(42d, numberBox.SpyPeer.LastNewValue,
-                        "The automation peer must be notified of the new value.");
+                    Assert.Equal(1, numberBox.SpyPeer!.RaiseValueChangedCallCount);
+                    Assert.Equal(10d, numberBox.SpyPeer.LastOldValue);
+                    Assert.Equal(42d, numberBox.SpyPeer.LastNewValue);
                 }
                 finally
                 {

@@ -26,10 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -43,7 +43,7 @@ namespace Fluence.Wpf.Tests
         // Separator
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void Separator_DefaultStyle_Applies()
         {
             WpfTestSta.Invoke(static () =>
@@ -58,12 +58,12 @@ namespace Fluence.Wpf.Tests
 
                 // Template applied - Border is the root of the template
                 Border? border = FindVisualChild<Border>(sep);
-                Assert.IsNotNull(border, "Separator template must contain a Border.");
+                Assert.NotNull(border);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Separator_Height_IsOne()
         {
             WpfTestSta.Invoke(static () =>
@@ -76,13 +76,12 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(1.0, sep.Height,
-                    "Separator Height must be 1 per .NET 10 WPF Fluent Separator style.");
+                Assert.Equal(1.0, sep.Height);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Separator_Background_UsesDividerStrokeColorDefaultBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -98,15 +97,14 @@ namespace Fluence.Wpf.Tests
                 SolidColorBrush? bg = sep.Background as SolidColorBrush;
                 SolidColorBrush? expected = app?.TryFindResource("DividerStrokeColorDefaultBrush") as SolidColorBrush;
 
-                Assert.IsNotNull(expected, "DividerStrokeColorDefaultBrush must resolve.");
-                Assert.IsNotNull(bg, "Separator.Background must be a SolidColorBrush.");
-                Assert.AreEqual(expected.Color, bg.Color,
-                    "Separator.Background must use DividerStrokeColorDefaultBrush.");
+                Assert.NotNull(expected);
+                Assert.NotNull(bg);
+                Assert.Equal(expected.Color, bg.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Separator_ThemeCycle_StyleRemainsApplied()
         {
             WpfTestSta.Invoke(static () =>
@@ -123,7 +121,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Border? border = FindVisualChild<Border>(sep);
-                Assert.IsNotNull(border, "Separator template Border must still exist after theme cycle.");
+                Assert.NotNull(border);
                 w.Close();
             });
         }

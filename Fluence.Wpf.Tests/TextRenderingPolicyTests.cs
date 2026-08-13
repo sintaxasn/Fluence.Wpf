@@ -26,8 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,13 +33,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
-    [TestClass]
     public class TextRenderingPolicyTests
     {
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicy()
         {
             WpfTestSta.Invoke(static () =>
@@ -60,12 +59,11 @@ namespace Fluence.Wpf.Tests
                 {
                     _ = window.ApplyTemplate();
 
-                    Assert.IsTrue(window.UseLayoutRounding, "FluenceWindow should enable layout rounding at the root.");
-                    Assert.IsTrue(window.SnapsToDevicePixels, "FluenceWindow should snap device pixels at the root.");
-                    Assert.AreEqual(
+                    Assert.True(window.UseLayoutRounding, "FluenceWindow should enable layout rounding at the root.");
+                    Assert.True(window.SnapsToDevicePixels, "FluenceWindow should snap device pixels at the root.");
+                    Assert.Equal(
                         ClearTypeHint.Auto,
-                        RenderOptions.GetClearTypeHint(window),
-                        "FluenceWindow must leave RenderOptions.ClearTypeHint at the WPF default (Auto) so the renderer picks ClearType for opaque surfaces and grayscale anti-aliasing for translucent surfaces. Forcing Enabled blocks the fallback and produces soft text over Mica / Acrylic / accent-backdrop layers.");
+                        RenderOptions.GetClearTypeHint(window));
                 }
                 finally
                 {
@@ -74,7 +72,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_ChildInheritsPixelAlignmentPolicy()
         {
             WpfTestSta.Invoke(static () =>
@@ -94,8 +92,8 @@ namespace Fluence.Wpf.Tests
                 {
                     _ = window.ApplyTemplate();
 
-                    Assert.IsTrue(child.UseLayoutRounding, "Children should inherit root layout rounding.");
-                    Assert.IsTrue(child.SnapsToDevicePixels, "Children should inherit root device-pixel snapping.");
+                    Assert.True(child.UseLayoutRounding, "Children should inherit root layout rounding.");
+                    Assert.True(child.SnapsToDevicePixels, "Children should inherit root device-pixel snapping.");
                 }
                 finally
                 {
@@ -104,7 +102,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ProductionSources_DoNotSetWpfTextOptionsRenderingPolicy()
         {
             string repoRoot = FindRepoRoot();
@@ -135,13 +133,10 @@ namespace Fluence.Wpf.Tests
                     .SelectMany(path => FindBannedFragments(path, bannedFragments)),
             ];
 
-            Assert.AreEqual(
-                0,
-                offenders.Length,
-                "Production sources should not set WPF TextOptions rendering policy: " + string.Join(Environment.NewLine, offenders));
+            Assert.Empty(offenders);
         }
 
-        [TestMethod]
+        [Fact]
         public void ProductionSources_SetDevicePixelSnappingOnlyOnFluenceWindowRoot()
         {
             string repoRoot = FindRepoRoot();
@@ -164,13 +159,10 @@ namespace Fluence.Wpf.Tests
                     .Select(GetRepoRelativePath),
             ];
 
-            Assert.AreEqual(
-                0,
-                offenders.Length,
-                "Only FluenceWindow should set SnapsToDevicePixels: " + string.Join(Environment.NewLine, offenders));
+            Assert.Empty(offenders);
         }
 
-        [TestMethod]
+        [Fact]
         public void TypographyStyles_ApplyTypeRampMetrics()
         {
             WpfTestSta.Invoke(static () =>
@@ -189,7 +181,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBlockExtensions_Typography_AppliesTypeRampStyleOnly()
         {
             WpfTestSta.Invoke(static () =>
@@ -200,18 +192,17 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.TextBlock textBlock = new();
                 textBlock.SetTypography(FluentTypography.Title);
 
-                Assert.AreSame(
+                Assert.Same(
                     application?.TryFindResource("TitleTextBlockStyle"),
-                    textBlock.Style,
-                    "Attached typography should use the named XAML style resource as its source of truth.");
-                Assert.AreEqual(28d, textBlock.FontSize, 0.01d);
-                Assert.AreEqual(FontWeights.SemiBold, textBlock.FontWeight);
-                Assert.AreEqual(36d, textBlock.LineHeight, 0.01d);
-                Assert.AreEqual(LineStackingStrategy.BlockLineHeight, textBlock.LineStackingStrategy);
+                    textBlock.Style);
+                Assert.Equal(28d, textBlock.FontSize, 0.01d);
+                Assert.Equal(FontWeights.SemiBold, textBlock.FontWeight);
+                Assert.Equal(36d, textBlock.LineHeight, 0.01d);
+                Assert.Equal(LineStackingStrategy.BlockLineHeight, textBlock.LineStackingStrategy);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TextBlockExtensions_TypographyNone_DoesNotMutateExistingMetrics()
         {
             WpfTestSta.Invoke(static () =>
@@ -228,11 +219,11 @@ namespace Fluence.Wpf.Tests
 
                 textBlock.SetTypography(FluentTypography.None);
 
-                Assert.AreEqual(fontFamily, textBlock.FontFamily);
-                Assert.AreEqual(13d, textBlock.FontSize, 0.01d);
-                Assert.AreEqual(FontWeights.Bold, textBlock.FontWeight);
-                Assert.AreEqual(17d, textBlock.LineHeight, 0.01d);
-                Assert.AreEqual(LineStackingStrategy.MaxHeight, textBlock.LineStackingStrategy);
+                Assert.Equal(fontFamily, textBlock.FontFamily);
+                Assert.Equal(13d, textBlock.FontSize, 0.01d);
+                Assert.Equal(FontWeights.Bold, textBlock.FontWeight);
+                Assert.Equal(17d, textBlock.LineHeight, 0.01d);
+                Assert.Equal(LineStackingStrategy.MaxHeight, textBlock.LineStackingStrategy);
             });
         }
 
@@ -252,21 +243,20 @@ namespace Fluence.Wpf.Tests
             double expectedLineHeight)
         {
             Style? style = application?.TryFindResource(styleKey) as Style;
-            Assert.IsNotNull(style, styleKey + " should resolve.");
+            Assert.NotNull(style);
 
             System.Windows.Controls.TextBlock textBlock = new()
             {
                 Style = style,
             };
 
-            Assert.AreEqual(expectedFontSize, textBlock.FontSize, 0.01d, styleKey + " should set FontSize.");
-            Assert.AreEqual(expectedFontWeight, textBlock.FontWeight, styleKey + " should set FontWeight.");
-            Assert.AreEqual(expectedLineHeight, textBlock.LineHeight, 0.01d, styleKey + " should set LineHeight.");
-            Assert.AreEqual(
+            Assert.Equal(expectedFontSize, textBlock.FontSize, 0.01d);
+            Assert.Equal(expectedFontWeight, textBlock.FontWeight);
+            Assert.Equal(expectedLineHeight, textBlock.LineHeight, 0.01d);
+            Assert.Equal(
                 LineStackingStrategy.BlockLineHeight,
-                textBlock.LineStackingStrategy,
-                styleKey + " should set line-height stacking.");
-            Assert.IsNotNull(textBlock.Foreground, styleKey + " should resolve a foreground brush.");
+                textBlock.LineStackingStrategy);
+            Assert.NotNull(textBlock.Foreground);
         }
 
         private static IEnumerable<string> EnumerateProductionSources(IEnumerable<string> roots)

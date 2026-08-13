@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests
     // consumer-assigned Icon overrides that default instead of being clobbered by it.
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_Icon_DefaultsToEmbeddedFluenceBrandIcon()
         {
             RunOnStaThread(static delegate
@@ -53,11 +53,8 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow window = new();
                 try
                 {
-                    Assert.IsNotNull(window.Icon,
-                        "FluenceWindow should default Icon to the embedded Fluence brand icon.");
-                    Assert.IsInstanceOfType(window.Icon, typeof(BitmapSource),
-                        "The default Icon must be a BitmapSource (the embedded square PNG), which proves " +
-                        "the icon resource resolves and CreateDefaultIcon loads it for the Win32 HICON.");
+                    Assert.NotNull(window.Icon);
+                    _ = Assert.IsAssignableFrom<BitmapSource>(window.Icon);
                 }
                 finally
                 {
@@ -66,7 +63,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_Icon_ConsumerAssignedValueOverridesDefault()
         {
             RunOnStaThread(static delegate
@@ -85,8 +82,7 @@ namespace Fluence.Wpf.Tests
 
                     window.Icon = consumerIcon;
 
-                    Assert.AreSame(consumerIcon, window.Icon,
-                        "A consumer-assigned Icon must override the embedded default and persist.");
+                    Assert.Same(consumerIcon, window.Icon);
                 }
                 finally
                 {
@@ -95,7 +91,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_DefaultIcon_IsSquareBitmapSource()
         {
             RunOnStaThread(static delegate
@@ -103,15 +99,11 @@ namespace Fluence.Wpf.Tests
                 _ = EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
-                Assert.IsNotNull(FluenceWindow.DefaultIcon,
-                    "FluenceWindow.DefaultIcon should expose the embedded Fluence brand icon.");
-                Assert.IsInstanceOfType(FluenceWindow.DefaultIcon, typeof(BitmapSource),
-                    "DefaultIcon must be a BitmapSource so a consumer can apply it as a Win32 HICON, " +
-                    "which the vector DrawingImage resource cannot reliably drive.");
+                Assert.NotNull(FluenceWindow.DefaultIcon);
+                _ = Assert.IsAssignableFrom<BitmapSource>(FluenceWindow.DefaultIcon);
 
                 BitmapSource icon = (BitmapSource)FluenceWindow.DefaultIcon;
-                Assert.AreEqual(icon.PixelWidth, icon.PixelHeight,
-                    "The default icon must be square (no aspect distortion); the no-background source is an exact square.");
+                Assert.Equal(icon.PixelWidth, icon.PixelHeight);
             });
         }
     }

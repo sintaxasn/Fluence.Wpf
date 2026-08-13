@@ -810,7 +810,7 @@ Marketing images live under `docs/images/` (for example `docs/images/Banner.png`
 
 ## Tests
 
-MSTest exercises templates, theme stability, and control behavior on .NET Framework 4.7.2 and .NET 10 for Windows. A new public control needs at minimum:
+The xunit.v3 suite exercises templates, theme stability, and control behavior on .NET Framework 4.7.2 and .NET 10 for Windows.
 
 - A default-style / template smoke test that confirms the control applies the expected template.
 - A theme-cycle pass if the control leans on `DynamicResource` (`ThemeTestHelpers.ApplyStandardThemeCycle`).

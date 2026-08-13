@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
         // WI-3 C20  ListView SelectionIndicator
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void ListView_SelectionIndicator_PresentInItemTemplate()
         {
             WpfTestSta.Invoke(static () =>
@@ -62,16 +62,15 @@ namespace Fluence.Wpf.Tests
 
                 // Find the first ListViewItem in the visual tree
                 ListViewItem? item = FindVisualChild<ListViewItem>(lv);
-                Assert.IsNotNull(item, "ListViewItem must exist in visual tree after Show.");
+                Assert.NotNull(item);
 
                 Border? indicator = FindVisualChildByName<Border>(item, "SelectionIndicator");
-                Assert.IsNotNull(indicator,
-                    "SelectionIndicator border must be present in ListViewItem template per WI-3 C20.");
+                Assert.NotNull(indicator);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ListView_SelectionIndicator_WidthIsCanonical()
         {
             WpfTestSta.Invoke(static () =>
@@ -86,17 +85,16 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ListViewItem? item = FindVisualChild<ListViewItem>(lv);
-                Assert.IsNotNull(item, "ListViewItem must exist.");
+                Assert.NotNull(item);
                 Border? indicator = FindVisualChildByName<Border>(item, "SelectionIndicator");
-                Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
+                Assert.NotNull(indicator);
 
-                Assert.AreEqual(3.0, indicator.Width, 0.01,
-                    "SelectionIndicator.Width must be 3.0 (WinUI 3 canonical 3px bar) per WI-3 C20.");
+                Assert.Equal(3.0, indicator.Width, 0.01);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ListView_SelectionIndicator_CornerRadiusIsCanonical()
         {
             WpfTestSta.Invoke(static () =>
@@ -111,17 +109,16 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ListViewItem? item = FindVisualChild<ListViewItem>(lv);
-                Assert.IsNotNull(item, "ListViewItem must exist.");
+                Assert.NotNull(item);
                 Border? indicator = FindVisualChildByName<Border>(item, "SelectionIndicator");
-                Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
+                Assert.NotNull(indicator);
 
-                Assert.AreEqual(new CornerRadius(1.5), indicator.CornerRadius,
-                    "SelectionIndicator.CornerRadius must be 1.5 per WinUI 3 ListViewItemSelectionIndicatorCornerRadius.");
+                Assert.Equal(new CornerRadius(1.5), indicator.CornerRadius);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ListView_SelectionIndicator_BackgroundIsAccentBrush()
         {
             WpfTestSta.Invoke(static () =>
@@ -136,24 +133,23 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ListViewItem? item = FindVisualChild<ListViewItem>(lv);
-                Assert.IsNotNull(item, "ListViewItem must exist.");
+                Assert.NotNull(item);
                 Border? indicator = FindVisualChildByName<Border>(item, "SelectionIndicator");
-                Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
+                Assert.NotNull(indicator);
 
                 SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve.");
+                Assert.NotNull(expected);
 
                 SolidColorBrush? actual = indicator.Background as SolidColorBrush;
-                Assert.IsNotNull(actual, "SelectionIndicator.Background must be a SolidColorBrush.");
-                Assert.AreEqual(
+                Assert.NotNull(actual);
+                Assert.Equal(
                     expected.Color,
-                    actual.Color,
-                    "SelectionIndicator.Background must be AccentFillColorDefaultBrush per WI-3 C20.");
+                    actual.Color);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ListView_AnimateRemove_RemovesItemFromBoundObservableCollection()
         {
             WpfTestSta.Invoke(() =>
@@ -182,8 +178,8 @@ namespace Fluence.Wpf.Tests
                     return completed && !items.Contains("Two");
                 });
 
-                Assert.IsTrue(removed, "AnimateRemove should animate then remove the item from the bound ObservableCollection.");
-                Assert.AreEqual(2, items.Count);
+                Assert.True(removed, "AnimateRemove should animate then remove the item from the bound ObservableCollection.");
+                Assert.Equal(2, items.Count);
                 w.Close();
             });
         }

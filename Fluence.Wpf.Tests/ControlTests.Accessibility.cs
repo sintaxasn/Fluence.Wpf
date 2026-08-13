@@ -26,18 +26,18 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
-        [TestMethod]
+        [Fact]
         public void GlyphButtons_InPickersAndSpinners_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -65,9 +65,9 @@ namespace Fluence.Wpf.Tests
                     })
                     {
                         FrameworkElement? btn = FindVisualChildByName<FrameworkElement>(numberBox, part);
-                        Assert.IsNotNull(btn, $"{part} should exist in the NumberBox template.");
+                        Assert.NotNull(btn);
                         string actualName = AutomationProperties.GetName(btn);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                             $"{part} must expose accessible name for Narrator. Expected: '{expectedName}', actual: '{actualName}'.");
                     }
@@ -80,7 +80,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FluenceWindow_CaptionButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -103,9 +103,9 @@ namespace Fluence.Wpf.Tests
                     })
                     {
                         FrameworkElement? button = FindVisualChildByName<FrameworkElement>(window, part);
-                        Assert.IsNotNull(button, $"{part} should exist in the FluenceWindow template.");
+                        Assert.NotNull(button);
                         string actualName = AutomationProperties.GetName(button);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                             $"{part} must expose an accessible name for Narrator. Expected: '{expectedName}', actual: '{actualName}'.");
                     }
@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void AutoSuggestBox_QueryButton_HasAutomationName()
         {
             RunOnStaThread(static () =>
@@ -142,11 +142,11 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     ControlTemplate? template = autoSuggestBox.Template;
-                    Assert.IsNotNull(template, "AutoSuggestBox must receive its themed template.");
+                    Assert.NotNull(template);
                     FrameworkElement? queryButton = template.FindName("PART_QueryButton", autoSuggestBox) as FrameworkElement;
-                    Assert.IsNotNull(queryButton, "PART_QueryButton should exist in the AutoSuggestBox template.");
+                    Assert.NotNull(queryButton);
                     string actualName = AutomationProperties.GetName(queryButton);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Search", actualName, System.StringComparison.Ordinal),
                         $"PART_QueryButton must expose accessible name 'Search' for Narrator. Actual: '{actualName}'.");
                 }
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void DatePicker_AcceptCancelButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -176,7 +176,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    Assert.NotNull(template);
 
                     foreach ((string part, string expectedName) in new[]
                     {
@@ -185,9 +185,9 @@ namespace Fluence.Wpf.Tests
                     })
                     {
                         FrameworkElement? btn = template.FindName(part, picker) as FrameworkElement;
-                        Assert.IsNotNull(btn, $"{part} should exist in the DatePicker template.");
+                        Assert.NotNull(btn);
                         string actualName = AutomationProperties.GetName(btn);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                             $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                     }
@@ -200,7 +200,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TimePicker_AcceptCancelButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -218,7 +218,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ControlTemplate? template = picker.Template;
-                    Assert.IsNotNull(template, "TimePicker must receive its themed template.");
+                    Assert.NotNull(template);
 
                     foreach ((string part, string expectedName) in new[]
                     {
@@ -227,9 +227,9 @@ namespace Fluence.Wpf.Tests
                     })
                     {
                         FrameworkElement? btn = template.FindName(part, picker) as FrameworkElement;
-                        Assert.IsNotNull(btn, $"{part} should exist in the TimePicker template.");
+                        Assert.NotNull(btn);
                         string actualName = AutomationProperties.GetName(btn);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                             $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                     }
@@ -242,7 +242,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void InfoBarAndPipsPager_GlyphButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -263,11 +263,11 @@ namespace Fluence.Wpf.Tests
                         DrainDispatcher(infoBarWindow.Dispatcher);
 
                         ControlTemplate? infoBarTemplate = infoBar.Template;
-                        Assert.IsNotNull(infoBarTemplate, "InfoBar must receive its themed template.");
+                        Assert.NotNull(infoBarTemplate);
                         FrameworkElement? closeButton = infoBarTemplate.FindName("PART_CloseButton", infoBar) as FrameworkElement;
-                        Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the InfoBar template.");
+                        Assert.NotNull(closeButton);
                         string closeActualName = AutomationProperties.GetName(closeButton);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals("Close", closeActualName, System.StringComparison.Ordinal),
                             $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
                     }
@@ -293,7 +293,7 @@ namespace Fluence.Wpf.Tests
                         DrainDispatcher(pipsWindow.Dispatcher);
 
                         ControlTemplate? pipsTemplate = pipsPager.Template;
-                        Assert.IsNotNull(pipsTemplate, "PipsPager must receive its themed template.");
+                        Assert.NotNull(pipsTemplate);
 
                         foreach ((string part, string expectedName) in new[]
                         {
@@ -302,9 +302,9 @@ namespace Fluence.Wpf.Tests
                         })
                         {
                             FrameworkElement? btn = pipsTemplate.FindName(part, pipsPager) as FrameworkElement;
-                            Assert.IsNotNull(btn, $"{part} should exist in the PipsPager template.");
+                            Assert.NotNull(btn);
                             string actualName = AutomationProperties.GetName(btn);
-                            Assert.IsTrue(
+                            Assert.True(
                                 string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                                 $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                         }
@@ -321,7 +321,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TabViewItem_CloseButton_HasAutomationName()
         {
             RunOnStaThread(static () =>
@@ -348,11 +348,11 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     ControlTemplate? template = item.Template;
-                    Assert.IsNotNull(template, "TabViewItem must receive its themed template.");
+                    Assert.NotNull(template);
                     FrameworkElement? closeButton = template.FindName("PART_CloseButton", item) as FrameworkElement;
-                    Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the TabViewItem template.");
+                    Assert.NotNull(closeButton);
                     string actualName = AutomationProperties.GetName(closeButton);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Close tab", actualName, System.StringComparison.Ordinal),
                         $"PART_CloseButton must expose accessible name 'Close tab' for Narrator. Actual: '{actualName}'.");
                 }
@@ -364,7 +364,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_PaneToggleAndBackButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
@@ -385,7 +385,7 @@ namespace Fluence.Wpf.Tests
                         DrainDispatcher(navWindow.Dispatcher);
 
                         ControlTemplate? navTemplate = nav.Template;
-                        Assert.IsNotNull(navTemplate, "NavigationView must receive its themed template.");
+                        Assert.NotNull(navTemplate);
 
                         foreach ((string part, string expectedName) in new[]
                         {
@@ -394,9 +394,9 @@ namespace Fluence.Wpf.Tests
                         })
                         {
                             FrameworkElement? btn = navTemplate.FindName(part, nav) as FrameworkElement;
-                            Assert.IsNotNull(btn, $"{part} should exist in the NavigationView template.");
+                            Assert.NotNull(btn);
                             string actualName = AutomationProperties.GetName(btn);
-                            Assert.IsTrue(
+                            Assert.True(
                                 string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
                                 $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                         }
@@ -413,7 +413,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NavigationView_TopPane_BackButton_HasAutomationName()
         {
             RunOnStaThread(static () =>
@@ -438,12 +438,12 @@ namespace Fluence.Wpf.Tests
                         DrainDispatcher(navWindow.Dispatcher);
 
                         ControlTemplate? navTemplate = nav.Template;
-                        Assert.IsNotNull(navTemplate, "NavigationView must receive its themed template in Top mode.");
+                        Assert.NotNull(navTemplate);
 
                         FrameworkElement? backButton = navTemplate.FindName("PART_BackButton", nav) as FrameworkElement;
-                        Assert.IsNotNull(backButton, "PART_BackButton should exist in the NavigationView Top template.");
+                        Assert.NotNull(backButton);
                         string actualName = AutomationProperties.GetName(backButton);
-                        Assert.IsTrue(
+                        Assert.True(
                             string.Equals("Back", actualName, System.StringComparison.Ordinal),
                             $"PART_BackButton must expose accessible name 'Back' for Narrator in Top mode. Actual: '{actualName}'.");
                     }
@@ -459,7 +459,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FontIcon_AutomationPeer_IsExcludedFromControlTree()
         {
             RunOnStaThread(static () =>
@@ -473,12 +473,12 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Automation.Peers.AutomationPeer peer =
                         System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(icon);
 
-                    Assert.IsNotNull(peer, "FontIcon must create an automation peer.");
-                    Assert.IsInstanceOfType(peer, typeof(Automation.FontIconAutomationPeer));
-                    Assert.IsFalse(
+                    Assert.NotNull(peer);
+                    _ = Assert.IsAssignableFrom<Automation.FontIconAutomationPeer>(peer);
+                    Assert.False(
                         peer.IsControlElement(),
                         "Decorative FontIcon must be excluded from the UI Automation control view (AccessibilityView=Raw equivalent).");
-                    Assert.IsFalse(
+                    Assert.False(
                         peer.IsContentElement(),
                         "Decorative FontIcon must be excluded from the UI Automation content view.");
                 }
@@ -497,7 +497,7 @@ namespace Fluence.Wpf.Tests
         // outside the current test harness scope; the XAML-level name is verified in the Task 5
         // report (TeachingTip.xaml line 209, AutomationProperties.Name="Close").
 
-        [TestMethod]
+        [Fact]
         public void AppBarButton_Label_BecomesAccessibleName()
         {
             RunOnStaThread(static () =>
@@ -517,24 +517,24 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Share", peer.GetName(), StringComparison.Ordinal),
                         "AppBarButton Label must be the accessible name when no explicit AutomationProperties.Name is set.");
 
                     // A later Label change (e.g. via binding) must keep the auto-derived name in sync.
                     button.Label = "Send";
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Send", peer.GetName(), StringComparison.Ordinal),
                         "A later Label change must update the auto-derived accessible name.");
 
                     button.SetValue(AutomationProperties.NameProperty, "Explicit");
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
                         "Explicit AutomationProperties.Name must win over Label.");
 
                     // Once an explicit name diverges from the label, later Label changes must not clobber it.
                     button.Label = "Forward";
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
                         "An explicit AutomationProperties.Name must survive later Label changes.");
                 }

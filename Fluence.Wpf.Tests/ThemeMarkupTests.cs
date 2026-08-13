@@ -26,21 +26,20 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Markup;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Fluence.Wpf.Markup;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
     /// Tests for <see cref="ThemeResourceExtension"/> and <see cref="ThemeDictionary"/>.
     /// </summary>
-    [TestClass]
     public class ThemeMarkupTests
     {
         private const string XamlNamespaces =
@@ -48,8 +47,7 @@ namespace Fluence.Wpf.Tests
             "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " +
             "xmlns:fluence=\"http://schemas.fluencewpf.com\"";
 
-        [TestInitialize]
-        public void TestInitialize()
+        public ThemeMarkupTests()
         {
             WpfTestSta.Invoke(static () =>
             {
@@ -60,7 +58,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeResource_OnElement_UpdatesAcrossThemeChange()
         {
             WpfTestSta.Invoke(() =>
@@ -81,8 +79,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkColor = AssertForegroundMatchesToken(probe);
 
-                    Assert.AreNotEqual(lightColor, darkColor,
-                        "A ThemeResource reference should re-resolve to the dark token after a theme change.");
+                    Assert.NotEqual(lightColor, darkColor);
                 }
                 finally
                 {
@@ -91,7 +88,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeResource_InStyleSetter_UpdatesAcrossThemeChange()
         {
             WpfTestSta.Invoke(() =>
@@ -114,8 +111,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkColor = AssertForegroundMatchesToken(probe);
 
-                    Assert.AreNotEqual(lightColor, darkColor,
-                        "A ThemeResource Setter value should re-resolve to the dark token after a theme change.");
+                    Assert.NotEqual(lightColor, darkColor);
                 }
                 finally
                 {
@@ -124,7 +120,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeDictionary_XamlParsed_SwapsValuesAcrossStandardThemeCycle()
         {
             WpfTestSta.Invoke(() =>
@@ -157,27 +153,23 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Light theme", probe.Text, StringComparer.Ordinal,
-                        "The Light table should be selected while the light theme is active.");
-                    AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE), "Light");
+                    Assert.Equal("Light theme", probe.Text, StringComparer.Ordinal);
+                    AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Dark theme", probe.Text, StringComparer.Ordinal,
-                        "A DynamicResource string should follow the theme dictionary swap to Dark.");
-                    AssertProbeBrush(window, Color.FromRgb(0x33, 0x33, 0x33), "Dark");
+                    Assert.Equal("Dark theme", probe.Text, StringComparer.Ordinal);
+                    AssertProbeBrush(window, Color.FromRgb(0x33, 0x33, 0x33));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("High contrast theme", probe.Text, StringComparer.Ordinal,
-                        "A DynamicResource string should follow the theme dictionary swap to HighContrast.");
-                    AssertProbeBrush(window, Color.FromRgb(0x00, 0xFF, 0x00), "HighContrast");
+                    Assert.Equal("High contrast theme", probe.Text, StringComparer.Ordinal);
+                    AssertProbeBrush(window, Color.FromRgb(0x00, 0xFF, 0x00));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Light theme", probe.Text, StringComparer.Ordinal,
-                        "A DynamicResource string should follow the theme dictionary swap back to Light.");
-                    AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE), "Light");
+                    Assert.Equal("Light theme", probe.Text, StringComparer.Ordinal);
+                    AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE));
                 }
                 finally
                 {
@@ -186,7 +178,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeDictionary_CodeFirst_UsesDefaultFallback()
         {
             WpfTestSta.Invoke(() =>
@@ -206,20 +198,16 @@ namespace Fluence.Wpf.Tests
                 window.Resources.MergedDictionaries.Add(themeDictionary);
                 try
                 {
-                    Assert.AreEqual("light", window.TryFindResource("ProbeValue"),
-                        "The exact Light table should win while the light theme is active.");
+                    Assert.Equal("light", window.TryFindResource("ProbeValue"));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
-                    Assert.AreEqual("fallback", window.TryFindResource("ProbeValue"),
-                        "With no Dark table, the Default table should be selected.");
+                    Assert.Equal("fallback", window.TryFindResource("ProbeValue"));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
-                    Assert.AreEqual("fallback", window.TryFindResource("ProbeValue"),
-                        "With no HighContrast table, the Default table should be selected.");
+                    Assert.Equal("fallback", window.TryFindResource("ProbeValue"));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
-                    Assert.AreEqual("light", window.TryFindResource("ProbeValue"),
-                        "Returning to the light theme should re-select the exact Light table.");
+                    Assert.Equal("light", window.TryFindResource("ProbeValue"));
                 }
                 finally
                 {
@@ -228,7 +216,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeDictionary_HighContrast_PrefersPolarityTableThenGeneric()
         {
             WpfTestSta.Invoke(static () =>
@@ -264,14 +252,12 @@ namespace Fluence.Wpf.Tests
                     // Polarity is judged from the live system window color with the same
                     // luminance formula the library uses, so the expectation is stable on
                     // any machine, high contrast active or not.
-                    System.Windows.Media.Color windowColor = SystemColors.WindowColor;
+                    Color windowColor = SystemColors.WindowColor;
                     double luminance = (0.299 * windowColor.R) + (0.587 * windowColor.G) + (0.114 * windowColor.B);
                     string expected = luminance < 128.0 ? "black" : "white";
 
-                    Assert.AreEqual(expected, window.TryFindResource("ProbeValue"),
-                        "High contrast should select the polarity table matching the system window luminance.");
-                    Assert.AreEqual("generic", window.TryFindResource("OtherProbeValue"),
-                        "Without polarity tables, high contrast should select the generic HighContrast table.");
+                    Assert.Equal(expected, window.TryFindResource("ProbeValue"));
+                    Assert.Equal("generic", window.TryFindResource("OtherProbeValue"));
                 }
                 finally
                 {
@@ -280,7 +266,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeDictionary_InSealedStyleResources_DoesNotThrowOnThemeChange()
         {
             WpfTestSta.Invoke(static () =>
@@ -298,7 +284,7 @@ namespace Fluence.Wpf.Tests
 
                 Style style = new(typeof(TextBlock)) { Resources = themeDictionary };
                 style.Seal();
-                Assert.IsTrue(themeDictionary.IsReadOnly,
+                Assert.True(themeDictionary.IsReadOnly,
                     "Sealing the style should propagate read-only into its resources; the guard under test depends on it.");
 
                 // Without the read-only guard this throws InvalidOperationException from the
@@ -306,12 +292,11 @@ namespace Fluence.Wpf.Tests
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
 
-                Assert.AreEqual("light", themeDictionary["ProbeValue"],
-                    "A sealed scope keeps the selection made before sealing.");
+                Assert.Equal("light", themeDictionary["ProbeValue"]);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ThemeDictionary_Discarded_IsGarbageCollected()
         {
             WpfTestSta.Invoke(static () =>
@@ -324,7 +309,7 @@ namespace Fluence.Wpf.Tests
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                Assert.IsFalse(tracker.IsAlive,
+                Assert.False(tracker.IsAlive,
                     "A discarded ThemeDictionary must be collectable; the static theme subscription must not pin it.");
 
                 // The subscription must also keep working with dead entries in its list.
@@ -336,21 +321,19 @@ namespace Fluence.Wpf.Tests
         private static Color AssertForegroundMatchesToken(TextBlock probe)
         {
             SolidColorBrush? tokenBrush = Application.Current.TryFindResource("TextFillColorPrimaryBrush") as SolidColorBrush;
-            Assert.IsNotNull(tokenBrush, "TextFillColorPrimaryBrush should resolve at application scope.");
+            Assert.NotNull(tokenBrush);
 
             SolidColorBrush? foreground = probe.Foreground as SolidColorBrush;
-            Assert.IsNotNull(foreground, "The probe foreground should be a SolidColorBrush.");
-            Assert.AreEqual(tokenBrush.Color, foreground.Color,
-                "The ThemeResource reference should resolve to the canonical token brush.");
+            Assert.NotNull(foreground);
+            Assert.Equal(tokenBrush.Color, foreground.Color);
             return foreground.Color;
         }
 
-        private static void AssertProbeBrush(Window window, Color expected, string themeName)
+        private static void AssertProbeBrush(Window window, Color expected)
         {
             SolidColorBrush? brush = window.TryFindResource("ProbeBrush") as SolidColorBrush;
-            Assert.IsNotNull(brush, $"ProbeBrush should resolve from the {themeName} table.");
-            Assert.AreEqual(expected, brush.Color,
-                $"ProbeBrush should carry the {themeName} table's color.");
+            Assert.NotNull(brush);
+            Assert.Equal(expected, brush.Color);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests
         // WI-3 A1-A4  Focus visual dedup
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemes()
         {
             WpfTestSta.Invoke(static () =>
@@ -59,13 +59,12 @@ namespace Fluence.Wpf.Tests
                     ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
 
                     Style? style = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
-                    Assert.IsNotNull(style,
-                        string.Format("DefaultControlFocusVisualStyle must resolve in theme: {0}", theme));
+                    Assert.NotNull(style);
                 }
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_PerControlKeys_RemovedFromDictionary()
         {
             WpfTestSta.Invoke(static () =>
@@ -75,18 +74,14 @@ namespace Fluence.Wpf.Tests
 
                 // These per-control duplicate keys must no longer exist now that
                 // all four controls reference DefaultControlFocusVisualStyle.
-                Assert.IsNull(app?.TryFindResource("ButtonFocusVisual"),
-                    "ButtonFocusVisual per-control key must be removed.");
-                Assert.IsNull(app?.TryFindResource("CheckBoxFocusVisual"),
-                    "CheckBoxFocusVisual per-control key must be removed.");
-                Assert.IsNull(app?.TryFindResource("RadioButtonFocusVisual"),
-                    "RadioButtonFocusVisual per-control key must be removed.");
-                Assert.IsNull(app?.TryFindResource("ToggleButtonFocusVisual"),
-                    "ToggleButtonFocusVisual per-control key must be removed.");
+                Assert.Null(app?.TryFindResource("ButtonFocusVisual"));
+                Assert.Null(app?.TryFindResource("CheckBoxFocusVisual"));
+                Assert.Null(app?.TryFindResource("RadioButtonFocusVisual"));
+                Assert.Null(app?.TryFindResource("ToggleButtonFocusVisual"));
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_Button_FocusVisualStyleIsSharedResource()
         {
             WpfTestSta.Invoke(static () =>
@@ -95,20 +90,19 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
-                Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
+                Assert.NotNull(sharedStyle);
 
                 Button btn = new();
                 Window w = new() { Content = btn, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreSame(sharedStyle, btn.FocusVisualStyle,
-                    "Button.FocusVisualStyle must reference the shared DefaultControlFocusVisualStyle.");
+                Assert.Same(sharedStyle, btn.FocusVisualStyle);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_CheckBox_FocusVisualStyleIsSharedResource()
         {
             WpfTestSta.Invoke(static () =>
@@ -117,20 +111,19 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
-                Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
+                Assert.NotNull(sharedStyle);
 
                 CheckBox cb = new() { Content = "Test" };
                 Window w = new() { Content = cb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreSame(sharedStyle, cb.FocusVisualStyle,
-                    "CheckBox.FocusVisualStyle must reference the shared DefaultControlFocusVisualStyle.");
+                Assert.Same(sharedStyle, cb.FocusVisualStyle);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_RadioButton_FocusVisualStyleIsSharedResource()
         {
             WpfTestSta.Invoke(static () =>
@@ -139,20 +132,19 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
-                Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
+                Assert.NotNull(sharedStyle);
 
                 RadioButton rb = new() { Content = "Option A" };
                 Window w = new() { Content = rb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreSame(sharedStyle, rb.FocusVisualStyle,
-                    "RadioButton.FocusVisualStyle must reference the shared DefaultControlFocusVisualStyle.");
+                Assert.Same(sharedStyle, rb.FocusVisualStyle);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_ToggleButton_FocusVisualStyleIsSharedResource()
         {
             WpfTestSta.Invoke(static () =>
@@ -161,20 +153,19 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
-                Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
+                Assert.NotNull(sharedStyle);
 
                 ToggleButton tb = new() { Content = "Toggle" };
                 Window w = new() { Content = tb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreSame(sharedStyle, tb.FocusVisualStyle,
-                    "ToggleButton.FocusVisualStyle must reference the shared DefaultControlFocusVisualStyle.");
+                Assert.Same(sharedStyle, tb.FocusVisualStyle);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_TabItem_UsesCollectionFocusStyleWithRightBreathingRoom()
         {
             WpfTestSta.Invoke(static () =>
@@ -183,7 +174,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Style? sharedStyle = app?.TryFindResource("DefaultCollectionFocusVisualStyle") as Style;
-                Assert.IsNotNull(sharedStyle, "DefaultCollectionFocusVisualStyle must resolve.");
+                Assert.NotNull(sharedStyle);
 
                 System.Windows.Controls.TabControl tabControl = new();
                 _ = tabControl.Items.Add(new System.Windows.Controls.TabItem { Header = "Text", Content = new System.Windows.Controls.TextBlock { Text = "A" } });
@@ -197,10 +188,9 @@ namespace Fluence.Wpf.Tests
                     w.UpdateLayout();
 
                     System.Windows.Controls.TabItem? first = tabControl.ItemContainerGenerator.ContainerFromIndex(0) as System.Windows.Controls.TabItem;
-                    Assert.IsNotNull(first, "The first TabItem container should be generated.");
-                    Assert.AreSame(sharedStyle, first.FocusVisualStyle,
-                        "TabItem should use WPF keyboard focus cues instead of a pointer-sticky custom focus ring.");
-                    Assert.IsTrue(first.Margin.Right >= 8.0,
+                    Assert.NotNull(first);
+                    Assert.Same(sharedStyle, first.FocusVisualStyle);
+                    Assert.True(first.Margin.Right >= 8.0,
                         "TabItem should reserve enough right margin so the focus rectangle is not clipped at the tab edge.");
                 }
                 finally
@@ -210,7 +200,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TabControl_TabKeySelectsNextHeaderThenContinuesOut()
         {
             WpfTestSta.Invoke(static () =>
@@ -241,34 +231,30 @@ namespace Fluence.Wpf.Tests
 
                     System.Windows.Controls.TabItem? first = tabControl.ItemContainerGenerator.ContainerFromIndex(0) as System.Windows.Controls.TabItem;
                     System.Windows.Controls.TabItem? second = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as System.Windows.Controls.TabItem;
-                    Assert.IsNotNull(first, "The first TabControl header should be generated.");
-                    Assert.IsNotNull(second, "The second TabControl header should be generated.");
+                    Assert.NotNull(first);
+                    Assert.NotNull(second);
 
                     _ = Keyboard.Focus(first);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreSame(first, Keyboard.FocusedElement,
-                        "Test setup should put keyboard focus on the first TabControl header.");
+                    Assert.Same(first, Keyboard.FocusedElement);
 
                     KeyEventArgs firstTabArgs = RaiseTabKey(first, window);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.IsTrue(firstTabArgs.Handled,
+                    Assert.True(firstTabArgs.Handled,
                         "Tab on the first TabControl header should be handled as header navigation.");
-                    Assert.AreSame(second, Keyboard.FocusedElement,
-                        "Tab should move focus to the next TabControl header.");
-                    Assert.AreSame(second, tabControl.SelectedItem,
-                        "Tabbing to the next TabControl header should select that tab.");
+                    Assert.Same(second, Keyboard.FocusedElement);
+                    Assert.Same(second, tabControl.SelectedItem);
 
                     KeyEventArgs secondTabArgs = RaiseTabKey(second, window);
-                    Assert.IsFalse(secondTabArgs.Handled,
+                    Assert.False(secondTabArgs.Handled,
                         "Tab on the final TabControl header should be left for normal focus navigation.");
                     bool movedOut = second.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(movedOut, "Tab should be able to move past the last TabControl header.");
-                    Assert.AreSame(afterButton, Keyboard.FocusedElement,
-                        "Tab should continue out of the TabControl after the final header.");
+                    Assert.True(movedOut, "Tab should be able to move past the last TabControl header.");
+                    Assert.Same(afterButton, Keyboard.FocusedElement);
                 }
                 finally
                 {
@@ -278,7 +264,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TabView_TabKeySelectsNextHeaderThenContinuesOut()
         {
             WpfTestSta.Invoke(static () =>
@@ -312,38 +298,32 @@ namespace Fluence.Wpf.Tests
 
                     System.Windows.Controls.Grid? rootGrid = tabView.Template.FindName("RootGrid", tabView) as System.Windows.Controls.Grid;
                     System.Windows.Controls.Border? contentPanel = tabView.Template.FindName("ContentPanel", tabView) as System.Windows.Controls.Border;
-                    Assert.IsNotNull(rootGrid, "TabView template should expose RootGrid for keyboard navigation.");
-                    Assert.IsNotNull(contentPanel, "TabView template should expose ContentPanel for keyboard navigation.");
-                    Assert.AreEqual(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(rootGrid),
-                        "TabView should not trap tab navigation inside the control template.");
-                    Assert.AreEqual(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(contentPanel),
-                        "TabView content should continue tab navigation out of the control.");
+                    Assert.NotNull(rootGrid);
+                    Assert.NotNull(contentPanel);
+                    Assert.Equal(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(rootGrid));
+                    Assert.Equal(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(contentPanel));
 
                     _ = Keyboard.Focus(first);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreSame(first, Keyboard.FocusedElement,
-                        "Test setup should put keyboard focus on the first TabView header.");
+                    Assert.Same(first, Keyboard.FocusedElement);
 
                     KeyEventArgs firstTabArgs = RaiseTabKey(first, window);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.IsTrue(firstTabArgs.Handled,
+                    Assert.True(firstTabArgs.Handled,
                         "Tab on the first TabView header should be handled as header navigation.");
-                    Assert.AreSame(second, Keyboard.FocusedElement,
-                        "Tab should move focus to the next TabView header.");
-                    Assert.AreSame(second, tabView.SelectedItem,
-                        "Tabbing to the next TabView header should select that tab.");
+                    Assert.Same(second, Keyboard.FocusedElement);
+                    Assert.Same(second, tabView.SelectedItem);
 
                     KeyEventArgs secondTabArgs = RaiseTabKey(second, window);
-                    Assert.IsFalse(secondTabArgs.Handled,
+                    Assert.False(secondTabArgs.Handled,
                         "Tab on the final TabView header should be left for normal focus navigation.");
                     bool movedOut = second.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(movedOut, "Tab should be able to move past the last TabView header.");
-                    Assert.AreSame(afterButton, Keyboard.FocusedElement,
-                        "Tab should continue out of the TabView after the final header.");
+                    Assert.True(movedOut, "Tab should be able to move past the last TabView header.");
+                    Assert.Same(afterButton, Keyboard.FocusedElement);
                 }
                 finally
                 {
@@ -366,7 +346,7 @@ namespace Fluence.Wpf.Tests
             return args;
         }
 
-        [TestMethod]
+        [Fact]
         public void FocusVisual_NavigationViewItem_PointerInvokeDoesNotMoveKeyboardFocus()
         {
             WpfTestSta.Invoke(static () =>
@@ -395,8 +375,7 @@ namespace Fluence.Wpf.Tests
 
                     _ = Keyboard.Focus(first);
                     DrainDispatcher(w.Dispatcher);
-                    Assert.AreSame(first, Keyboard.FocusedElement,
-                        "Test setup should put keyboard focus on the first navigation item.");
+                    Assert.Same(first, Keyboard.FocusedElement);
 
                     MouseButtonEventArgs mouseArgs = new(
                         Mouse.PrimaryDevice,
@@ -410,10 +389,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(w.Dispatcher);
                     w.UpdateLayout();
 
-                    Assert.AreSame(second, nav.SelectedItem,
-                        "Pointer selection should still select the clicked navigation item.");
-                    Assert.AreNotSame(second, Keyboard.FocusedElement,
-                        "Pointer selection should not leave the keyboard focus visual on the clicked navigation item.");
+                    Assert.Same(second, nav.SelectedItem);
+                    Assert.NotSame(second, Keyboard.FocusedElement);
                 }
                 finally
                 {

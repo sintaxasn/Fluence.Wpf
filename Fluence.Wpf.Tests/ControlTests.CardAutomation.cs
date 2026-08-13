@@ -26,14 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Automation;
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using Fluence.Wpf.Automation;
+using Fluence.Wpf.Controls;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Tests
         // Clickable Card - automation peer
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void ClickableCard_AutomationPeer_IsCardAutomationPeer()
         {
             RunOnStaThread(static () =>
@@ -72,8 +72,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
-                    Assert.IsInstanceOfType(peer, typeof(CardAutomationPeer),
-                        "A clickable Card must produce a CardAutomationPeer.");
+                    _ = Assert.IsAssignableFrom<CardAutomationPeer>(peer);
                 }
                 finally
                 {
@@ -86,7 +85,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ClickableCard_AutomationControlType_IsButton()
         {
             RunOnStaThread(static () =>
@@ -111,8 +110,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
-                    Assert.AreEqual(AutomationControlType.Button, peer.GetAutomationControlType(),
-                        "A clickable Card must expose AutomationControlType.Button to Narrator.");
+                    Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
                 }
                 finally
                 {
@@ -125,7 +123,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ClickableCard_GetPattern_Invoke_ReturnsInvokeProvider()
         {
             RunOnStaThread(static () =>
@@ -151,10 +149,8 @@ namespace Fluence.Wpf.Tests
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     object? pattern = peer.GetPattern(PatternInterface.Invoke);
-                    Assert.IsNotNull(pattern,
-                        "A clickable Card peer must return a non-null IInvokeProvider for PatternInterface.Invoke.");
-                    Assert.IsInstanceOfType(pattern, typeof(IInvokeProvider),
-                        "The Invoke pattern returned must implement IInvokeProvider.");
+                    Assert.NotNull(pattern);
+                    _ = Assert.IsAssignableFrom<IInvokeProvider>(pattern);
                 }
                 finally
                 {
@@ -167,7 +163,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ClickableCard_InvokePattern_RaisesClickEvent()
         {
             RunOnStaThread(static () =>
@@ -196,11 +192,11 @@ namespace Fluence.Wpf.Tests
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-                    Assert.IsNotNull(invokeProvider, "IInvokeProvider must be available on a clickable Card peer.");
+                    Assert.NotNull(invokeProvider);
                     invokeProvider.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(clickRaised,
+                    Assert.True(clickRaised,
                         "IInvokeProvider.Invoke() must raise the Card Click routed event.");
                 }
                 finally
@@ -214,7 +210,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ClickableCard_IsTabStop_IsTrue()
         {
             RunOnStaThread(static () =>
@@ -225,9 +221,9 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     Card card = new() { IsClickable = true };
-                    Assert.IsTrue(card.IsTabStop,
+                    Assert.True(card.IsTabStop,
                         "A clickable Card must be IsTabStop=true so keyboard users can reach it.");
-                    Assert.IsTrue(card.Focusable,
+                    Assert.True(card.Focusable,
                         "A clickable Card must be Focusable=true.");
                 }
                 finally
@@ -240,7 +236,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NonClickableCard_AutomationControlType_IsNotButton()
         {
             RunOnStaThread(static () =>
@@ -265,8 +261,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
-                    Assert.AreNotEqual(AutomationControlType.Button, peer.GetAutomationControlType(),
-                        "A non-clickable Card must not expose AutomationControlType.Button.");
+                    Assert.NotEqual(AutomationControlType.Button, peer.GetAutomationControlType());
                 }
                 finally
                 {
@@ -279,7 +274,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NonClickableCard_GetPattern_Invoke_ReturnsNull()
         {
             RunOnStaThread(static () =>
@@ -305,8 +300,7 @@ namespace Fluence.Wpf.Tests
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     object? pattern = peer.GetPattern(PatternInterface.Invoke);
-                    Assert.IsNull(pattern,
-                        "A non-clickable Card peer must not expose the Invoke pattern.");
+                    Assert.Null(pattern);
                 }
                 finally
                 {
@@ -319,7 +313,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void NonClickableCard_IsTabStop_IsFalse()
         {
             RunOnStaThread(static () =>
@@ -330,7 +324,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     Card card = new() { IsClickable = false };
-                    Assert.IsFalse(card.IsTabStop,
+                    Assert.False(card.IsTabStop,
                         "A non-clickable Card must not be in the tab order.");
                 }
                 finally
@@ -347,7 +341,7 @@ namespace Fluence.Wpf.Tests
         // CheckBox Description -> HelpText
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void CheckBox_Description_SetsAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -364,7 +358,7 @@ namespace Fluence.Wpf.Tests
                     };
 
                     string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Enables the optional feature for this session.", helpText, StringComparison.Ordinal),
                         $"CheckBox.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }
@@ -378,7 +372,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckBox_DescriptionChanges_UpdatesAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -396,7 +390,7 @@ namespace Fluence.Wpf.Tests
 
                     checkBox.Description = "Updated description.";
                     string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Updated description.", helpText, StringComparison.Ordinal),
                         $"CheckBox.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }
@@ -410,7 +404,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void CheckBox_NullDescription_ClearsAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -428,7 +422,7 @@ namespace Fluence.Wpf.Tests
                     checkBox.Description = null;
 
                     string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.IsNullOrWhiteSpace(helpText),
                         $"Null CheckBox.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }
@@ -446,7 +440,7 @@ namespace Fluence.Wpf.Tests
         // RadioButton Description -> HelpText
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void RadioButton_Description_SetsAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -463,7 +457,7 @@ namespace Fluence.Wpf.Tests
                     };
 
                     string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Choose this option for better performance.", helpText, StringComparison.Ordinal),
                         $"RadioButton.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }
@@ -477,7 +471,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RadioButton_DescriptionChanges_UpdatesAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -495,7 +489,7 @@ namespace Fluence.Wpf.Tests
 
                     radioButton.Description = "Revised description.";
                     string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.Equals("Revised description.", helpText, StringComparison.Ordinal),
                         $"RadioButton.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }
@@ -509,7 +503,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void RadioButton_NullDescription_ClearsAutomationHelpText()
         {
             RunOnStaThread(static () =>
@@ -527,7 +521,7 @@ namespace Fluence.Wpf.Tests
                     radioButton.Description = null;
 
                     string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.IsTrue(
+                    Assert.True(
                         string.IsNullOrWhiteSpace(helpText),
                         $"Null RadioButton.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
                 }

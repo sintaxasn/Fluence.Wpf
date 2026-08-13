@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
         // WI-5B.2  TreeView / TreeViewItem
         // ---------------------------------------------------------------------------
 
-        [TestMethod]
+        [Fact]
         public void TreeView_DefaultStyle_Applies()
         {
             WpfTestSta.Invoke(static () =>
@@ -62,16 +62,14 @@ namespace Fluence.Wpf.Tests
 
                 // Template applied → ScrollViewer present
                 ScrollViewer? sv = FindVisualChild<ScrollViewer>(tv);
-                Assert.IsNotNull(sv, "TreeView template must contain a ScrollViewer.");
-                Assert.IsInstanceOfType(sv, typeof(Controls.SmoothScrollViewer),
-                    "TreeView must use Fluence SmoothScrollViewer so its scrollbars use the shared Fluent style.");
-                Assert.AreSame(app?.TryFindResource("ScrollViewerStyle"), sv.Style,
-                    "TreeView SmoothScrollViewer must use the shared ScrollViewerStyle resource.");
+                Assert.NotNull(sv);
+                _ = Assert.IsAssignableFrom<Controls.SmoothScrollViewer>(sv);
+                Assert.Same(app?.TryFindResource("ScrollViewerStyle"), sv.Style);
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_TemplateParts_Present()
         {
             WpfTestSta.Invoke(static () =>
@@ -88,16 +86,16 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ContentPresenter? cp = FindVisualChildByName<ContentPresenter>(item, "PART_Header");
-                Assert.IsNotNull(cp, "PART_Header ContentPresenter must be present in TreeViewItem template.");
+                Assert.NotNull(cp);
 
                 ItemsPresenter? itemsPresenter = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
-                Assert.IsNotNull(itemsPresenter, "ItemsHost ItemsPresenter must be present in TreeViewItem template.");
+                Assert.NotNull(itemsPresenter);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_Expander_VisibleWhenHasChildren()
         {
             WpfTestSta.Invoke(static () =>
@@ -115,15 +113,14 @@ namespace Fluence.Wpf.Tests
 
                 // The ToggleButton expander must be Visible when HasItems is true
                 ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
-                Assert.IsNotNull(expander, "Expander ToggleButton must exist in TreeViewItem template.");
-                Assert.AreEqual(Visibility.Visible, expander.Visibility,
-                    "Expander must be Visible when TreeViewItem has children.");
+                Assert.NotNull(expander);
+                Assert.Equal(Visibility.Visible, expander.Visibility);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_Expander_CollapsedWhenNoChildren()
         {
             WpfTestSta.Invoke(static () =>
@@ -139,15 +136,14 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
-                Assert.IsNotNull(expander, "Expander ToggleButton must exist.");
-                Assert.AreEqual(Visibility.Collapsed, expander.Visibility,
-                    "Expander must be Collapsed when TreeViewItem has no children.");
+                Assert.NotNull(expander);
+                Assert.Equal(Visibility.Collapsed, expander.Visibility);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_IsExpanded_MakesChildrenVisible()
         {
             WpfTestSta.Invoke(static () =>
@@ -165,22 +161,20 @@ namespace Fluence.Wpf.Tests
 
                 // Initially collapsed
                 ItemsPresenter? itemsHost = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
-                Assert.IsNotNull(itemsHost, "ItemsHost must exist.");
-                Assert.AreEqual(Visibility.Collapsed, itemsHost.Visibility,
-                    "ItemsHost must be Collapsed when IsExpanded=False.");
+                Assert.NotNull(itemsHost);
+                Assert.Equal(Visibility.Collapsed, itemsHost.Visibility);
 
                 // Expand
                 item.IsExpanded = true;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual(Visibility.Visible, itemsHost.Visibility,
-                    "ItemsHost must be Visible when IsExpanded=True.");
+                Assert.Equal(Visibility.Visible, itemsHost.Visibility);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_SelectedState_ChangesBackground()
         {
             WpfTestSta.Invoke(static () =>
@@ -196,7 +190,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 Border? itemBorder = FindVisualChildByName<Border>(item, "ItemBorder");
-                Assert.IsNotNull(itemBorder, "ItemBorder must exist in TreeViewItem template.");
+                Assert.NotNull(itemBorder);
 
                 // Background must be transparent (or null) in normal state
                 Brush normalBg = itemBorder.Background;
@@ -207,16 +201,15 @@ namespace Fluence.Wpf.Tests
 
                 SolidColorBrush? selectedBg = itemBorder.Background as SolidColorBrush;
                 SolidColorBrush? expectedBrush = app?.TryFindResource("SubtleFillColorSecondaryBrush") as SolidColorBrush;
-                Assert.IsNotNull(expectedBrush, "SubtleFillColorSecondaryBrush must resolve.");
-                Assert.IsNotNull(selectedBg, "ItemBorder.Background must be a SolidColorBrush when selected.");
-                Assert.AreEqual(expectedBrush.Color, selectedBg.Color,
-                    "Selected TreeViewItem must use SubtleFillColorSecondaryBrush per WI-5B.2/WinUI 3.");
+                Assert.NotNull(expectedBrush);
+                Assert.NotNull(selectedBg);
+                Assert.Equal(expectedBrush.Color, selectedBg.Color);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_HoverTriggers_AreScopedToHeaderBorder()
         {
             WpfTestSta.Invoke(static () =>
@@ -232,7 +225,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.IsNotNull(item.Template, "TreeViewItem template should be applied.");
+                Assert.NotNull(item.Template);
                 bool hasHeaderHoverTrigger = false;
                 bool hasAncestorHoverTrigger = false;
 
@@ -269,16 +262,16 @@ namespace Fluence.Wpf.Tests
                     }
                 }
 
-                Assert.IsTrue(hasHeaderHoverTrigger,
+                Assert.True(hasHeaderHoverTrigger,
                     "TreeViewItem hover visuals should be scoped to the header border.");
-                Assert.IsFalse(hasAncestorHoverTrigger,
+                Assert.False(hasAncestorHoverTrigger,
                     "TreeViewItem hover visuals should not listen to the whole item, because child hover would light parents.");
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeView_ThemeCycle_StyleRemainsApplied()
         {
             WpfTestSta.Invoke(static () =>
@@ -296,15 +289,14 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ScrollViewer? sv = FindVisualChild<ScrollViewer>(tv);
-                Assert.IsNotNull(sv, "TreeView template must still contain ScrollViewer after theme cycle.");
-                Assert.IsInstanceOfType(sv, typeof(Controls.SmoothScrollViewer),
-                    "TreeView must keep Fluence SmoothScrollViewer after theme changes.");
+                Assert.NotNull(sv);
+                _ = Assert.IsAssignableFrom<Controls.SmoothScrollViewer>(sv);
 
                 w.Close();
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void TreeViewItem_ChevronGlyph_PresentInExpander()
         {
             WpfTestSta.Invoke(static () =>
@@ -321,12 +313,10 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
-                Assert.IsNotNull(expander, "Expander must be present.");
+                Assert.NotNull(expander);
                 TextBlock? chevron = FindVisualChildByName<TextBlock>(expander, "ChevronGlyph");
-                Assert.IsNotNull(chevron,
-                    "ChevronGlyph TextBlock must be present inside Expander per WI-5B.2.");
-                Assert.AreEqual("\uE76C", chevron.Text, StringComparer.Ordinal,
-                    "ChevronGlyph must display Segoe Fluent Icons ChevronRight (U+E76C).");
+                Assert.NotNull(chevron);
+                Assert.Equal("\uE76C", chevron.Text, StringComparer.Ordinal);
 
                 w.Close();
             });
