@@ -45,39 +45,23 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [Fact]
-        public void Apply_Light_TextBrushIsDarkOnLight()
+        [Theory]
+        [InlineData(ApplicationTheme.Light, 0xE4, 0x00, 0x00, 0x00)]
+        [InlineData(ApplicationTheme.Dark, 0xFF, 0xFF, 0xFF, 0xFF)]
+        public void Apply_Theme_TextFillColorPrimaryMatches(ApplicationTheme theme, byte a, byte r, byte g, byte b)
         {
-            WpfTestSta.Invoke(static () =>
+            WpfTestSta.Invoke(() =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
 
                 Color? textColor = app.Resources["TextFillColorPrimary"] as Color?;
                 _ = Assert.NotNull(textColor);
 
-                Assert.Equal((byte)0xE4, textColor.Value.A);
-                Assert.Equal((byte)0x00, textColor.Value.R);
-                Assert.Equal((byte)0x00, textColor.Value.G);
-                Assert.Equal((byte)0x00, textColor.Value.B);
-            });
-        }
-
-        [Fact]
-        public void Apply_Dark_TextBrushIsLightOnDark()
-        {
-            WpfTestSta.Invoke(static () =>
-            {
-                Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-
-                Color? textColor = app.Resources["TextFillColorPrimary"] as Color?;
-                _ = Assert.NotNull(textColor);
-
-                Assert.Equal((byte)0xFF, textColor.Value.A);
-                Assert.Equal((byte)0xFF, textColor.Value.R);
-                Assert.Equal((byte)0xFF, textColor.Value.G);
-                Assert.Equal((byte)0xFF, textColor.Value.B);
+                Assert.Equal(a, textColor.Value.A);
+                Assert.Equal(r, textColor.Value.R);
+                Assert.Equal(g, textColor.Value.G);
+                Assert.Equal(b, textColor.Value.B);
             });
         }
 
@@ -195,52 +179,27 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(!registryLight, result);
         }
 
-        [Fact]
-        public void Apply_Light_ResolvedThemeIsLight()
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public void Apply_ExplicitTheme_ResolvedThemeMatches(ApplicationTheme theme)
         {
-            WpfTestSta.Invoke(static () =>
+            WpfTestSta.Invoke(() =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                Assert.Equal(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme);
+                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+                Assert.Equal(theme, ApplicationThemeManager.ResolvedTheme);
             });
         }
 
-        [Fact]
-        public void Apply_Dark_ResolvedThemeIsDark()
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Auto)]
+        public void Apply_ResolvedThemeNeverReturnsAuto(ApplicationTheme theme)
         {
-            WpfTestSta.Invoke(static () =>
+            WpfTestSta.Invoke(() =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-                Assert.Equal(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme);
-            });
-        }
-
-        [Fact]
-        public void Apply_HighContrast_ResolvedThemeIsHighContrast()
-        {
-            WpfTestSta.Invoke(static () =>
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
-                Assert.Equal(ApplicationTheme.HighContrast, ApplicationThemeManager.ResolvedTheme);
-            });
-        }
-
-        [Fact]
-        public void Apply_ExplicitTheme_ResolvedThemeNeverReturnsAuto()
-        {
-            WpfTestSta.Invoke(static () =>
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                Assert.NotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme);
-            });
-        }
-
-        [Fact]
-        public void Apply_Auto_ResolvedThemeIsNotAuto()
-        {
-            WpfTestSta.Invoke(static () =>
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
                 Assert.NotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme);
             });
         }

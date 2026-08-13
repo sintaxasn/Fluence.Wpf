@@ -34,6 +34,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Threading;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -70,6 +71,7 @@ namespace Fluence.Wpf.Tests
         private static bool WaitUntil(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
         {
             DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
             do
             {
@@ -89,7 +91,7 @@ namespace Fluence.Wpf.Tests
                 Dispatcher.PushFrame(frame);
                 timer.Stop();
             }
-            while (DateTime.UtcNow < deadline);
+            while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
 
             _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
             return condition();

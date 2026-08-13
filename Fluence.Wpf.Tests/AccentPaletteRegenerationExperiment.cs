@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests
         /// Probe 1: write only to <c>DWM\AccentColor</c> (the simplest signal) and check whether
         /// AccentPalette regenerates after a 1s wait.
         /// </summary>
-        [Fact(Skip = "Modifies user's system accent. Remove [Ignore] to run manually.")]
+        [Fact(Explicit = true)] // Modifies user's system accent; run explicitly and manually only.
         public void Experiment_WriteDwmAccentColor_DoesAccentPaletteRegenerate()
         {
             // Mango - clearly distinguishable from any Windows default the user might be on.
@@ -81,7 +81,7 @@ namespace Fluence.Wpf.Tests
         /// <summary>
         /// Probe 2: write to all four user-facing accent values (DWM + Explorer\Accent) and check.
         /// </summary>
-        [Fact(Skip = "Modifies user's system accent. Remove [Ignore] to run manually.")]
+        [Fact(Explicit = true)] // Modifies user's system accent; run explicitly and manually only.
         public void Experiment_WriteAllAccentValues_DoesAccentPaletteRegenerate()
         {
             Color experimentalAccent = Color.FromRgb(0xCA, 0x50, 0x10);
@@ -96,7 +96,7 @@ namespace Fluence.Wpf.Tests
         /// computes <c>AccentPalette</c> from a private themecpl/themeui code path only
         /// when the user picks an accent in Settings; registry writes are ignored.
         /// </summary>
-        [Fact(Skip = "Modifies user's system accent. Result confirmed 2026-05-23: palette does NOT regenerate.")]
+        [Fact(Explicit = true)] // Modifies user's system accent. Result confirmed 2026-05-23: palette does NOT regenerate.
         public void Experiment_WriteAllAndBroadcast_DoesAccentPaletteRegenerate()
         {
             Color experimentalAccent = Color.FromRgb(0xCA, 0x50, 0x10);

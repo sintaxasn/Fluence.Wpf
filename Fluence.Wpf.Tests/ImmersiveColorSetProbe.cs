@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests
         //   * Conclusion: uxtheme color sets do NOT expose per-color ramps for arbitrary
         //     accents. Cannot be used to look up custom-accent ramps without first changing
         //     the user's system accent in Settings.
-        [Fact(Skip = "Read-only probe; result documented 2026-05-23: only the active accent is exposed.")]
+        [Fact(Explicit = true)] // Read-only probe; result documented 2026-05-23: only the active accent is exposed.
         public void Probe_EnumerateColorSets_DumpsAllRamps()
         {
             uint count = NativeMethods.GetImmersiveColorSetCount();

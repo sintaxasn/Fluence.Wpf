@@ -54,33 +54,21 @@ namespace Fluence.Wpf.Tests.Theming
         // ------------------------------------------------------------------ ColorMap --
 
         /// <summary>
-        /// ColorMap.Build for Light must contain the core accent-derived keys with non-default colors.
+        /// ColorMap.Build for each theme must contain the core accent-derived key.
         /// </summary>
-        [Fact]
-        public void ColorMap_Build_Light_ContainsAccentFillColorDefault()
+        /// <param name="theme">The theme to build the map for.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        public void ColorMap_Build_ContainsAccentFillColorDefault(ApplicationTheme theme)
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher!.Invoke(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
                 AccentPalette p = MakeTestPalette();
-                Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Light, p);
-                Assert.True(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Light.");
+                Dictionary<string, Color> m = ColorMap.Build(theme, p);
+                Assert.True(m.ContainsKey("AccentFillColorDefault"), $"AccentFillColorDefault must be present in {theme}.");
                 Assert.NotEqual(default, m["AccentFillColorDefault"]);
-            });
-        }
-
-        /// <summary>
-        /// ColorMap.Build for Dark must contain the core accent-derived keys.
-        /// </summary>
-        [Fact]
-        public void ColorMap_Build_Dark_ContainsAccentFillColorDefault()
-        {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
-            {
-                _ = WpfTestSta.EnsureApplication();
-                AccentPalette p = MakeTestPalette();
-                Dictionary<string, Color> m = ColorMap.Build(ApplicationTheme.Dark, p);
-                Assert.True(m.ContainsKey("AccentFillColorDefault"), "AccentFillColorDefault must be present in Dark.");
             });
         }
 
@@ -187,45 +175,26 @@ namespace Fluence.Wpf.Tests.Theming
         // ------------------------------------------------------------------ BaseColorTables --
 
         /// <summary>
-        /// BaseColorTables.Load for Light must return a non-empty map containing known tokens.
+        /// BaseColorTables.Load for each theme must return a non-empty map; Light additionally
+        /// pins a known token.
         /// </summary>
-        [Fact]
-        public void BaseColorTables_Load_Light_ReturnsColors()
+        /// <param name="theme">The theme to load base color tables for.</param>
+        /// <param name="minimumCount">The minimum number of entries expected.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light, 10)]
+        [InlineData(ApplicationTheme.Dark, 10)]
+        [InlineData(ApplicationTheme.HighContrast, 5)]
+        public void BaseColorTables_Load_ReturnsColors(ApplicationTheme theme, int minimumCount)
         {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher!.Invoke(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.Light);
-                Assert.True(m.Count > 10, "BaseColorTables.Load(Light) must return many color entries.");
-                Assert.True(m.ContainsKey("TextFillColorPrimary"), "TextFillColorPrimary must be present.");
-            });
-        }
-
-        /// <summary>
-        /// BaseColorTables.Load for Dark must return entries distinct from Light where expected.
-        /// </summary>
-        [Fact]
-        public void BaseColorTables_Load_Dark_ReturnsColors()
-        {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
-            {
-                _ = WpfTestSta.EnsureApplication();
-                Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.Dark);
-                Assert.True(m.Count > 10, "BaseColorTables.Load(Dark) must return many color entries.");
-            });
-        }
-
-        /// <summary>
-        /// BaseColorTables.Load for HighContrast must return entries.
-        /// </summary>
-        [Fact]
-        public void BaseColorTables_Load_HighContrast_ReturnsColors()
-        {
-            WpfTestSta.Dispatcher!.Invoke(static () =>
-            {
-                _ = WpfTestSta.EnsureApplication();
-                Dictionary<string, Color> m = BaseColorTables.Load(ApplicationTheme.HighContrast);
-                Assert.True(m.Count > 5, "BaseColorTables.Load(HighContrast) must return color entries.");
+                Dictionary<string, Color> m = BaseColorTables.Load(theme);
+                Assert.True(m.Count > minimumCount, $"BaseColorTables.Load({theme}) must return many color entries.");
+                if (theme is ApplicationTheme.Light)
+                {
+                    Assert.True(m.ContainsKey("TextFillColorPrimary"), "TextFillColorPrimary must be present.");
+                }
             });
         }
 
@@ -260,9 +229,9 @@ namespace Fluence.Wpf.Tests.Theming
             });
 
             // Tear down after the smoke test so other fixtures see a clean state
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application.Current!.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.ResetForTesting();
@@ -299,9 +268,9 @@ namespace Fluence.Wpf.Tests.Theming
             });
 
             // Tear down
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
-                Application.Current!.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.ResetForTesting();
@@ -353,7 +322,7 @@ namespace Fluence.Wpf.Tests.Theming
             });
 
             // Tear down
-            WpfTestSta.Dispatcher!.Invoke(static () =>
+            WpfTestSta.Dispatcher.Invoke(static () =>
             {
                 FluenceThemeEngine.ResetForTesting();
                 ApplicationThemeManager.ResetForTesting();

@@ -9,7 +9,9 @@
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TestTfmsInParallel>false</TestTfmsInParallel>
-    <NoWarn>$(NoWarn);CS1591;CA1031;CA1707;CA2263;VSTHRD001;MA0045;xUnit1004</NoWarn>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <NoWarn>$(NoWarn);CS1591;CA1031;CA1707;CA2263;VSTHRD001;MA0045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

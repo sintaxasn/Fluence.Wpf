@@ -82,19 +82,17 @@ namespace Fluence.Wpf.Tests
         ];
 
         /// <summary>
-        /// Skips the calling capture test unless <c>FLUENCE_CAPTURE_SCREENSHOTS</c> is set, so the
-        /// screenshots are never regenerated during an ordinary test run.
+        /// Declarative skip condition: capture tests run only when
+        /// <c>FLUENCE_CAPTURE_SCREENSHOTS</c> is set, so the screenshots are never regenerated
+        /// during an ordinary test run.
         /// </summary>
-        private static void RequireScreenshotOptIn()
+        public static bool ScreenshotCaptureEnabled
         {
-            string? flag = Environment.GetEnvironmentVariable(OptInEnvironmentVariable);
-            bool enabled = string.Equals(flag, "1", StringComparison.Ordinal)
-                || string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
-            if (!enabled)
+            get
             {
-                Assert.Skip(
-                    "Screenshot capture is opt-in; set " + OptInEnvironmentVariable
-                    + "=1 to regenerate docs/screenshots.");
+                string? flag = Environment.GetEnvironmentVariable(OptInEnvironmentVariable);
+                return string.Equals(flag, "1", StringComparison.Ordinal)
+                    || string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -416,10 +414,9 @@ namespace Fluence.Wpf.Tests
         }
 #endif
 
-        [Fact]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CaptureGalleryShellNavigationModes()
         {
-            RequireScreenshotOptIn();
             RunOnStaThread(static () =>
             {
                 string output = EnsureOutputDirectory();
@@ -432,10 +429,9 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [Fact]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CapturePowerShellControlsTour()
         {
-            RequireScreenshotOptIn();
             RunOnStaThread(static () =>
             {
                 string output = EnsureOutputDirectory();
@@ -447,10 +443,9 @@ namespace Fluence.Wpf.Tests
         }
 
 #if NET10_0_OR_GREATER
-        [Fact]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CaptureMvvmTaskManager()
         {
-            RequireScreenshotOptIn();
             RunOnStaThread(static () =>
             {
                 string output = EnsureOutputDirectory();

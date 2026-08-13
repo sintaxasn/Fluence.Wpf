@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// updated <c>DesignTime.{Light,Dark}.xaml</c> files.
         /// </summary>
         [SlopwatchSuppress("SW001", "Maintainer-only file generator that rewrites committed DesignTime.{Light,Dark}.xaml; must not run in CI. DesignTimeResources_AreCurrent is the CI guard.")]
-        [Fact(Skip = "Maintainer-only: writes the committed DesignTime.{Light,Dark}.xaml files. Run manually after an intentional engine change.")]
+        [Fact(Explicit = true)] // Maintainer-only: writes the committed DesignTime.{Light,Dark}.xaml files. Run manually after an intentional engine change.
         public void RegenerateDesignTimeResources()
         {
             WpfTestSta.Invoke(static () =>

@@ -87,9 +87,9 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static System.Windows.Controls.Button GetPrimaryButtonPart(Controls.ToggleSplitButton button)
+        private static Button GetPrimaryButtonPart(Controls.ToggleSplitButton button)
         {
-            System.Windows.Controls.Button? primary = button.Template?.FindName("PART_PrimaryButton", button) as System.Windows.Controls.Button;
+            Button? primary = button.Template?.FindName("PART_PrimaryButton", button) as Button;
             Assert.NotNull(primary);
             return primary;
         }
@@ -185,7 +185,7 @@ namespace Fluence.Wpf.Tests
                     int clickCount = 0;
                     button.Click += (_, _) => clickCount++;
 
-                    System.Windows.Controls.Button primary = GetPrimaryButtonPart(button);
+                    Button primary = GetPrimaryButtonPart(button);
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(button.Dispatcher);
@@ -488,7 +488,7 @@ namespace Fluence.Wpf.Tests
                 },
                 (application, button) =>
                 {
-                    System.Windows.Controls.Button primary = GetPrimaryButtonPart(button);
+                    Button primary = GetPrimaryButtonPart(button);
                     ToggleButton secondary = GetSecondaryButtonPart(button);
                     Style? focusVisualStyle = application?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
 
