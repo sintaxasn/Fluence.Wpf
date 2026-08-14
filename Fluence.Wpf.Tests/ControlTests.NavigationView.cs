@@ -159,8 +159,7 @@ namespace Fluence.Wpf.Tests
                     mw.UpdateLayout();
 
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindVisualChildByName<NavigationView>(mw, "DemoNav"));
-                    NavigationViewItem? footer = nav!.FooterMenuItems.Count > 0 ? nav.FooterMenuItems[0] as NavigationViewItem : null;
-                    Assert.NotNull(footer);
+                    NavigationViewItem footer = Assert.IsType<NavigationViewItem>(nav.FooterMenuItems.Count > 0 ? nav.FooterMenuItems[0] as NavigationViewItem : null);
                     ContentPresenter footerIcon = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter"));
 
                     nav.IsPaneOpen = false;

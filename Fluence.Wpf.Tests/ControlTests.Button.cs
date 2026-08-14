@@ -297,11 +297,9 @@ namespace Fluence.Wpf.Tests
             AssertBrushMatchesResource(outerBorder.BorderBrush, borderKey);
         }
 
-        private static void AssertBrushMatchesResource(Brush? actual, string resourceKey)
+        private static void AssertBrushMatchesResource(Brush actual, string resourceKey)
         {
-            object? expected = Application.Current.TryFindResource(resourceKey);
-            Assert.NotNull(actual);
-            _ = Assert.IsAssignableFrom<Brush>(expected);
+            Brush expected = Assert.IsAssignableFrom<Brush>(Application.Current.TryFindResource(resourceKey));
 
             if (actual is SolidColorBrush actualSolid && expected is SolidColorBrush expectedSolid)
             {
