@@ -60,11 +60,11 @@ namespace Fluence.Wpf.Tests
 
         // Constructs the control inside the STA action (FrameworkElement creation on
         // the xUnit worker thread throws) and shows it so the template applies.
-        private static void RunToggleSplitButtonTest(Func<Controls.ToggleSplitButton> createButton, Action<Application?, Controls.ToggleSplitButton> verify)
+        private static void RunToggleSplitButtonTest(Func<Controls.ToggleSplitButton> createButton, Action<Application, Controls.ToggleSplitButton> verify)
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 Controls.ToggleSplitButton button = createButton();
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     verify(application, button);
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests
                     };
 
                     GetPrimaryButtonPart(button).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.Equal(1, clickCount);
                     Assert.Equal(true, checkedInsideHandler);
@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Tests
                     Button primary = GetPrimaryButtonPart(button);
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.Equal(2, clickCount);
                     Assert.False(button.IsChecked, "A second primary click should toggle back off.");
@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Tests
                     button.Command = new ToggleSplitButtonRelayCommand(_ => executeCount++);
 
                     GetPrimaryButtonPart(button).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.Equal(1, executeCount);
                     Assert.True(button.IsChecked, "The primary click must also toggle the checked state.");
@@ -257,14 +257,14 @@ namespace Fluence.Wpf.Tests
                     Popup popup = Assert.IsType<Popup>(button.Template?.FindName("PART_Popup", button));
 
                     secondary.IsChecked = true;
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.True(popup.IsOpen, "Checking the secondary half should open the flyout popup.");
                     Assert.True(button.IsFlyoutOpen);
                     Assert.False(button.IsChecked, "Opening the flyout must not toggle the primary checked state.");
 
                     secondary.IsChecked = false;
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.False(popup.IsOpen, "Unchecking the secondary half should close the flyout popup.");
                     Assert.False(button.IsFlyoutOpen);
@@ -314,7 +314,7 @@ namespace Fluence.Wpf.Tests
                     Color uncheckedDivider = GetSolidColor(divider.Fill);
 
                     button.IsChecked = true;
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
                     Color checkedDivider = GetSolidColor(divider.Fill);
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
                 {
                     ToggleButton secondary = GetSecondaryButtonPart(button);
                     secondary.IsChecked = true;
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
                     Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));
@@ -350,7 +350,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(accentTertiary, GetSolidColor(secondaryFill.Background));
 
                     secondary.IsChecked = false;
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
                 });
         }
 
@@ -443,13 +443,13 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
 
                     expandProvider.Expand();
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.True(button.IsFlyoutOpen, "Expand must open the flyout.");
                     Assert.Equal(ExpandCollapseState.Expanded, expandProvider.ExpandCollapseState);
 
                     expandProvider.Collapse();
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
 
                     Assert.False(button.IsFlyoutOpen, "Collapse must close the flyout.");
                     Assert.Equal(ExpandCollapseState.Collapsed, expandProvider.ExpandCollapseState);
@@ -494,7 +494,7 @@ namespace Fluence.Wpf.Tests
                 (application, button) =>
                 {
                     ThemeTestHelpers.ApplyStandardThemeCycle();
-                    DrainDispatcher(button.Dispatcher);
+                    WpfTestSta.DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
                     Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));

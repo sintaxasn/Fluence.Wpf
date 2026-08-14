@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 object brush = Assert.IsAssignableFrom<object>(app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush"));
@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 object brush = Assert.IsAssignableFrom<object>(app?.TryFindResource("SurfaceStrokeColorFlyoutBrush"));
@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 // Default style is keyed to the Fluence ToolTip type.
@@ -93,9 +93,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ToolTip_OpenFade_SettlesAtFullOpacity()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 300, Height = 200 };
@@ -107,7 +107,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.PlacementTarget = target;
@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 // The WPF tooltip pipeline resolves its host popup animation through this
@@ -155,7 +155,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys = ["SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush"];

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -66,31 +65,10 @@ namespace Fluence.Wpf.Tests
             new("status", typeof(GalleryStatusPage)),
         ];
 
-        private static void RunOnSta(Action action)
-        {
-            Exception? captured = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception ex)
-                {
-                    captured = ex;
-                }
-            }));
-
-            if (captured is not null)
-            {
-                ExceptionDispatchInfo.Capture(captured).Throw();
-            }
-        }
-
         [Fact]
         public void MainWindow_DirectNavigation_LoadsConcretePages()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -99,9 +77,9 @@ namespace Fluence.Wpf.Tests
                     foreach (DemoPageExpectation expectation in PageExpectations)
                     {
                         window.NavigateTo(expectation.Tag);
-                        Drain(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
                         window.UpdateLayout();
-                        Drain(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                         object content = GetSelectedPageContent(window);
                         Assert.NotNull(content);
@@ -120,7 +98,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_InitialSelection_LoadsHomePageContent()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -143,7 +121,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryHomePage_HeroSwapsHeaderLockupWithTheme()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryHomePage page = new();
@@ -160,24 +138,24 @@ namespace Fluence.Wpf.Tests
                     Assert.Same(light, image.Source);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Same(dark, image.Source);
 
                     // High contrast has no fixed polarity, so the page picks whichever
                     // variant reads against the live system window color.
                     ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(ReferenceEquals(image.Source, light) || ReferenceEquals(image.Source, dark),
                         "High contrast should show one of the two header lockups.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Same(light, image.Source);
                 }
                 finally
@@ -241,7 +219,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_Search_NavigatesToGroupedConcretePage()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -250,7 +228,7 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.TextBox search = Assert.IsAssignableFrom<Controls.TextBox>(FindByName<Controls.TextBox>(window, "NavSearchBox"));
 
@@ -263,7 +241,7 @@ namespace Fluence.Wpf.Tests
                     {
                         RoutedEvent = UIElement.PreviewKeyDownEvent,
                     });
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     object content = GetSelectedPageContent(window);
@@ -279,7 +257,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_BackRequested_WalksVisitedPagesInOrder()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -288,13 +266,13 @@ namespace Fluence.Wpf.Tests
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
 
                     window.NavigateTo("buttons");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.NavigateTo("trees");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.NavigateTo("status");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(typeof(GalleryStatusPage), GetSelectedPageContent(window).GetType());
 
@@ -336,7 +314,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryPages_UseSharedWinUiGalleryPageLayout()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 Style scrollStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageScrollViewerStyle"));
@@ -406,7 +384,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TitleBarSearch_StaysVisibleWhenContentExtendsIntoTitleBar()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -416,7 +394,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Visible, search.Visibility);
 
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Visible, search.Visibility);
@@ -431,7 +409,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TitleBarSearch_IsCenteredInWindow()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -440,12 +418,12 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     Controls.TextBox search = Assert.IsAssignableFrom<Controls.TextBox>(FindByName<Controls.TextBox>(window, "NavSearchBox"));
@@ -457,9 +435,9 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 4.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0);
 
                     Assert.True(search.Focus(), "Search should accept keyboard focus.");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(300.0, search.ActualWidth, 0.5);
                     Assert.Equal(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0);
@@ -474,7 +452,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChrome()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -482,15 +460,15 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     window.NavigateTo("buttons");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
 
@@ -533,7 +511,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_FirstGlyphTracksBackAvailability()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -546,9 +524,9 @@ namespace Fluence.Wpf.Tests
                     nav.IsBackEnabled = true;
 
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     System.Windows.Controls.Button titleBarBack = Assert.IsAssignableFrom<System.Windows.Controls.Button>(FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton"));
@@ -563,9 +541,9 @@ namespace Fluence.Wpf.Tests
                     double? titleIconWithBackX = GetVisualX(titleIcon, window);
 
                     nav.IsBackEnabled = false;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(Visibility.Collapsed, titleBarBack.Visibility);
                     Assert.Equal((titleIconWithBackX ?? double.MaxValue) - 42.0, GetVisualX(titleIcon, window) ?? double.MaxValue, 1.5);
@@ -580,7 +558,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_KeepsNavigationItemsBelowTitleBar()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -591,9 +569,9 @@ namespace Fluence.Wpf.Tests
                     nav.IsPaneToggleButtonVisible = true;
 
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(42.0, window.TitleBarHeight, 0.01);
 
@@ -615,7 +593,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TopPane_UsesNonExtendedTitleBarWithoutPaneToggleChrome()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -626,15 +604,15 @@ namespace Fluence.Wpf.Tests
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
                     nav.IsPaneOpen = false;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     nav.IsBackEnabled = true;
                     nav.IsBackButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(window.ExtendsContentIntoTitleBar,
                         "Top NavigationView mode should keep the FluenceWindow title bar non-extended.");
@@ -675,7 +653,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_SettingsFooter_NavigatesToSelectableSettingsPage()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -686,9 +664,9 @@ namespace Fluence.Wpf.Tests
                     Assert.Null(FindByName<FrameworkElement>(window, "PaneModeToggle"));
 
                     InvokeSettingsItem(settings);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     _ = Assert.IsAssignableFrom<GallerySettingsPage>(nav.Content);
                     Assert.True(settings.IsSelected,
@@ -708,7 +686,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_SettingsFooter_CollapsesLabelWhenPaneClosed()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -727,9 +705,9 @@ namespace Fluence.Wpf.Tests
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     nav.IsPaneOpen = false;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     label = Assert.IsAssignableFrom<ContentPresenter>(FindByName<ContentPresenter>(settings, "ContentPresenter"));
                     Assert.Equal(Visibility.Collapsed, label.Visibility);
@@ -746,7 +724,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_SettingsFooter_DoesNotForceTopPaneModeWhenOpened()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -757,14 +735,14 @@ namespace Fluence.Wpf.Tests
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     nav.IsPaneOpen = false;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     InvokeSettingsItem(settings);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode);
                     Assert.False(nav.IsPaneOpen,
@@ -786,7 +764,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_NavigationStyleCombo_TracksExternalIsPaneOpenChanges()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -795,9 +773,9 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
 
                     window.NavigateTo("settings");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.ComboBox? navigationStyle = FindByName<Controls.ComboBox>(
                         nav.Content as DependencyObject,
@@ -806,16 +784,16 @@ namespace Fluence.Wpf.Tests
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneOpen = false;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(2, navigationStyle.SelectedIndex);
 
                     nav.IsPaneOpen = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(1, navigationStyle.SelectedIndex);
                 }
@@ -829,22 +807,22 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TopPane_OverflowButtonDoesNotOverlapTreesAtMinimumWidth()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
                     window.Width = 698;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement overflowButton = Assert.IsAssignableFrom<FrameworkElement>(FindByName<FrameworkElement>(nav, NavigationView.PartTopOverflowButton));
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
@@ -885,7 +863,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_NavigationStyleCombo_SwitchesPaneModeAndKeepsContentLive()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -894,9 +872,9 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
 
                     window.NavigateTo("settings");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     object settingsPage = nav.Content
                         ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
@@ -906,26 +884,26 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(navigationStyle);
 
                     navigationStyle.SelectedIndex = 1;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode);
                     Assert.True(nav.IsPaneOpen,
                         "Choosing Left in Settings should open the left pane instead of preserving a compact state.");
                     Assert.Same(settingsPage, nav.Content);
 
                     navigationStyle.SelectedIndex = 2;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode);
                     Assert.False(nav.IsPaneOpen,
                         "Choosing Left compact in Settings should close the pane.");
 
                     navigationStyle.SelectedIndex = 0;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode);
                 }
                 finally
@@ -938,7 +916,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggle()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -947,9 +925,9 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
 
                     window.NavigateTo("settings");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     object settingsPage = nav.Content
                         ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
@@ -959,9 +937,9 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(navigationStyle);
 
                     navigationStyle.SelectedIndex = 1;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode);
                     Assert.True(nav.IsPaneOpen, "Left navigation should be expanded before the pane toggle is clicked.");
@@ -974,9 +952,9 @@ namespace Fluence.Wpf.Tests
                     titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
                     Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0,
                         "Collapsing Left navigation should start the sidebar width animation instead of snapping to compact width.");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode);
                     Assert.False(nav.IsPaneOpen,
@@ -985,13 +963,13 @@ namespace Fluence.Wpf.Tests
 
                     WaitForAnimationAndDrain(window.Dispatcher, 220);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
                     Assert.True(nav.GetPaneColumnWidthForTesting() < 280.0, "Expanding Left navigation should start from the current compact width instead of snapping open.");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode);
                     Assert.True(nav.IsPaneOpen,
@@ -1008,7 +986,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryNavigationPage_CompactSamplePaneToggleOpensPane()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryNavigationPage page = new();
@@ -1024,17 +1002,17 @@ namespace Fluence.Wpf.Tests
                     Assert.Null(sampleToggle);
 
                     paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(nav.IsPaneOpen,
                         "Clicking the built-in compact pane toggle should open the sample pane.");
 
                     paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(nav.IsPaneOpen,
                         "Clicking the built-in compact pane toggle should close the sample pane.");
@@ -1049,7 +1027,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_TrimsTitleToSearchClearance()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1058,15 +1036,15 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.Width = 1200;
                     window.SetUserShowIcon(show: true, window.Icon);
                     window.SetUserShowTitle(show: true, "Fluence.Wpf Control Gallery Extended Title That Should Trim Before Search");
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     System.Windows.Controls.TextBlock titleText = Assert.IsAssignableFrom<System.Windows.Controls.TextBlock>(FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText"));
@@ -1088,7 +1066,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_HidesTitleTextWhenItOverlapsSearch()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1097,18 +1075,18 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.Width = 760;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.SetUserShowIcon(show: true, window.Icon);
                     window.SetUserShowTitle(show: true, "Fluence.Wpf Control Gallery Extended Title That Should Not Overlap The Search Box");
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     ContentPresenter titleIcon = Assert.IsAssignableFrom<ContentPresenter>(FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter"));
@@ -1132,7 +1110,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_DoesNotLetTitleOverlapSearchAtMinimumWidth()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1141,18 +1119,18 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.Width = 698;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.SetUserShowIcon(show: true, window.Icon);
                     window.SetUserShowTitle(show: true, "Fluence.Wpf Control Gallery Extended Title That Must Never Overlap Search");
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     Controls.TextBox search = Assert.IsAssignableFrom<Controls.TextBox>(FindByName<Controls.TextBox>(window, "NavSearchBox"));
@@ -1176,7 +1154,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ExtendedTitleBar_RestoresTitleTextWhenSearchHasRoom()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1185,18 +1163,18 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.Width = 760;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.SetUserShowIcon(show: true, window.Icon);
                     window.SetUserShowTitle(show: true, "Fluence.Wpf Control Gallery Extended Title That Should Not Overlap The Search Box");
                     window.ExtendsContentIntoTitleBar = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TitleBar shellTitleBar = Assert.IsAssignableFrom<TitleBar>(FindByName<TitleBar>(window, "ShellTitleBar"));
                     System.Windows.Controls.TextBlock titleText = Assert.IsAssignableFrom<System.Windows.Controls.TextBlock>(FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText"));
@@ -1210,9 +1188,9 @@ namespace Fluence.Wpf.Tests
 
                     window.Width = 1200;
                     window.SetUserShowTitle(show: true, "Fluence.Wpf");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     titleText = Assert.IsType<System.Windows.Controls.TextBlock>(FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText"));
                     Controls.TextBox search = Assert.IsAssignableFrom<Controls.TextBox>(FindByName<Controls.TextBox>(window, "NavSearchBox"));
@@ -1231,7 +1209,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TitleBarSearch_DoesNotShiftWhenChromeOptionsChange()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1242,19 +1220,19 @@ namespace Fluence.Wpf.Tests
                     double? initialX = GetVisualX(search, window);
 
                     window.SetUserShowIcon(show: false, window.Icon);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     Assert.Equal(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0);
 
                     window.SetUserShowTitle(show: false, window.Title);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     Assert.Equal(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0);
 
                     window.IsMinimizeButtonVisible = Visibility.Collapsed;
                     window.IsMaximizeButtonVisible = Visibility.Collapsed;
                     window.IsCloseButtonVisible = Visibility.Collapsed;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     Assert.Equal(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0);
                 }
@@ -1268,7 +1246,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DemoSampleControl_ExpanderUsesInMemorySourceTabs()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1286,7 +1264,7 @@ namespace Fluence.Wpf.Tests
                     Assert.False(expander.IsExpanded, "Source starts collapsed.");
 
                     expander.IsExpanded = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TabControl tabs = Assert.IsAssignableFrom<TabControl>(FindByName<TabControl>(sample, "SourceTabControl"));
@@ -1310,7 +1288,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DemoSampleControl_SourceRendererPreservesIndentation()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1326,7 +1304,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Controls.Expander expander = Assert.IsAssignableFrom<Controls.Expander>(FindByName<Controls.Expander>(sample, "SourceExpander"));
                     expander.IsExpanded = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TabControl? tabs = FindByName<TabControl>(sample, "SourceTabControl");
@@ -1346,7 +1324,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTab()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1360,7 +1338,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Controls.Expander? expander = FindByName<Controls.Expander>(sample, "SourceExpander");
                     _ = expander?.IsExpanded = true;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TabControl? tabs = FindByName<TabControl>(sample, "SourceTabControl");
@@ -1377,7 +1355,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_NonHomePagesExposeInlineSourceSamples()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1394,9 +1372,9 @@ namespace Fluence.Wpf.Tests
                         }
 
                         window.NavigateTo(expectation.Tag);
-                        Drain(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
                         window.UpdateLayout();
-                        Drain(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                         object content = GetSelectedPageContent(window);
                         DependencyObject root = Assert.IsAssignableFrom<DependencyObject>(content);
@@ -1415,7 +1393,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryStatusPage_DeterminateProgressRingUsesNumberBoxBinding()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1431,7 +1409,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(50.0, ring.Value, 0.001);
 
                     valueBox.Value = 75;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(75.0, ring.Value, 0.001);
@@ -1446,7 +1424,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryStatusPage_ProgressBarValueAllowsZero()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1460,7 +1438,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, valueBox.Minimum, 0.001);
 
                     valueBox.Value = 0;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(0.0, progressBar.Value, 0.001);
@@ -1482,7 +1460,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryStatusPage_SourceMatchesLiveStepAndRingValues()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1522,7 +1500,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryStatusPage_StepProgressBarAnimatesEdgeClicks()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1561,7 +1539,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryNavigationPage_CompactSourceMatchesLiveInteraction()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryNavigationPage page = new();
@@ -1591,7 +1569,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryTabsPage_TabViewContentUsesLayerFillSurface()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryTabsPage page = new();
@@ -1607,9 +1585,9 @@ namespace Fluence.Wpf.Tests
 
                     ButtonBase addButton = Assert.IsAssignableFrom<ButtonBase>(tabView.Template.FindName("PART_AddTabButton", tabView));
                     addButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, addButton));
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(4, tabView.Items.Count);
                     TabViewItem selectedTab = Assert.IsType<TabViewItem>(tabView.SelectedItem);
@@ -1631,7 +1609,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryTypographyPage_TableUsesCompactRowSpacing()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryTypographyPage page = new();
@@ -1662,7 +1640,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryTypographyPage_DirectTableKeepsCopyColumnWithoutSourceExpander()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryTypographyPage page = new();
@@ -1689,7 +1667,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControls()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1729,7 +1707,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_CompactsControlsAtNarrowWidths()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1737,9 +1715,9 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Width = 560;
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.ComboBox appTheme = Assert.IsAssignableFrom<System.Windows.Controls.ComboBox>(FindByName<System.Windows.Controls.ComboBox>(page, "AppThemeComboBox"));
                     System.Windows.Controls.ComboBox minimize = Assert.IsAssignableFrom<System.Windows.Controls.ComboBox>(FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo"));
@@ -1770,7 +1748,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColors()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1813,7 +1791,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GallerySettingsPage_InvalidAccentSwatchTag_DoesNotChangeAccent()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1844,7 +1822,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryAccessibilityPage_KeyboardSamplesUseAlignedRows()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryAccessibilityPage page = new();
@@ -1905,7 +1883,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GalleryIconsPage_IconCatalogIsScrollableAndVirtualized()
         {
-            RunOnSta(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
                 EnsureTheme();
                 GalleryIconsPage page = new();
@@ -1939,9 +1917,9 @@ namespace Fluence.Wpf.Tests
                     Assert.Null(list.ItemContainerGenerator.ContainerFromIndex(list.Items.Count - 1));
 
                     list.ScrollIntoView(list.Items[^1]);
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.NotNull(list.ItemContainerGenerator.ContainerFromIndex(list.Items.Count - 1));
                 }
@@ -2004,17 +1982,17 @@ namespace Fluence.Wpf.Tests
 
         private static void EnsureTheme()
         {
-            Application? application = WpfTestSta.EnsureApplication();
+            Application application = WpfTestSta.EnsureApplication();
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application?.Resources.MergedDictionaries.Clear();
+            application.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
             ResourceDictionary demoShared = new()
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
             };
-            application?.Resources.MergedDictionaries.Add(demoShared);
+            application.Resources.MergedDictionaries.Add(demoShared);
         }
 
         private static string GetRepositoryFilePath(params string[] relativeSegments)
@@ -2045,9 +2023,9 @@ namespace Fluence.Wpf.Tests
                 ShowInTaskbar = false,
             };
             window.Show();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
         }
 
@@ -2064,9 +2042,9 @@ namespace Fluence.Wpf.Tests
                 Content = content,
             };
             window.Show();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
         }
 
@@ -2082,7 +2060,7 @@ namespace Fluence.Wpf.Tests
         {
             System.Windows.Controls.Button backButton = Assert.IsAssignableFrom<System.Windows.Controls.Button>(FindByName<System.Windows.Controls.Button>(titleBar, "PART_BackButton"));
             backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
-            Drain(titleBar.Dispatcher);
+            WpfTestSta.DrainDispatcher(titleBar.Dispatcher);
         }
 
         private static void InvokeSettingsItem(NavigationViewItem settingsItem)
@@ -2090,7 +2068,7 @@ namespace Fluence.Wpf.Tests
             // Settings is a FooterMenuItems entry; drive selection through the same control path a
             // click/keyboard invocation uses (raises ItemInvoked and shows the footer indicator).
             NavigationView.FromItemContainer(settingsItem)?.SelectFooterMenuItem(settingsItem);
-            Drain(settingsItem.Dispatcher);
+            WpfTestSta.DrainDispatcher(settingsItem.Dispatcher);
         }
 
         private static double? GetVisualX(FrameworkElement? element, Visual ancestor)
@@ -2113,11 +2091,6 @@ namespace Fluence.Wpf.Tests
             return GetVisualY(element, ancestor) + (element.ActualHeight / 2.0);
         }
 
-        private static void Drain(Dispatcher dispatcher)
-        {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
-        }
-
         private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
         {
             DispatcherFrame frame = new();
@@ -2132,7 +2105,7 @@ namespace Fluence.Wpf.Tests
             };
             timer.Start();
             Dispatcher.PushFrame(frame);
-            Drain(dispatcher);
+            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)
@@ -2185,11 +2158,11 @@ namespace Fluence.Wpf.Tests
             _ = source.Focus();
             FocusManager.SetFocusedElement(window, source);
             _ = Keyboard.Focus(source);
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
 
             TraversalRequest request = new(FocusNavigationDirection.Next);
             bool moved = source.MoveFocus(request);
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
 
             Assert.True(moved, "Keyboard focus should move to the next tab stop. " + message);
             Assert.Same(expected, Keyboard.FocusedElement);

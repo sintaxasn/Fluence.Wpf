@@ -72,9 +72,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBar_DefaultStyle_GeneratesBreadcrumbBarItemContainers()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.BreadcrumbBar)));
@@ -88,7 +88,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(crumbs.Length, bar.Items.Count);
@@ -109,9 +109,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBar_LastItem_HidesChevronAndUsesPrimaryTypography()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SolidColorBrush primaryBrush = Assert.IsType<SolidColorBrush>(app?.TryFindResource("TextFillColorPrimaryBrush"));
@@ -169,9 +169,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBar_CrumbClick_RaisesItemClickedWithItemAndIndex()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     object? clickedItem = null;
@@ -223,9 +223,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBarItem_MouseAndKeyboard_ActivateCrumb()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -239,7 +239,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.False(first.IsLastItem, "A directly added ancestor crumb must not report IsLastItem.");
@@ -292,9 +292,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBar_ItemsChanges_UpdateLastItemState()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.BreadcrumbBarItem documents =
@@ -324,7 +324,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Visible, documentsChevron.Visibility);
 
                     crumbs.RemoveAt(2);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     Assert.True(documents.IsLastItem,
                         "Removing the trailing crumb must promote the previous crumb back to IsLastItem=true.");
@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys =
@@ -367,9 +367,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBar_AutomationPeer_ReportsGroupClassNameAndName()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -383,7 +383,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(bar));
@@ -402,9 +402,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BreadcrumbBarItem_Pressed_AnimatesContentPlatePressScale()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -418,7 +418,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.False(first.IsLastItem, "The pressed crumb must be an ancestor (non-last) item.");

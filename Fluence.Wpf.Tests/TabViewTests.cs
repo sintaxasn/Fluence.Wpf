@@ -26,15 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
-using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Xunit;
 
@@ -42,33 +39,7 @@ namespace Fluence.Wpf.Tests
 {
     public class TabViewTests
     {
-        private static void RunOnFreshStaThread(Action action)
-        {
-            Exception? capturedException = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    capturedException = exception;
-                }
-            }));
-
-            if (capturedException is not null)
-            {
-                ExceptionDispatchInfo.Capture(capturedException).Throw();
-            }
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static ResourceDictionary? MergeGenericDictionary(Application? application)
+        private static ResourceDictionary? MergeGenericDictionary(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -78,17 +49,12 @@ namespace Fluence.Wpf.Tests
             return dictionaries?.Count > 0 ? dictionaries[^1] : null;
         }
 
-        private static void DrainDispatcher(Dispatcher dispatcher)
-        {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
-        }
-
         // ---- TabViewItem defaults ----
 
         [Fact]
         public void TabViewItem_DefaultIsClosable_IsTrue()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabViewItem tab = new();
                 Assert.True(tab.IsClosable);
@@ -98,7 +64,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabViewItem_DefaultIcon_IsNull()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabViewItem tab = new();
                 Assert.Null(tab.Icon);
@@ -108,7 +74,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabViewItem_IconProperty_RoundTrips()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabViewItem tab = new();
                 FontIcon icon = new() { Glyph = "\uE8A5" };
@@ -123,7 +89,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_DefaultIsAddTabButtonVisible_IsTrue()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabView tabs = new();
                 Assert.True(tabs.IsAddTabButtonVisible);
@@ -133,7 +99,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_DefaultTabWidthMode_IsSizeToContent()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabView tabs = new();
                 Assert.Equal(TabViewWidthMode.SizeToContent, tabs.TabWidthMode);
@@ -143,7 +109,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_DefaultCloseButtonOverlayMode_IsAuto()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabView tabs = new();
                 Assert.Equal(TabViewCloseButtonOverlayMode.Auto, tabs.CloseButtonOverlayMode);
@@ -153,9 +119,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_ContainerGeneration_UsesTabViewItem()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new()
@@ -169,7 +135,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     DependencyObject container = tabs.ItemContainerGenerator.ContainerFromIndex(0);
@@ -189,7 +155,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_IsItemItsOwnContainerOverride_TrueForTabViewItem()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 TabView tabs = new();
                 TabViewItem candidate = new();
@@ -211,9 +177,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_AddTabButtonClick_RaisesAddTabButtonClickEvent()
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = true };
@@ -222,7 +188,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ButtonBase addButton = Assert.IsAssignableFrom<ButtonBase>(tabs.Template.FindName("PART_AddTabButton", tabs));
@@ -235,7 +201,7 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(invoke);
                     invoke.Invoke();
 
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(1, raised);
                 }
@@ -253,9 +219,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabViewItem_CloseButton_RaisesCloseRequestedAndBubblesToTabView()
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
@@ -268,7 +234,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     // Force template application on the first tab so its PART_CloseButton is realized.
                     _ = first.ApplyTemplate();
@@ -285,7 +251,7 @@ namespace Fluence.Wpf.Tests
                         as IInvokeProvider;
                     Assert.NotNull(invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(1, itemRaised);
                     Assert.NotNull(viewArgs);
@@ -305,9 +271,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabViewItem_IsClosableFalse_HidesCloseButton()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
@@ -318,7 +284,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     _ = locked.ApplyTemplate();
 
@@ -340,9 +306,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_AddTabButtonHidden_WhenIsAddTabButtonVisibleFalse()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = false };
@@ -351,7 +317,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FrameworkElement addButton = Assert.IsAssignableFrom<FrameworkElement>(tabs.Template.FindName("PART_AddTabButton", tabs));
@@ -372,9 +338,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TabView_Items_AddsAndRemovesTabsOnDemand()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
@@ -385,19 +351,19 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = tabs;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TabViewItem added = new() { Header = "Beta" };
                     _ = tabs.Items.Add(added);
                     tabs.SelectedItem = added;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(2, tabs.Items.Count);
                     Assert.Same(added, tabs.SelectedItem);
 
                     tabs.Items.Remove(first);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     _ = Assert.Single(tabs.Items);
                     Assert.Same(added, tabs.Items[0]);

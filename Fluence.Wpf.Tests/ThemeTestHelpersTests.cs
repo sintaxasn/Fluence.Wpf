@@ -38,10 +38,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = WpfTestSta.EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                app?.Resources.MergedDictionaries.Clear();
+                app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplySystemAccent();
 

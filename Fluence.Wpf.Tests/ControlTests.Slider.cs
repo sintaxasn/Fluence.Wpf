@@ -50,13 +50,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Track track = Assert.IsAssignableFrom<Track>(FindVisualChildByName<Track>(slider, "PART_Track"));
                 w.Close();
@@ -68,13 +68,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Thumb's template root Grid has a ScaleTransform named ThumbScale.
                 Thumb thumb = Assert.IsAssignableFrom<Thumb>(FindVisualChild<Thumb>(slider));
@@ -93,13 +93,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Ellipse thumbEllipse = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbEllipse"));
                 Ellipse innerDot = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbInnerDot"));

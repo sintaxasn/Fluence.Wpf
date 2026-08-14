@@ -50,13 +50,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border root = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder"));
                 w.Close();
@@ -68,13 +68,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // All 4 WI-3 B14 SeverityLevels states must be reachable via GoToState
                 bool ok1 = VisualStateManager.GoToState(bar, "Informational", useTransitions: false);
@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Title = "Closable" };
@@ -103,7 +103,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     System.Windows.Controls.Button close =
                         Assert.IsAssignableFrom<System.Windows.Controls.Button>(FindVisualChildByName<System.Windows.Controls.Button>(bar, "PART_CloseButton"));
@@ -143,13 +143,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border indicator = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar"));
                 Assert.NotNull(indicator.Background);
@@ -162,13 +162,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border indicator = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar"));
                 System.Windows.Controls.TextBlock defaultIcon = Assert.IsAssignableFrom<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "DefaultIcon"));
@@ -176,7 +176,7 @@ namespace Fluence.Wpf.Tests
                 Color initialColor = initial.Color;
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorAttentionBrush"));
                 SolidColorBrush indicatorBrush = Assert.IsType<SolidColorBrush>(indicator.Background);
@@ -194,20 +194,20 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border indicator = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar"));
                 Brush brushBefore = indicator.Background;
 
                 // Change severity - trigger + GoToState must both fire
                 bar.Severity = InfoBarSeverity.Error;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Background must still be non-null after the change
                 Assert.NotNull(indicator.Background);
@@ -220,14 +220,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new() { Title = "Saved", IsOpen = true };
                 Window window = new() { Content = bar };
                 window.Show();
                 _ = bar.ApplyTemplate();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.Equal(AutomationLiveSetting.Polite, AutomationProperties.GetLiveSetting(bar));
                 window.Close();
@@ -239,7 +239,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBar bar = new()
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = bar, Width = 520, Height = 120 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Border root = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder"));
                 Assert.False(root.ClipToBounds,

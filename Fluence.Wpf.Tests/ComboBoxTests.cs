@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -37,45 +36,19 @@ namespace Fluence.Wpf.Tests
 {
     public class ComboBoxTests
     {
-        private static void RunOnFreshStaThread(Action action)
-        {
-            Exception? capturedException = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    capturedException = exception;
-                }
-            }));
-
-            if (capturedException is not null)
-            {
-                ExceptionDispatchInfo.Capture(capturedException).Throw();
-            }
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static ResourceDictionary? MergeTheme(Application? application)
+        private static ResourceDictionary? MergeTheme(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application?.Resources.MergedDictionaries.Clear();
+            application.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
-            return dictionaries?.Count > 0 ? dictionaries[^1] : null;
+            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
+            return dictionaries.Count > 0 ? dictionaries[^1] : null;
         }
 
         private static void RunWithComboBox(Action<ComboBox> testBody)
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
                 ComboBox comboBox = new();
                 testBody(comboBox);
@@ -205,9 +178,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_Template_ExposesDropdownBorderAndNoiseOverlay()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 _ = MergeTheme(application);
 
                 Window window = new();
@@ -221,7 +194,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 200;
                     window.Height = 80;
                     window.Show();
-                    WpfTestSta.Dispatcher?.Invoke(static () => { }, System.Windows.Threading.DispatcherPriority.Background, default);
+                    WpfTestSta.Dispatcher.Invoke(static () => { }, System.Windows.Threading.DispatcherPriority.Background, default);
                     window.UpdateLayout();
                     _ = comboBox.ApplyTemplate();
 

@@ -189,12 +189,12 @@ namespace Fluence.Wpf.Tests
                 {
                     Controls.Expander expander = Assert.IsAssignableFrom<Controls.Expander>(DemoTestHost.FindByName<Controls.Expander>(sample, "SourceExpander"));
                     expander.IsExpanded = true;
-                    DemoTestHost.Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AssertSourceCopyTag(sample, "<Grid />");
                     sample.XamlSource = "<StackPanel />";
-                    DemoTestHost.Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AssertSourceCopyTag(sample, "<StackPanel />");

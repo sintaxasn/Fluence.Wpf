@@ -65,9 +65,9 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.NavigateTo("colors");
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     NavigationView navigationView = Assert.IsAssignableFrom<NavigationView>(FindByName<NavigationView>(window, "DemoNav"));
                     _ = Assert.IsAssignableFrom<GalleryColorsPage>(navigationView.Content);
@@ -238,9 +238,9 @@ namespace Fluence.Wpf.Tests
         private static void SelectTab(TabControl colorTabs, int index, Dispatcher dispatcher)
         {
             colorTabs.SelectedIndex = index;
-            Drain(dispatcher);
+            WpfTestSta.DrainDispatcher(dispatcher);
             colorTabs.UpdateLayout();
-            Drain(dispatcher);
+            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         private static Application EnsureDemoTheme()
@@ -278,9 +278,9 @@ namespace Fluence.Wpf.Tests
                 ShowInTaskbar = false,
             };
             window.Show();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
         }
 
@@ -297,9 +297,9 @@ namespace Fluence.Wpf.Tests
                 Content = content,
             };
             window.Show();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
         }
 
@@ -307,12 +307,7 @@ namespace Fluence.Wpf.Tests
         {
             window.Content = null;
             window.Close();
-            Drain(window.Dispatcher);
-        }
-
-        private static void Drain(Dispatcher dispatcher)
-        {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
         }
 
         private static T? FindByName<T>(DependencyObject? root, string name)

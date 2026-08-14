@@ -49,14 +49,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("One");
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // VSM groups are attached to the root Grid of the template
                 Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChild<Grid>(cb));
@@ -75,14 +75,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("One");
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChild<Grid>(cb));
                 IList groups = VisualStateManager.GetVisualStateGroups(root);
@@ -100,18 +100,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Alpha");
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 bool transitioned = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
                 Assert.True(transitioned, "GoToState('Focused') must return true.");
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Border accentLine = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"));
                 Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
@@ -125,21 +125,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Beta");
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Focused first, then Unfocused
                 _ = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 bool transitioned = VisualStateManager.GoToState(cb, "Unfocused", useTransitions: false);
                 Assert.True(transitioned, "GoToState('Unfocused') must return true.");
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Border accentLine = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"));
                 Assert.Equal(0.0, accentLine.Opacity, 0.01);
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Tests
                 cb.SelectedIndex = 0;
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Border accentLine = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"));
                 Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
@@ -176,24 +176,24 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Gamma");
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 _ = cb.ApplyTemplate();
                 w.UpdateLayout();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 bool transitioned = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
                 Assert.True(transitioned, "GoToState('Focused') must return true after theme cycle.");
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Border accentLine = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"));
                 Assert.Equal(Visibility.Collapsed, accentLine.Visibility);

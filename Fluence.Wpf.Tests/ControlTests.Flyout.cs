@@ -44,9 +44,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FlyoutPresenter_DefaultStyle_AppliesFluentSurface()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.FlyoutPresenter)));
@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = presenter;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     CornerRadius? overlayRadius = (CornerRadius?)app?.FindResource("OverlayCornerRadius");
@@ -80,9 +80,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_ShowAt_OpensLightDismissPopupAndPresentsContent()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     bool openingRaised = false;
@@ -139,9 +139,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_Hide_ClosesPopupAndRaisesClosingThenClosed()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -152,7 +152,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -185,9 +185,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_ClosingCancel_KeepsFlyoutOpen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -200,7 +200,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -208,7 +208,7 @@ namespace Fluence.Wpf.Tests
                         "ShowAt should open the flyout popup before the cancel scenario.");
 
                     flyout.Hide();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(flyout.IsOpen, "Canceling Closing must keep the flyout open.");
 
                     cancelClose = false;
@@ -228,9 +228,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_ContentChange_FlowsToPresenter()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -241,7 +241,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal("First", presenter.Content);
 
                     flyout.Content = "Second";
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Second", presenter.Content);
                 }
                 finally
@@ -266,9 +266,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyout()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -279,7 +279,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = owner;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.FlyoutBase.SetAttachedFlyout(owner, flyout);
@@ -301,9 +301,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_PlacementModes_MapToPopupPlacement()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -314,7 +314,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(FlyoutPlacementMode.Top, flyout.Placement);
@@ -359,9 +359,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_ShowAt_StampsRevealPlacementWithMappedSide()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -372,7 +372,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.FlyoutPresenter unstamped = new();
@@ -442,9 +442,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_Escape_HidesFlyoutThroughClosingPipeline()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -455,7 +455,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -490,9 +490,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Flyout_ShowAt_FlowsTargetDataContextIntoPresenter()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -504,7 +504,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -535,7 +535,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys = ["SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush"];

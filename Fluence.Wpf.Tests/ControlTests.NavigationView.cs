@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
             window.Content = null;
             window.UpdateLayout();
             window.Close();
-            DrainDispatcher(WpfTestSta.Dispatcher);
+            WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
         }
 
         // Pump the dispatcher for `milliseconds` so any in-flight storyboard
@@ -137,9 +137,9 @@ namespace Fluence.Wpf.Tests
             // main items), so the fixed 40px icon column keeps the icon anchored at the left regardless
             // of the animating pane width. We force intermediate closed pane widths against the real
             // gallery MainWindow and assert the footer icon stays at the left.
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica, updateAccent: true);
 
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     mw.Show();
-                    DrainDispatcher(mw.Dispatcher);
+                    WpfTestSta.DrainDispatcher(mw.Dispatcher);
                     // Settle until the shell's NavigationView is realized rather than padding a
                     // fixed delay; returns as soon as the visual tree is up.
                     _ = WaitUntil(mw.Dispatcher, 2000, () => FindVisualChildByName<NavigationView>(mw, "DemoNav") is not null);
@@ -185,7 +185,7 @@ namespace Fluence.Wpf.Tests
                 {
                     mw.Content = null;
                     mw.Close();
-                    DrainDispatcher(mw.Dispatcher);
+                    WpfTestSta.DrainDispatcher(mw.Dispatcher);
                 }
             });
         }
@@ -193,9 +193,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(GetNavigationViewItemsHostPanel(nav));
@@ -231,9 +231,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_PaneDisplayMode_Top_RendersHorizontalPane()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(GetNavigationViewItemsHostPanel(nav));
@@ -269,9 +269,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyle()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -292,9 +292,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftCompact_ClosedPaneKeepsIconFooterVisible()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.Border footerHost = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost"));
@@ -343,9 +343,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftClosedPaneItemsKeepFullIconWidth()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -367,7 +367,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(messages);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.01);
@@ -392,9 +392,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidth()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -416,7 +416,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(messages);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.01);
@@ -441,9 +441,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemIcons()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -458,7 +458,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FontIcon glyph = Assert.IsAssignableFrom<FontIcon>(FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph"));
@@ -478,9 +478,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftChrome_BackPrecedesPaneToggle()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -497,7 +497,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
@@ -527,9 +527,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftMode_DefaultFontIconSizeIs16()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -545,7 +545,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One", Icon = icon });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(16.0, icon.IconFontSize, 0.01);
@@ -564,9 +564,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationViewItem_Template_RendersInfoBadge()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -584,7 +584,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter"));
@@ -607,9 +607,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_SelectedItem_UpdatesOnItemClick()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -628,11 +628,11 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(item1);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, nav.SelectedIndex);
@@ -652,9 +652,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_ItemInvoked_FiresBeforeSelectionChanges()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -673,7 +673,7 @@ namespace Fluence.Wpf.Tests
                     nav.SelectedItem = item0;
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     List<string> calls = [];
@@ -693,7 +693,7 @@ namespace Fluence.Wpf.Tests
                     IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.NotNull(invokedArgs);
@@ -718,9 +718,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_SelectionFollowsFocus_True_SelectsOnFocus()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -737,13 +737,13 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
                     FrameworkElement container1 = Assert.IsAssignableFrom<FrameworkElement>(nav.ItemContainerGenerator.ContainerFromIndex(1));
                     _ = Keyboard.Focus(container1);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, nav.SelectedIndex);
@@ -762,9 +762,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_SelectionFollowsFocus_False_DoesNotSelectOnFocus()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -781,13 +781,13 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
                     FrameworkElement container1 = Assert.IsAssignableFrom<FrameworkElement>(nav.ItemContainerGenerator.ContainerFromIndex(1));
                     _ = Keyboard.Focus(container1);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(0, nav.SelectedIndex);
@@ -806,9 +806,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_IsBackButtonVisible_False_HidesBackButton()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -824,7 +824,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
@@ -845,9 +845,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_IsBackEnabled_False_CollapsesBackButton()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -863,7 +863,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
@@ -886,9 +886,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftModes_ForcePaneToggleVisible()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -915,14 +915,14 @@ namespace Fluence.Wpf.Tests
                             _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                             window.Content = nav;
                             window.Show();
-                            DrainDispatcher(window.Dispatcher);
+                            WpfTestSta.DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
                             Assert.False(nav.IsPaneToggleButtonVisible,
                                 "Top mode should keep the pane toggle hidden before switching to " + mode + ".");
 
                             nav.PaneDisplayMode = mode;
-                            DrainDispatcher(window.Dispatcher);
+                            WpfTestSta.DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
                             Assert.True(nav.IsPaneToggleButtonVisible,
@@ -930,7 +930,7 @@ namespace Fluence.Wpf.Tests
                             AssertPaneToggleVisible(nav);
 
                             nav.IsPaneToggleButtonVisible = false;
-                            DrainDispatcher(window.Dispatcher);
+                            WpfTestSta.DrainDispatcher(window.Dispatcher);
                             window.UpdateLayout();
 
                             Assert.True(nav.IsPaneToggleButtonVisible,
@@ -956,9 +956,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_BackRequested_FiresOnBackClick()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -974,7 +974,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     bool fired = false;
@@ -982,7 +982,7 @@ namespace Fluence.Wpf.Tests
                     nav.BackRequested += handler;
                     _ = nav.ApplyTemplate();
                     nav.RaiseBackRequestedForTesting();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(fired);
                 }
@@ -1000,9 +1000,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_ThemeSwitch_UpdatesBrushes()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1017,16 +1017,16 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(application?.Resources.MergedDictionaries.Count > 0);
                     Color lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
                     Assert.NotEqual(lightBase, darkBase);
@@ -1046,9 +1046,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_SharedIndicator_ExistsInTemplate_AndVisibleWhenSelected()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1066,7 +1066,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(item1);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
@@ -1074,9 +1074,9 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, indicator.Opacity, 0.01);
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
@@ -1094,9 +1094,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_PreTemplateSelection_PositionsSharedIndicatorAfterTemplateApplied()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1118,9 +1118,9 @@ namespace Fluence.Wpf.Tests
 
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
@@ -1139,9 +1139,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacement()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1161,13 +1161,13 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Child", IsChildItem = true });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
@@ -1177,7 +1177,7 @@ namespace Fluence.Wpf.Tests
                     // Settle until the indicator slide reaches the asserted child-item offset.
                     _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 53.0) <= 0.5);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     double childItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.Equal(53.0, childItemX, 0.5);
@@ -1196,9 +1196,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelections()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1222,13 +1222,13 @@ namespace Fluence.Wpf.Tests
                     });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
@@ -1236,9 +1236,9 @@ namespace Fluence.Wpf.Tests
                         "Initial selection should snap before later changes animate.");
 
                     nav.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(translate.HasAnimatedProperties,
                         "Changing selection should animate the shared indicator transform.");
@@ -1258,9 +1258,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftMode_RapidReselection_IndicatorSettlesOnFinalTarget()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1289,13 +1289,13 @@ namespace Fluence.Wpf.Tests
                     });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
@@ -1359,9 +1359,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndent()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1385,13 +1385,13 @@ namespace Fluence.Wpf.Tests
                     });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
@@ -1430,9 +1430,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAbove()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1456,13 +1456,13 @@ topMode: false,
                     });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
@@ -1501,9 +1501,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndent()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1523,13 +1523,13 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "No icon top-level" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
@@ -1538,7 +1538,7 @@ topMode: false,
                     // Settle until the indicator returns to the icon-item offset (the asserted value).
                     _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - iconItemX) <= 0.5);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     double noIconItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.Equal(iconItemX, noIconItemX, 0.5);
@@ -1557,9 +1557,9 @@ topMode: false,
         [Fact]
         public void NavigationViewItem_FocusVisual_StaysInsideItemBounds()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -1588,9 +1588,9 @@ topMode: false,
         [Fact]
         public void NavigationView_SharedIndicator_HidesWhenSelectionCleared()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1605,21 +1605,21 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.Equal(1.0, indicator?.Opacity ?? 0.0, 0.01);
 
                     nav.SelectedItem = null;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(0.0, indicator?.Opacity ?? 1.0, 0.01);
                 }
@@ -1637,9 +1637,9 @@ topMode: false,
         [Fact]
         public void NavigationView_TopMode_SharedIndicator_VisibleWhenSelected()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1655,13 +1655,13 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Beta" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
@@ -1680,9 +1680,9 @@ topMode: false,
         [Fact]
         public void NavigationView_FullThemeCycle_NoExceptions()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1697,7 +1697,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ApplicationTheme[] themes =
@@ -1711,7 +1711,7 @@ topMode: false,
                     for (int i = 0; i < themes.Length; i++)
                     {
                         ApplicationThemeManager.Apply(themes[i], BackdropType.None, updateAccent: true);
-                        DrainDispatcher(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
                         nav.UpdateLayout();
 
                         Assert.Equal(themes[i], ApplicationThemeManager.CurrentTheme);
@@ -1733,9 +1733,9 @@ topMode: false,
         [Fact]
         public void NavigationView_PaneModeSwitch_IndicatorSurvives()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1751,18 +1751,18 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
@@ -1781,9 +1781,9 @@ topMode: false,
         [Fact]
         public void NavigationView_PaneCollapse_IndicatorSurvives()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1799,26 +1799,26 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     nav.IsPaneOpen = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
 
                     nav.IsPaneOpen = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
@@ -1836,9 +1836,9 @@ topMode: false,
         [Fact]
         public void NavigationViewItem_DisabledState_ChangesForeground()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1854,13 +1854,13 @@ topMode: false,
                     _ = nav.Items.Add(item);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Brush enabledForeground = item.Foreground;
 
                     item.IsEnabled = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Brush disabledForeground = item.Foreground;
@@ -1880,9 +1880,9 @@ topMode: false,
         [Fact]
         public void NavigationView_Left_PaneClosedInitially_ContentStartsAt48px_Inline()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1898,9 +1898,9 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
@@ -1921,9 +1921,9 @@ topMode: false,
         [Fact]
         public void NavigationView_Left_ContentStarts42pxBelowWindowTop()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1939,9 +1939,9 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
@@ -1962,9 +1962,9 @@ topMode: false,
         [Fact]
         public void NavigationView_Left_HeaderContentUsesAutoHeight()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1981,9 +1981,9 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
@@ -2004,9 +2004,9 @@ topMode: false,
         [Fact]
         public void NavigationView_Left_PaneToggle_ResizesPushingContent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2022,9 +2022,9 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
@@ -2054,9 +2054,9 @@ topMode: false,
         [Fact]
         public void NavigationView_PaneDisplayModeChange_AnimatesPaneWidth_LeftAndLeftCompact()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2072,7 +2072,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     // Settle until the open pane reaches the asserted 320px expanded width.
                     _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
                     window.UpdateLayout();
@@ -2081,7 +2081,7 @@ topMode: false,
                     // Left -> LeftCompact: the control coerces IsPaneOpen=false; the pane width must
                     // animate down rather than snap straight to 48 (the bug the mode-change handler had).
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Switching Left -> LeftCompact should animate the pane width, not snap immediately to 48.");
                     _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() <= 48.5);
                     Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.5);
@@ -2090,7 +2090,7 @@ topMode: false,
                     // mode): the pane width must animate back up rather than snap to 320.
                     nav.IsPaneOpen = true;
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Switching LeftCompact -> Left (reopened) should animate the pane width, not snap immediately to 320.");
                     _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() >= 319.5);
                     Assert.Equal(320.0, nav.GetPaneColumnWidthForTesting(), 0.5);
@@ -2110,9 +2110,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_Inline()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2128,7 +2128,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     // Pane-open enter animation is 167 ms (CubicEase EaseOut). Settle until the pane
                     // reaches its 320px open width rather than padding past HoldEnd.
@@ -2153,9 +2153,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftCompact_HeaderContentUsesAutoHeight()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2172,7 +2172,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
@@ -2196,9 +2196,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_Inline()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2214,9 +2214,9 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
@@ -2236,9 +2236,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftCompact_BackEnabledClosedPane_KeepsPaneToggleVisible()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2257,14 +2257,14 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     nav.IsPaneOpen = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
                     System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
@@ -2288,9 +2288,9 @@ topMode: false,
         [Fact]
         public void NavigationView_LeftCompact_PaneToggle_ResizesPushingContent()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2306,7 +2306,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     // Pane enter animation is 167 ms (CubicEase). Settle until the pane reaches its
                     // 320px open width before sampling layout, rather than padding past HoldEnd.
@@ -2341,9 +2341,9 @@ topMode: false,
         [Fact]
         public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2357,7 +2357,7 @@ topMode: false,
                     };
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
@@ -2381,9 +2381,9 @@ topMode: false,
         [Fact]
         public void NavigationView_Header_InPane_IsRendered_NotSelectable()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2401,7 +2401,7 @@ topMode: false,
                     _ = nav.Items.Add(item);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     NavigationViewItemHeader renderedHeader = Assert.IsAssignableFrom<NavigationViewItemHeader>(FindVisualChild<NavigationViewItemHeader>(nav));
@@ -2426,9 +2426,9 @@ topMode: false,
         [Fact]
         public void NavigationView_BackButtonStates_BothStatesAccessible()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2437,7 +2437,7 @@ topMode: false,
                     NavigationView nav = new() { Width = 700, Height = 500 };
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // WI-3 B15: BackButtonStates VSM group must expose both states
                     bool okVisible = VisualStateManager.GoToState(nav, "BackButtonVisible", useTransitions: false);
@@ -2460,9 +2460,9 @@ topMode: false,
         [Fact]
         public void NavigationView_IsBackButtonVisible_True_ShowsBackButton()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2471,7 +2471,7 @@ topMode: false,
                     NavigationView nav = new() { Width = 700, Height = 500, IsBackButtonVisible = true };
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
                     Assert.Equal(Visibility.Visible, back.Visibility);
@@ -2495,9 +2495,9 @@ topMode: false,
         [Fact]
         public void NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemes()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2511,21 +2511,21 @@ topMode: false,
                     };
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"));
 
                     ThemeTestHelpers.ApplyStandardThemeCycle();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"));
                 }
@@ -2551,9 +2551,9 @@ topMode: false,
             // be Transparent (or null) so the DWM Mica/Acrylic backdrop shows through. The
             // WI-3 B15 commit wrongly set them to LayerFillColorAltBrush, which blocked the
             // backdrop entirely. This test asserts the reverted state is preserved.
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 // ---- Left pane ----
@@ -2569,7 +2569,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winLeft.Content = nav;
                     winLeft.Show();
-                    DrainDispatcher(winLeft.Dispatcher);
+                    WpfTestSta.DrainDispatcher(winLeft.Dispatcher);
                     winLeft.UpdateLayout();
 
                     System.Windows.Controls.Border paneBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder"));
@@ -2594,7 +2594,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winCompact.Content = nav;
                     winCompact.Show();
-                    DrainDispatcher(winCompact.Dispatcher);
+                    WpfTestSta.DrainDispatcher(winCompact.Dispatcher);
                     winCompact.UpdateLayout();
 
                     System.Windows.Controls.Border compactPane = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane"));
@@ -2619,7 +2619,7 @@ topMode: false,
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winTop.Content = nav;
                     winTop.Show();
-                    DrainDispatcher(winTop.Dispatcher);
+                    WpfTestSta.DrainDispatcher(winTop.Dispatcher);
                     winTop.UpdateLayout();
 
                     System.Windows.Controls.Border paneHeader = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder"));
@@ -2665,7 +2665,7 @@ topMode: false,
 
         private static void AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode mode, bool isPaneOpen)
         {
-            Application? application = EnsureApplication();
+            Application application = WpfTestSta.EnsureApplication();
             Style expected = Assert.IsType<Style>(application?.TryFindResource("ScrollViewerStyle"));
 
             Window window = new();
@@ -2682,7 +2682,7 @@ topMode: false,
 
                 window.Content = nav;
                 window.Show();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
                 ScrollViewer scrollViewer = Assert.IsAssignableFrom<ScrollViewer>(FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer));
@@ -2717,9 +2717,9 @@ topMode: false,
             // producing two visible accent pills on the selected item. The pane-level
             // indicator is canonical (WinUI 3) and is wired in NavigationView.cs; the
             // per-item one must NOT exist in the template.
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -2734,7 +2734,7 @@ topMode: false,
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.Border? inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");

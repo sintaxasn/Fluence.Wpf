@@ -43,47 +43,21 @@ namespace Fluence.Wpf.Tests
 {
     public class FluenceWindowTitleBarTests
     {
-        private static void RunOnFreshStaThread(Action action)
-        {
-            Exception? capturedException = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    capturedException = exception;
-                }
-            }));
-
-            if (capturedException is not null)
-            {
-                ExceptionDispatchInfo.Capture(capturedException).Throw();
-            }
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static ResourceDictionary? MergeTheme(Application? application)
+        private static ResourceDictionary? MergeTheme(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application?.Resources.MergedDictionaries.Clear();
+            application.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
-            return dictionaries?.Count > 0 ? dictionaries[^1] : null;
+            Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
+            return dictionaries.Count > 0 ? dictionaries[^1] : null;
         }
 
         private static void RunWithWindow(Action<FluenceWindow> testBody)
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
 
@@ -110,9 +84,9 @@ namespace Fluence.Wpf.Tests
         /// <param name="testBody">The action to run with the shown window.</param>
         private static void RunWithShownWindow(Action<FluenceWindow> testBody)
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
 
@@ -371,9 +345,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ThemeSwitch_UpdatesWindowBackground()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
 
@@ -404,9 +378,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ThemeChanged_FiresOnApply()
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 int fireCount = 0;
                 void handler(object? s, ThemeChangedEventArgs e)
@@ -466,9 +440,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FullThemeCycle_KeyBrushesResolve()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
 
                 try
@@ -495,9 +469,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MergedDictionaries_CountStableAfterMultipleSwitches()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
 
                 try
@@ -1112,9 +1086,9 @@ modifiers: null);
             // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
             // Minimized. If this ever regresses to "visible but inert" we'll catch it here
             // instead of only in manual QA.
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
 
@@ -1187,9 +1161,9 @@ modifiers: null);
             // PSADT case are also Topmost - a combination that can mask bugs a Show() test misses.
             // We schedule the click via Dispatcher.BeginInvoke(ApplicationIdle) from Loaded so
             // the command fires after the modal frame is pumping, then verify WindowState.
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
                 WindowState observedStateAfterMinimize = WindowState.Normal;
@@ -1292,9 +1266,9 @@ modifiers: null);
         [Fact]
         public void PasswordBox_SelectAll_DoesNotThrowWithoutTemplate()
         {
-            RunOnFreshStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
 
                 try
@@ -1395,9 +1369,9 @@ modifiers: null);
         [Fact]
         public void CaptionButtons_AboveContent_WhenExtendsContentIntoTitleBar()
         {
-            RunOnFreshStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
                 FluenceWindow? window = null;
 

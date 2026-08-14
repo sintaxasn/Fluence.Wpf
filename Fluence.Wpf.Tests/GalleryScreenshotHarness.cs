@@ -96,21 +96,6 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static void RunOnStaThread(Action action)
-        {
-            WpfTestSta.RunOnSta(action);
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static void DrainDispatcher(Dispatcher dispatcher)
-        {
-            WpfTestSta.DrainDispatcher(dispatcher);
-        }
-
         private static string FindRepoRoot()
         {
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -176,7 +161,7 @@ namespace Fluence.Wpf.Tests
 
         private static Application ResetApplication(ApplicationTheme theme, bool includeDemoSharedStyles)
         {
-            Application application = EnsureApplication() ?? throw new InvalidOperationException("Could not create WPF Application for screenshot capture.");
+            Application application = WpfTestSta.EnsureApplication() ?? throw new InvalidOperationException("Could not create WPF Application for screenshot capture.");
             application.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -210,9 +195,9 @@ namespace Fluence.Wpf.Tests
         private static void ShowSettleAndCapture(Window window, ApplicationTheme theme, string fullPath)
         {
             window.Show();
-            DrainDispatcher(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
-            DrainDispatcher(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             PumpDispatcher(window.Dispatcher, AnimationSettleDelay);
             window.UpdateLayout();
             _ = window.Dispatcher.Invoke(DispatcherPriority.Render, new Action(static delegate { }));
@@ -268,7 +253,7 @@ namespace Fluence.Wpf.Tests
                 window = new Demo.MainWindow();
                 PrepareCaptureWindow(window, GalleryCaptureWidth, GalleryCaptureHeight);
                 window.Show();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 if (window.DemoNav is not null)
                 {
@@ -278,7 +263,7 @@ namespace Fluence.Wpf.Tests
 
                 window.NavigateTo(route);
                 ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 PumpDispatcher(window.Dispatcher, AnimationSettleDelay);
                 window.UpdateLayout();
                 _ = window.Dispatcher.Invoke(DispatcherPriority.Render, new Action(static delegate { }));
@@ -417,7 +402,7 @@ namespace Fluence.Wpf.Tests
         [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CaptureGalleryShellNavigationModes()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
@@ -432,7 +417,7 @@ namespace Fluence.Wpf.Tests
         [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CapturePowerShellControlsTour()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
@@ -446,7 +431,7 @@ namespace Fluence.Wpf.Tests
         [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
         public void CaptureMvvmTaskManager()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)

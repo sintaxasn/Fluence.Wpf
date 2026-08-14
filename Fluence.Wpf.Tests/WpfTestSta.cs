@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Tests
         /// any queued layout, render, and idle callbacks complete before the caller samples state.
         /// </summary>
         /// <param name="dispatcher">The dispatcher to drain.</param>
-        internal static void DrainDispatcher(Dispatcher? dispatcher)
+        internal static void DrainDispatcher(Dispatcher dispatcher)
         {
             _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
         }

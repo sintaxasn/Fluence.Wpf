@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     TranslateTransform translate =
                         Assert.IsType<TranslateTransform>(bar.Template.FindName("PART_IndeterminateTranslate", bar));
@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -130,7 +130,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                     Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
@@ -154,7 +154,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -167,7 +167,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     RotateTransform rotate = Assert.IsType<RotateTransform>(icon.Template.FindName("PART_Rotate", icon));
                     Assert.False(rotate.HasAnimatedProperties,
@@ -187,7 +187,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -196,7 +196,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
                     ts.IsChecked = true;
@@ -219,7 +219,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     expander.IsExpanded = true;
 
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(contentRow.Height.IsStar,
                         "With motion disabled the content row must open to its star height immediately.");
 
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
                     Assert.Equal(0.0, translate.Y, 0.001);
                 }
                 finally
@@ -262,9 +262,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ReducedMotion_Flyout_ShowAt_PresentsSurfaceAtRestWithoutClocks()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -275,7 +275,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -313,9 +313,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ReducedMotion_TeachingTip_Open_PresentsTipAtRestWithoutClocks()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -330,7 +330,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -363,9 +363,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ReducedMotion_ContentDialog_Hide_TearsDownSynchronouslyWithoutClocks()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -411,9 +411,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocks()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -424,11 +424,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     combo.IsDropDownOpen = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.Border border =
                         Assert.IsType<System.Windows.Controls.Border>(combo.Template.FindName("PART_DropdownBorder", combo));
@@ -456,7 +456,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 MotionHelper.OverrideIsMotionEnabled = true;
 
@@ -465,7 +465,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
                     ts.IsChecked = true;

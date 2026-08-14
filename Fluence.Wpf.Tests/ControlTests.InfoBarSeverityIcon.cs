@@ -48,9 +48,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void InfoBar_GetSeverityBrushKey_ResolvesToThemeBrush()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
                 foreach (InfoBarSeverity severity in new[]
                 {

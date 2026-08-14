@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 TabView tv = new();
@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsAssignableFrom<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"));
                 w.Close();
@@ -67,7 +67,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 TabView tv = new();
@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsAssignableFrom<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"));
                 w.Close();
@@ -87,14 +87,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ScrollViewer sv = Assert.IsAssignableFrom<ScrollViewer>(FindVisualChildByName<ScrollViewer>(tv, "PART_TabContentScroller"));
                 w.Close();
@@ -106,7 +106,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 TabView tv = new();
@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Tests
                 // Wide window: 2 short tabs will not overflow a 700px wide control
                 Window w = new() { Content = tv, Width = 700, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.Primitives.RepeatButton back = Assert.IsAssignableFrom<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"));
                 System.Windows.Controls.Primitives.RepeatButton fwd = Assert.IsAssignableFrom<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"));

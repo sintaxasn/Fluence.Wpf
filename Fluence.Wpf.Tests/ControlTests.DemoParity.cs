@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Tests
 
                 button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.Equal("Clicks: 2", count.Text, StringComparer.Ordinal);
             });
@@ -85,11 +85,11 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
 
                 wrapToggle.IsChecked = true;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.Equal("Wrap text: On", stateText.Text, StringComparer.Ordinal);
 
                 wrapToggle.IsChecked = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.Equal("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
             });
         }
@@ -107,13 +107,13 @@ namespace Fluence.Wpf.Tests
                 Button primary = Assert.IsType<Button>(listToggle.Template?.FindName("PART_PrimaryButton", listToggle));
 
                 primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.True(listToggle.IsChecked, "Clicking the primary half should check the sample.");
                 Assert.Equal("List formatting: Bulleted list", stateText.Text, StringComparer.Ordinal);
 
                 primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.False(listToggle.IsChecked, "A second primary click should uncheck the sample.");
                 Assert.Equal("List formatting: Off", stateText.Text, StringComparer.Ordinal);
@@ -136,14 +136,14 @@ namespace Fluence.Wpf.Tests
                 Assert.True(threeState.IsThreeState);
 
                 selectAll.IsChecked = true;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.True(optionOne.IsChecked.GetValueOrDefault());
                 Assert.True(optionTwo.IsChecked.GetValueOrDefault());
                 Assert.True(optionThree.IsChecked.GetValueOrDefault());
 
                 optionTwo.IsChecked = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.Null(selectAll.IsChecked);
             });
@@ -171,11 +171,11 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(new Thickness(24, 0, 0, 0), ring.Margin);
 
                 workToggle.IsChecked = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.False(ring.IsActive);
 
                 workToggle.IsChecked = true;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.True(ring.IsActive);
             });
         }
@@ -270,9 +270,9 @@ namespace Fluence.Wpf.Tests
 
         private static void RunDemoPageTest(Func<UserControl> createPage, Action<Window> verify)
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 UserControl page = createPage();
                 Window window = new()
@@ -285,7 +285,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     verify(window);

@@ -42,9 +42,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_AutomationPeer_ReportsPasswordEdit()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -59,9 +59,9 @@ namespace Fluence.Wpf.Tests
                     window.Width = 280;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = box.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(box);
                     _ = Assert.IsAssignableFrom<Fluence.Wpf.Automation.PasswordBoxAutomationPeer>(peer);
@@ -83,9 +83,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_ForwardsAccessibleNameToInnerField()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -100,9 +100,9 @@ namespace Fluence.Wpf.Tests
                     window.Width = 280;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = box.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     System.Windows.Controls.PasswordBox inner = box.Template.FindName("PART_PasswordBox", box) as System.Windows.Controls.PasswordBox
                         ?? throw new Xunit.Sdk.XunitException("The inner PART_PasswordBox must be present in the template.");
@@ -122,9 +122,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_RevealButton_IsKeyboardOperableAndNamed()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -140,9 +140,9 @@ namespace Fluence.Wpf.Tests
                     window.Width = 280;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = box.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Button revealButton = Assert.IsAssignableFrom<Button>(FindVisualChildByName<Button>(box, "PART_RevealButton"));
 
@@ -157,14 +157,14 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer revealPeer = UIElementAutomationPeer.CreatePeerForElement(revealButton);
                     IInvokeProvider invoke = (IInvokeProvider)revealPeer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(box.IsPasswordRevealed,
                         "Invoking PART_RevealButton (keyboard Space/Enter path) must reveal the password.");
 
                     // Second invoke should toggle off.
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(box.IsPasswordRevealed,
                         "A second invocation of PART_RevealButton must hide the password again.");
@@ -187,9 +187,9 @@ namespace Fluence.Wpf.Tests
             // Contract: press-and-hold = transient reveal; release = hide immediately.
             // Prior to the fix, OnRevealButtonUp reset _isMouseRevealActive before Click fired,
             // causing the Click toggle branch to run and leaving IsPasswordRevealed = true.
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -205,9 +205,9 @@ namespace Fluence.Wpf.Tests
                     window.Width = 280;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = box.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Button revealButton = Assert.IsAssignableFrom<Button>(FindVisualChildByName<Button>(box, "PART_RevealButton"));
 
@@ -221,7 +221,7 @@ namespace Fluence.Wpf.Tests
                         Source = revealButton,
                     };
                     revealButton.RaiseEvent(downArgs);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(box.IsPasswordRevealed,
                         "Password must be revealed while the mouse button is held down (press-and-hold).");
@@ -237,7 +237,7 @@ namespace Fluence.Wpf.Tests
                         Source = revealButton,
                     };
                     revealButton.RaiseEvent(upArgs);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(box.IsPasswordRevealed,
                         "Password must be hidden immediately after mouse button is released.");
@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Tests
                     // had already been reset to false in OnRevealButtonUp.
                     RoutedEventArgs clickArgs = new(Button.ClickEvent, revealButton);
                     revealButton.RaiseEvent(clickArgs);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(box.IsPasswordRevealed,
                         "Password must stay hidden after Click fires following a mouse press-and-release (press-and-hold is transient, not a toggle).");
@@ -258,11 +258,11 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer revealPeer = UIElementAutomationPeer.CreatePeerForElement(revealButton);
                     IInvokeProvider invoke = (IInvokeProvider)revealPeer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(box.IsPasswordRevealed,
                         "Keyboard invocation after a mouse press-and-release must be able to reveal the password.");
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(box.IsPasswordRevealed,
                         "Second keyboard invocation must hide the password again.");
                 }

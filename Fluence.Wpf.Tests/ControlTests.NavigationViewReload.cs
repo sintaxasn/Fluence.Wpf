@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_AfterUnloadReload_SelectionIndicatorStillUpdates()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 ContentControl host = new();
@@ -61,20 +61,20 @@ namespace Fluence.Wpf.Tests
 
                     host.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     nav.SelectedItem = home;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WaitForAnimationAndDrain(window.Dispatcher, 400);
 
                     // Simulate navigating away from the cached page and back: the NavigationView is
                     // unloaded (template parts nulled) and reloaded against the same instance.
                     host.Content = null;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     host.Content = nav;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WaitForAnimationAndDrain(window.Dispatcher, 400);
 
@@ -82,7 +82,7 @@ namespace Fluence.Wpf.Tests
                     double homeY = GetSelectionIndicatorTranslate(indicator).Y;
 
                     nav.InvokeItem(files);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     // Settle until the indicator slide animation has reached its hold-end (no longer
                     // animating), so the sampled filesY is the final settled offset.

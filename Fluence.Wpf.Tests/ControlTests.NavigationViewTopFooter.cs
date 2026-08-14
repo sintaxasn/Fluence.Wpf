@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopFooterIndicator_CentersUnderFooterItem()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectFooterMenuItem(footer);
@@ -86,16 +86,16 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopFooterItem_RendersIconOnly()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
                 {
                     window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ContentPresenter label = FindVisualChildByName<ContentPresenter>(footer, "ContentPresenter")
@@ -122,16 +122,16 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopFooterItem_KeepsLabel_InLeft()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
                 {
                     window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ContentPresenter label = FindVisualChildByName<ContentPresenter>(footer, "ContentPresenter")
@@ -154,9 +154,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMainItem_KeepsLabel()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
@@ -164,7 +164,7 @@ namespace Fluence.Wpf.Tests
                     NavigationView nav = CreateNavWithFooterItem(out _, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     NavigationViewItem mainItem = (NavigationViewItem)nav.Items[0]!;
@@ -188,9 +188,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopFooterIndicator_AnimatesOnSelection()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
@@ -199,7 +199,7 @@ namespace Fluence.Wpf.Tests
                     nav.SelectedIndex = 0;
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FrameworkElement footerIndicator = nav.GetFooterSelectionIndicatorForTesting()
@@ -207,7 +207,7 @@ namespace Fluence.Wpf.Tests
 
                     // Selecting the footer item should fade/scale the indicator in (animate), not snap.
                     nav.SelectFooterMenuItem(footer);
-                    DrainDispatcher(window.Dispatcher); // runs the queued RefreshIndicators that starts the animation
+                    WpfTestSta.DrainDispatcher(window.Dispatcher); // runs the queued RefreshIndicators that starts the animation
                     Assert.True(footerIndicator.HasAnimatedProperties,
                         "Selecting a footer item in Top mode should animate the indicator in, not snap it to full opacity.");
 
@@ -216,7 +216,7 @@ namespace Fluence.Wpf.Tests
 
                     // Navigating away (exiting Settings) should animate the indicator back out.
                     nav.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(footerIndicator.HasAnimatedProperties,
                         "Leaving the footer item should animate the indicator out, not hide it instantly.");
 

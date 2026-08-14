@@ -81,17 +81,7 @@ namespace Fluence.Wpf.Tests
             application.Resources.Clear();
         }
 
-        private static void RunOnStaThread(Action action)
-        {
-            WpfTestSta.RunOnSta(action);
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static ResourceDictionary? MergeGenericDictionary(Application? application)
+        private static ResourceDictionary? MergeGenericDictionary(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -108,11 +98,6 @@ namespace Fluence.Wpf.Tests
             application?.Resources.MergedDictionaries.Add(demoShared);
 
             return genericDictionary;
-        }
-
-        private static void DrainDispatcher(Dispatcher? dispatcher)
-        {
-            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
@@ -213,7 +198,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FontIcon_DefaultFontFamily_IsSegoeFluent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.FontIcon fontIcon = new();
 
@@ -224,7 +209,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FontIcon_GlyphProperty_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.FontIcon fontIcon = new();
                 const string testGlyph = "\uE710";
@@ -238,7 +223,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_DefaultAppearance_IsStandard()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.Button button = new();
 
@@ -249,7 +234,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_AccentAppearance_CanBeSet()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.Button button = new()
                 {
@@ -263,7 +248,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBox_PlaceholderText_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.TextBox textBox = new();
                 const string placeholder = "Enter text here...";
@@ -277,7 +262,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBox_ClearButtonEnabled_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.TextBox textBox = new();
 
@@ -288,7 +273,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_RevealButtonEnabled_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.PasswordBox passwordBox = new();
 
@@ -299,7 +284,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_IsPasswordRevealed_DefaultFalse()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.PasswordBox passwordBox = new();
 
@@ -310,9 +295,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBox_DefaultChrome_UsesWinUiReferenceValues()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -325,7 +310,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = textBox;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border mainBorder = Assert.IsType<Border>(textBox.Template.FindName("MainBorder", textBox));
@@ -347,9 +332,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBox_FocusState_ShowsAccentLineUnderneath()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -364,7 +349,7 @@ namespace Fluence.Wpf.Tests
                     window.Content = textBox;
                     window.Show();
                     _ = textBox.Focus();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border accentLine = Assert.IsType<Border>(textBox.Template.FindName("FocusAccentLine", textBox));
@@ -383,9 +368,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_DefaultChrome_UsesWinUiReferenceValues()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -398,7 +383,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = passwordBox;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border mainBorder = Assert.IsType<Border>(passwordBox.Template.FindName("MainBorder", passwordBox));
@@ -420,9 +405,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PasswordBox_FocusState_ShowsAccentLineUnderneath()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -436,7 +421,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = passwordBox;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     PasswordBox innerPasswordBox = Assert.IsType<PasswordBox>(passwordBox.Template.FindName("PART_PasswordBox", passwordBox));
@@ -444,7 +429,7 @@ namespace Fluence.Wpf.Tests
 
 
                     _ = innerPasswordBox.Focus();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1.0, accentLine.Opacity);
@@ -461,7 +446,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ListView_ItemAnimationsEnabled_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.ListView listView = new();
 
@@ -472,7 +457,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ListView_HoverHighlightEnabled_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.ListView listView = new();
 
@@ -483,9 +468,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ListViewItem_DefaultChrome_UsesWinUiReferenceValues()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -500,7 +485,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = listView;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
@@ -520,9 +505,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ListViewItem_SelectionIndicator_UsesWinUiCornerRadius()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -537,7 +522,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = listView;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
@@ -559,9 +544,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ListViewItem_SelectedState_UsesWinUiSelectedBrush()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
@@ -584,11 +569,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = listView;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     listView.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
@@ -615,9 +600,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBlockExtensions_Typography_SetsCorrectFontSize()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -642,9 +627,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TextBox_TextViewAlignsWithPlaceholder_WhenIconIsShown()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.TextBox textBox = new()
@@ -663,7 +648,7 @@ namespace Fluence.Wpf.Tests
                     window.Content = textBox;
                     window.Show();
                     _ = textBox.Focus();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FrameworkElement placeholder = Assert.IsAssignableFrom<FrameworkElement>(textBox.Template.FindName("PlaceholderTextBlock", textBox));
@@ -690,9 +675,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_AccentAppearance_UsesAccentBrush()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
@@ -710,7 +695,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
@@ -730,9 +715,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_LeftIconContentGroup_RemainsCentered()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.Button button = new()
@@ -750,7 +735,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AssertContentGroupIsCentered(window, button, "With Icon", "\uE710");
@@ -766,9 +751,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_RightIconContentGroup_RemainsCentered()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.Button button = new()
@@ -787,7 +772,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AssertContentGroupIsCentered(window, button, "Icon Right", "\uE72A");
@@ -803,9 +788,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_LeftIcon_RendersGlyph()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.Button button = new()
@@ -823,7 +808,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TextBlock glyphTextBlock = Assert.IsType<TextBlock>(FindVisualChildren<TextBlock>(button).FirstOrDefault(textBlock => string.Equals(textBlock.Text, "\uE710", StringComparison.Ordinal)));
@@ -841,9 +826,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Button_AccentAppearance_UsesDistinctWinUiStateBrushes()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
@@ -861,7 +846,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
@@ -898,9 +883,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_AccentColorButtons_UseButtonControl()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -908,11 +893,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.NavigateTo("settings");
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     List<Controls.Button> accentSwatchButtons = [.. FindVisualChildren<Controls.Button>(window).Where(static b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')];
@@ -946,9 +931,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_SettingsSelectors_UseExpectedControls()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -956,11 +941,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.NavigateTo("settings");
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = Assert.IsAssignableFrom<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox"));
@@ -980,9 +965,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_AppThemeComboBox_UpdatesStateLabel()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, updateAccent: true);
                 MainWindow? window = null;
@@ -991,11 +976,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.NavigateTo("settings");
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.ComboBox themeComboBox = Assert.IsAssignableFrom<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox"));
@@ -1003,7 +988,7 @@ namespace Fluence.Wpf.Tests
 
 
                     themeComboBox.SelectedIndex = 2;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal("Current: Dark", themeStateLabel.Text, StringComparer.Ordinal);
@@ -1020,9 +1005,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_DemoButtons_RenderTheirIcons()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1030,7 +1015,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -1054,9 +1039,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_StandardDemoButtonIcons_UsePrimaryTextBrush()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 MainWindow? window = null;
@@ -1065,7 +1050,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -1095,9 +1080,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluentTabControl_SelectedTabUsesFluentCardSurface()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1110,11 +1095,11 @@ namespace Fluence.Wpf.Tests
                     window.Width = 640;
                     window.Height = 480;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tabControl.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TabItem selectedTab = Assert.IsType<TabItem>(tabControl.ItemContainerGenerator.ContainerFromIndex(1));
@@ -1144,9 +1129,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluentTabControl_SelectedHeaderUsesSequentialPanelAndCenteredIndicator()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1160,11 +1145,11 @@ namespace Fluence.Wpf.Tests
                     window.Width = 640;
                     window.Height = 480;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tabControl.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WaitForAnimationAndDrain(window.Dispatcher, 250);
 
@@ -1196,9 +1181,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluentTabControl_LeftPlacement_SeparatesHeadersAndContent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1214,7 +1199,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 640;
                     window.Height = 480;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FrameworkElement headerPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("HeaderPanel", tabControl));
@@ -1240,9 +1225,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluentTabControl_BottomPlacement_LeavesBorderBreathingRoom()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -1258,7 +1243,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 640;
                     window.Height = 480;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     FrameworkElement headerPanel = Assert.IsAssignableFrom<FrameworkElement>(tabControl.Template.FindName("HeaderPanel", tabControl));
@@ -1281,9 +1266,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_TabSelection_ActivatesExpectedContent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1291,7 +1276,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -1324,9 +1309,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_NavigationView_UsesFlatGalleryTaxonomy()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1334,7 +1319,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
@@ -1372,9 +1357,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_CaptionButtons_DefaultOverrides()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1382,7 +1367,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.True(window.IsMinimizable);
@@ -1404,9 +1389,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ThemeWatcherToggle_UpdatesLabel()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1414,11 +1399,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     window.NavigateTo("settings");
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.ToggleSwitch toggle = Assert.IsAssignableFrom<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle"));
@@ -1428,7 +1413,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal("Watching: Yes", label.Text, StringComparer.Ordinal);
 
                     toggle.IsChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal("Watching: No", label.Text, StringComparer.Ordinal);
@@ -1445,9 +1430,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_IconLeftButton_IconIsVerticallyCentered()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1455,7 +1440,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -1482,9 +1467,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_StandardButtonIcons_AreInsideButtonBounds()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -1492,7 +1477,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -1516,7 +1501,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_Card_DefaultVariant_IsDefault()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.Card card = new();
                 Assert.Equal(CardVariant.Default, card.Variant);
@@ -1526,7 +1511,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_Card_IsClickable_ExposesIsPressed()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.Card card = new() { IsClickable = true };
                 Assert.False(card.IsPressed);
@@ -1536,7 +1521,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_CheckBox_Content_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.CheckBox cb = new() { Content = "Test" };
                 Assert.Equal("Test", cb.Content as string, StringComparer.Ordinal);
@@ -1546,7 +1531,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_ComboBox_PlaceholderText_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.ComboBox combo = new() { PlaceholderText = "Pick one" };
                 Assert.Equal("Pick one", combo.PlaceholderText, StringComparer.Ordinal);
@@ -1556,9 +1541,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_SelectionChange_UpdatesDisplayedContent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new() { Width = 240 };
@@ -1570,14 +1555,14 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ContentPresenter presenter = Assert.IsType<ContentPresenter>(combo.Template.FindName("contentPresenter", combo));
                     Assert.Equal("Alpha", presenter.Content as string, StringComparer.Ordinal);
 
                     combo.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal("Beta", presenter.Content as string, StringComparer.Ordinal);
@@ -1593,9 +1578,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_ItemTemplate_HasHoverOverlay()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new() { Width = 240 };
@@ -1606,11 +1591,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     combo.IsDropDownOpen = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(0));
@@ -1635,9 +1620,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopen()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.ComboBox combo = new() { Width = 240 };
@@ -1648,7 +1633,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
@@ -1669,7 +1654,7 @@ namespace Fluence.Wpf.Tests
                                 open));
 
                         combo.IsDropDownOpen = false;
-                        DrainDispatcher(window.Dispatcher);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
                     }
                 }
                 finally
@@ -1683,9 +1668,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_NoSelection_ShowsPlaceholder()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new()
@@ -1700,14 +1685,14 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TextBlock placeholder = Assert.IsType<TextBlock>(combo.Template.FindName("PlaceholderTextBlock", combo));
                     Assert.Equal(Visibility.Visible, placeholder.Visibility);
 
                     combo.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, placeholder.Visibility);
@@ -1723,9 +1708,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_ToggleButton_OpensDropDown()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new()
@@ -1740,7 +1725,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = combo.ApplyTemplate();
@@ -1753,7 +1738,7 @@ namespace Fluence.Wpf.Tests
 
 
                     toggleProvider.Toggle();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.True(combo.IsDropDownOpen, "ComboBox toggle should open the drop-down.");
@@ -1770,9 +1755,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_ToggleButton_UsesReleaseClickMode()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new()
@@ -1786,7 +1771,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = combo.ApplyTemplate();
@@ -1805,9 +1790,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBox_DropDownSelection_UpdatesSelectedIndex()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ComboBox combo = new()
@@ -1822,17 +1807,17 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = combo;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     combo.IsDropDownOpen = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(1));
 
                     item.IsSelected = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, combo.SelectedIndex);
@@ -1849,7 +1834,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_ProgressBar_ProgressMode_DefaultIsStandard()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.ProgressBar bar = new();
                 Assert.Equal(ProgressBarMode.Standard, bar.ProgressMode);
@@ -1859,7 +1844,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_Border_Variant_DefaultIsNone()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.Border border = new();
                 Assert.Equal(BorderVariant.None, border.Variant);
@@ -1869,7 +1854,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_StackPanel_Spacing_DefaultZero()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.StackPanel panel = new();
                 Assert.Equal(0.0, panel.Spacing);
@@ -1879,7 +1864,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_DockPanel_LastChildFill_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.DockPanel dock = new();
                 Assert.True(dock.LastChildFill);
@@ -1889,7 +1874,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_TextBox_ValidationState_DefaultNone()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.TextBox tb = new();
                 Assert.Equal(ValidationState.None, tb.ValidationState);
@@ -1899,7 +1884,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_TextBox_HelperText_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.TextBox tb = new() { HelperText = "Hint" };
                 Assert.Equal("Hint", tb.HelperText, StringComparer.Ordinal);
@@ -1909,7 +1894,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_PasswordBox_IndicatorsDefaultOffAndOptIn()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.PasswordBox pb = new();
                 Assert.False(pb.ShowCapsLockIndicator, "Caps Lock indicator must be opt-in by default.");
@@ -1925,7 +1910,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_PasswordBox_ComputesPasswordStrength()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.PasswordBox pb = new() { Password = "Aa1!aaaaaa" };
                 Assert.True(pb.PasswordStrength >= 3);
@@ -1935,7 +1920,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_ListView_EmptyContent_DefaultNull()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.ListView list = new();
                 Assert.Null(list.EmptyContent);
@@ -1945,7 +1930,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_FontIcon_Rotation_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.FontIcon icon = new() { Rotation = 33 };
                 Assert.Equal(33.0, icon.Rotation);
@@ -1955,7 +1940,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_FontIcon_IsSpinning_Roundtrips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.FontIcon icon = new() { IsSpinning = true };
                 Assert.True(icon.IsSpinning);
@@ -1965,9 +1950,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_FontIcon_Spin_PausesWhenCollapsed_ResumesWhenVisible()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -1981,19 +1966,19 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = icon;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     RotateTransform rotate = Assert.IsType<RotateTransform>(icon.Template.FindName("PART_Rotate", icon));
                     Assert.True(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
 
                     icon.Visibility = Visibility.Collapsed;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(rotate.HasAnimatedProperties, "Spin animation must stop while the icon is collapsed.");
                     Assert.Equal(icon.Rotation, rotate.Angle);
 
                     icon.Visibility = Visibility.Visible;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(rotate.HasAnimatedProperties, "Spin animation must resume when the icon becomes visible again.");
                 }
                 finally
@@ -2007,9 +1992,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_FontIcon_Spin_StopsWhenUnloaded()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2023,14 +2008,14 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = icon;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     RotateTransform rotate = Assert.IsType<RotateTransform>(icon.Template.FindName("PART_Rotate", icon));
                     Assert.True(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
 
                     window.Content = null;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(rotate.HasAnimatedProperties, "Spin animation must stop when the icon is unloaded.");
                     Assert.Equal(icon.Rotation, rotate.Angle);
                 }
@@ -2045,7 +2030,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_FontIcon_EnableTransitions_DefaultTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.FontIcon icon = new();
                 Assert.True(icon.EnableTransitions);
@@ -2055,9 +2040,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_TextBox_CharacterCounter_ShowsWithMaxLength()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2072,7 +2057,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = textBox;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     TextBlock counter = Assert.IsType<TextBlock>(textBox.Template.FindName("PART_CharacterCounter", textBox));
@@ -2089,9 +2074,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_ListView_EmptyContent_VisibleWhenNoItems()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2106,7 +2091,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = list;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.False(list.HasItems);
@@ -2123,9 +2108,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Stage3_ProgressBar_Template_HasTrackAndFill()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2135,7 +2120,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = bar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.NotNull(bar.Template.FindName("PART_Track", bar));
@@ -2152,9 +2137,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Slider_Template_HasTrack()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2164,7 +2149,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = slider;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.NotNull(slider.Template.FindName("PART_Track", slider));
@@ -2180,9 +2165,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ProgressNumberBox_UpdatesFirstProgressBar()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -2190,7 +2175,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
@@ -2199,7 +2184,7 @@ namespace Fluence.Wpf.Tests
                     Controls.ProgressBar progressBar = Assert.IsAssignableFrom<Controls.ProgressBar>(FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar"));
 
                     numberBox.Value = 73;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(73d, progressBar.Value, 0.1);
@@ -2216,9 +2201,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_SelectionDemoCombo_SelectionUpdatesIndex()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -2226,7 +2211,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
@@ -2235,7 +2220,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(3, combo.Items.Count);
 
                     combo.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, combo.SelectedIndex);
@@ -2252,9 +2237,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void MainWindow_ComboBoxPage_InitialComboBoxesHaveNoSelection()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 MainWindow? window = null;
 
@@ -2262,7 +2247,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window = new MainWindow();
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
@@ -2290,9 +2275,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void HyperlinkButton_DefaultForeground_IsAccent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2306,7 +2291,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application?.Resources["AccentTextFillColorPrimaryBrush"]);
@@ -2324,9 +2309,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void HyperlinkButton_Click_WithNavigateUri_DoesNotThrow()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.HyperlinkButton button = new()
@@ -2339,11 +2324,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(button.IsLoaded,
                         "HyperlinkButton should remain loaded after click dispatch.");
@@ -2360,9 +2345,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void InfoBar_ErrorSeverity_HasExpectedBackground()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
@@ -2378,7 +2363,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = infoBar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Brush expectedBrush = Assert.IsAssignableFrom<Brush>(application?.Resources["SystemFillColorCriticalBackgroundBrush"]);
@@ -2398,9 +2383,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void InfoBar_CloseButton_SetsIsOpenFalse()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.InfoBar infoBar = new()
@@ -2414,7 +2399,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = infoBar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = infoBar.ApplyTemplate();
@@ -2424,7 +2409,7 @@ namespace Fluence.Wpf.Tests
                     IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(infoBar.IsOpen, "Clicking the close button should set IsOpen to false.");
                 }
@@ -2439,9 +2424,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void InfoBar_ClosingCancel_PreventsClose()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.InfoBar infoBar = new()
@@ -2457,7 +2442,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = infoBar;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = infoBar.ApplyTemplate();
@@ -2467,7 +2452,7 @@ namespace Fluence.Wpf.Tests
                     IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(infoBar.IsOpen, "Canceling the Closing event should keep IsOpen true.");
                 }
@@ -2482,9 +2467,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_Checked_HasAccentFill()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
@@ -2499,7 +2484,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = radio;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
@@ -2521,9 +2506,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_ContentAlignment_CentersTextWithIndicator()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.RadioButton radio = new()
@@ -2537,7 +2522,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = radio;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
@@ -2561,9 +2546,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_GroupExclusivity_UnchecksOthers()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 StackPanel panel = new();
@@ -2578,13 +2563,13 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = panel;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.True(radio1.IsChecked is true);
 
                     radio2.IsChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(false, radio1.IsChecked);
                     Assert.Equal(true, radio2.IsChecked);
@@ -2601,9 +2586,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ToggleSwitch_OnOffContent_SwapsOnCheck()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ToggleSwitch toggle = new()
@@ -2617,7 +2602,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = toggle;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = toggle.ApplyTemplate();
@@ -2627,7 +2612,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, onPresenter.Visibility);
 
                     toggle.IsChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, offPresenter.Visibility);
@@ -2644,9 +2629,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ToggleSwitch_IsChecked_TogglesOnClick()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ToggleSwitch toggle = new() { IsChecked = false };
@@ -2655,14 +2640,14 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = toggle;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(false, toggle.IsChecked);
 
                     IToggleProvider toggleProvider = (ToggleButtonAutomationPeer)new(toggle);
                     toggleProvider.Toggle();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(true, toggle.IsChecked);
                 }
@@ -2677,9 +2662,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ProgressRing_Determinate_UpdatesArc()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ProgressRing ring = new()
@@ -2697,7 +2682,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = ring;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = ring.ApplyTemplate();
@@ -2715,9 +2700,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ProgressRing_Indeterminate_CaterpillarArcBecomesVisible()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 Controls.ProgressRing ring = new()
@@ -2732,7 +2717,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = ring;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = ring.ApplyTemplate();
@@ -2760,9 +2745,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DemoMainWindow_SelectingNavPage_DoesNotThrow()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, updateAccent: true);
@@ -2795,11 +2780,11 @@ namespace Fluence.Wpf.Tests
             Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(window.FindName("DemoNav"));
 
             window.NavigateTo(itemContent);
-            DrainDispatcher(dispatcher);
+            WpfTestSta.DrainDispatcher(dispatcher);
             dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.Loaded, default);
             dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.ContextIdle, default);
             window.UpdateLayout();
-            DrainDispatcher(dispatcher);
+            WpfTestSta.DrainDispatcher(dispatcher);
 
             Controls.NavigationViewItem? selected = nav.SelectedItem as Controls.NavigationViewItem;
             string? selectedLabel = selected is null ? null : selected.Content as string;

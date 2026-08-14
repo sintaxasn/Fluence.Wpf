@@ -65,9 +65,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_OuterRing_UsesControlStrongStrokeBrush()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -83,7 +83,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
@@ -111,9 +111,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_OuterRing_SwitchesToDisabledStrokeWhenDisabled()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -129,12 +129,12 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
                     radio.IsEnabled = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Ellipse outerEllipse = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(radio, "OuterEllipse"));
@@ -158,9 +158,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CheckBox_CheckedGlyph_UsesIndeterminateDashStrokeWeight()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -178,7 +178,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = checkBox.ApplyTemplate();
@@ -210,9 +210,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CheckBox_CheckIn_GlyphAnimatesInAndUncheckRevertsInstantly()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 80;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = checkBox.ApplyTemplate();
@@ -238,7 +238,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, checkGlyph.Opacity, 0.001);
 
                     checkBox.IsChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // The check-in storyboard uses FillBehavior="Stop", so once the clocks
                     // finish the glyph must fall back to the setter-provided steady state:
@@ -260,7 +260,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(1.0, scale.ScaleY, 0.001);
 
                     checkBox.IsChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // Uncheck is deliberately not animated: the trigger setters revert
                     // instantly and the finished Stop storyboard holds nothing, so the
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Tests
                     // A second check-in must replay the animation and settle again
                     // (SnapshotAndReplace hands off the finished clocks).
                     checkBox.IsChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     bool resettled = WaitUntil(window.Dispatcher, 5000, () =>
                         checkGlyph.RenderTransform is ScaleTransform liveScale
                         && checkGlyph.Opacity >= 0.9999
@@ -297,9 +297,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Card_Click_FiresOnMouseDownThenUp_WhenIsClickable()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 160;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     int clicks = 0;
@@ -349,9 +349,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void Card_Click_DoesNotFire_WhenNotClickable()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -368,7 +368,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 160;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     int clicks = 0;
@@ -399,9 +399,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_Left_ContentBorder_HasWinUiCornerRadiusAndStroke()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -416,7 +416,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
@@ -457,9 +457,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_LeftCompact_ContentBorder_HasWinUiCornerRadiusAndStroke()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -474,7 +474,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
@@ -514,9 +514,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_DefaultStyle_AppliesLeftTemplate()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -530,7 +530,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();

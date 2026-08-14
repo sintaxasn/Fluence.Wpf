@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 SplitButton btn = new();
@@ -64,13 +64,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 SplitButton btn = new() { Appearance = ControlAppearance.Accent, Content = "Go" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Equal(
                     ControlAppearance.Accent,
@@ -84,13 +84,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 SplitButton btn = new() { Content = "Test" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btn, "Divider"));
                 Assert.NotNull(divider.Fill);
@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests
             // matching DropDownButton.
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 SplitButton button = new()
@@ -121,7 +121,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = button.ApplyTemplate();
@@ -147,14 +147,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 // Standard appearance - get divider color
                 SplitButton btnStd = new() { Appearance = ControlAppearance.Standard, Content = "Std" };
                 Window wStd = new() { Content = btnStd, Width = 300, Height = 100 };
                 wStd.Show();
-                DrainDispatcher(wStd.Dispatcher);
+                WpfTestSta.DrainDispatcher(wStd.Dispatcher);
 
                 Rectangle dividerStd = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btnStd, "Divider"));
                 SolidColorBrush stdBrush = Assert.IsType<SolidColorBrush>(dividerStd.Fill);
@@ -164,7 +164,7 @@ namespace Fluence.Wpf.Tests
                 SplitButton btnAcc = new() { Appearance = ControlAppearance.Accent, Content = "Acc" };
                 Window wAcc = new() { Content = btnAcc, Width = 300, Height = 100 };
                 wAcc.Show();
-                DrainDispatcher(wAcc.Dispatcher);
+                WpfTestSta.DrainDispatcher(wAcc.Dispatcher);
 
                 Rectangle dividerAcc = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btnAcc, "Divider"));
                 SolidColorBrush accBrush = Assert.IsType<SolidColorBrush>(dividerAcc.Fill);

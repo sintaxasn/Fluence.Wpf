@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests
                 Assert.True(subtle.IsEnabled);
 
                 enable.IsChecked = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
                 Assert.False(standard.IsEnabled, "Enable toggle should disable the Standard button.");
@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
                 MergeDemoSharedStyles(application);
 
@@ -94,7 +94,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.Expander expander = Assert.IsType<Controls.Expander>(sample.FindName("SourceExpander"));
 
@@ -173,7 +173,7 @@ namespace Fluence.Wpf.Tests
                 Assert.True(totalIcons > 500, "Catalog should load the full Segoe Fluent Icons set before filtering.");
 
                 search.Text = "zoom";
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 List<GalleryIconsPage.IconCatalogItem> filtered = GetIconCatalogItems(list);
                 Assert.True(filtered.Count > 0, "Searching for zoom should keep matching icons.");
@@ -206,7 +206,7 @@ namespace Fluence.Wpf.Tests
                 Assert.False(second.IsSelected, "The second icon should start unselected.");
 
                 tiles[1].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.True(second.IsSelected, "Clicking a tile should select its icon.");
                 Assert.False(first.IsSelected, "Selecting a tile should clear the previous selection.");
@@ -226,7 +226,7 @@ namespace Fluence.Wpf.Tests
                 Controls.AutoSuggestBox search = Assert.IsAssignableFrom<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(window, "IconSearchBox"));
 
                 search.Text = "E71F";
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 AssertIconSidebarValue(window, "IconNameValueText", "CopyIconNameButton", "ZoomOut");
                 AssertIconSidebarValue(window, "IconTextGlyphValueText", "CopyTextGlyphButton", "&#xE71F;");
@@ -327,11 +327,11 @@ namespace Fluence.Wpf.Tests
                 Assert.False(compact.IsPaneOpen,
                     "Compact navigation sample should start with the compact pane closed.");
                 paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.True(compact.IsPaneOpen,
                     "The built-in pane toggle should open the compact pane.");
                 paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.False(compact.IsPaneOpen,
                     "The built-in pane toggle should close the compact pane on subsequent clicks.");
             });
@@ -397,19 +397,19 @@ namespace Fluence.Wpf.Tests
                 Assert.Null(FindVisualChildByName<TextBlock>(window, "SliderValueLabel"));
 
                 numberBox.Value = 73d;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
                 Assert.Equal(73d, progressBar.Value, 0.1);
 
                 numberBox.Value = 0d;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
                 Assert.Equal(0d, progressBar.Value, 0.1);
 
                 indeterminateToggle.IsChecked = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.Equal("On / Off", indeterminateToggle.OffContent as string, StringComparer.Ordinal);
             });
         }

@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -84,7 +84,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 300;
                     window.Height = 200;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.CheckBox firstCheckBox = Assert.IsAssignableFrom<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(first, "SelectionCheckBox"));
@@ -94,14 +94,14 @@ namespace Fluence.Wpf.Tests
 
                     first.IsSelectionChecked = true;
                     second.IsSelectionChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(2, treeView.SelectedItems.Count);
                     Assert.Contains(first, treeView.SelectedItems.Cast<object>());
                     Assert.Contains(second, treeView.SelectedItems.Cast<object>());
 
                     first.IsSelectionChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     _ = Assert.Single(treeView.SelectedItems);
                     Assert.DoesNotContain(first, treeView.SelectedItems.Cast<object>());
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -139,11 +139,11 @@ namespace Fluence.Wpf.Tests
                     window.Width = 300;
                     window.Height = 200;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     _ = treeView.ApplyTemplate();
                     _ = item.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.TreeViewItem keyboardItem =
@@ -152,9 +152,9 @@ namespace Fluence.Wpf.Tests
                     _ = keyboardItem.ApplyTemplate();
                     _ = keyboardItem.Focus();
                     _ = Keyboard.Focus(keyboardItem);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     keyboardItem.IsSelectionChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(keyboardItem.ToggleMultipleSelectionFromKeyboard(),
                         "Focused TreeViewItem should accept Space in Multiple selection mode.");
@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -200,14 +200,14 @@ namespace Fluence.Wpf.Tests
                     window.Width = 300;
                     window.Height = 200;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     item.IsSelectionChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = Assert.Single(treeView.SelectedItems);
 
                     treeView.SelectionMode = TreeViewSelectionMode.None;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.CheckBox checkBox = Assert.IsAssignableFrom<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"));
@@ -231,7 +231,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -254,11 +254,11 @@ namespace Fluence.Wpf.Tests
                     window.Width = 320;
                     window.Height = 240;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     parent.IsSelectionChecked = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(true, first.IsSelectionChecked);
                     Assert.Equal(true, second.IsSelectionChecked);
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Contains(third, treeView.SelectedItems.Cast<object>());
 
                     second.IsSelectionChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Null(parent.IsSelectionChecked);
                     Assert.DoesNotContain(parent, treeView.SelectedItems.Cast<object>());
@@ -279,7 +279,7 @@ namespace Fluence.Wpf.Tests
 
                     first.IsSelectionChecked = false;
                     third.IsSelectionChecked = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(false, parent.IsSelectionChecked);
                     Assert.Empty(treeView.SelectedItems);

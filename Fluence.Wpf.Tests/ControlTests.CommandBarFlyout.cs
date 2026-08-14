@@ -45,9 +45,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void AppBarButton_DefaultStyle_AppliesCompactChromeAndLabelTooltip()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.AppBarButton)));
@@ -64,7 +64,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = panel;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Same(icon, labeled.Icon);
@@ -86,9 +86,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CommandBarFlyout_ShowAt_PresentsPrimaryCommands()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Tests
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(popup.Child);
 
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
                     ItemsControl primaryItems = Assert.IsAssignableFrom<ItemsControl>(presenter.Template.FindName("PART_PrimaryItemsControl", presenter));
                     Assert.Same(flyout.PrimaryCommands, primaryItems.ItemsSource);
@@ -135,9 +135,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CommandBarFlyout_MoreButton_TracksSecondaryCommands()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
                     ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
                     Assert.Equal(Visibility.Collapsed, moreButton.Visibility);
@@ -186,9 +186,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CommandBarFlyout_MoreButton_TogglesSecondaryOverflow()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -218,7 +218,7 @@ namespace Fluence.Wpf.Tests
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
                     ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
                     FrameworkElement secondaryHost = Assert.IsAssignableFrom<FrameworkElement>(presenter.Template.FindName("PART_SecondaryHost", presenter));
@@ -265,9 +265,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CommandBarFlyout_PrimaryCommandClick_RaisesClickAndHidesFlyout()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -286,7 +286,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -311,9 +311,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CommandBarFlyout_SecondaryCommands_UseOverflowStyleAndRenderLabels()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Tests
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(flyout.HostPopup?.Child);
 
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = presenter.ApplyTemplate();
                     ButtonBase moreButton = Assert.IsAssignableFrom<ButtonBase>(presenter.Template.FindName("PART_MoreButton", presenter));
 
@@ -373,7 +373,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys =
@@ -401,9 +401,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void AppBarButton_Pressed_AnimatesBackplatePressScale()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -421,7 +421,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = button;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Media.ScaleTransform pressScale =

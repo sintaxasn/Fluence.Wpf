@@ -71,9 +71,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommands()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;
@@ -101,9 +101,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_CaptionButtons_ReflowIntoRightAlignedSlots()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;
@@ -122,7 +122,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(2, System.Windows.Controls.Grid.GetColumn(close));
 
                     window.IsCloseButtonVisible = Visibility.Collapsed;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, System.Windows.Controls.Grid.GetColumn(minimize));
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Tests
 
                     window.IsCloseButtonVisible = Visibility.Visible;
                     window.IsMinimizeButtonVisible = Visibility.Collapsed;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(1, System.Windows.Controls.Grid.GetColumn(maximize));
@@ -148,9 +148,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_MinimizeCommand_TransitionsToMinimized()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(WindowState.Normal, window.WindowState);
 
                     SystemCommands.MinimizeWindowCommand.Execute(parameter: null, window);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(WindowState.Minimized, window.WindowState);
                 }
@@ -179,9 +179,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_MaximizeCommand_TransitionsToMaximized()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(WindowState.Normal, window.WindowState);
 
                     SystemCommands.MaximizeWindowCommand.Execute(parameter: null, window);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(WindowState.Maximized, window.WindowState);
                 }
@@ -205,9 +205,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_RestoreCommand_TransitionsMaximizedToNormal()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;
@@ -215,11 +215,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
                     window.WindowState = WindowState.Maximized;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(WindowState.Maximized, window.WindowState);
 
                     SystemCommands.RestoreWindowCommand.Execute(parameter: null, window);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(WindowState.Normal, window.WindowState);
                 }
@@ -233,9 +233,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_CloseCommand_FiresClosingEvent()
         {
-            RunOnStaThread(delegate
+            WpfTestSta.RunOnSta(delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow? window = null;

@@ -30,24 +30,13 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
     public class AdditionalControlsTests
     {
-        private static void Drain(Dispatcher d)
-        {
-            d.Invoke(static () => { }, DispatcherPriority.ApplicationIdle, default);
-        }
-
-        private static Application? EnsureApp()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static void MergeGeneric(Application? app)
+        private static void MergeGeneric(Application app)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -64,7 +53,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.NumberBox numberBox = new() { Width = 160, Value = 3 };
@@ -72,7 +61,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = numberBox;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = numberBox.ApplyTemplate();
                     Assert.NotNull(numberBox.Template.FindName("PART_TextBox", numberBox));
                 }
@@ -108,7 +97,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.Expander ex = new() { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
@@ -116,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = ex;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = ex.ApplyTemplate();
                     Assert.NotNull(ex.Template);
                 }
@@ -132,7 +121,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
@@ -140,7 +129,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = btn;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = btn.ApplyTemplate();
                     Assert.NotNull(btn.Template.FindName("PART_Popup", btn));
                 }
@@ -156,7 +145,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 160, Flyout = new StackPanel() };
@@ -164,7 +153,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = btn;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = btn.ApplyTemplate();
 
                     ContentPresenter presenter = Assert.IsType<ContentPresenter>(btn.Template.FindName("FlyoutContentPresenter", btn));
@@ -182,7 +171,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.SplitButton btn = new() { Content = "Export", Width = 180, Flyout = new StackPanel() };
@@ -190,7 +179,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = btn;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = btn.ApplyTemplate();
 
                     ContentPresenter presenter = Assert.IsType<ContentPresenter>(btn.Template.FindName("FlyoutContentPresenter", btn));
@@ -218,7 +207,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApp();
+                Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
                 Window window = new();
                 Controls.InfoBadge badge = new() { Value = 2, Width = 32, Height = 32 };
@@ -226,7 +215,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = badge;
                     window.Show();
-                    Drain(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = badge.ApplyTemplate();
                     Assert.NotNull(badge.Template);
                 }

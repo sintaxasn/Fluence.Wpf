@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests
         {
             Window window = new() { Width = 640, Height = 480, Content = new Grid() };
             window.Show();
-            DrainDispatcher(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
             return window;
         }
@@ -79,9 +79,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_DefaultStyle_AppliesAndTemplatePartsFound()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ContentDialog defaults = new();
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, dialog.Visibility);
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Visible, close.Visibility);
 
                     dialog.SecondaryButtonText = string.Empty;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Collapsed, secondary.Visibility);
                 }
                 finally
@@ -142,9 +142,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_DeclaredAsWindowContentChild_CollapsedAtRestAndShowsViaShow()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Grid host = new();
@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, dialog.Visibility);
@@ -191,9 +191,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_EnterInAcceptsReturnTextBox_DoesNotInvokeDefaultButton()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -215,14 +215,14 @@ namespace Fluence.Wpf.Tests
                         "The dialog template must apply before Enter is simulated.");
 
                     _ = body.Focus();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // Real key input tunnels the preview event first and then bubbles the key
                     // down event. The multiline TextBox consumes the bubbling Enter, so the
                     // dialog must leave it alone.
                     RaiseKeyEvent(body, Key.Enter, UIElement.PreviewKeyDownEvent);
                     RaiseKeyEvent(body, Key.Enter, UIElement.KeyDownEvent);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(task.IsCompleted,
                         "Enter inside an AcceptsReturn TextBox must not invoke the default button while DefaultButton=Primary.");
@@ -242,9 +242,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_EnterWithDefaultButton_InvokesDefaultViaBubbling()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -270,7 +270,7 @@ namespace Fluence.Wpf.Tests
                     // Move focus off the command buttons so the default-button shortcut path
                     // (not the native button click) handles Enter.
                     _ = dialog.Focus();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(dialog, Key.Enter, UIElement.PreviewKeyDownEvent);
                     RaiseKeyEvent(dialog, Key.Enter, UIElement.KeyDownEvent);
@@ -291,9 +291,9 @@ namespace Fluence.Wpf.Tests
         public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -332,9 +332,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_Hide_PlaysDialogHiddenExitThenCompletesTask()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -384,9 +384,9 @@ namespace Fluence.Wpf.Tests
         {
             Task<ContentDialogResult>? dialogTask = null;
             int closedCount = 0;
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -412,7 +412,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => dialogTask.IsCompleted),
                         "The double close must still complete the ShowAsync task.");
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                 }
                 finally
                 {
@@ -430,9 +430,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_ShowAsync_AddsOverlayAdornerAndReturnsPendingTask()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -481,9 +481,9 @@ namespace Fluence.Wpf.Tests
         public async Task ContentDialog_PrimaryButtonClick_CompletesTaskWithPrimaryAndRemovesOverlayAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -535,9 +535,9 @@ namespace Fluence.Wpf.Tests
         public async Task ContentDialog_CloseButtonClick_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -582,9 +582,9 @@ namespace Fluence.Wpf.Tests
         public async Task ContentDialog_EscapeKey_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -633,9 +633,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_CancelingPrimaryButtonClick_KeepsDialogOpen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -658,7 +658,7 @@ namespace Fluence.Wpf.Tests
 
                     ButtonBase primary = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton"));
                     primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(task.IsCompleted, "A canceled PrimaryButtonClick must keep the ShowAsync task pending.");
                     Assert.True(GetContentDialogOverlayAdorners(window) is { Length: > 0 },
@@ -679,9 +679,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_SmokeFillBrush_ResolvesAcrossThemeCycle()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
@@ -696,9 +696,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_WhileOpen_BlocksPointerInputOutsideDialog()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Button behind = new() { Content = "Behind" };
@@ -707,7 +707,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.ContentDialog dialog = new()
@@ -765,9 +765,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_WhileOpen_BlocksKeyInputOutsideDialog()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 TextBox behind = new() { Text = "Behind" };
@@ -776,7 +776,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.ContentDialog dialog = new()
@@ -837,9 +837,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_Open_UsesSurfaceStrokeAndPlaysEntranceAnimation()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = CreateShownContentDialogOwner();
@@ -881,9 +881,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_OverFluenceWindow_HostsOverlayAboveTheWholeWindow()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.FluenceWindow window = new()
@@ -897,7 +897,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Panel host =
@@ -929,9 +929,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_DeclaresAssertiveLiveSetting()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ContentDialog dialog = new() { Title = "Confirm" };
@@ -947,9 +947,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ContentDialog_AutomationPeer_ReportsWindowRoleAndTitleName()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.ContentDialog dialog = new() { Title = "Delete file?" };
@@ -958,7 +958,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dialog);
                     _ = Assert.IsAssignableFrom<Automation.ContentDialogAutomationPeer>(peer);

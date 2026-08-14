@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Color GetResolvedBrushColor(Application? application, string brushKey)
+        private static Color GetResolvedBrushColor(Application application, string brushKey)
         {
             SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application?.Resources[brushKey]);
             return brush.Color;
@@ -66,12 +66,12 @@ namespace Fluence.Wpf.Tests
 
         // Constructs the control inside the STA action: FrameworkElement creation on
         // the xUnit worker thread throws, so the factory must run on the STA thread.
-        private static void RunToggleButtonTest<T>(Func<T> createToggleButton, Action<Application?, T> verify)
+        private static void RunToggleButtonTest<T>(Func<T> createToggleButton, Action<Application, T> verify)
             where T : Controls.ToggleButton
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 T toggleButton = createToggleButton();
@@ -81,7 +81,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = toggleButton;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     verify(application, toggleButton);
@@ -164,7 +164,7 @@ namespace Fluence.Wpf.Tests
                 (application, probe) =>
                 {
                     probe.SetPressed(value: true);
-                    DrainDispatcher(probe.Dispatcher);
+                    WpfTestSta.DrainDispatcher(probe.Dispatcher);
                     probe.UpdateLayout();
 
                     Border restFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(probe, "RestFill"));
@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Tests
                 (application, probe) =>
                 {
                     probe.SetPressed(value: true);
-                    DrainDispatcher(probe.Dispatcher);
+                    WpfTestSta.DrainDispatcher(probe.Dispatcher);
                     probe.UpdateLayout();
 
                     Border restFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(probe, "RestFill"));
@@ -334,7 +334,7 @@ namespace Fluence.Wpf.Tests
                 (application, toggleButton) =>
                 {
                     ThemeTestHelpers.ApplyStandardThemeCycle();
-                    DrainDispatcher(toggleButton.Dispatcher);
+                    WpfTestSta.DrainDispatcher(toggleButton.Dispatcher);
                     toggleButton.UpdateLayout();
 
                     Border restFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"));

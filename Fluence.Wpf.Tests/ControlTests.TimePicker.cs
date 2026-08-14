@@ -73,9 +73,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_DefaultStyle_AppliesTemplateParts()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.TimePicker)));
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -115,9 +115,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholder()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -130,7 +130,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Tests
 
                     CultureInfo culture = CultureInfo.CurrentCulture;
                     picker.SelectedTime = new TimeSpan(9, 5, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(Visibility.Collapsed, placeholder.Visibility);
                     Assert.Equal(Visibility.Visible, segmentsHost.Visibility);
@@ -157,14 +157,14 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(ExpectedAmDesignator(culture), periodText.Text, StringComparer.Ordinal);
 
                     picker.SelectedTime = TimeSpan.Zero;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(12.ToString(culture), hourText.Text, StringComparer.Ordinal);
                     Assert.Equal(0.ToString("00", culture), minuteText.Text, StringComparer.Ordinal);
                     Assert.Equal(ExpectedAmDesignator(culture), periodText.Text, StringComparer.Ordinal);
 
                     picker.SelectedTime = new TimeSpan(12, 30, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(12.ToString(culture), hourText.Text, StringComparer.Ordinal);
                     Assert.Equal(30.ToString("00", culture), minuteText.Text, StringComparer.Ordinal);
@@ -180,9 +180,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_FieldClick_OpensPopupAndPopulatesColumns()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -206,7 +206,7 @@ namespace Fluence.Wpf.Tests
                     Selector periodList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_PeriodList", picker));
 
                     picker.SelectedTime = new TimeSpan(14, 30, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -243,9 +243,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_TwentyFourHourClock_PopulatesHoursAndHidesPeriodColumn()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -260,7 +260,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -301,9 +301,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_ClockIdentifierAndMinuteIncrement_CoerceInvalidValues()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.TimePicker picker = new();
@@ -334,9 +334,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_Accept_CommitsSelectionAndRaisesSelectedTimeChanged()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -362,7 +362,7 @@ namespace Fluence.Wpf.Tests
 
                     TimeSpan oldTime = new(9, 5, 0);
                     picker.SelectedTime = oldTime;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -374,10 +374,10 @@ namespace Fluence.Wpf.Tests
                     hourList.SelectedIndex = 11;
                     minuteList.SelectedIndex = 30;
                     periodList.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(acceptButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TimeSpan noon = new(12, 30, 0);
                     Assert.Equal(noon, picker.SelectedTime);
@@ -393,10 +393,10 @@ namespace Fluence.Wpf.Tests
 
                     Assert.Equal(11, hourList.SelectedIndex);
                     periodList.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(acceptButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     TimeSpan midnight = new(0, 30, 0);
                     Assert.Equal(midnight, picker.SelectedTime);
@@ -414,9 +414,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_Cancel_RevertsPendingSelection()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -426,7 +426,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -438,7 +438,7 @@ namespace Fluence.Wpf.Tests
 
                     TimeSpan original = new(9, 5, 0);
                     picker.SelectedTime = original;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -449,10 +449,10 @@ namespace Fluence.Wpf.Tests
 
                     hourList.SelectedIndex = 3;
                     minuteList.SelectedIndex = 45;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(cancelButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(original, picker.SelectedTime);
                     Assert.False(raised, "Cancel must not raise SelectedTimeChanged.");
@@ -469,9 +469,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_AutomationPeer_ReportsNameFromTimeOrPlaceholder()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -481,7 +481,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(picker));
@@ -492,7 +492,7 @@ namespace Fluence.Wpf.Tests
 
                     TimeSpan time = new(14, 30, 0);
                     picker.SelectedTime = time;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(DateTime.Today.Add(time).ToString("t", CultureInfo.CurrentCulture), peer.GetName(), StringComparer.Ordinal);
                 }
@@ -506,9 +506,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_BlankCultureDesignators_FallBackToInvariantAmPm()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 // Simulate the .NET Framework NLS locales (de-DE, fr-FR, sv-SE, it-IT) that
@@ -527,7 +527,7 @@ namespace Fluence.Wpf.Tests
 
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -537,12 +537,12 @@ namespace Fluence.Wpf.Tests
                     TextBlock periodText = Assert.IsType<TextBlock>(template.FindName("PeriodSegmentText", picker));
 
                     picker.SelectedTime = new TimeSpan(14, 30, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal("PM", periodText.Text, StringComparer.Ordinal);
 
                     picker.SelectedTime = new TimeSpan(9, 5, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal("AM", periodText.Text, StringComparer.Ordinal);
 
@@ -565,9 +565,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTab()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -581,7 +581,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -611,9 +611,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_FlyoutEscape_ClosesWithoutCommitting()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -623,7 +623,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -634,7 +634,7 @@ namespace Fluence.Wpf.Tests
 
                     TimeSpan original = new(9, 5, 0);
                     picker.SelectedTime = original;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -646,7 +646,7 @@ namespace Fluence.Wpf.Tests
 
                     hourList.SelectedIndex = 3;
                     minuteList.SelectedIndex = 45;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popup.Child, Key.Escape, UIElement.PreviewKeyDownEvent);
 
@@ -665,9 +665,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_FlyoutEnter_CommitsPendingSelection()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -677,7 +677,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -688,7 +688,7 @@ namespace Fluence.Wpf.Tests
                     Selector periodList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_PeriodList", picker));
 
                     picker.SelectedTime = new TimeSpan(9, 5, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -698,7 +698,7 @@ namespace Fluence.Wpf.Tests
                     hourList.SelectedIndex = 11;
                     minuteList.SelectedIndex = 30;
                     periodList.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popup.Child, Key.Enter, UIElement.PreviewKeyDownEvent);
 
@@ -716,9 +716,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_OutOfRangeSelectedTime_NormalizesFieldText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -730,7 +730,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -741,17 +741,17 @@ namespace Fluence.Wpf.Tests
 
                     // A negative span wraps to the previous-day hour like the flyout columns.
                     picker.SelectedTime = TimeSpan.FromHours(-1);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(23.ToString(culture), hourText.Text, StringComparer.Ordinal);
 
                     // A span past a day wraps into the day like the flyout columns.
                     picker.SelectedTime = TimeSpan.FromHours(25);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(1.ToString(culture), hourText.Text, StringComparer.Ordinal);
 
                     // Negative minutes normalize into 0..59.
                     picker.SelectedTime = new TimeSpan(0, -30, 0);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(30.ToString("00", culture), minuteText.Text, StringComparer.Ordinal);
                 }
                 finally
@@ -764,9 +764,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -776,7 +776,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -790,11 +790,11 @@ namespace Fluence.Wpf.Tests
                     // A light dismiss closes the popup outside the control's own pipeline,
                     // exactly like the StaysOpen=false dismissal on the field mousedown.
                     popup.SetCurrentValue(Popup.IsOpenProperty, value: false);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // The click of the same press-release gesture must not reopen the flyout.
                     RaiseButtonClick(flyoutButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(popup.IsOpen,
                         "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
 
@@ -814,9 +814,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TimePicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();

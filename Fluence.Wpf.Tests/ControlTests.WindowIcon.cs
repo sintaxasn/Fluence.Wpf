@@ -45,9 +45,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_Icon_DefaultsToEmbeddedFluenceBrandIcon()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow window = new();
@@ -66,9 +66,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_Icon_ConsumerAssignedValueOverridesDefault()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 FluenceWindow window = new();
@@ -94,9 +94,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindow_DefaultIcon_IsSquareBitmapSource()
         {
-            RunOnStaThread(static delegate
+            WpfTestSta.RunOnSta(static delegate
             {
-                _ = EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
 
                 Assert.NotNull(FluenceWindow.DefaultIcon);

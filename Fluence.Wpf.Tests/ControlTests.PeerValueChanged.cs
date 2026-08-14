@@ -76,9 +76,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DropDownButton_AutomationPeer_ReportsButtonControlType()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 80;
                     window.Show();
                     _ = dropDownButton.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dropDownButton);
                     Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
@@ -109,9 +109,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_ValueChanged_RaisesAutomationPeerValueChanged()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -130,7 +130,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 100;
                     window.Show();
                     _ = numberBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     _ = Assert.IsAssignableFrom<NumberBoxValueChangedSpyPeer>(peer);

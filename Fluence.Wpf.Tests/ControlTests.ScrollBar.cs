@@ -104,7 +104,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollViewer sv = new()
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = new()
@@ -169,12 +169,12 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Show();
                     _ = sb.ApplyTemplate();
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     // GoToState with useTransitions=false: DiscreteDoubleKeyFrame at
                     // KeyTime=0 applies the final value immediately.
                     bool stateApplied = VisualStateManager.GoToState(sb, "MouseIndicator", useTransitions: false);
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.True(stateApplied,
                         "GoToState('MouseIndicator') must return true - VSM group must be present.");
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = new()
@@ -215,14 +215,14 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Show();
                     _ = sb.ApplyTemplate();
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     // Expand to MouseIndicator first, then collapse back.
                     _ = VisualStateManager.GoToState(sb, "MouseIndicator", useTransitions: false);
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.True(stateApplied,
                         "GoToState('NoIndicator') must return true - VSM group must be present.");
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = new()
@@ -263,10 +263,10 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Show();
                     _ = sb.ApplyTemplate();
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "MouseIndicator", useTransitions: false);
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.True(stateApplied,
                         "GoToState('MouseIndicator') on horizontal ScrollBar must return true.");
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = new()
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Show();
                     _ = sb.ApplyTemplate();
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "Root"));
                     Assert.Equal(8.0, sb.ActualWidth, 0.5);
@@ -334,7 +334,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = new()
@@ -354,10 +354,10 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Show();
                     _ = sb.ApplyTemplate();
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     sb.IsEnabled = false;
-                    DrainDispatcher(WpfTestSta.Dispatcher);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     // IsEnabled=False trigger sets Opacity=0.45 on the ScrollBar root.
                     Assert.True(!sb.IsEnabled || sb.Opacity < 1.0,
@@ -379,7 +379,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] keys =

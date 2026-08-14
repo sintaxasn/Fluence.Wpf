@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void HyperlinkButton_Peer_IsHyperlinkButtonAutomationPeer()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -52,7 +52,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 120;
                     window.Show();
                     _ = button.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
                     _ = Assert.IsAssignableFrom<HyperlinkButtonAutomationPeer>(peer);
@@ -71,9 +71,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void HyperlinkButton_Peer_ReportsHyperlinkControlType()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 120;
                     window.Show();
                     _ = button.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
                     Assert.Equal(

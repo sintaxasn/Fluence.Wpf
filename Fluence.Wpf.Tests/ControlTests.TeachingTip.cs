@@ -48,9 +48,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_DefaultStyle_AppliesAndTemplatePartsFound()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.TeachingTip defaults = new();
@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, tip.Visibility);
@@ -112,9 +112,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_ClosedInPanel_RendersNothingBeforeFirstOpen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(Visibility.Collapsed, tip.Visibility);
@@ -158,9 +158,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_DeclaredAsBorderChild_OpensWithoutThrowing()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -176,7 +176,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -196,9 +196,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_IsOpenTrue_OpensPopupAndRendersContent()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -267,9 +267,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_IsOpenFalse_ClosesPopupAndRaisesClosed()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -284,7 +284,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -314,9 +314,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_IsLightDismissEnabled_MapsToPopupStaysOpen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -332,7 +332,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -358,9 +358,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_CloseButton_RaisesCloseButtonClickAndCloses()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -375,7 +375,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -409,9 +409,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_ActionButton_RaisesActionButtonClickAndInvokesCommand()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -430,7 +430,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -461,9 +461,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_NoTarget_DocksBottomRightAndHidesBeak()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480, Content = new Grid() };
@@ -476,7 +476,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -515,9 +515,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_PreferredPlacement_MapsToPopupPlacement()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -532,7 +532,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -555,7 +555,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(TeachingTipPlacementMode.Top, tip.ActualPlacement);
                     Assert.NotNull(popup.CustomPopupPlacementCallback);
                     Assert.Equal(new Point(-20, -40), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Path bottomBeak = Assert.IsType<Path>(tip.Template.FindName("BottomBeak", tip));
                     Path topBeak = Assert.IsType<Path>(tip.Template.FindName("TopBeak", tip));
                     Assert.Equal(Visibility.Visible, bottomBeak.Visibility);
@@ -588,9 +588,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_CloseAffordance_FollowsCloseButtonContentAndLightDismiss()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -605,7 +605,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -624,19 +624,19 @@ namespace Fluence.Wpf.Tests
 
                     // Null content, light dismiss: no close affordance at all (WinUI).
                     tip.IsLightDismissEnabled = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Collapsed, footerClose.Visibility);
                     Assert.Equal(Visibility.Collapsed, alternateClose.Visibility);
 
                     // Explicit content: footer close button only, regardless of light dismiss.
                     tip.CloseButtonContent = "Got it";
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Visible, footerClose.Visibility);
                     Assert.Equal(Visibility.Collapsed, alternateClose.Visibility);
                     Assert.Equal(Visibility.Visible, footerArea.Visibility);
 
                     tip.IsLightDismissEnabled = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Visible, footerClose.Visibility);
                     Assert.Equal(Visibility.Collapsed, alternateClose.Visibility);
                 }
@@ -651,9 +651,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_AlternateCloseButton_RunsCloseButtonPipeline()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -668,7 +668,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -705,9 +705,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_Escape_ClosesTip()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -722,7 +722,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -758,9 +758,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_OpenReveal_SettlesAtRestForEachPlacement()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480 };
@@ -770,7 +770,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = target;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     foreach (TeachingTipPlacementMode placement in new[]
@@ -823,9 +823,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_OpenReveal_CenterTipFadesWithoutSlide()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 640, Height = 480, Content = new Grid() };
@@ -838,7 +838,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
@@ -876,7 +876,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys =
@@ -905,7 +905,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void TeachingTip_HasPolite_LiveSetting()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.TeachingTip tip = new();
                 AutomationLiveSetting liveSetting = AutomationProperties.GetLiveSetting(tip);

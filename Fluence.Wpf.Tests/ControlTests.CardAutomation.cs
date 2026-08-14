@@ -50,9 +50,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ClickableCard_AutomationPeer_IsCardAutomationPeer()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     _ = Assert.IsAssignableFrom<CardAutomationPeer>(peer);
@@ -88,9 +88,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ClickableCard_AutomationControlType_IsButton()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -107,7 +107,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
@@ -126,9 +126,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ClickableCard_GetPattern_Invoke_ReturnsInvokeProvider()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -145,7 +145,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     object pattern = Assert.IsAssignableFrom<object>(peer.GetPattern(PatternInterface.Invoke));
@@ -165,9 +165,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ClickableCard_InvokePattern_RaisesClickEvent()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     bool clickRaised = false;
                     card.Click += (_, _) => clickRaised = true;
@@ -192,7 +192,7 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
                     invokeProvider.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(clickRaised,
                         "IInvokeProvider.Invoke() must raise the Card Click routed event.");
@@ -211,9 +211,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ClickableCard_IsTabStop_IsTrue()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -237,9 +237,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NonClickableCard_AutomationControlType_IsNotButton()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -256,7 +256,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     Assert.NotEqual(AutomationControlType.Button, peer.GetAutomationControlType());
@@ -275,9 +275,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NonClickableCard_GetPattern_Invoke_ReturnsNull()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 200;
                     window.Show();
                     _ = card.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
                     object? pattern = peer.GetPattern(PatternInterface.Invoke);
@@ -314,9 +314,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NonClickableCard_IsTabStop_IsFalse()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -342,9 +342,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CheckBox_Description_SetsAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -373,9 +373,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CheckBox_DescriptionChanges_UpdatesAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -405,9 +405,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void CheckBox_NullDescription_ClearsAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -441,9 +441,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_Description_SetsAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -472,9 +472,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_DescriptionChanges_UpdatesAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
@@ -504,9 +504,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RadioButton_NullDescription_ClearsAutomationHelpText()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try

@@ -39,9 +39,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_InFluenceWindow_LeftAndTopCoerceTitleBarExtension()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 FluenceWindow window = new()
                 {
@@ -59,14 +59,14 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.True(window.ExtendsContentIntoTitleBar,
                         "Left NavigationView pane mode should extend FluenceWindow content into the title bar.");
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.False(window.ExtendsContentIntoTitleBar,
@@ -86,9 +86,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMode_CoercesPaneOpenAndToggleHidden()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.True(nav.IsPaneOpen, "Top mode should always report IsPaneOpen=True.");
@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Tests
 
                     nav.IsPaneOpen = false;
                     nav.IsPaneToggleButtonVisible = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(nav.IsPaneOpen, "Top mode should coerce runtime IsPaneOpen changes back to true.");
                     Assert.False(nav.IsPaneToggleButtonVisible,
@@ -134,9 +134,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMode_KeepsItemIconAndTextVisibleWithoutScrollViewer()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests
                     _ = nav.Items.Add(second);
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ScrollViewer? topScrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer);
@@ -208,9 +208,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMode_OverflowMenuInvokesHiddenItem()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -235,7 +235,7 @@ namespace Fluence.Wpf.Tests
 
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(16.0, overflowIcon.IconFontSize, 0.01);
                     Assert.Equal("Diagnostics", overflowItem.Header);
                     overflowItem.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.MenuItem.ClickEvent));
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Same(last, invokedItem);
                     Assert.Same(last, nav.SelectedItem);
@@ -291,9 +291,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMode_ReservesOverflowButtonByMovingLastFittingItemToMenu()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -314,9 +314,9 @@ namespace Fluence.Wpf.Tests
 
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
@@ -349,9 +349,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NavigationView_TopMode_OverflowButtonStaysLeftOfClippedItem()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -372,9 +372,9 @@ namespace Fluence.Wpf.Tests
 
                     window.Content = nav;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
                     Grid topItemsHost = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost));

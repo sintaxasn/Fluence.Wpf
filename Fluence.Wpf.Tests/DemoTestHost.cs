@@ -74,9 +74,9 @@ namespace Fluence.Wpf.Tests
                 Content = content,
             };
             window.Show();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             window.UpdateLayout();
-            Drain(window.Dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
         }
 
@@ -84,12 +84,7 @@ namespace Fluence.Wpf.Tests
         {
             window.Content = null;
             window.Close();
-            Drain(window.Dispatcher);
-        }
-
-        internal static void Drain(Dispatcher? dispatcher)
-        {
-            WpfTestSta.DrainDispatcher(dispatcher);
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
         }
 
         internal static T? FindByName<T>(DependencyObject? root, string name)
@@ -130,7 +125,7 @@ namespace Fluence.Wpf.Tests
                 window.Close();
             }
 
-            Drain(Dispatcher.CurrentDispatcher);
+            WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.MergedDictionaries.Clear();

@@ -51,9 +51,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_DefaultStyle_AppliesTemplateParts()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.DatePicker)));
@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -93,9 +93,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_SelectedDate_UpdatesFieldSegmentsAndPlaceholder()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests
 
                     DateTime date = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = date;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(Visibility.Collapsed, placeholder.Visibility);
                     Assert.Equal(Visibility.Visible, segmentsHost.Visibility);
@@ -148,9 +148,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_FieldClick_OpensPopupAndPopulatesColumns()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -171,7 +171,7 @@ namespace Fluence.Wpf.Tests
                     Selector yearList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_YearList", picker));
 
                     picker.SelectedDate = new DateTime(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -203,9 +203,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_Accept_CommitsSelectionAndRaisesSelectedDateChanged()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -228,7 +228,7 @@ namespace Fluence.Wpf.Tests
 
                     DateTime oldDate = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = oldDate;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -240,10 +240,10 @@ namespace Fluence.Wpf.Tests
                     monthList.SelectedIndex = 0;
                     yearList.SelectedIndex = 2025 - picker.MinYear;
                     dayList.SelectedIndex = 9;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(acceptButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     DateTime expected = new(2025, 1, 10, 0, 0, 0, DateTimeKind.Unspecified);
                     Assert.Equal(expected, picker.SelectedDate);
@@ -263,9 +263,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_Cancel_RevertsPendingSelection()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -275,7 +275,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests
 
                     DateTime original = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = original;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -298,10 +298,10 @@ namespace Fluence.Wpf.Tests
 
                     monthList.SelectedIndex = 0;
                     dayList.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(cancelButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(original, picker.SelectedDate);
                     Assert.False(raised, "Cancel must not raise SelectedDateChanged.");
@@ -318,9 +318,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_DayColumn_AdjustsToMonthLength()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -330,7 +330,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Tests
                     Selector yearList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_YearList", picker));
 
                     picker.SelectedDate = new DateTime(2023, 1, 31, 0, 0, 0, DateTimeKind.Unspecified);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -351,13 +351,13 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(30, dayList.SelectedIndex);
 
                     monthList.SelectedIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(28, dayList.Items.Count);
                     Assert.Equal(27, dayList.SelectedIndex);
 
                     yearList.SelectedIndex = 2024 - picker.MinYear;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(29, dayList.Items.Count);
                 }
@@ -371,9 +371,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_AutomationPeer_ReportsNameFromDateOrPlaceholder()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -383,7 +383,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(picker));
@@ -394,7 +394,7 @@ namespace Fluence.Wpf.Tests
 
                     DateTime date = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = date;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(date.ToString("d", CultureInfo.CurrentCulture), peer.GetName(), StringComparer.Ordinal);
                 }
@@ -408,9 +408,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTab()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -423,7 +423,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -453,9 +453,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_FlyoutEscape_ClosesWithoutCommitting()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -465,7 +465,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -476,7 +476,7 @@ namespace Fluence.Wpf.Tests
 
                     DateTime original = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = original;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -488,7 +488,7 @@ namespace Fluence.Wpf.Tests
 
                     monthList.SelectedIndex = 0;
                     dayList.SelectedIndex = 0;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popup.Child, Key.Escape, UIElement.PreviewKeyDownEvent);
 
@@ -507,9 +507,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_FlyoutEnter_CommitsPendingSelection()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -519,7 +519,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -530,7 +530,7 @@ namespace Fluence.Wpf.Tests
                     Selector yearList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_YearList", picker));
 
                     picker.SelectedDate = new DateTime(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
@@ -540,7 +540,7 @@ namespace Fluence.Wpf.Tests
                     monthList.SelectedIndex = 0;
                     yearList.SelectedIndex = 2025 - picker.MinYear;
                     dayList.SelectedIndex = 9;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popup.Child, Key.Enter, UIElement.PreviewKeyDownEvent);
 
@@ -558,9 +558,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
@@ -579,9 +579,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_NonGregorianDefaultCulture_UsesGregorianMonthNames()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 CultureInfo originalCulture = CultureInfo.CurrentCulture;
@@ -608,7 +608,7 @@ namespace Fluence.Wpf.Tests
                     Controls.DatePicker picker = new() { SelectedDate = march };
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -642,9 +642,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void DatePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -654,7 +654,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = picker;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
@@ -669,11 +669,11 @@ namespace Fluence.Wpf.Tests
                     // A light dismiss closes the popup outside the control's own pipeline,
                     // exactly like the StaysOpen=false dismissal on the field mousedown.
                     popup.SetCurrentValue(Popup.IsOpenProperty, value: false);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     // The click of the same press-release gesture must not reopen the flyout.
                     RaiseButtonClick(flyoutButton);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(popup.IsOpen,
                         "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
 

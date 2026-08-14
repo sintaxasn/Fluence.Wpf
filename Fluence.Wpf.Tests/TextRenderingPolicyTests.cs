@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = WpfTestSta.EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
                 FluenceWindow window = new()
@@ -77,7 +77,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = WpfTestSta.EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
                 System.Windows.Controls.Border child = new();
@@ -167,7 +167,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = WpfTestSta.EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
                 AssertTypographyMetrics(application, "CaptionTextBlockStyle", 12d, FontWeights.Regular, 16d);
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? application = WpfTestSta.EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
                 System.Windows.Controls.TextBlock textBlock = new();
@@ -227,7 +227,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void ResetApplication(Application? application)
+        private static void ResetApplication(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -236,7 +236,7 @@ namespace Fluence.Wpf.Tests
         }
 
         private static void AssertTypographyMetrics(
-            Application? application,
+            Application application,
             string styleKey,
             double expectedFontSize,
             FontWeight expectedFontWeight,

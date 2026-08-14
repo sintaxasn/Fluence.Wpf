@@ -52,13 +52,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Verify the VSM group is present in the template.
                 IList groups = VisualStateManager.GetVisualStateGroups(
@@ -82,14 +82,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 // Default: Value=-1, no IconSource → Dot state.
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // DotIndicator should be visible; BadgeBorder should be collapsed.
                 Ellipse dot = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(badge, "DotIndicator"));
@@ -105,13 +105,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Ellipse? dot = FindVisualChildByName<Ellipse>(badge, "DotIndicator");
                 System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBadge badge = new() { Value = 12 };
@@ -134,7 +134,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
                     w.UpdateLayout();
 
                     System.Windows.Controls.Border border = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"));
@@ -162,13 +162,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 IList groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
                 VisualStateGroup? dkg = null;

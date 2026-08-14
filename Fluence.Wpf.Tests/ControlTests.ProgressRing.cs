@@ -54,7 +54,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new();
@@ -75,13 +75,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_DeterminateArc"));
                 w.Close();
@@ -97,13 +97,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new() { IsIndeterminate = true, IsActive = true };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
@@ -133,13 +133,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new() { Width = 32, Height = 32 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // 32 × 0.1 + 1 = 4.2 ;  32 × 0.5 − 4.2 = 11.8
                 Assert.Equal(4.2, ring.EllipseDiameter, 0.001);
@@ -154,13 +154,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new() { Width = 64, Height = 64 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // 64 × 0.1 + 0 = 6.4 ;  64 × 0.5 − 6.4 = 25.6
                 Assert.Equal(6.4, ring.EllipseDiameter, 0.001);
@@ -179,7 +179,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -193,7 +193,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_DeterminateArc"));
                 Assert.NotNull(arc.Data);
@@ -207,7 +207,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -221,7 +221,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_DeterminateArc"));
                 Assert.Null(arc.Data);
@@ -235,7 +235,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -247,13 +247,13 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 Assert.NotNull(arc?.Data);
 
                 ring.IsIndeterminate = true;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Null(arc?.Data);
 
@@ -266,7 +266,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -278,14 +278,14 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.NotNull(indeterminateArc.Data);
 
                 ring.IsIndeterminate = false;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Null(indeterminateArc.Data);
 
@@ -298,7 +298,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -310,14 +310,14 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.NotNull(indeterminateArc.Data);
 
                 w.Close();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Null(indeterminateArc.Data);
             });
@@ -332,13 +332,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush fg = Assert.IsType<SolidColorBrush>(ring.Foreground);
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("AccentFillColorDefaultBrush"));
@@ -354,7 +354,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -367,7 +367,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
 
@@ -376,7 +376,7 @@ namespace Fluence.Wpf.Tests
 
                 ring.IsIndeterminate = false;
                 ring.Value = 50;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 AssertPathStroke(determinateArc, expected);
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
@@ -404,7 +404,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 SolidColorBrush initial = Assert.IsType<SolidColorBrush>(indeterminateArc.Stroke);
@@ -414,7 +414,7 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(initialExpected.Color, initialColor);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCautionBrush"));
                 AssertPathStroke(indeterminateArc, expected);
@@ -465,7 +465,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -478,7 +478,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
@@ -508,7 +508,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -522,10 +522,10 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app?.TryFindResource("SystemFillColorCriticalBrush"));
 
@@ -533,7 +533,7 @@ namespace Fluence.Wpf.Tests
                 AssertPathStroke(determinateArc, expected);
 
                 ring.IsIndeterminate = true;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected);
@@ -551,7 +551,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -564,7 +564,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Equal(ProgressRingState.Normal, ring.ProgressState);
 
@@ -579,7 +579,7 @@ namespace Fluence.Wpf.Tests
 
                 ring.IsIndeterminate = false;
                 ring.Value = 50;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 AssertPathStroke(determinateArc, expected);
@@ -593,7 +593,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -606,7 +606,7 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Equal(ProgressRingState.Normal, ring.ProgressState);
 
@@ -634,7 +634,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -646,27 +646,27 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 RotateTransform rotate = Assert.IsAssignableFrom<RotateTransform>(GetIndeterminateRotateTransform(ring));
                 Assert.True(WaitUntil(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties),
                     "The indeterminate animation must run while the ring is loaded and visible.");
 
                 ring.Visibility = Visibility.Collapsed;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.False(rotate.HasAnimatedProperties,
                     "Collapsing the ring must stop the repeat-forever rotation animation.");
                 AssertDependencyPropertyNotAnimated(ring, "IndeterminateSweepFractionProperty");
 
                 ring.Visibility = Visibility.Visible;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.True(WaitUntil(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties),
                     "Restoring visibility must restart the indeterminate animation.");
 
                 w.Close();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.False(rotate.HasAnimatedProperties,
                     "Closing the hosting window must leave no active rotation animation clocks.");
@@ -678,7 +678,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new()
@@ -690,10 +690,10 @@ namespace Fluence.Wpf.Tests
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ring.ProgressState = ProgressRingState.Error;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 Assert.True(ring.ShowError, "ProgressState=Error must set ShowError.");
                 Assert.False(ring.ShowPaused, "ProgressState=Error must clear ShowPaused.");
 
@@ -702,12 +702,12 @@ namespace Fluence.Wpf.Tests
                 AssertPathStroke(indeterminateArc, critical);
 
                 ring.ProgressState = ProgressRingState.Paused;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 Assert.True(ring.ShowPaused, "ProgressState=Paused must set ShowPaused.");
                 Assert.False(ring.ShowError, "ProgressState=Paused must clear ShowError.");
 
                 ring.ProgressState = ProgressRingState.Normal;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
                 Assert.False(ring.ShowPaused, "ProgressState=Normal must clear ShowPaused.");
                 Assert.False(ring.ShowError, "ProgressState=Normal must clear ShowError.");
 
@@ -723,16 +723,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_DeterminateArc"));
 
@@ -749,14 +749,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 ProgressRing ring = new() { Width = 64, Height = 64 };
                 Window window = new() { Content = ring };
                 window.Show();
                 _ = ring.ApplyTemplate();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 Assert.Equal(AutomationLiveSetting.Polite, AutomationProperties.GetLiveSetting(ring));
                 window.Close();

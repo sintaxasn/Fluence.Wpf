@@ -43,9 +43,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_UpButton_Click_IncrementsValueBySmallChange()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
                     IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(6.0, numberBox.Value);
                     Assert.Equal("6", numberBox.Text, StringComparer.Ordinal);
@@ -93,9 +93,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_DownButton_Click_DecrementsValueBySmallChange()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -121,7 +121,7 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(downButton);
                     IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(4.0, numberBox.Value);
                     Assert.Equal("4", numberBox.Text, StringComparer.Ordinal);
@@ -144,9 +144,9 @@ namespace Fluence.Wpf.Tests
             // a quick press-release updates the value. With the default ClickMode=Release
             // the internal RepeatButton timer only raises Click after Delay elapses
             // (~250 ms on most systems), which users perceive as "the button is broken."
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -186,9 +186,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_SpinButtons_AreNotTabStops()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -232,9 +232,9 @@ namespace Fluence.Wpf.Tests
             // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from
             // border edge).  Before this fix Fluence used "0,1,0,1" which butted the buttons
             // flush against the right border of the control.
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -274,9 +274,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_CompactSpinPanel_ReservesLayoutWhenHidden()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -291,7 +291,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 260;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -308,7 +308,7 @@ namespace Fluence.Wpf.Tests
 
                     _ = textBox.Focus();
                     _ = Keyboard.Focus(textBox);
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(heightBeforeFocus, numberBox.ActualHeight, 0.1);
@@ -330,7 +330,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_DirectValue_ClampsPositiveInfinityToMaximum()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.NumberBox numberBox = new()
                 {
@@ -346,7 +346,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_DirectValue_NormalizesReversedRangeBeforeClamping()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
                 Controls.NumberBox numberBox = new()
                 {
@@ -362,9 +362,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_Click_ClampsToMaximum()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -383,7 +383,7 @@ namespace Fluence.Wpf.Tests
                     window.Width = 240;
                     window.Height = 120;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     _ = numberBox.ApplyTemplate();
@@ -392,7 +392,7 @@ namespace Fluence.Wpf.Tests
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
                     IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(5.0, numberBox.Value);
                 }
@@ -410,9 +410,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_Header_BecomesAccessibleName()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -424,7 +424,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 120;
                     window.Show();
                     _ = numberBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     Assert.True(
@@ -450,9 +450,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_Peer_LargeChange_MatchesControl()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -469,7 +469,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 120;
                     window.Show();
                     _ = numberBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);

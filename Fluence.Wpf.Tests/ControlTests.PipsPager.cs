@@ -51,9 +51,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_DefaultStyle_AppliesAndTemplatePartsResolve()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Style style = Assert.IsType<Style>(app?.TryFindResource(typeof(Controls.PipsPager)));
@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(0, pager.NumberOfPages);
@@ -90,9 +90,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_FivePages_RendersFivePips()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -127,9 +127,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_PipClick_SelectsPageAndRaisesSelectedIndexChanged()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     int oldIndex = -1;
@@ -184,9 +184,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_NavigationButtons_ChangeSelectionAndRespectBounds()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.Button previous = Assert.IsAssignableFrom<System.Windows.Controls.Button>(FindVisualChildByName<System.Windows.Controls.Button>(pager, "PART_PreviousButton"));
@@ -241,9 +241,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_MaxVisiblePips_WindowsAroundSelection()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -265,7 +265,7 @@ namespace Fluence.Wpf.Tests
 
                     // Mid-range selection: the window centers on the selected page.
                     pager.SelectedPageIndex = 5;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(3, host.Children.Count);
                     Assert.Equal("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal);
                     Assert.Equal("Page 7", AutomationProperties.GetName(GetPipAt(host, 2)!), StringComparer.Ordinal);
@@ -274,7 +274,7 @@ namespace Fluence.Wpf.Tests
 
                     // Selection at the trailing edge: the window clamps to the last pages.
                     pager.SelectedPageIndex = 9;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(3, host.Children.Count);
                     Assert.Equal("Page 8", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal);
                     Assert.Equal("Page 10", AutomationProperties.GetName(GetPipAt(host, 2)!), StringComparer.Ordinal);
@@ -291,9 +291,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_SelectedPageIndex_CoercesIntoRange()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
@@ -329,9 +329,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_VerticalOrientation_StacksPipsVerticallyAndSwapsChevrons()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 400 };
@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -361,7 +361,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal("\uE76C", nextGlyph.Glyph, StringComparer.Ordinal);
 
                     pager.Orientation = System.Windows.Controls.Orientation.Vertical;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     Assert.Equal(System.Windows.Controls.Orientation.Vertical, host.Orientation);
@@ -378,9 +378,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_ButtonVisibilityEnum_ControlsNavigationButtonVisibility()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.Button previous = Assert.IsAssignableFrom<System.Windows.Controls.Button>(FindVisualChildByName<System.Windows.Controls.Button>(pager, "PART_PreviousButton"));
@@ -401,7 +401,7 @@ namespace Fluence.Wpf.Tests
 
                     pager.PreviousButtonVisibility = PipsPagerButtonVisibility.Visible;
                     pager.NextButtonVisibility = PipsPagerButtonVisibility.Visible;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Visible, previous.Visibility);
                     Assert.Equal(Visibility.Visible, next.Visibility);
 
@@ -409,7 +409,7 @@ namespace Fluence.Wpf.Tests
                     // pager (template MultiTrigger on IsMouseOver); without hover they collapse.
                     pager.PreviousButtonVisibility = PipsPagerButtonVisibility.VisibleOnPointerOver;
                     pager.NextButtonVisibility = PipsPagerButtonVisibility.VisibleOnPointerOver;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(pager.IsMouseOver, "The pager must not be hovered in this headless test.");
                     Assert.Equal(Visibility.Collapsed, previous.Visibility);
                     Assert.Equal(Visibility.Collapsed, next.Visibility);
@@ -424,9 +424,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_ArrowKeys_MoveSelectionWhileFocusIsInside()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -436,7 +436,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -478,7 +478,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 string[] brushKeys =
@@ -506,9 +506,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_PipFills_UseNeutralStrongFillRoles()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -523,7 +523,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -569,7 +569,7 @@ namespace Fluence.Wpf.Tests
                         "The selected pip dot must grow to the 6px selected size.");
 
                     pager.IsEnabled = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Same(app?.TryFindResource("ControlStrongFillColorDisabledBrush"), restDot.Fill);
                 }
                 finally
@@ -582,9 +582,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_PipSizeMorph_AnimatesSelectionAndSurvivesWindowRebuild()
         {
-            RunOnStaThread(() =>
+            WpfTestSta.RunOnSta(() =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -594,7 +594,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
@@ -624,7 +624,7 @@ namespace Fluence.Wpf.Tests
                     // In-place selection change (the window stays clamped at the start):
                     // the old pip's ExitActions shrink it back to 4 while the new pip grows to 6.
                     pager.SelectedPageIndex = 1;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
                         "The newly selected pip must animate up to the 6px selected size.");
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 4.0)),
@@ -634,7 +634,7 @@ namespace Fluence.Wpf.Tests
                     // selected pip must still land at 6x6 because its trigger condition is
                     // already true when the recreated template applies.
                     pager.SelectedPageIndex = 5;
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal);
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
                         "A recreated selected pip must animate to the 6px selected size.");
@@ -651,9 +651,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PipsPager_AutomationPeer_ReportsGroupClassNameAndName()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
@@ -664,7 +664,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = pager;
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(pager));

@@ -46,9 +46,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_Disabled_RangeValueProvider_SetValue_ThrowsElementNotEnabledException()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 100;
                     window.Show();
                     _ = numberBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     IRangeValueProvider rangeValueProvider = Assert.IsAssignableFrom<IRangeValueProvider>(peer.GetPattern(PatternInterface.RangeValue));
@@ -86,9 +86,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void NumberBox_Disabled_RangeValueProvider_IsReadOnly_ReturnsFalse()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 100;
                     window.Show();
                     _ = numberBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
                     IRangeValueProvider rangeValueProvider = Assert.IsAssignableFrom<IRangeValueProvider>(peer.GetPattern(PatternInterface.RangeValue));
@@ -127,9 +127,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void AutoSuggestBox_Disabled_ValueProvider_SetValue_ThrowsElementNotEnabledException()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -146,7 +146,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 100;
                     window.Show();
                     _ = autoSuggestBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(autoSuggestBox);
                     IValueProvider valueProvider = Assert.IsAssignableFrom<IValueProvider>(peer.GetPattern(PatternInterface.Value));
@@ -167,9 +167,9 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void AutoSuggestBox_Disabled_ValueProvider_IsReadOnly_ReturnsFalse()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
 
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Tests
                     window.Height = 100;
                     window.Show();
                     _ = autoSuggestBox.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(autoSuggestBox);
                     IValueProvider valueProvider = Assert.IsAssignableFrom<IValueProvider>(peer.GetPattern(PatternInterface.Value));

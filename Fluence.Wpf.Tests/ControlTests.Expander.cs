@@ -49,13 +49,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Content" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // RootBorder is the template root - proves Fluence style applied.
                 Border rootBorder = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(expander, "RootBorder"));
@@ -68,13 +68,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Path chevron = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(expander, "Chevron"));
 
@@ -92,13 +92,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Structural check: ExpandSite ContentPresenter is present.
                 ContentPresenter site = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(expander, "ExpandSite"));
@@ -111,13 +111,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Border headerBorder = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"));
                 Assert.Equal(new CornerRadius(4), headerBorder.CornerRadius);
@@ -134,7 +134,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
@@ -142,7 +142,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"));
                     Assert.True(contentBorder.ClipToBounds,
@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
@@ -174,7 +174,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
                         ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
@@ -205,7 +205,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
                         ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
@@ -245,7 +245,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
                         ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 Controls.Expander expander = new()
@@ -301,7 +301,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     w.Show();
-                    DrainDispatcher(w.Dispatcher);
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Border contentBorder = FindVisualChildByName<Border>(expander, "PART_ContentBorder")
                         ?? throw new Xunit.Sdk.XunitException("PART_ContentBorder must exist.");

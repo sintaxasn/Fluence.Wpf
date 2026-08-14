@@ -29,7 +29,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -168,7 +167,7 @@ namespace Fluence.Wpf.Tests
                     titleBar.BackRequested += delegate { eventCount++; };
                     titleBar.IsBackButtonVisible = true;
                     titleBar.UpdateLayout();
-                    DrainDispatcher(titleBar.Dispatcher);
+                    WpfTestSta.DrainDispatcher(titleBar.Dispatcher);
 
                     Assert.Equal(Visibility.Visible, backButton.Visibility);
 
@@ -203,7 +202,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(1, paneToggleCommand.CanExecuteSubscriptionCount);
 
                     titleBar.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, titleBar));
-                    DrainDispatcher(titleBar.Dispatcher);
+                    WpfTestSta.DrainDispatcher(titleBar.Dispatcher);
 
                     Assert.Equal(1, backCommand.CanExecuteUnsubscriptionCount);
                     Assert.Equal(1, paneToggleCommand.CanExecuteUnsubscriptionCount);
@@ -212,9 +211,9 @@ namespace Fluence.Wpf.Tests
 
         private static void RunWithTitleBar(Func<Controls.TitleBar> titleBarFactory, Action<Controls.TitleBar> testBody)
         {
-            RunOnFreshStaThread(delegate
+            WpfTestSta.RunOnSta(delegate
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window? window = null;
                 Controls.TitleBar? titleBar = null;
@@ -234,10 +233,10 @@ namespace Fluence.Wpf.Tests
                     };
 
                     window.Show();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     _ = titleBar.ApplyTemplate();
-                    DrainDispatcher(window.Dispatcher);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     testBody(titleBar);
                 }
@@ -289,36 +288,10 @@ namespace Fluence.Wpf.Tests
             AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
             IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
             invoke.Invoke();
-            DrainDispatcher(button.Dispatcher);
+            WpfTestSta.DrainDispatcher(button.Dispatcher);
         }
 
-        private static void RunOnFreshStaThread(Action action)
-        {
-            Exception? capturedException = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    capturedException = exception;
-                }
-            }));
-
-            if (capturedException is not null)
-            {
-                ExceptionDispatchInfo.Capture(capturedException).Throw();
-            }
-        }
-
-        private static Application? EnsureApplication()
-        {
-            return WpfTestSta.EnsureApplication();
-        }
-
-        private static ResourceDictionary? MergeGenericDictionary(Application? application)
+        private static ResourceDictionary? MergeGenericDictionary(Application application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -329,14 +302,9 @@ namespace Fluence.Wpf.Tests
             return dictionaries?.Count > 0 ? dictionaries[^1] : null;
         }
 
-        private static void DrainDispatcher(Dispatcher dispatcher)
-        {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
-        }
-
         private static void ResetSharedWpfState()
         {
-            Application? application = WpfTestSta.EnsureApplication();
+            Application application = WpfTestSta.EnsureApplication();
             Keyboard.ClearFocus();
 
             foreach (Window? window in application?.Windows.Cast<Window>() ?? [])

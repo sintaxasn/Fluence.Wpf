@@ -52,13 +52,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // PART_StarsPanel must be present after template is applied.
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
@@ -71,13 +71,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
                 Assert.Equal(5, panel.Children.Count);
@@ -90,13 +90,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
 
@@ -120,13 +120,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Value = 2 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
 
@@ -145,13 +145,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Value = 0 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
 
@@ -169,13 +169,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Value = 4, Caption = "4.0" };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.TextBlock caption = Assert.IsAssignableFrom<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption"));
                 Assert.Equal(Visibility.Visible, caption.Visibility);
@@ -189,13 +189,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Caption = string.Empty };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.TextBlock caption = Assert.IsAssignableFrom<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption"));
                 Assert.Equal(Visibility.Collapsed, caption.Visibility);
@@ -208,17 +208,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { MaxRating = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 // Setting Value above MaxRating must clamp it.
                 rc.Value = 10.0;
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 Assert.Equal(3.0, rc.Value);
                 w.Close();
@@ -230,16 +230,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                Application? app = EnsureApplication();
+                Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
-                DrainDispatcher(w.Dispatcher);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.StackPanel panel = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"));
                 w.Close();
@@ -249,15 +249,15 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RatingControl_AutomationPeer_ExposesRangeValueAndIsKeyboardSettable()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
                 _ = rating.ApplyTemplate();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
                 _ = Assert.IsAssignableFrom<Automation.RatingControlAutomationPeer>(peer);
@@ -270,14 +270,14 @@ namespace Fluence.Wpf.Tests
                 Assert.True(rating.Focusable, "RatingControl must be focusable.");
                 Assert.True(rating.IsTabStop, "RatingControl must be a tab stop.");
                 _ = rating.Focus();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 PresentationSource source = Assert.IsAssignableFrom<PresentationSource>(PresentationSource.FromVisual(rating));
                 rating.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Right)
                 {
                     RoutedEvent = Keyboard.KeyDownEvent,
                 });
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.Equal(3.0, rating.Value, 0.001);
 
                 window.Close();
@@ -287,22 +287,22 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabled()
         {
-            RunOnStaThread(static () =>
+            WpfTestSta.RunOnSta(static () =>
             {
-                Application? application = EnsureApplication();
+                Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
                 _ = rating.ApplyTemplate();
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
                 IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
 
                 // Read-only: SetValue must throw and leave the value unchanged.
                 rating.IsReadOnly = true;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.True(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
                 _ = Assert.Throws<InvalidOperationException>(() => range.SetValue(4.0));
                 Assert.Equal(2.0, rating.Value, 0.001);
@@ -310,13 +310,13 @@ namespace Fluence.Wpf.Tests
                 // Disabled: SetValue must throw ElementNotEnabledException.
                 rating.IsReadOnly = false;
                 rating.IsEnabled = false;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 _ = Assert.Throws<System.Windows.Automation.ElementNotEnabledException>(() => range.SetValue(4.0));
                 Assert.Equal(2.0, rating.Value, 0.001);
 
                 // Enabled and writable: SetValue applies.
                 rating.IsEnabled = true;
-                DrainDispatcher(window.Dispatcher);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 range.SetValue(4.0);
                 Assert.Equal(4.0, rating.Value, 0.001);
 
