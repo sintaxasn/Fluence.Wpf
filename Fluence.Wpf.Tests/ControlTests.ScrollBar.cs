@@ -26,8 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,32 +60,14 @@ namespace Fluence.Wpf.Tests
             Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"));
 
             IList groups = VisualStateManager.GetVisualStateGroups(root);
-            VisualState? state = null;
-            foreach (VisualStateGroup group in groups)
-            {
-                foreach (VisualState candidate in group.States)
-                {
-                    if (string.Equals(candidate.Name, stateName, System.StringComparison.Ordinal))
-                    {
-                        state = candidate;
-                        break;
-                    }
-                }
-
-                if (state is not null)
-                {
-                    break;
-                }
-            }
-
-            Assert.NotNull(state);
+            VisualState state = Assert.IsType<VisualState>(groups.Cast<VisualStateGroup>().SelectMany(group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal)));
             Assert.NotNull(state.Storyboard);
 
             foreach (Timeline timeline in state.Storyboard.Children)
             {
                 if (timeline is not DoubleAnimationUsingKeyFrames animation ||
-                    !string.Equals(Storyboard.GetTargetName(animation), targetName, System.StringComparison.Ordinal) ||
-                    !string.Equals(Storyboard.GetTargetProperty(animation).Path, targetProperty, System.StringComparison.Ordinal))
+                    !string.Equals(Storyboard.GetTargetName(animation), targetName, StringComparison.Ordinal) ||
+                    !string.Equals(Storyboard.GetTargetProperty(animation).Path, targetProperty, StringComparison.Ordinal))
                 {
                     continue;
                 }
