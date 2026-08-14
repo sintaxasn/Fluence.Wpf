@@ -1167,13 +1167,13 @@ namespace Fluence.Wpf.Controls
         /// <returns>The result of the message processing.</returns>
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == NativeConstants.WM_NCHITTEST)
+            if (msg == PInvoke.WM_NCHITTEST)
             {
                 // WindowChrome routes the whole title bar through WM_NCHITTEST. We return
                 // HTCAPTION for drag regions, HTMAXBUTTON for Windows 11 snap-layout hover,
                 // and 0 for WPF-controlled buttons or interactive custom title-bar content.
-                int result = HitTestTitleBar(lParam);
-                if (result == NativeConstants.HTMAXBUTTON)
+                uint result = HitTestTitleBar(lParam);
+                if (result == PInvoke.HTMAXBUTTON)
                 {
                     SetSnapHover(WindowState is WindowState.Maximized ? _restoreButton : _maximizeButton);
                 }
@@ -1187,19 +1187,19 @@ namespace Fluence.Wpf.Controls
                     return new IntPtr(result);
                 }
             }
-            else if (msg == NativeConstants.WM_NCMOUSELEAVE)
+            else if (msg == PInvoke.WM_NCMOUSELEAVE)
             {
                 ClearSnapHover();
             }
-            else if (msg == NativeConstants.WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE && !IsMoveable)
+            else if (msg == PInvoke.WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0L) == PInvoke.SC_MOVE && !IsMoveable)
             {
                 handled = true;
             }
-            else if (msg == NativeConstants.WM_GETMINMAXINFO)
+            else if (msg == PInvoke.WM_GETMINMAXINFO)
             {
                 HandleGetMinMaxInfo(hwnd, lParam, ref handled);
             }
-            else if (msg == NativeConstants.WM_NCLBUTTONUP && wParam.ToInt32() == NativeConstants.HTMAXBUTTON)
+            else if (msg == PInvoke.WM_NCLBUTTONUP && wParam.ToInt32() == PInvoke.HTMAXBUTTON)
             {
                 HandleMaxButtonClick(ref handled);
             }
@@ -1333,14 +1333,14 @@ namespace Fluence.Wpf.Controls
         /// unless it is over interactive content or the window is not moveable.
         /// </summary>
         /// <param name="lParam">The message parameter containing the screen-space point.</param>
-        private int HitTestTitleBar(IntPtr lParam)
+        private uint HitTestTitleBar(IntPtr lParam)
         {
             long lParamValue = lParam.ToInt64();
             int x = unchecked((short)(lParamValue & 0xFFFF));
             int y = unchecked((short)((lParamValue >> 16) & 0xFFFF));
             Point point = PointFromScreen(new(x, y));
 
-            if (TryGetTopResizeHit(point, out int resizeHit))
+            if (TryGetTopResizeHit(point, out uint resizeHit))
             {
                 return resizeHit;
             }
@@ -1363,13 +1363,13 @@ namespace Fluence.Wpf.Controls
                 _maximizeButton.IsEnabled &&
                 IsOverElement(_maximizeButton, point))
             {
-                return shouldExposeSnapFlyout ? NativeConstants.HTMAXBUTTON : 0;
+                return shouldExposeSnapFlyout ? PInvoke.HTMAXBUTTON : 0;
             }
             if (_restoreButton?.Visibility is Visibility.Visible &&
                 _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
             {
-                return shouldExposeSnapFlyout ? NativeConstants.HTMAXBUTTON : 0;
+                return shouldExposeSnapFlyout ? PInvoke.HTMAXBUTTON : 0;
             }
 
             // Minimize and close: return 0 so hit falls through to client area; WPF Button + Command fire.
@@ -1390,7 +1390,7 @@ namespace Fluence.Wpf.Controls
             // (&&) skips the InputHitTest tree-walk that WM_NCHITTEST would otherwise run on every
             // mouse move.
             bool overInteractiveContent = (TitleBar is not null || ExtendsContentIntoTitleBar) && IsOverInteractiveContent(point);
-            return !overInteractiveContent && IsMoveable ? NativeConstants.HTCAPTION : 0;
+            return !overInteractiveContent && IsMoveable ? PInvoke.HTCAPTION : 0;
         }
 
         /// <summary>
@@ -1401,7 +1401,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="point">The point to test, in window coordinates.</param>
         /// <param name="hit">The resulting resize hit, if any.</param>
         /// <returns><see langword="true"/> if the point falls in the top resize band; otherwise, <see langword="false"/>.</returns>
-        private bool TryGetTopResizeHit(Point point, out int hit)
+        private bool TryGetTopResizeHit(Point point, out uint hit)
         {
             hit = 0;
             if (WindowState is WindowState.Maximized ||
@@ -1419,10 +1419,10 @@ namespace Fluence.Wpf.Controls
             double leftCornerWidth = Math.Max(resizeBorder.Left, resizeBorder.Top);
             double rightCornerWidth = Math.Max(resizeBorder.Right, resizeBorder.Top);
             hit = point.X <= leftCornerWidth
-                ? NativeConstants.HTTOPLEFT
+                ? PInvoke.HTTOPLEFT
                 : point.X >= ActualWidth - rightCornerWidth
-                    ? NativeConstants.HTTOPRIGHT
-                    : NativeConstants.HTTOP;
+                    ? PInvoke.HTTOPRIGHT
+                    : PInvoke.HTTOP;
 
             return true;
         }

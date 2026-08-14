@@ -38,6 +38,7 @@ using System.Windows.Shell;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Native;
+using Windows.Win32;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Xunit;
@@ -130,23 +131,23 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static int? InvokeHitTestTitleBar(FluenceWindow window, IntPtr lParam)
+        private static uint? InvokeHitTestTitleBar(FluenceWindow window, IntPtr lParam)
         {
             MethodInfo? method = typeof(FluenceWindow).GetMethod(
                 "HitTestTitleBar",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.NotNull(method);
-            return (int?)method.Invoke(window, [lParam]);
+            return (uint?)method.Invoke(window, [lParam]);
         }
 
-        private static IntPtr? InvokeWndProc(FluenceWindow window, int msg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private static IntPtr? InvokeWndProc(FluenceWindow window, uint msg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             MethodInfo? method = typeof(FluenceWindow).GetMethod(
                 "WndProc",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.NotNull(method);
 
-            object[] args = [IntPtr.Zero, msg, wParam, lParam, false];
+            object[] args = [IntPtr.Zero, (int)msg, wParam, lParam, false];
             IntPtr? result = (IntPtr?)method.Invoke(window, args);
             handled = (bool)args[4];
             return result;
@@ -546,9 +547,9 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(Visibility.Visible, btn.Visibility);
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
-                Assert.Equal(0, hit);
-                Assert.NotEqual(NativeConstants.HTMINBUTTON, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.Equal(0u, hit);
+                Assert.NotEqual(PInvoke.HTMINBUTTON, hit);
             });
         }
 
@@ -560,9 +561,9 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.Button btn = Assert.IsAssignableFrom<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_closeButton"));
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
-                Assert.Equal(0, hit);
-                Assert.NotEqual(NativeConstants.HTCLOSE, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.Equal(0u, hit);
+                Assert.NotEqual(PInvoke.HTCLOSE, hit);
             });
         }
 
@@ -576,8 +577,8 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(Visibility.Visible, btn.Visibility);
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
-                Assert.Equal(NativeConstants.HTMAXBUTTON, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.Equal(PInvoke.HTMAXBUTTON, hit);
             });
         }
 
@@ -593,8 +594,8 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(Visibility.Hidden, btn.Visibility);
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
-                Assert.NotEqual(NativeConstants.HTMAXBUTTON, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.NotEqual(PInvoke.HTMAXBUTTON, hit);
             });
         }
 
@@ -611,8 +612,8 @@ namespace Fluence.Wpf.Tests
                 Assert.False(btn.IsEnabled);
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
-                Assert.NotEqual(NativeConstants.HTMAXBUTTON, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.NotEqual(PInvoke.HTMAXBUTTON, hit);
             });
         }
 
@@ -624,8 +625,8 @@ namespace Fluence.Wpf.Tests
                 w.UpdateLayout();
                 Point clientMidTitle = new(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
                 Point screen = w.PointToScreen(clientMidTitle);
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
-                Assert.Equal(NativeConstants.HTCAPTION, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Assert.Equal(PInvoke.HTCAPTION, hit);
             });
         }
 
@@ -636,8 +637,8 @@ namespace Fluence.Wpf.Tests
             {
                 w.UpdateLayout();
                 Point screen = w.PointToScreen(new Point(w.ActualWidth / 2.0, 1.0));
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
-                Assert.Equal(NativeConstants.HTTOP, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Assert.Equal(PInvoke.HTTOP, hit);
             });
         }
 
@@ -649,12 +650,12 @@ namespace Fluence.Wpf.Tests
                 w.UpdateLayout();
 
                 Point topLeft = w.PointToScreen(new Point(1.0, 1.0));
-                int? leftHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topLeft.X, topLeft.Y));
-                Assert.Equal(NativeConstants.HTTOPLEFT, leftHit);
+                uint? leftHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topLeft.X, topLeft.Y));
+                Assert.Equal(PInvoke.HTTOPLEFT, leftHit);
 
                 Point topRight = w.PointToScreen(new Point(w.ActualWidth - 1.0, 1.0));
-                int? rightHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topRight.X, topRight.Y));
-                Assert.Equal(NativeConstants.HTTOPRIGHT, rightHit);
+                uint? rightHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topRight.X, topRight.Y));
+                Assert.Equal(PInvoke.HTTOPRIGHT, rightHit);
             });
         }
 
@@ -668,8 +669,8 @@ namespace Fluence.Wpf.Tests
 
                 Point clientMidTitle = new(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
                 Point screen = w.PointToScreen(clientMidTitle);
-                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
-                Assert.Equal(0, hit);
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Assert.Equal(0u, hit);
             });
         }
 
@@ -679,11 +680,11 @@ namespace Fluence.Wpf.Tests
             return RunWithWindowAsync(static w =>
             {
                 w.IsMoveable = false;
-                _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out bool handled);
+                _ = InvokeWndProc(w, PInvoke.WM_SYSCOMMAND, new IntPtr(PInvoke.SC_MOVE), IntPtr.Zero, out bool handled);
                 Assert.True(handled, "IsMoveable=false must handle SC_MOVE.");
 
                 w.IsMoveable = true;
-                _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
+                _ = InvokeWndProc(w, PInvoke.WM_SYSCOMMAND, new IntPtr(PInvoke.SC_MOVE), IntPtr.Zero, out handled);
                 Assert.False(handled, "IsMoveable=true must leave SC_MOVE available.");
             });
         }
@@ -700,8 +701,8 @@ namespace Fluence.Wpf.Tests
 
                 _ = InvokeWndProc(
                     w,
-                    NativeConstants.WM_NCLBUTTONUP,
-                    new IntPtr(NativeConstants.HTMAXBUTTON),
+                    PInvoke.WM_NCLBUTTONUP,
+                    new IntPtr(PInvoke.HTMAXBUTTON),
                     IntPtr.Zero,
                     out bool handled);
                 await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
@@ -714,8 +715,8 @@ namespace Fluence.Wpf.Tests
 
                 _ = InvokeWndProc(
                     w,
-                    NativeConstants.WM_NCLBUTTONUP,
-                    new IntPtr(NativeConstants.HTMAXBUTTON),
+                    PInvoke.WM_NCLBUTTONUP,
+                    new IntPtr(PInvoke.HTMAXBUTTON),
                     IntPtr.Zero,
                     out handled);
                 await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
