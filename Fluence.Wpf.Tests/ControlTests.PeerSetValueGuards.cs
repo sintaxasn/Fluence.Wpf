@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Tests
     /// Task-A2 tests: automation peer SetValue implementations reject writes to a
     /// disabled control by throwing <see cref="ElementNotEnabledException"/>, matching
     /// the UIA IValueProvider/IRangeValueProvider contract already honored by
-    /// <see cref="Fluence.Wpf.Automation.RatingControlAutomationPeer"/>.
+    /// <see cref="Automation.RatingControlAutomationPeer"/>.
     /// </summary>
     public partial class ControlTests
     {

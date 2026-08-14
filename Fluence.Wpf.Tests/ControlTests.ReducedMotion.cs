@@ -380,9 +380,9 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    System.Threading.Tasks.Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
-                            () => FindVisualChildByName<System.Windows.Controls.Primitives.ButtonBase>(dialog, "PART_CloseButton") is not null).ConfigureAwait(true),
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_CloseButton") is not null).ConfigureAwait(true),
                         "The dialog template must apply before Hide is called.");
 
                     dialog.Hide();
@@ -420,7 +420,7 @@ namespace Fluence.Wpf.Tests
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.ComboBox combo = new() { Width = 240 };
-                _ = combo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
                 try
                 {
                     window.Content = combo;
@@ -431,8 +431,8 @@ namespace Fluence.Wpf.Tests
                     combo.IsDropDownOpen = true;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.Border border =
-                        Assert.IsType<System.Windows.Controls.Border>(combo.Template.FindName("PART_DropdownBorder", combo));
+                    Border border =
+                        Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
                     TranslateTransform translate = Assert.IsType<TranslateTransform>(border.RenderTransform);
 
                     Assert.Equal(0.0, translate.Y, 0.001);

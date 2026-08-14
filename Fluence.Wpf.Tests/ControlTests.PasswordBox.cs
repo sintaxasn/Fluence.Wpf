@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(box);
-                    _ = Assert.IsAssignableFrom<Fluence.Wpf.Automation.PasswordBoxAutomationPeer>(peer);
+                    _ = Assert.IsAssignableFrom<Automation.PasswordBoxAutomationPeer>(peer);
                     Assert.Equal(AutomationControlType.Edit, peer.GetAutomationControlType());
                     Assert.True(peer.IsPassword(),
                         "PasswordBox peer must report IsPassword=true so Narrator suppresses reading the value aloud.");
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                     _ = box.ApplyTemplate();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.PasswordBox inner = box.Template.FindName("PART_PasswordBox", box) as System.Windows.Controls.PasswordBox
+                    PasswordBox inner = box.Template.FindName("PART_PasswordBox", box) as PasswordBox
                         ?? throw new Xunit.Sdk.XunitException("The inner PART_PasswordBox must be present in the template.");
                     Assert.Equal("Enter your password", AutomationProperties.GetName(inner), StringComparer.Ordinal);
                 }
