@@ -27,6 +27,7 @@
  */
 
 using System.Windows.Media;
+using Windows.Win32.Graphics.Dwm;
 
 namespace Fluence.Wpf.Helpers
 {
@@ -48,7 +49,7 @@ namespace Fluence.Wpf.Helpers
         bool useTransparentBackground,
         Color backgroundColor,
         int captionColor,
-        int? systemBackdropType,
+        DWM_SYSTEMBACKDROP_TYPE? systemBackdropType,
         bool useLegacyMicaEffect,
         bool useImmersiveDarkMode)
     {
@@ -91,7 +92,7 @@ namespace Fluence.Wpf.Helpers
         /// <see langword="null"/> when the OS does not expose that attribute (pre-22H2 or
         /// Windows 10). A <see langword="null"/> value must not be written to DWM.
         /// </summary>
-        internal int? SystemBackdropType { get; private set; } = systemBackdropType;
+        internal DWM_SYSTEMBACKDROP_TYPE? SystemBackdropType { get; private set; } = systemBackdropType;
 
         /// <summary>
         /// Gets a value indicating whether the legacy 21H2 Mica effect

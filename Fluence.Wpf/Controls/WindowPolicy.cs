@@ -31,6 +31,7 @@ using Fluence.Wpf.Native;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shell;
+using Windows.Win32.Graphics.Dwm;
 
 namespace Fluence.Wpf.Controls
 {
@@ -273,7 +274,7 @@ namespace Fluence.Wpf.Controls
         ///   <item>
         ///     <c>None</c> effective backdrop gets a solid fallback background and
         ///     <see cref="NativeConstants.DWMWA_COLOR_DEFAULT"/> for the caption. On 22H2+ the plan
-        ///     emits <see cref="NativeConstants.DWMSBT_NONE"/> to explicitly clear any previous Mica
+        ///     emits DWMSBT_NONE to explicitly clear any previous Mica
         ///     or Acrylic; on Windows 10 no <c>DWMWA_SYSTEMBACKDROP_TYPE</c> write is attempted.
         ///   </item>
         ///   <item>
@@ -306,8 +307,8 @@ namespace Fluence.Wpf.Controls
             // None path: solid background, default caption color, explicit DWMSBT_NONE on 22H2+.
             if (effectiveBackdrop is BackdropType.None)
             {
-                int? clearedSystemBackdrop = capabilities.SupportsSystemBackdropType
-                    ? NativeConstants.DWMSBT_NONE
+                DWM_SYSTEMBACKDROP_TYPE? clearedSystemBackdrop = capabilities.SupportsSystemBackdropType
+                    ? DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE
                     : null;
 
                 return new BackdropPlan(
@@ -376,14 +377,14 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <param name="backdropType">The effective backdrop type after capability resolution.</param>
         /// <returns>The <c>DWMSBT_*</c> constant for the system backdrop.</returns>
-        private static int MapSystemBackdropType(BackdropType backdropType)
+        private static DWM_SYSTEMBACKDROP_TYPE MapSystemBackdropType(BackdropType backdropType)
         {
             return backdropType switch
             {
-                BackdropType.Acrylic => NativeConstants.DWMSBT_TRANSIENTWINDOW,
-                BackdropType.Tabbed => NativeConstants.DWMSBT_TABBEDWINDOW,
+                BackdropType.Acrylic => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW,
+                BackdropType.Tabbed => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TABBEDWINDOW,
                 BackdropType.Mica or BackdropType.Auto or BackdropType.None or _ =>
-                    NativeConstants.DWMSBT_MAINWINDOW,
+                    DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW,
             };
         }
     }

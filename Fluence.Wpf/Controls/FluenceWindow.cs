@@ -41,6 +41,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
@@ -845,7 +846,7 @@ namespace Fluence.Wpf.Controls
             {
                 _ = NativeMethods.SetSystemBackdropType(
                     _handle,
-                    plan.SystemBackdropType ?? NativeConstants.DWMSBT_AUTO);
+                    plan.SystemBackdropType ?? DWM_SYSTEMBACKDROP_TYPE.DWMSBT_AUTO);
             }
             if (capabilities.SupportsMicaEffect)
             {

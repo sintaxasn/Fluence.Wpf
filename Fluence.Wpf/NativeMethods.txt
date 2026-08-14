@@ -1,4 +1,5 @@
-﻿DwmExtendFrameIntoClientArea
+﻿DWM_SYSTEMBACKDROP_TYPE
+DwmExtendFrameIntoClientArea
 DwmGetWindowAttribute
 DwmIsCompositionEnabled
 DwmSetWindowAttribute

@@ -33,6 +33,7 @@ using System.Windows.Shell;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
+using Windows.Win32.Graphics.Dwm;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
@@ -213,7 +214,7 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(NativeConstants.DWMWA_COLOR_DEFAULT, plan.CaptionColor);
             Assert.True(plan.SystemBackdropType is not null,
                 "On 22H2 DWM exposes DWMWA_SYSTEMBACKDROP_TYPE - None must emit DWMSBT_NONE to explicitly clear Mica/Acrylic.");
-            Assert.Equal(NativeConstants.DWMSBT_NONE, plan.SystemBackdropType.Value);
+            Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType.Value);
             Assert.False(plan.UseLegacyMicaEffect);
         }
 
@@ -266,7 +267,7 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
             Assert.True(plan.UseTransparentBackground);
             Assert.True(plan.SystemBackdropType is not null);
-            Assert.Equal(NativeConstants.DWMSBT_MAINWINDOW, plan.SystemBackdropType.Value);
+            Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW, plan.SystemBackdropType.Value);
             Assert.False(plan.UseLegacyMicaEffect,
                 "22H2 must use the canonical DWMWA_SYSTEMBACKDROP_TYPE path, not the legacy Mica attribute.");
         }
@@ -285,7 +286,7 @@ namespace Fluence.Wpf.Tests
                 Colors.White);
 
             Assert.Equal(BackdropType.Acrylic, plan.EffectiveBackdrop);
-            Assert.Equal(NativeConstants.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType);
+            Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType);
         }
 
         [Fact]
@@ -298,7 +299,7 @@ namespace Fluence.Wpf.Tests
                 Colors.White);
 
             Assert.Equal(BackdropType.Tabbed, plan.EffectiveBackdrop);
-            Assert.Equal(NativeConstants.DWMSBT_TABBEDWINDOW, plan.SystemBackdropType);
+            Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TABBEDWINDOW, plan.SystemBackdropType);
         }
 
         #endregion BuildBackdropPlan - Acrylic + Tabbed (SystemBackdropType mapping)

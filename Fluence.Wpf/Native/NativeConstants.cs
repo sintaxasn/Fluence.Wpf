@@ -36,35 +36,6 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // ---------------------------------------------------------------------
-        // DWM system backdrop types (DWM_SYSTEMBACKDROP_TYPE).
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// Let DWM pick the backdrop automatically.
-        /// </summary>
-        public const int DWMSBT_AUTO = 0;
-
-        /// <summary>
-        /// No system backdrop.
-        /// </summary>
-        public const int DWMSBT_NONE = 1;
-
-        /// <summary>
-        /// Main-window backdrop (Mica).
-        /// </summary>
-        public const int DWMSBT_MAINWINDOW = 2;
-
-        /// <summary>
-        /// Transient-window backdrop (Acrylic).
-        /// </summary>
-        public const int DWMSBT_TRANSIENTWINDOW = 3;
-
-        /// <summary>
-        /// Tabbed-window backdrop (Mica Alt).
-        /// </summary>
-        public const int DWMSBT_TABBEDWINDOW = 4;
-
-        // ---------------------------------------------------------------------
         // DWM window corner preferences (DWM_WINDOW_CORNER_PREFERENCE).
         // ---------------------------------------------------------------------
 

@@ -174,9 +174,9 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         /// <param name="backdropType">The <c>DWMSBT_*</c> value.</param>
         /// <returns><see langword="true"/> on success.</returns>
-        public static bool SetSystemBackdropType(IntPtr hwnd, int backdropType)
+        public static bool SetSystemBackdropType(IntPtr hwnd, DWM_SYSTEMBACKDROP_TYPE backdropType)
         {
-            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, backdropType);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
         }
 
         /// <summary>
