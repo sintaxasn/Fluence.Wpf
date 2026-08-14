@@ -83,7 +83,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -473,7 +473,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Button primary = GetPrimaryButtonPart(button);
                     ToggleButton secondary = GetSecondaryButtonPart(button);
-                    Style focusVisualStyle = Assert.IsType<Style>(application?.TryFindResource("DefaultControlFocusVisualStyle"));
+                    Style focusVisualStyle = Assert.IsType<Style>(application.TryFindResource("DefaultControlFocusVisualStyle"));
 
                     Assert.Same(focusVisualStyle, primary.FocusVisualStyle);
                     Assert.Same(focusVisualStyle, secondary.FocusVisualStyle);
