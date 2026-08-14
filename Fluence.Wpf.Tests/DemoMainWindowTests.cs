@@ -638,8 +638,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, internalBack.Visibility);
                     Assert.Null(internalToggle);
 
-                    NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
-                    Assert.NotNull(firstItem);
+                    NavigationViewItem firstItem = Assert.IsType<NavigationViewItem>(nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null);
                     Assert.Equal(Visibility.Visible, firstItem.Visibility);
                 }
                 finally
