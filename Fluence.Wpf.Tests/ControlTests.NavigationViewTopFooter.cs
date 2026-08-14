@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
@@ -36,9 +37,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void NavigationView_TopFooterIndicator_CentersUnderFooterItem()
+        public Task NavigationView_TopFooterIndicator_CentersUnderFooterItemAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -52,7 +53,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     nav.SelectFooterMenuItem(footer);
-                    _ = WaitUntil(window.Dispatcher, 600, () => (nav.GetFooterSelectionIndicatorForTesting()?.Opacity ?? 0.0) >= 0.9);
+                    _ = await WaitUntilAsync(window.Dispatcher, 600, () => (nav.GetFooterSelectionIndicatorForTesting()?.Opacity ?? 0.0) >= 0.9).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     FrameworkElement footerIndicator = nav.GetFooterSelectionIndicatorForTesting()
@@ -84,9 +85,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopFooterItem_RendersIconOnly()
+        public Task NavigationView_TopFooterItem_RendersIconOnlyAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -120,9 +121,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopFooterItem_KeepsLabel_InLeft()
+        public Task NavigationView_TopFooterItem_KeepsLabel_InLeftAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -152,9 +153,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMainItem_KeepsLabel()
+        public Task NavigationView_TopMainItem_KeepsLabelAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -186,9 +187,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopFooterIndicator_AnimatesOnSelection()
+        public Task NavigationView_TopFooterIndicator_AnimatesOnSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -211,7 +212,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(footerIndicator.HasAnimatedProperties,
                         "Selecting a footer item in Top mode should animate the indicator in, not snap it to full opacity.");
 
-                    bool shown = WaitUntil(window.Dispatcher, 600, () => footerIndicator.Opacity >= 0.9);
+                    bool shown = await WaitUntilAsync(window.Dispatcher, 600, () => footerIndicator.Opacity >= 0.9).ConfigureAwait(true);
                     Assert.True(shown, "The footer indicator should reach full opacity after the fade-in completes.");
 
                     // Navigating away (exiting Settings) should animate the indicator back out.
@@ -220,7 +221,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(footerIndicator.HasAnimatedProperties,
                         "Leaving the footer item should animate the indicator out, not hide it instantly.");
 
-                    bool hidden = WaitUntil(window.Dispatcher, 600, () => footerIndicator.Opacity <= 0.1);
+                    bool hidden = await WaitUntilAsync(window.Dispatcher, 600, () => footerIndicator.Opacity <= 0.1).ConfigureAwait(true);
                     Assert.True(hidden, "The footer indicator should fade to hidden after the footer item is deselected.");
                 }
                 finally

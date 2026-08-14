@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -50,9 +51,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void ColorPicker_DefaultStyle_AppliesTemplateParts()
+        public Task ColorPicker_DefaultStyle_AppliesTemplatePartsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -97,9 +98,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SpectrumBitmap_IsGenerated256x256AfterTemplateApply()
+        public Task ColorPicker_SpectrumBitmap_IsGenerated256x256AfterTemplateApplyAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -129,9 +130,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SetColor_RaisesColorChangedAndUpdatesHexText()
+        public Task ColorPicker_SetColor_RaisesColorChangedAndUpdatesHexTextAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -176,9 +177,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_HexEntry_CommitsOnEnterAndInvalidInputReverts()
+        public Task ColorPicker_HexEntry_CommitsOnEnterAndInvalidInputRevertsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -236,9 +237,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_HueSlider_UpdatesColorAtFullSaturationAndValue()
+        public Task ColorPicker_HueSlider_UpdatesColorAtFullSaturationAndValueAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -279,9 +280,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_AlphaSlider_CollapsedByDefaultAndFunctionalWhenEnabled()
+        public Task ColorPicker_AlphaSlider_CollapsedByDefaultAndFunctionalWhenEnabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -330,9 +331,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SpectrumPoint_UpdatesSaturationAndValuePreservingHue()
+        public Task ColorPicker_SpectrumPoint_UpdatesSaturationAndValuePreservingHueAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -385,9 +386,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_PreviousColor_TogglesPreviousSwatch()
+        public Task ColorPicker_PreviousColor_TogglesPreviousSwatchAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -431,9 +432,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_AutomationPeer_ReportsClassTypeAndHexName()
+        public Task ColorPicker_AutomationPeer_ReportsClassTypeAndHexNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -470,9 +471,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SurfaceBrushes_ResolveAfterThemeCycle()
+        public Task ColorPicker_SurfaceBrushes_ResolveAfterThemeCycleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -488,9 +489,9 @@ namespace Fluence.Wpf.Tests
 
         // Boilerplate runner for the option-surface tests: constructs the picker on the
         // STA thread, shows it, asserts the template applied, and hands both to verify.
-        private static void RunColorPickerOptionTest(Func<Controls.ColorPicker> createPicker, Action<Controls.ColorPicker, ControlTemplate, Window> verify)
+        private static Task RunColorPickerOptionTestAsync(Func<Controls.ColorPicker> createPicker, Action<Controls.ColorPicker, ControlTemplate, Window> verify)
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -530,9 +531,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_OptionSurfaceDefaults_MatchWinUi()
+        public Task ColorPicker_OptionSurfaceDefaults_MatchWinUiAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, _, _) =>
                 {
@@ -546,9 +547,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_IsColorPreviewVisible_TogglesSwatchSection()
+        public Task ColorPicker_IsColorPreviewVisible_TogglesSwatchSectionAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -566,9 +567,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_IsColorSliderVisible_TogglesHueSection()
+        public Task ColorPicker_IsColorSliderVisible_TogglesHueSectionAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -586,9 +587,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_IsHexInputVisible_TogglesHexTextBoxOnly()
+        public Task ColorPicker_IsHexInputVisible_TogglesHexTextBoxOnlyAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -606,9 +607,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_AlphaVisibilityFlags_AndWithIsAlphaEnabled()
+        public Task ColorPicker_AlphaVisibilityFlags_AndWithIsAlphaEnabledAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { IsAlphaEnabled = true },
                 (picker, template, window) =>
                 {
@@ -638,9 +639,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_MoreButton_DefaultCollapsedWithTextEntryVisible()
+        public Task ColorPicker_MoreButton_DefaultCollapsedWithTextEntryVisibleAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, _) =>
                 {
@@ -653,9 +654,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_MoreButton_TogglesTextEntryGridAndLabel()
+        public Task ColorPicker_MoreButton_TogglesTextEntryGridAndLabelAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { IsMoreButtonVisible = true },
                 (picker, template, window) =>
                 {
@@ -682,9 +683,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_ColorRepresentationComboBox_SwapsRgbAndHsvPanels()
+        public Task ColorPicker_ColorRepresentationComboBox_SwapsRgbAndHsvPanelsAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -705,9 +706,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_RgbTextEntry_CommitsLivePreservingExactRgb()
+        public Task ColorPicker_RgbTextEntry_CommitsLivePreservingExactRgbAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -728,9 +729,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_HsvTextEntry_GoesThroughHsvModelWithoutQuantizingSiblings()
+        public Task ColorPicker_HsvTextEntry_GoesThroughHsvModelWithoutQuantizingSiblingsAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -759,9 +760,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_ChannelTextEntry_InvalidInputRestoredOnEnter()
+        public Task ColorPicker_ChannelTextEntry_InvalidInputRestoredOnEnterAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -780,9 +781,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_AlphaTextEntry_ParsesPercentAndNormalizes()
+        public Task ColorPicker_AlphaTextEntry_ParsesPercentAndNormalizesAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { IsAlphaEnabled = true },
                 (picker, template, window) =>
                 {
@@ -813,9 +814,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_IsColorChannelTextInputVisible_CollapsesChannelPanelNotHexOrAlpha()
+        public Task ColorPicker_IsColorChannelTextInputVisible_CollapsesChannelPanelNotHexOrAlphaAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { IsAlphaEnabled = true },
                 (picker, template, window) =>
                 {
@@ -836,9 +837,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_HexMaxLength_TracksIsAlphaEnabled()
+        public Task ColorPicker_HexMaxLength_TracksIsAlphaEnabledAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, window) =>
                 {
@@ -854,9 +855,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SpectrumArea_IsFocusableTabStop()
+        public Task ColorPicker_SpectrumArea_IsFocusableTabStopAsync()
         {
-            RunColorPickerOptionTest(
+            return RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker(),
                 (picker, template, _) =>
                 {
@@ -875,11 +876,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ColorPicker_SpectrumKeyboard_RightKeyIncreasesSaturation()
+        public async Task ColorPicker_SpectrumKeyboard_RightKeyIncreasesSaturationAsync()
         {
             // Start with a mid-saturation color: FromRgb(128, 64, 64) has saturation ~0.5
             // (Max=128, Min=64, S=(128-64)/128=0.5) so pressing Right has room to increase it.
-            RunColorPickerOptionTest(
+            await RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { Color = Color.FromRgb(0x80, 0x40, 0x40) },
                 (picker, template, window) =>
                 {
@@ -905,14 +906,14 @@ namespace Fluence.Wpf.Tests
                     Assert.True(
                         colorAfter.R >= colorBefore.R,
                         "Pressing Right on the spectrum must increase saturation, brightening the hue channel.");
-                });
+                }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void ColorPicker_SpectrumKeyboard_UpKeyIncreasesValue()
+        public async Task ColorPicker_SpectrumKeyboard_UpKeyIncreasesValueAsync()
         {
             // Start dark so Value (brightness) has room to increase.
-            RunColorPickerOptionTest(
+            await RunColorPickerOptionTestAsync(
                 () => new Controls.ColorPicker { Color = Color.FromRgb(0x40, 0x20, 0x00) },
                 (picker, template, window) =>
                 {
@@ -938,7 +939,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(
                         colorAfter.R > colorBefore.R || colorAfter.G > colorBefore.G || colorAfter.B > colorBefore.B,
                         "Pressing Up on the spectrum must increase Value, making channels brighter.");
-                });
+                }).ConfigureAwait(true);
         }
     }
 }

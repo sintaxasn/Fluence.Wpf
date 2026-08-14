@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -66,9 +67,9 @@ namespace Fluence.Wpf.Tests
         ];
 
         [Fact]
-        public void MainWindow_DirectNavigation_LoadsConcretePages()
+        public Task MainWindow_DirectNavigation_LoadsConcretePagesAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -96,9 +97,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_InitialSelection_LoadsHomePageContent()
+        public Task MainWindow_InitialSelection_LoadsHomePageContentAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -119,9 +120,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryHomePage_HeroSwapsHeaderLockupWithTheme()
+        public Task GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryHomePage page = new();
@@ -166,15 +167,15 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryHomePage_UsesHeaderLockupHeroAndGitHubLink()
+        public async Task GalleryHomePage_UsesHeaderLockupHeroAndGitHubLinkAsync()
         {
-            string homePage = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryHomePage.xaml");
+            string homePage = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", "GalleryHomePage.xaml").ConfigureAwait(true);
             Assert.Contains("FluenceHeaderLightDrawingImage", homePage, StringComparison.Ordinal);
             Assert.Contains("https://github.com/sintaxasn/fluence.wpf", homePage, StringComparison.Ordinal);
         }
 
         [Fact]
-        public void Library_EmbedsXamlBrandIcons_AndDemosSetBrandApplicationIcon()
+        public async Task Library_EmbedsXamlBrandIcons_AndDemosSetBrandApplicationIconAsync()
         {
             // The Fluence brand icon ships as resolution-independent vector DrawingImages in
             // Fluence.Wpf\Themes\Icons\FluenceIcons.xaml (merged into Generic.xaml), replacing the
@@ -182,44 +183,44 @@ namespace Fluence.Wpf.Tests
             // FluenceWindow rasterizes the brand vector for its default Window.Icon, so neither demo
             // sets Icon= in XAML (both inherit the embedded default at runtime). The demo executables
             // do set ApplicationIcon to the brand .ico so the .exe file icon in Explorer is the brand mark.
-            string libraryProject = ReadRepositoryFile("Fluence.Wpf", "Fluence.Wpf.csproj");
+            string libraryProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Fluence.Wpf.csproj").ConfigureAwait(true);
             Assert.False(libraryProject.Contains("Fluence.ico", StringComparison.Ordinal),
                 "The library should no longer embed assets\\Fluence.ico now that the brand icon is a XAML vector.");
             Assert.Contains("<PackageIcon>Fluence_Icon_Light_128.png</PackageIcon>", libraryProject, StringComparison.Ordinal);
 
             // The three brand DrawingImages live in a dedicated icon dictionary that is merged into
             // Generic.xaml so the keys resolve from application resources.
-            Assert.True(File.Exists(GetRepositoryFilePath("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml")),
+            Assert.True(File.Exists(DemoTestHost.GetRepositoryFilePath("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml")),
                 "The brand icon dictionary should exist at Fluence.Wpf\\Themes\\Icons\\FluenceIcons.xaml.");
-            string iconDictionary = ReadRepositoryFile("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml");
+            string iconDictionary = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml").ConfigureAwait(true);
             Assert.Contains("FluenceIconBrandDrawingImage", iconDictionary, StringComparison.Ordinal);
             Assert.Contains("FluenceIconLightDrawingImage", iconDictionary, StringComparison.Ordinal);
             Assert.Contains("FluenceIconDarkDrawingImage", iconDictionary, StringComparison.Ordinal);
-            Assert.Contains("Themes/Icons/FluenceIcons.xaml", ReadRepositoryFile("Fluence.Wpf", "Themes", "Generic.xaml"), StringComparison.Ordinal);
+            Assert.Contains("Themes/Icons/FluenceIcons.xaml", await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Themes", "Generic.xaml").ConfigureAwait(true), StringComparison.Ordinal);
 
             // Both demo executables set their ApplicationIcon to the Fluence brand .ico so the .exe
             // shows the brand mark in Explorer and on a pre-launch taskbar pin.
-            string galleryProject = ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj");
+            string galleryProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj").ConfigureAwait(true);
             Assert.Contains("<ApplicationIcon>", galleryProject, StringComparison.Ordinal);
             Assert.Contains("Fluence_Icon_Light.ico", galleryProject, StringComparison.Ordinal);
-            string mvvmProject = ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj");
+            string mvvmProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj").ConfigureAwait(true);
             Assert.Contains("<ApplicationIcon>", mvvmProject, StringComparison.Ordinal);
             Assert.Contains("Fluence_Icon_Light.ico", mvvmProject, StringComparison.Ordinal);
 
-            Assert.False(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
+            Assert.False((await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "MainWindow.xaml").ConfigureAwait(true)).Contains("Icon=\"", StringComparison.Ordinal),
                 "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
-            Assert.False(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
+            Assert.False((await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").ConfigureAwait(true)).Contains("Icon=\"", StringComparison.Ordinal),
                 "The MVVM demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
 
             // The retired .ico is gone from the tree.
-            Assert.False(File.Exists(GetRepositoryFilePath("assets", "Fluence.ico")),
+            Assert.False(File.Exists(DemoTestHost.GetRepositoryFilePath("assets", "Fluence.ico")),
                 "assets\\Fluence.ico should be deleted once the XAML vector icons replace it.");
         }
 
         [Fact]
-        public void MainWindow_Search_NavigatesToGroupedConcretePage()
+        public Task MainWindow_Search_NavigatesToGroupedConcretePageAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -255,9 +256,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_BackRequested_WalksVisitedPagesInOrder()
+        public Task MainWindow_BackRequested_WalksVisitedPagesInOrderAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -312,9 +313,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryPages_UseSharedWinUiGalleryPageLayout()
+        public Task GalleryPages_UseSharedWinUiGalleryPageLayoutAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 Style scrollStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageScrollViewerStyle"));
@@ -382,9 +383,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_TitleBarSearch_StaysVisibleWhenContentExtendsIntoTitleBar()
+        public Task MainWindow_TitleBarSearch_StaysVisibleWhenContentExtendsIntoTitleBarAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -407,9 +408,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_TitleBarSearch_IsCenteredInWindow()
+        public Task MainWindow_TitleBarSearch_IsCenteredInWindowAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -450,9 +451,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChrome()
+        public Task MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChromeAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -509,9 +510,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_FirstGlyphTracksBackAvailability()
+        public Task MainWindow_ExtendedTitleBar_FirstGlyphTracksBackAvailabilityAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -556,9 +557,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_KeepsNavigationItemsBelowTitleBar()
+        public Task MainWindow_ExtendedTitleBar_KeepsNavigationItemsBelowTitleBarAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -591,9 +592,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_TopPane_UsesNonExtendedTitleBarWithoutPaneToggleChrome()
+        public Task MainWindow_TopPane_UsesNonExtendedTitleBarWithoutPaneToggleChromeAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -651,9 +652,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_SettingsFooter_NavigatesToSelectableSettingsPage()
+        public Task MainWindow_SettingsFooter_NavigatesToSelectableSettingsPageAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -684,9 +685,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_SettingsFooter_CollapsesLabelWhenPaneClosed()
+        public Task MainWindow_SettingsFooter_CollapsesLabelWhenPaneClosedAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -722,9 +723,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_SettingsFooter_DoesNotForceTopPaneModeWhenOpened()
+        public Task MainWindow_SettingsFooter_DoesNotForceTopPaneModeWhenOpenedAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -762,9 +763,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_NavigationStyleCombo_TracksExternalIsPaneOpenChanges()
+        public Task GallerySettingsPage_NavigationStyleCombo_TracksExternalIsPaneOpenChangesAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -805,9 +806,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_TopPane_OverflowButtonDoesNotOverlapTreesAtMinimumWidth()
+        public Task MainWindow_TopPane_OverflowButtonDoesNotOverlapTreesAtMinimumWidthAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -861,9 +862,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_NavigationStyleCombo_SwitchesPaneModeAndKeepsContentLive()
+        public Task GallerySettingsPage_NavigationStyleCombo_SwitchesPaneModeAndKeepsContentLiveAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -914,9 +915,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggle()
+        public Task GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggleAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(async static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -961,7 +962,7 @@ namespace Fluence.Wpf.Tests
                         "Clicking the shell pane toggle should collapse the Left pane.");
                     Assert.Equal(2, navigationStyle.SelectedIndex);
 
-                    WaitForAnimationAndDrain(window.Dispatcher, 220);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 220).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -984,9 +985,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryNavigationPage_CompactSamplePaneToggleOpensPane()
+        public Task GalleryNavigationPage_CompactSamplePaneToggleOpensPaneAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryNavigationPage page = new();
@@ -1025,9 +1026,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_TrimsTitleToSearchClearance()
+        public Task MainWindow_ExtendedTitleBar_TrimsTitleToSearchClearanceAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1064,9 +1065,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_HidesTitleTextWhenItOverlapsSearch()
+        public Task MainWindow_ExtendedTitleBar_HidesTitleTextWhenItOverlapsSearchAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1108,9 +1109,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_DoesNotLetTitleOverlapSearchAtMinimumWidth()
+        public Task MainWindow_ExtendedTitleBar_DoesNotLetTitleOverlapSearchAtMinimumWidthAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1152,9 +1153,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_ExtendedTitleBar_RestoresTitleTextWhenSearchHasRoom()
+        public Task MainWindow_ExtendedTitleBar_RestoresTitleTextWhenSearchHasRoomAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1207,9 +1208,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_TitleBarSearch_DoesNotShiftWhenChromeOptionsChange()
+        public Task MainWindow_TitleBarSearch_DoesNotShiftWhenChromeOptionsChangeAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1244,9 +1245,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSampleControl_ExpanderUsesInMemorySourceTabs()
+        public Task DemoSampleControl_ExpanderUsesInMemorySourceTabsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1286,9 +1287,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSampleControl_SourceRendererPreservesIndentation()
+        public Task DemoSampleControl_SourceRendererPreservesIndentationAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1322,9 +1323,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTab()
+        public Task DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTabAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 DemoSampleControl sample = new()
@@ -1353,9 +1354,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MainWindow_NonHomePagesExposeInlineSourceSamples()
+        public Task MainWindow_NonHomePagesExposeInlineSourceSamplesAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -1391,9 +1392,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryStatusPage_DeterminateProgressRingUsesNumberBoxBinding()
+        public Task GalleryStatusPage_DeterminateProgressRingUsesNumberBoxBindingAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1422,9 +1423,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryStatusPage_ProgressBarValueAllowsZero()
+        public Task GalleryStatusPage_ProgressBarValueAllowsZeroAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1458,9 +1459,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryStatusPage_SourceMatchesLiveStepAndRingValues()
+        public Task GalleryStatusPage_SourceMatchesLiveStepAndRingValuesAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1498,9 +1499,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryStatusPage_StepProgressBarAnimatesEdgeClicks()
+        public Task GalleryStatusPage_StepProgressBarAnimatesEdgeClicksAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(async static delegate
             {
                 EnsureTheme();
                 GalleryStatusPage page = new();
@@ -1516,18 +1517,18 @@ namespace Fluence.Wpf.Tests
                     Controls.Button nextButton = Assert.IsAssignableFrom<Controls.Button>(FindStepButton(page, "Next"));
 
                     backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
-                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
 
-                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 1, forward: true);
-                    WaitForAnimationAndDrain(window.Dispatcher, 340);
-                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 2, forward: true);
-                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+                    await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 1, forward: true).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 2, forward: true).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
 
                     progressBar.CurrentStep = 9;
-                    WaitForAnimationAndDrain(window.Dispatcher, 340);
-                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 10, forward: true);
-                    WaitForAnimationAndDrain(window.Dispatcher, 340);
-                    AssertStepClickStartsAwayFromTarget(backButton, progressBar, fill, track, window.Dispatcher, 9, forward: false);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 10, forward: true).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await AssertStepClickStartsAwayFromTargetAsync(backButton, progressBar, fill, track, window.Dispatcher, 9, forward: false).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -1537,9 +1538,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryNavigationPage_CompactSourceMatchesLiveInteraction()
+        public Task GalleryNavigationPage_CompactSourceMatchesLiveInteractionAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryNavigationPage page = new();
@@ -1567,9 +1568,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryTabsPage_TabViewContentUsesLayerFillSurface()
+        public Task GalleryTabsPage_TabViewContentUsesLayerFillSurfaceAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryTabsPage page = new();
@@ -1607,9 +1608,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryTypographyPage_TableUsesCompactRowSpacing()
+        public Task GalleryTypographyPage_TableUsesCompactRowSpacingAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryTypographyPage page = new();
@@ -1638,9 +1639,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryTypographyPage_DirectTableKeepsCopyColumnWithoutSourceExpander()
+        public Task GalleryTypographyPage_DirectTableKeepsCopyColumnWithoutSourceExpanderAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryTypographyPage page = new();
@@ -1665,9 +1666,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControls()
+        public Task GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControlsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1705,9 +1706,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_CompactsControlsAtNarrowWidths()
+        public Task GallerySettingsPage_CompactsControlsAtNarrowWidthsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1746,9 +1747,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColors()
+        public Task GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColorsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1789,9 +1790,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySettingsPage_InvalidAccentSwatchTag_DoesNotChangeAccent()
+        public Task GallerySettingsPage_InvalidAccentSwatchTag_DoesNotChangeAccentAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GallerySettingsPage page = new();
@@ -1820,9 +1821,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryAccessibilityPage_KeyboardSamplesUseAlignedRows()
+        public Task GalleryAccessibilityPage_KeyboardSamplesUseAlignedRowsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryAccessibilityPage page = new();
@@ -1881,9 +1882,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryIconsPage_IconCatalogIsScrollableAndVirtualized()
+        public Task GalleryIconsPage_IconCatalogIsScrollableAndVirtualizedAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 EnsureTheme();
                 GalleryIconsPage page = new();
@@ -1995,22 +1996,6 @@ namespace Fluence.Wpf.Tests
             application.Resources.MergedDictionaries.Add(demoShared);
         }
 
-        private static string GetRepositoryFilePath(params string[] relativeSegments)
-        {
-            string root = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
-            string[] pathParts = new string[relativeSegments.Length + 1];
-            pathParts[0] = root;
-            Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
-            return Path.Join(pathParts);
-        }
-
-        private static string ReadRepositoryFile(params string[] relativeSegments)
-        {
-            string path = GetRepositoryFilePath(relativeSegments);
-            Assert.True(File.Exists(path), "Repository file must be readable at: " + path);
-            return File.ReadAllText(path);
-        }
-
         private static MainWindow CreateShownMainWindow()
         {
             MainWindow window = new()
@@ -2091,21 +2076,12 @@ namespace Fluence.Wpf.Tests
             return GetVisualY(element, ancestor) + (element.ActualHeight / 2.0);
         }
 
-        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
         {
-            DispatcherFrame frame = new();
-            DispatcherTimer timer = new(DispatcherPriority.Background, dispatcher)
-            {
-                Interval = TimeSpan.FromMilliseconds(milliseconds),
-            };
-            timer.Tick += delegate
-            {
-                timer.Stop();
-                frame.Continue = false;
-            };
-            timer.Start();
-            Dispatcher.PushFrame(frame);
-            WpfTestSta.DrainDispatcher(dispatcher);
+            // Awaiting resumes on the dispatcher via its synchronization context, so the
+            // dispatcher keeps pumping (animations advance) while the delay elapses.
+            await Task.Delay(milliseconds, TestContext.Current.CancellationToken).ConfigureAwait(true);
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)
@@ -2174,7 +2150,7 @@ namespace Fluence.Wpf.Tests
                 .FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal));
         }
 
-        private static void AssertStepClickStartsAwayFromTarget(
+        private static async Task AssertStepClickStartsAwayFromTargetAsync(
             Controls.Button button,
             Controls.ProgressBar progressBar,
             FrameworkElement fill,
@@ -2184,7 +2160,7 @@ namespace Fluence.Wpf.Tests
             bool forward)
         {
             button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, button));
-            WaitForAnimationAndDrain(dispatcher, 40);
+            await WaitForAnimationAndDrainAsync(dispatcher, 40).ConfigureAwait(true);
 
             Assert.Equal(expectedStep, progressBar.CurrentStep);
             double targetWidth = track.ActualWidth * expectedStep / progressBar.Steps;

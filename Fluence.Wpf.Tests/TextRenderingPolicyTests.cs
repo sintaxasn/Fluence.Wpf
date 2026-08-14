@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -41,9 +42,9 @@ namespace Fluence.Wpf.Tests
     public class TextRenderingPolicyTests
     {
         [Fact]
-        public void FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicy()
+        public Task FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicyAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -73,9 +74,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_ChildInheritsPixelAlignmentPolicy()
+        public Task FluenceWindow_ChildInheritsPixelAlignmentPolicyAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -103,7 +104,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProductionSources_DoNotSetWpfTextOptionsRenderingPolicy()
+        public async Task ProductionSources_DoNotSetWpfTextOptionsRenderingPolicyAsync()
         {
             string repoRoot = FindRepoRoot();
             string[] productionRoots =
@@ -127,17 +128,17 @@ namespace Fluence.Wpf.Tests
                 textOptionsPrefix + "GetTextHintingMode",
             ];
 
-            string[] offenders =
-            [
-                .. EnumerateProductionSources(productionRoots)
-                    .SelectMany(path => FindBannedFragments(path, bannedFragments)),
-            ];
+            List<string> offenders = [];
+            foreach (string path in EnumerateProductionSources(productionRoots))
+            {
+                offenders.AddRange(await FindBannedFragmentsAsync(path, bannedFragments).ConfigureAwait(true));
+            }
 
             Assert.Empty(offenders);
         }
 
         [Fact]
-        public void ProductionSources_SetDevicePixelSnappingOnlyOnFluenceWindowRoot()
+        public async Task ProductionSources_SetDevicePixelSnappingOnlyOnFluenceWindowRootAsync()
         {
             string repoRoot = FindRepoRoot();
             string[] productionRoots =
@@ -152,20 +153,28 @@ namespace Fluence.Wpf.Tests
                 "Themes",
                 "Controls",
                 "FluenceWindow.xaml");
-            string[] offenders =
-            [
-                .. EnumerateProductionSources(productionRoots)
-                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase) && File.ReadAllText(path).Contains("SnapsToDevicePixels", StringComparison.Ordinal))
-                    .Select(GetRepoRelativePath),
-            ];
+            List<string> offenders = [];
+            foreach (string path in EnumerateProductionSources(productionRoots))
+            {
+                if (string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string source = await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken).ConfigureAwait(true);
+                if (source.Contains("SnapsToDevicePixels", StringComparison.Ordinal))
+                {
+                    offenders.Add(GetRepoRelativePath(path));
+                }
+            }
 
             Assert.Empty(offenders);
         }
 
         [Fact]
-        public void TypographyStyles_ApplyTypeRampMetrics()
+        public Task TypographyStyles_ApplyTypeRampMetricsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -182,9 +191,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBlockExtensions_Typography_AppliesTypeRampStyleOnly()
+        public Task TextBlockExtensions_Typography_AppliesTypeRampStyleOnlyAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -203,9 +212,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBlockExtensions_TypographyNone_DoesNotMutateExistingMetrics()
+        public Task TextBlockExtensions_TypographyNone_DoesNotMutateExistingMetricsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 System.Windows.Controls.TextBlock textBlock = new();
                 textBlock.SetTypography(FluentTypography.Body);
@@ -285,13 +294,16 @@ namespace Fluence.Wpf.Tests
                 normalized.Contains(separator + "obj" + separator, StringComparison.OrdinalIgnoreCase);
         }
 
-        private static IEnumerable<string> FindBannedFragments(string path, IEnumerable<string> bannedFragments)
+        private static async Task<List<string>> FindBannedFragmentsAsync(string path, IEnumerable<string> bannedFragments)
         {
-            string source = File.ReadAllText(path);
+            string source = await File.ReadAllTextAsync(path, TestContext.Current.CancellationToken).ConfigureAwait(true);
+            List<string> found = [];
             foreach (string bannedFragment in bannedFragments.Where(bannedFragment => source.Contains(bannedFragment, StringComparison.Ordinal)))
             {
-                yield return GetRepoRelativePath(path) + ": " + bannedFragment;
+                found.Add(GetRepoRelativePath(path) + ": " + bannedFragment);
             }
+
+            return found;
         }
 
         private static string GetRepoRelativePath(string path)

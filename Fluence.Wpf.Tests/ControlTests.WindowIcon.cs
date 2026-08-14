@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void FluenceWindow_Icon_DefaultsToEmbeddedFluenceBrandIcon()
+        public Task FluenceWindow_Icon_DefaultsToEmbeddedFluenceBrandIconAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_Icon_ConsumerAssignedValueOverridesDefault()
+        public Task FluenceWindow_Icon_ConsumerAssignedValueOverridesDefaultAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -92,9 +93,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_DefaultIcon_IsSquareBitmapSource()
+        public Task FluenceWindow_DefaultIcon_IsSquareBitmapSourceAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);

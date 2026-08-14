@@ -30,8 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -41,9 +43,9 @@ namespace Fluence.Wpf.Tests
             "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
             UriKind.Relative);
 
-        internal static void RunOnSta(Action action)
+        internal static Task RunOnStaAsync(Action action)
         {
-            WpfTestSta.RunOnSta(action);
+            return WpfTestSta.RunOnStaAsync(action);
         }
 
         internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)
@@ -111,10 +113,10 @@ namespace Fluence.Wpf.Tests
             return Path.Join(pathParts);
         }
 
-        internal static string ReadRepositoryFile(params string[] relativeSegments)
+        internal static Task<string> ReadRepositoryFileAsync(params string[] relativeSegments)
         {
             string path = GetRepositoryFilePath(relativeSegments);
-            return File.ReadAllText(path);
+            return File.ReadAllTextAsync(path, TestContext.Current.CancellationToken);
         }
 
         private static void ResetApplication(Application application)

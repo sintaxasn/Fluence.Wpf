@@ -27,6 +27,7 @@
  */
 
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -46,9 +47,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ListView_SelectionIndicator_PresentInItemTemplate()
+        public Task ListView_SelectionIndicator_PresentInItemTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -69,9 +70,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListView_SelectionIndicator_WidthIsCanonical()
+        public Task ListView_SelectionIndicator_WidthIsCanonicalAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -91,9 +92,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListView_SelectionIndicator_CornerRadiusIsCanonical()
+        public Task ListView_SelectionIndicator_CornerRadiusIsCanonicalAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -113,9 +114,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListView_SelectionIndicator_BackgroundIsAccentBrush()
+        public Task ListView_SelectionIndicator_BackgroundIsAccentBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -140,9 +141,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListView_AnimateRemove_RemovesItemFromBoundObservableCollection()
+        public Task ListView_AnimateRemove_RemovesItemFromBoundObservableCollectionAsync()
         {
-            WpfTestSta.Invoke(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -163,10 +164,10 @@ namespace Fluence.Wpf.Tests
                 bool completed = false;
                 lv.AnimateRemove("Two", delegate { completed = true; });
 
-                bool removed = WaitUntil(w.Dispatcher, 1000, delegate
+                bool removed = await WaitUntilAsync(w.Dispatcher, 1000, delegate
                 {
                     return completed && !items.Contains("Two");
-                });
+                }).ConfigureAwait(true);
 
                 Assert.True(removed, "AnimateRemove should animate then remove the item from the bound ObservableCollection.");
                 Assert.Equal(2, items.Count);

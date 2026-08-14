@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -46,9 +47,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void TeachingTip_DefaultStyle_AppliesAndTemplatePartsFound()
+        public Task TeachingTip_DefaultStyle_AppliesAndTemplatePartsFoundAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -100,7 +101,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, close.Visibility);
                     Assert.Equal(Visibility.Visible, alternateClose.Visibility);
                     Controls.FontIcon alternateGlyph = Assert.IsType<Controls.FontIcon>(alternateClose.Content);
-                    Assert.Equal("", alternateGlyph.Glyph, StringComparer.Ordinal);
+                    Assert.Equal("\uE711", alternateGlyph.Glyph, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -110,9 +111,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_ClosedInPanel_RendersNothingBeforeFirstOpen()
+        public Task TeachingTip_ClosedInPanel_RendersNothingBeforeFirstOpenAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -139,12 +140,12 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, tip.ActualWidth, 0.001);
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "Opening the declared tip must re-host it in its popup.");
                     Assert.Equal(Visibility.Visible, tip.Visibility);
                     Assert.False(host.Children.Contains(tip),
                         "Opening must detach the tip from its declared panel.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.ActualHeight > 0),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.ActualHeight > 0).ConfigureAwait(true),
                         "The popup-hosted tip must render its surface once open.");
                 }
                 finally
@@ -156,9 +157,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_DeclaredAsBorderChild_OpensWithoutThrowing()
+        public Task TeachingTip_DeclaredAsBorderChild_OpensWithoutThrowingAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -180,7 +181,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "A tip declared as Border.Child must open without throwing.");
                     Assert.Null(host.Child);
                     Assert.Same(tip, tip.HostPopup?.Child);
@@ -194,9 +195,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_IsOpenTrue_OpensPopupAndRendersContent()
+        public Task TeachingTip_IsOpenTrue_OpensPopupAndRendersContentAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -219,7 +220,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup.");
 
                     Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
@@ -233,8 +234,8 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new Point(-20, 20), placements[0].Point);
                     Assert.True(popup.StaysOpen, "Light dismiss is disabled by default, so the popup must stay open.");
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => FindVisualChildren<TextBlock>(tip)
-                            .Any(t => string.Equals(t.Text, "Update ready", StringComparison.Ordinal))),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => FindVisualChildren<TextBlock>(tip)
+                            .Any(t => string.Equals(t.Text, "Update ready", StringComparison.Ordinal))).ConfigureAwait(true),
                         "The title must render inside the open tip.");
                     Assert.True(FindVisualChildren<TextBlock>(tip)
                             .Any(t => string.Equals(t.Text, "Restart to apply the update", StringComparison.Ordinal)),
@@ -252,8 +253,8 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Media.TranslateTransform translate =
                         Assert.IsType<System.Windows.Media.TranslateTransform>(tip.Template.FindName("TipTranslate", tip));
                     Grid tipRoot = Assert.IsType<Grid>(tip.Template.FindName("TipRoot", tip));
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => Math.Abs(translate.Y) < 0.001 && tipRoot.Opacity >= 1.0),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && tipRoot.Opacity >= 1.0).ConfigureAwait(true),
                         "The open reveal must settle at Y=0 and full opacity.");
                 }
                 finally
@@ -265,9 +266,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_IsOpenFalse_ClosesPopupAndRaisesClosed()
+        public Task TeachingTip_IsOpenFalse_ClosesPopupAndRaisesClosedAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -288,19 +289,19 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup before the close scenario.");
 
                     bool closedRaised = false;
                     tip.Closed += (_, _) => closedRaised = true;
 
                     tip.IsOpen = false;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
                         "IsOpen=false must close the host popup.");
 
                     // Popup.Closed is raised asynchronously once the fade-out completes, so
                     // sample the flag instead of asserting immediately.
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => closedRaised).ConfigureAwait(true),
                         "Closing the tip must raise Closed after the popup closes.");
                 }
                 finally
@@ -312,9 +313,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_IsLightDismissEnabled_MapsToPopupStaysOpen()
+        public Task TeachingTip_IsLightDismissEnabled_MapsToPopupStaysOpenAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -336,7 +337,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup before light dismiss is verified.");
 
                     Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
@@ -356,9 +357,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_CloseButton_RaisesCloseButtonClickAndCloses()
+        public Task TeachingTip_CloseButton_RaisesCloseButtonClickAndClosesAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -379,8 +380,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase).ConfigureAwait(true),
                         "The tip must open and apply its template before the close button is clicked.");
 
                     bool closeClickRaised = false;
@@ -393,9 +394,9 @@ namespace Fluence.Wpf.Tests
 
                     Assert.True(closeClickRaised, "Clicking the close button must raise CloseButtonClick.");
                     Assert.False(tip.IsOpen, "Clicking the close button must set IsOpen=false.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
                         "Clicking the close button must close the host popup.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => closedRaised).ConfigureAwait(true),
                         "Clicking the close button must raise Closed once the popup has closed.");
                 }
                 finally
@@ -407,9 +408,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_ActionButton_RaisesActionButtonClickAndInvokesCommand()
+        public Task TeachingTip_ActionButton_RaisesActionButtonClickAndInvokesCommandAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -434,8 +435,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_ActionButton", tip) is ButtonBase),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_ActionButton", tip) is ButtonBase).ConfigureAwait(true),
                         "The tip must open and apply its template before the action button is clicked.");
 
                     bool actionClickRaised = false;
@@ -459,9 +460,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_NoTarget_DocksBottomRightAndHidesBeak()
+        public Task TeachingTip_NoTarget_DocksBottomRightAndHidesBeakAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -480,7 +481,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "An untargeted tip must still open its host popup.");
 
                     Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
@@ -491,8 +492,8 @@ namespace Fluence.Wpf.Tests
                     Assert.Same(window.Content, popup.PlacementTarget);
                     Assert.Equal(TeachingTipPlacementMode.Center, tip.ActualPlacement);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tip.Template?.FindName("TopBeak", tip) is Path),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.Template?.FindName("TopBeak", tip) is Path).ConfigureAwait(true),
                         "The tip template must apply inside the popup.");
                     foreach (string beakName in new[] { "TopBeak", "BottomBeak", "LeftBeak", "RightBeak" })
                     {
@@ -513,9 +514,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_PreferredPlacement_MapsToPopupPlacement()
+        public Task TeachingTip_PreferredPlacement_MapsToPopupPlacementAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -536,7 +537,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup before placement mapping is verified.");
 
                     Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
@@ -586,9 +587,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_CloseAffordance_FollowsCloseButtonContentAndLightDismiss()
+        public Task TeachingTip_CloseAffordance_FollowsCloseButtonContentAndLightDismissAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -609,8 +610,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase).ConfigureAwait(true),
                         "The tip must open and apply its template before the affordance matrix is verified.");
 
                     ButtonBase footerClose = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip));
@@ -649,9 +650,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_AlternateCloseButton_RunsCloseButtonPipeline()
+        public Task TeachingTip_AlternateCloseButton_RunsCloseButtonPipelineAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -672,8 +673,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_AlternateCloseButton", tip) is ButtonBase),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_AlternateCloseButton", tip) is ButtonBase).ConfigureAwait(true),
                         "The tip must open and apply its template before the alternate close button is clicked.");
 
                     bool closeClickRaised = false;
@@ -687,11 +688,11 @@ namespace Fluence.Wpf.Tests
 
                     Assert.True(closeClickRaised, "Clicking the alternate X must raise CloseButtonClick.");
                     Assert.False(tip.IsOpen, "Clicking the alternate X must set IsOpen=false.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
                         "Clicking the alternate X must close the host popup.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => closedRaised).ConfigureAwait(true),
                         "Clicking the alternate X must raise Closed once the popup has closed.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup?.PlacementTarget is null),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup?.PlacementTarget is null).ConfigureAwait(true),
                         "Closing must release the popup's placement target so the tip does not pin the anchor.");
                 }
                 finally
@@ -703,9 +704,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_Escape_ClosesTip()
+        public Task TeachingTip_Escape_ClosesTipAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -726,7 +727,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "The tip must open before Escape is simulated.");
 
                     bool closedRaised = false;
@@ -742,9 +743,9 @@ namespace Fluence.Wpf.Tests
                     });
 
                     Assert.False(tip.IsOpen, "Escape inside the tip must set IsOpen=false.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
                         "Escape inside the tip must close the host popup.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => closedRaised).ConfigureAwait(true),
                         "The Escape dismissal must raise Closed.");
                 }
                 finally
@@ -756,9 +757,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_OpenReveal_SettlesAtRestForEachPlacement()
+        public Task TeachingTip_OpenReveal_SettlesAtRestForEachPlacementAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -791,7 +792,7 @@ namespace Fluence.Wpf.Tests
                             IsOpen = true,
                         };
 
-                        Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
+                        Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded).ConfigureAwait(true),
                             string.Format("The {0} tip must open and load inside its popup.", placement));
                         Assert.Equal(placement, tip.ActualPlacement);
 
@@ -802,14 +803,14 @@ namespace Fluence.Wpf.Tests
                         // The placement-aware reveal must settle at the (0,0) rest position and
                         // full opacity, with the Stop-fill clocks released by the completed
                         // handlers so nothing stays animated.
-                        Assert.True(WaitUntil(window.Dispatcher, 2000,
+                        Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
                                 () => Math.Abs(translate.X) < 0.001 && Math.Abs(translate.Y) < 0.001 &&
                                     tipRoot.Opacity >= 1.0 &&
-                                    !translate.HasAnimatedProperties && !tipRoot.HasAnimatedProperties),
+                                    !translate.HasAnimatedProperties && !tipRoot.HasAnimatedProperties).ConfigureAwait(true),
                             string.Format("The {0} reveal must settle at translate (0,0), full opacity, and release its clocks.", placement));
 
                         tip.IsOpen = false;
-                        Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                        Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
                             string.Format("The {0} tip must close before the next placement opens.", placement));
                     }
                 }
@@ -821,9 +822,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_OpenReveal_CenterTipFadesWithoutSlide()
+        public Task TeachingTip_OpenReveal_CenterTipFadesWithoutSlideAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -842,7 +843,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded).ConfigureAwait(true),
                         "The untargeted tip must open and load inside its popup.");
                     Assert.Equal(TeachingTipPlacementMode.Center, tip.ActualPlacement);
 
@@ -857,8 +858,8 @@ namespace Fluence.Wpf.Tests
                     Assert.False(translate.HasAnimatedProperties,
                         "A Center tip must not carry a reveal slide clock.");
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => tipRoot.Opacity >= 1.0 && !tipRoot.HasAnimatedProperties),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tipRoot.Opacity >= 1.0 && !tipRoot.HasAnimatedProperties).ConfigureAwait(true),
                         "The Center fade must settle at full opacity and release its clock.");
                     Assert.Equal(0.0, translate.X, 0.001);
                     Assert.Equal(0.0, translate.Y, 0.001);
@@ -872,9 +873,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TeachingTip_ThemeCycle_SurfaceBrushesResolve()
+        public Task TeachingTip_ThemeCycle_SurfaceBrushesResolveAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -903,9 +904,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void TeachingTip_HasPolite_LiveSetting()
+        public Task TeachingTip_HasPolite_LiveSettingAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.TeachingTip tip = new();
                 AutomationLiveSetting liveSetting = AutomationProperties.GetLiveSetting(tip);

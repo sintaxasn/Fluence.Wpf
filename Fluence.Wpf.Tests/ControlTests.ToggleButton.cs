@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -66,10 +67,10 @@ namespace Fluence.Wpf.Tests
 
         // Constructs the control inside the STA action: FrameworkElement creation on
         // the xUnit worker thread throws, so the factory must run on the STA thread.
-        private static void RunToggleButtonTest<T>(Func<T> createToggleButton, Action<Application, T> verify)
+        private static Task RunToggleButtonTestAsync<T>(Func<T> createToggleButton, Action<Application, T> verify)
             where T : Controls.ToggleButton
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -95,9 +96,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_Defaults_AreWinUiCanon()
+        public Task ToggleButton_Defaults_AreWinUiCanonAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -115,9 +116,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_DefaultStyle_TemplateExposesRestFillAndBackdrop()
+        public Task ToggleButton_DefaultStyle_TemplateExposesRestFillAndBackdropAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -132,9 +133,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_Checked_UsesAccentFillBackdropAndOnAccentText()
+        public Task ToggleButton_Checked_UsesAccentFillBackdropAndOnAccentTextAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -153,9 +154,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_CheckedPressed_UsesAccentTertiaryFill()
+        public Task ToggleButton_CheckedPressed_UsesAccentTertiaryFillAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new PressableToggleButtonProbe
                 {
                     Content = "Probe",
@@ -177,9 +178,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_Indeterminate_RestKeepsDefaultFill()
+        public Task ToggleButton_Indeterminate_RestKeepsDefaultFillAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -199,9 +200,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_IndeterminatePressed_UsesControlTertiaryFill()
+        public Task ToggleButton_IndeterminatePressed_UsesControlTertiaryFillAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new PressableToggleButtonProbe
                 {
                     Content = "Probe",
@@ -224,9 +225,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_IndeterminateDisabled_UsesDisabledFillAndText()
+        public Task ToggleButton_IndeterminateDisabled_UsesDisabledFillAndTextAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -246,9 +247,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_CheckedDisabled_UsesAccentDisabledFill()
+        public Task ToggleButton_CheckedDisabled_UsesAccentDisabledFillAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -265,9 +266,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_AppearanceAccent_StillRendersCheckedAccentVisuals()
+        public Task ToggleButton_AppearanceAccent_StillRendersCheckedAccentVisualsAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -287,9 +288,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_CheckedTriggers_OrderedRestHoverPressed()
+        public Task ToggleButton_CheckedTriggers_OrderedRestHoverPressedAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
@@ -322,9 +323,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ToggleButton_ThemeCycle_CheckedBrushesReResolve()
+        public Task ToggleButton_ThemeCycle_CheckedBrushesReResolveAsync()
         {
-            RunToggleButtonTest(
+            return RunToggleButtonTestAsync(
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",

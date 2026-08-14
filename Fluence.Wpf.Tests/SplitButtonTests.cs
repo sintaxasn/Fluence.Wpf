@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -54,9 +55,9 @@ namespace Fluence.Wpf.Tests
         #region Defaults and DPs
 
         [Fact]
-        public void Defaults_AreWinUiCanon()
+        public Task Defaults_AreWinUiCanonAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 SplitButton button = new();
 
@@ -71,9 +72,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsFlyoutOpen_IsReadOnlyDp()
+        public Task IsFlyoutOpen_IsReadOnlyDpAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 // Direct SetValue on the public IsFlyoutOpenProperty must fail: only the
                 // internal PropertyKey may mutate it. Guard against accidental promotion
@@ -99,9 +100,9 @@ namespace Fluence.Wpf.Tests
         #region Template parts
 
         [Fact]
-        public void Template_ExposesPrimarySecondaryAndPopupParts()
+        public Task Template_ExposesPrimarySecondaryAndPopupPartsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
@@ -148,9 +149,9 @@ namespace Fluence.Wpf.Tests
         #region Primary click
 
         [Fact]
-        public void PrimaryButtonClick_RaisesSplitButtonClick()
+        public Task PrimaryButtonClick_RaisesSplitButtonClickAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
@@ -194,9 +195,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PrimaryButtonClick_ExecutesCommand()
+        public Task PrimaryButtonClick_ExecutesCommandAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
@@ -242,9 +243,9 @@ namespace Fluence.Wpf.Tests
         #region Flyout open / close
 
         [Fact]
-        public void SecondaryButtonChecked_OpensPopupAndFlipsIsFlyoutOpen()
+        public Task SecondaryButtonChecked_OpensPopupAndFlipsIsFlyoutOpenAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
@@ -304,9 +305,9 @@ namespace Fluence.Wpf.Tests
         #region Automation
 
         [Fact]
-        public void AutomationPeer_IsSplitButton_WithInvokeAndExpandCollapse()
+        public Task AutomationPeer_IsSplitButton_WithInvokeAndExpandCollapseAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 SplitButton splitButton = new();
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(splitButton);

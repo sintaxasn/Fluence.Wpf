@@ -28,6 +28,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Xunit;
@@ -49,9 +50,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NumberBox_DefaultStyle_LoadsParts()
+        public Task NumberBox_DefaultStyle_LoadsPartsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -73,9 +74,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NumberBox_Value_Roundtrips()
+        public Task NumberBox_Value_RoundtripsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.NumberBox box = new() { Value = 42.5 };
                 Assert.Equal(42.5, box.Value, 0.001);
@@ -83,9 +84,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_CornerRadius_Default()
+        public Task Expander_CornerRadius_DefaultAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.Expander ex = new();
                 Assert.Equal(new CornerRadius(4), ex.CornerRadius);
@@ -93,9 +94,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_Template_Applies()
+        public Task Expander_Template_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -117,9 +118,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DropDownButton_Template_HasFlyoutPresenterName()
+        public Task DropDownButton_Template_HasFlyoutPresenterNameAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -141,9 +142,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DropDownButton_FlyoutPresenter_StretchesForLeftAlignedItems()
+        public Task DropDownButton_FlyoutPresenter_StretchesForLeftAlignedItemsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -167,9 +168,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SplitButton_FlyoutPresenter_StretchesForLeftAlignedItems()
+        public Task SplitButton_FlyoutPresenter_StretchesForLeftAlignedItemsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -193,9 +194,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_Value_Roundtrips()
+        public Task InfoBadge_Value_RoundtripsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.InfoBadge badge = new() { Value = 9 };
                 Assert.Equal(9, badge.Value);
@@ -203,9 +204,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_Template_Applies()
+        public Task InfoBadge_Template_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeGeneric(app);
@@ -227,9 +228,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListBox_GetContainerForItemOverride_ReturnsFluentListBoxItem()
+        public Task ListBox_GetContainerForItemOverride_ReturnsFluentListBoxItemAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.ListBox list = new();
                 MethodInfo? m = typeof(Controls.ListBox).GetMethod(

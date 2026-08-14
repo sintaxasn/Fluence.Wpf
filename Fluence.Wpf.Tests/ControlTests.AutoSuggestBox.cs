@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -44,9 +45,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void AutoSuggestBox_DefaultStyle_AppliesTemplateParts()
+        public Task AutoSuggestBox_DefaultStyle_AppliesTemplatePartsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -83,9 +84,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_ProgrammaticTextChange_RaisesTextChangedWithProgrammaticReason()
+        public Task AutoSuggestBox_ProgrammaticTextChange_RaisesTextChangedWithProgrammaticReasonAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -122,9 +123,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_UserEditInTextBox_RaisesTextChangedWithUserInputReason()
+        public Task AutoSuggestBox_UserEditInTextBox_RaisesTextChangedWithUserInputReasonAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -161,9 +162,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_IsSuggestionListOpen_ShowsPopupWithItems()
+        public Task AutoSuggestBox_IsSuggestionListOpen_ShowsPopupWithItemsAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -184,7 +185,7 @@ namespace Fluence.Wpf.Tests
                     box.ItemsSource = (List<string>)["Apple", "Banana", "Cherry"];
                     box.IsSuggestionListOpen = true;
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Setting IsSuggestionListOpen=true must open the suggestion popup.");
                     Assert.Equal(3, list.Items.Count);
                 }
@@ -196,9 +197,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_ChooseSuggestionViaKeyboard_RaisesSuggestionChosenAndQuerySubmitted()
+        public Task AutoSuggestBox_ChooseSuggestionViaKeyboard_RaisesSuggestionChosenAndQuerySubmittedAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -219,7 +220,7 @@ namespace Fluence.Wpf.Tests
 
                     box.ItemsSource = (List<string>)["Apple", "Banana", "Cherry"];
                     box.IsSuggestionListOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The suggestion popup must open before the keyboard scenario.");
 
                     List<AutoSuggestionBoxTextChangeReason> reasons = [];
@@ -243,7 +244,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal("Apple", box.Text, StringComparer.Ordinal);
                     Assert.True(reasons.Contains(AutoSuggestionBoxTextChangeReason.SuggestionChosen),
                         "Choosing a suggestion must raise TextChanged with Reason=SuggestionChosen.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Submitting a query must close the suggestion popup.");
                 }
                 finally
@@ -254,9 +255,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_EnterWithoutSelection_RaisesQuerySubmittedWithCurrentText()
+        public Task AutoSuggestBox_EnterWithoutSelection_RaisesQuerySubmittedWithCurrentTextAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -292,9 +293,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_Escape_ClosesSuggestionList()
+        public Task AutoSuggestBox_Escape_ClosesSuggestionListAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -314,12 +315,12 @@ namespace Fluence.Wpf.Tests
 
                     box.ItemsSource = (List<string>)["Apple", "Banana", "Cherry"];
                     box.IsSuggestionListOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The suggestion popup must open before the Escape scenario.");
 
                     RaisePreviewKeyDown(textBox, window, Key.Escape);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Escape must close the suggestion popup.");
                     Assert.False(box.IsSuggestionListOpen, "Escape must reset IsSuggestionListOpen.");
                 }
@@ -331,9 +332,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_ArrowKeys_PreviewHighlightedSuggestionAndRestoreTypedText()
+        public Task AutoSuggestBox_ArrowKeys_PreviewHighlightedSuggestionAndRestoreTypedTextAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -357,7 +358,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     box.ItemsSource = (List<string>)["Apple", "Banana", "Cherry"];
                     box.IsSuggestionListOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The suggestion popup must open before the navigation scenario.");
 
                     List<AutoSuggestionBoxTextChangeReason> reasons = [];
@@ -403,9 +404,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_QueryIconButton_SubmitsQueryAndHidesWhenIconNull()
+        public Task AutoSuggestBox_QueryIconButton_SubmitsQueryAndHidesWhenIconNullAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -413,7 +414,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new()
                 {
-                    QueryIcon = new Controls.FontIcon { Glyph = "" },
+                    QueryIcon = new Controls.FontIcon { Glyph = "\uE721" },
                     Text = "search term",
                 };
 
@@ -452,9 +453,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_SurfaceBrushes_ResolveAfterThemeCycle()
+        public Task AutoSuggestBox_SurfaceBrushes_ResolveAfterThemeCycleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -482,9 +483,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_Header_BecomesAccessibleName()
+        public Task AutoSuggestBox_Header_BecomesAccessibleNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

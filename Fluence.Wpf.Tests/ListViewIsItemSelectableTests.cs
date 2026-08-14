@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using Xunit;
 
@@ -54,9 +55,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsItemSelectable_DefaultIsTrue()
+        public Task IsItemSelectable_DefaultIsTrueAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.ListView lv = new();
                 Assert.True(lv.IsItemSelectable);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsItemSelectable_False_ClearsSelectionWhenSet()
+        public Task IsItemSelectable_False_ClearsSelectionWhenSetAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -101,9 +102,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsItemSelectable_False_SelectedIndexStaysMinusOne_AfterDirectSet()
+        public Task IsItemSelectable_False_SelectedIndexStaysMinusOne_AfterDirectSetAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -139,9 +140,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsItemSelectable_False_ContainerIsNotFocusable()
+        public Task IsItemSelectable_False_ContainerIsNotFocusableAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -178,9 +179,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void IsItemSelectable_True_ContainerIsFocusable()
+        public Task IsItemSelectable_True_ContainerIsFocusableAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -217,9 +218,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ItemAnimationsEnabled_IndependentOfIsItemSelectable()
+        public Task ItemAnimationsEnabled_IndependentOfIsItemSelectableAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Controls.ListView lv = new() { IsItemSelectable = false, ItemAnimationsEnabled = true };
                 Assert.False(lv.IsItemSelectable);

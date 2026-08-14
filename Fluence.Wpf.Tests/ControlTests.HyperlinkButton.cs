@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using Fluence.Wpf.Automation;
@@ -36,9 +37,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void HyperlinkButton_Peer_IsHyperlinkButtonAutomationPeer()
+        public Task HyperlinkButton_Peer_IsHyperlinkButtonAutomationPeerAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -69,9 +70,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void HyperlinkButton_Peer_ReportsHyperlinkControlType()
+        public Task HyperlinkButton_Peer_ReportsHyperlinkControlTypeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

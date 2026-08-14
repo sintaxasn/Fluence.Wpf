@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -44,9 +45,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void NumberBox_Disabled_RangeValueProvider_SetValue_ThrowsElementNotEnabledException()
+        public Task NumberBox_Disabled_RangeValueProvider_SetValue_ThrowsElementNotEnabledExceptionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -84,9 +85,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NumberBox_Disabled_RangeValueProvider_IsReadOnly_ReturnsFalse()
+        public Task NumberBox_Disabled_RangeValueProvider_IsReadOnly_ReturnsFalseAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -125,9 +126,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_Disabled_ValueProvider_SetValue_ThrowsElementNotEnabledException()
+        public Task AutoSuggestBox_Disabled_ValueProvider_SetValue_ThrowsElementNotEnabledExceptionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -165,9 +166,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_Disabled_ValueProvider_IsReadOnly_ReturnsFalse()
+        public Task AutoSuggestBox_Disabled_ValueProvider_IsReadOnly_ReturnsFalseAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

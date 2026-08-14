@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -54,9 +55,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ThemedButton_HasCrispLayoutRoundingSetters()
+        public Task ThemedButton_HasCrispLayoutRoundingSettersAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeThemeAndGeneric(app);
@@ -68,9 +69,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ThemedTextBox_HasCrispLayoutRoundingSetters()
+        public Task ThemedTextBox_HasCrispLayoutRoundingSettersAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeThemeAndGeneric(app);
@@ -82,9 +83,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void CrispRendering_PreservedAcrossThemeSwitches()
+        public Task CrispRendering_PreservedAcrossThemeSwitchesAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
                 MergeThemeAndGeneric(app);

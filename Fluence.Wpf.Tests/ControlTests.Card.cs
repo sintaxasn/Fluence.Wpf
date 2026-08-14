@@ -27,6 +27,7 @@
  */
 
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Effects;
 using Fluence.Wpf.Controls;
@@ -46,9 +47,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Card_DefaultVariant_HasElevationShadowOnOuterBorder()
+        public Task Card_DefaultVariant_HasElevationShadowOnOuterBorderAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -67,9 +68,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_SubtleVariant_NoElevationShadow()
+        public Task Card_SubtleVariant_NoElevationShadowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -87,9 +88,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_OutlinedVariant_NoElevationShadow()
+        public Task Card_OutlinedVariant_NoElevationShadowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -107,9 +108,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_FilledVariant_NoElevationShadow()
+        public Task Card_FilledVariant_NoElevationShadowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -127,9 +128,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_DefaultVariant_ShadowHasCorrectProfile()
+        public Task Card_DefaultVariant_ShadowHasCorrectProfileAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Fluence.Wpf.Controls;
@@ -47,9 +48,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemes()
+        public Task FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
 
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_PerControlKeys_RemovedFromDictionary()
+        public Task FocusVisual_PerControlKeys_RemovedFromDictionaryAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -81,9 +82,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_Button_FocusVisualStyleIsSharedResource()
+        public Task FocusVisual_Button_FocusVisualStyleIsSharedResourceAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -101,9 +102,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_CheckBox_FocusVisualStyleIsSharedResource()
+        public Task FocusVisual_CheckBox_FocusVisualStyleIsSharedResourceAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -121,9 +122,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_RadioButton_FocusVisualStyleIsSharedResource()
+        public Task FocusVisual_RadioButton_FocusVisualStyleIsSharedResourceAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -141,9 +142,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_ToggleButton_FocusVisualStyleIsSharedResource()
+        public Task FocusVisual_ToggleButton_FocusVisualStyleIsSharedResourceAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -161,9 +162,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_TabItem_UsesCollectionFocusStyleWithRightBreathingRoom()
+        public Task FocusVisual_TabItem_UsesCollectionFocusStyleWithRightBreathingRoomAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -194,9 +195,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabControl_TabKeySelectsNextHeaderThenContinuesOut()
+        public Task TabControl_TabKeySelectsNextHeaderThenContinuesOutAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -256,9 +257,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabView_TabKeySelectsNextHeaderThenContinuesOut()
+        public Task TabView_TabKeySelectsNextHeaderThenContinuesOutAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -336,9 +337,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FocusVisual_NavigationViewItem_PointerInvokeDoesNotMoveKeyboardFocus()
+        public Task FocusVisual_NavigationViewItem_PointerInvokeDoesNotMoveKeyboardFocusAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

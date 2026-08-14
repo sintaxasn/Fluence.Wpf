@@ -28,6 +28,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -49,9 +50,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void TextBox_PlaceholderTextBlock_UsesTertiaryBrush()
+        public Task TextBox_PlaceholderTextBlock_UsesTertiaryBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -74,9 +75,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PasswordBox_PlaceholderTextBlock_UsesTertiaryBrush()
+        public Task PasswordBox_PlaceholderTextBlock_UsesTertiaryBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -99,9 +100,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PasswordBox_Unloaded_StopsCapsLockPollingTimer()
+        public Task PasswordBox_Unloaded_StopsCapsLockPollingTimerAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -132,9 +133,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_PlaceholderTextBlock_ThemeCycle_StillTertiaryBrush()
+        public Task TextBox_PlaceholderTextBlock_ThemeCycle_StillTertiaryBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -160,9 +161,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_ValidationLine_IsHiddenUntilFocused()
+        public Task TextBox_ValidationLine_IsHiddenUntilFocusedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -194,9 +195,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_HelperAndValidationText_UsesNinePixelTopMarginAndCenteredContent()
+        public Task TextBox_HelperAndValidationText_UsesNinePixelTopMarginAndCenteredContentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -228,9 +229,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void TextBox_ValidationError_SetsHelpText()
+        public Task TextBox_ValidationError_SetsHelpTextAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -255,9 +256,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_ValidationNone_ClearsHelpText()
+        public Task TextBox_ValidationNone_ClearsHelpTextAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -286,9 +287,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_ValidationWarning_SetsHelpText()
+        public Task TextBox_ValidationWarning_SetsHelpTextAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -313,9 +314,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_ValidationSuccess_ClearsHelpText()
+        public Task TextBox_ValidationSuccess_ClearsHelpTextAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -363,9 +364,9 @@ namespace Fluence.Wpf.Tests
         /// state invariants rather than raw event counts.
         /// </summary>
         [Fact]
-        public void TextBox_ValidationError_HelpText_StableAfterAdditionalKeystrokes()
+        public Task TextBox_ValidationError_HelpText_StableAfterAdditionalKeystrokesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

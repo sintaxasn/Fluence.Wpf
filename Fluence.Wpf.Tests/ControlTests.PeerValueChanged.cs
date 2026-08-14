@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using Fluence.Wpf.Automation;
@@ -74,9 +75,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DropDownButton_AutomationPeer_ReportsButtonControlType()
+        public Task DropDownButton_AutomationPeer_ReportsButtonControlTypeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -107,9 +108,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NumberBox_ValueChanged_RaisesAutomationPeerValueChanged()
+        public Task NumberBox_ValueChanged_RaisesAutomationPeerValueChangedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

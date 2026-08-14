@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -48,9 +49,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void PersonPicture_DefaultStyle_Applies()
+        public Task PersonPicture_DefaultStyle_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -67,9 +68,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_TemplateParts_Present()
+        public Task PersonPicture_TemplateParts_PresentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -90,9 +91,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_NoData_ShowsPlaceholderGlyph()
+        public Task PersonPicture_NoData_ShowsPlaceholderGlyphAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -112,9 +113,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_DisplayName_GeneratesInitials()
+        public Task PersonPicture_DisplayName_GeneratesInitialsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -131,9 +132,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_ExplicitInitials_Override()
+        public Task PersonPicture_ExplicitInitials_OverrideAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -150,9 +151,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_IsGroup_ShowsPeopleGlyph()
+        public Task PersonPicture_IsGroup_ShowsPeopleGlyphAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -169,9 +170,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_BadgeNumber_MakesBadgeVisible()
+        public Task PersonPicture_BadgeNumber_MakesBadgeVisibleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -191,9 +192,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_BadgeBackground_CoversNumberAndGlyphContent()
+        public Task PersonPicture_BadgeBackground_CoversNumberAndGlyphContentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -230,9 +231,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_NoBadge_BadgeCollapsed()
+        public Task PersonPicture_NoBadge_BadgeCollapsedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -249,9 +250,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_DefaultSize_Is40x40()
+        public Task PersonPicture_DefaultSize_Is40x40Async()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -268,9 +269,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_ThemeCycle_StyleRemainsApplied()
+        public Task PersonPicture_ThemeCycle_StyleRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -289,9 +290,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_AutomationPeer_IsPersonPictureAutomationPeer()
+        public Task PersonPicture_AutomationPeer_IsPersonPictureAutomationPeerAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -309,9 +310,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_AutomationPeer_ControlTypeIsImage()
+        public Task PersonPicture_AutomationPeer_ControlTypeIsImageAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -329,9 +330,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_AutomationPeer_GetName_ReturnsDisplayName()
+        public Task PersonPicture_AutomationPeer_GetName_ReturnsDisplayNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -349,9 +350,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_AutomationPeer_GetName_FallsBackToInitials()
+        public Task PersonPicture_AutomationPeer_GetName_FallsBackToInitialsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -370,9 +371,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PersonPicture_AutomationPeer_ExplicitAutomationName_Wins()
+        public Task PersonPicture_AutomationPeer_ExplicitAutomationName_WinsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

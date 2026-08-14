@@ -28,6 +28,7 @@
 
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Xunit;
@@ -45,9 +46,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ComboBox_FocusedStates_GroupExistsInTemplate()
+        public Task ComboBox_FocusedStates_GroupExistsInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -71,9 +72,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_EditableFocusedStates_GroupExistsInTemplate()
+        public Task ComboBox_EditableFocusedStates_GroupExistsInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -96,9 +97,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_FocusedState_DoesNotShowFocusAccentLine()
+        public Task ComboBox_FocusedState_DoesNotShowFocusAccentLineAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -121,9 +122,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_UnfocusedState_FocusAccentLineIsHidden()
+        public Task ComboBox_UnfocusedState_FocusAccentLineIsHiddenAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -149,9 +150,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_InitialTemplate_DoesNotShowFocusAccentLine()
+        public Task ComboBox_InitialTemplate_DoesNotShowFocusAccentLineAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -172,9 +173,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_ThemeCycle_FocusedStateKeepsAccentLineHidden()
+        public Task ComboBox_ThemeCycle_FocusedStateKeepsAccentLineHiddenAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

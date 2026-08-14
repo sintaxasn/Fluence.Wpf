@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ComboBox_DropdownCornerRadius_DefaultEqualsOverlayCornerRadius()
+        public Task ComboBox_DropdownCornerRadius_DefaultEqualsOverlayCornerRadiusAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -63,9 +64,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_DropdownCornerRadius_ValueIs8()
+        public Task ComboBox_DropdownCornerRadius_ValueIs8Async()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -85,9 +86,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void DropDownButton_DropdownCornerRadius_DefaultEqualsOverlayCornerRadius()
+        public Task DropDownButton_DropdownCornerRadius_DefaultEqualsOverlayCornerRadiusAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -105,9 +106,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DropDownButton_DropdownCornerRadius_ValueIs8()
+        public Task DropDownButton_DropdownCornerRadius_ValueIs8Async()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

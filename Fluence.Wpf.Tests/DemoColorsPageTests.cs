@@ -28,8 +28,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -56,9 +56,9 @@ namespace Fluence.Wpf.Tests
         ];
 
         [Fact]
-        public void GalleryColorsPage_NavigationRoute_LoadsConcretePage()
+        public Task GalleryColorsPage_NavigationRoute_LoadsConcretePageAsync()
         {
-            WpfTestSta.Invoke(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = EnsureDemoTheme();
                 MainWindow window = CreateShownMainWindow();
@@ -80,9 +80,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryColorsPage_UsesWinUiGalleryColorStructure()
+        public Task GalleryColorsPage_UsesWinUiGalleryColorStructureAsync()
         {
-            WpfTestSta.Invoke(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = EnsureDemoTheme();
                 GalleryColorsPage page = new();
@@ -148,9 +148,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemes()
+        public Task GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemesAsync()
         {
-            WpfTestSta.Invoke(static delegate
+            return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application application = EnsureDemoTheme();
                 GalleryColorsPage page = new();
@@ -189,10 +189,10 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryColorsPage_SourceAvoidsLegacyControlsAndLiteralForegrounds()
+        public async Task GalleryColorsPage_SourceAvoidsLegacyControlsAndLiteralForegroundsAsync()
         {
-            string pageXaml = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
-            string pageCode = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml.cs");
+            string pageXaml = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml").ConfigureAwait(true);
+            string pageCode = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml.cs").ConfigureAwait(true);
             string source = pageXaml + Environment.NewLine + pageCode;
 
             string[] forbidden =
@@ -372,22 +372,6 @@ namespace Fluence.Wpf.Tests
                     }
                 }
             }
-        }
-
-        private static string GetRepositoryFilePath(params string[] relativeSegments)
-        {
-            string root = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
-            string[] pathParts = new string[relativeSegments.Length + 1];
-            pathParts[0] = root;
-            Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
-            return Path.Join(pathParts);
-        }
-
-        private static string ReadRepositoryFile(params string[] relativeSegments)
-        {
-            string path = GetRepositoryFilePath(relativeSegments);
-            Assert.True(File.Exists(path), "Repository file must be readable at: " + path);
-            return File.ReadAllText(path);
         }
     }
 }

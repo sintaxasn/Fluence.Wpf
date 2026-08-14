@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Xunit;
@@ -86,9 +87,9 @@ namespace Fluence.Wpf.Tests
         /// accent border floating inside the DWM border. This assertion fails on the pre-fix code.
         /// </summary>
         [Fact]
-        public void SizeToContentWindow_TemplateBorder_FillsClientArea()
+        public Task SizeToContentWindow_TemplateBorder_FillsClientAreaAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(app);
@@ -135,9 +136,9 @@ namespace Fluence.Wpf.Tests
         /// single-bordered after growing).
         /// </summary>
         [Fact]
-        public void SizeToContentWindow_StillGrowsAndStaysFilled_WhenContentGrows()
+        public Task SizeToContentWindow_StillGrowsAndStaysFilled_WhenContentGrowsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(app);
@@ -189,9 +190,9 @@ namespace Fluence.Wpf.Tests
         /// fix). This pins that the fix does not regress fixed-size windows.
         /// </summary>
         [Fact]
-        public void FixedSizeWindow_TemplateBorder_FillsClientArea()
+        public Task FixedSizeWindow_TemplateBorder_FillsClientAreaAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(app);

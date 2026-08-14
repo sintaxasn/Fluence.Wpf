@@ -26,7 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests
     // runtime effect (WindowState transition / Closing event).
     public partial class ControlTests
     {
-        private static FluenceWindow CreateAndShowOffScreenFluenceWindow()
+        private static async Task<FluenceWindow> CreateAndShowOffScreenFluenceWindowAsync()
         {
             FluenceWindow window = new()
             {
@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests
                 ShowInTaskbar = false,
             };
             window.Show();
-            _ = window.Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(static delegate { }));
+            await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Loaded, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
             return window;
         }
 
@@ -69,9 +69,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommands()
+        public Task FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommandsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
 
                     System.Windows.Controls.Button minimize = GetCaptionButton(window, "PART_MinimizeButton");
                     System.Windows.Controls.Button maximize = GetCaptionButton(window, "PART_MaximizeButton");
@@ -99,9 +99,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_CaptionButtons_ReflowIntoRightAlignedSlots()
+        public Task FluenceWindow_CaptionButtons_ReflowIntoRightAlignedSlotsAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
 
                     System.Windows.Controls.Button minimize = GetCaptionButton(window, "PART_MinimizeButton");
                     System.Windows.Controls.Button maximize = GetCaptionButton(window, "PART_MaximizeButton");
@@ -146,9 +146,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_MinimizeCommand_TransitionsToMinimized()
+        public Task FluenceWindow_MinimizeCommand_TransitionsToMinimizedAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -156,7 +156,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
                     Assert.Equal(WindowState.Normal, window.WindowState);
 
                     SystemCommands.MinimizeWindowCommand.Execute(parameter: null, window);
@@ -177,9 +177,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_MaximizeCommand_TransitionsToMaximized()
+        public Task FluenceWindow_MaximizeCommand_TransitionsToMaximizedAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -187,7 +187,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
                     Assert.Equal(WindowState.Normal, window.WindowState);
 
                     SystemCommands.MaximizeWindowCommand.Execute(parameter: null, window);
@@ -203,9 +203,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_RestoreCommand_TransitionsMaximizedToNormal()
+        public Task FluenceWindow_RestoreCommand_TransitionsMaximizedToNormalAsync()
         {
-            WpfTestSta.RunOnSta(static delegate
+            return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
                     window.WindowState = WindowState.Maximized;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(WindowState.Maximized, window.WindowState);
@@ -231,9 +231,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_CloseCommand_FiresClosingEvent()
+        public Task FluenceWindow_CloseCommand_FiresClosingEventAsync()
         {
-            WpfTestSta.RunOnSta(delegate
+            return WpfTestSta.RunOnStaAsync(async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(Application.Current);
@@ -241,7 +241,7 @@ namespace Fluence.Wpf.Tests
                 FluenceWindow? window = null;
                 try
                 {
-                    window = CreateAndShowOffScreenFluenceWindow();
+                    window = await CreateAndShowOffScreenFluenceWindowAsync().ConfigureAwait(true);
                     bool closingFired = false;
                     window.Closing += delegate { closingFired = true; };
 
@@ -250,7 +250,7 @@ namespace Fluence.Wpf.Tests
                     // WM_SYSCOMMAND/SC_CLOSE via PostMessage. Block at Background priority
                     // so the Win32 message pump processes the queued message and close
                     // flow runs before we assert.
-                    _ = window.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+                    await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Background, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
                     Assert.True(closingFired,
                         "CloseWindowCommand must raise Window.Closing via SystemCommands.CloseWindow -> WM_SYSCOMMAND/SC_CLOSE.");

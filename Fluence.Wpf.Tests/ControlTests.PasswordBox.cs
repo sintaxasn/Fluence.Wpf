@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -40,9 +41,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void PasswordBox_AutomationPeer_ReportsPasswordEdit()
+        public Task PasswordBox_AutomationPeer_ReportsPasswordEditAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -81,9 +82,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PasswordBox_ForwardsAccessibleNameToInnerField()
+        public Task PasswordBox_ForwardsAccessibleNameToInnerFieldAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -120,9 +121,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PasswordBox_RevealButton_IsKeyboardOperableAndNamed()
+        public Task PasswordBox_RevealButton_IsKeyboardOperableAndNamedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -181,13 +182,13 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PasswordBox_RevealButton_MousePressAndHold_IsTransient()
+        public async Task PasswordBox_RevealButton_MousePressAndHold_IsTransientAsync()
         {
             // Regression test: a mouse press-and-release must NOT leave the password revealed.
             // Contract: press-and-hold = transient reveal; release = hide immediately.
             // Prior to the fix, OnRevealButtonUp reset _isMouseRevealActive before Click fired,
             // causing the Click toggle branch to run and leaving IsPasswordRevealed = true.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -274,7 +275,7 @@ namespace Fluence.Wpf.Tests
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            });
+            }).ConfigureAwait(true);
         }
     }
 }

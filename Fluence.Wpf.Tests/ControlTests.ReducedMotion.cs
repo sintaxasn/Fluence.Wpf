@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -47,7 +48,7 @@ namespace Fluence.Wpf.Tests
     /// The one deliberate exception is the indeterminate <see cref="Controls.ProgressBar"/>: its
     /// motion is the only thing that communicates "work is still happening", so it is treated as
     /// essential status feedback rather than decoration and keeps animating with the gate off.
-    /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating"/>.
+    /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync"/>.
     /// </para>
     /// </summary>
     public partial class ControlTests
@@ -72,9 +73,9 @@ namespace Fluence.Wpf.Tests
         /// </para>
         /// </summary>
         [Fact]
-        public void ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating()
+        public Task ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -99,7 +100,7 @@ namespace Fluence.Wpf.Tests
                         "An indeterminate ProgressBar must animate with motion disabled: the movement is the only status signal it has.");
 
                     double first = translate.X;
-                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(translate.X - first) > 0.5),
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => Math.Abs(translate.X - first) > 0.5).ConfigureAwait(true),
                         "The indeterminate bar must actually travel, not merely hold an animation clock.");
                 }
                 finally
@@ -111,9 +112,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocks()
+        public Task ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -150,9 +151,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotation()
+        public Task ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotationAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -183,9 +184,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_ToggleSwitch_Toggle_SnapsKnobToFinalOffsetSynchronously()
+        public Task ReducedMotion_ToggleSwitch_Toggle_SnapsKnobToFinalOffsetSynchronouslyAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -215,9 +216,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_Expander_Expand_OpensContentAtRestWithoutSlideClock()
+        public Task ReducedMotion_Expander_Expand_OpensContentAtRestWithoutSlideClockAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -260,9 +261,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_Flyout_ShowAt_PresentsSurfaceAtRestWithoutClocks()
+        public Task ReducedMotion_Flyout_ShowAt_PresentsSurfaceAtRestWithoutClocksAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -279,12 +280,12 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     flyout.ShowAt(target);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
                         "ShowAt should open the flyout popup.");
 
                     Popup popup = Assert.IsAssignableFrom<Popup>(flyout.HostPopup);
                     Controls.FlyoutPresenter presenter = Assert.IsType<Controls.FlyoutPresenter>(popup.Child);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => presenter.IsLoaded),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => presenter.IsLoaded).ConfigureAwait(true),
                         "The presenter must load inside the open popup.");
 
                     TranslateTransform translate =
@@ -300,7 +301,7 @@ namespace Fluence.Wpf.Tests
                         "With motion disabled the reveal fade must not leave an animation clock.");
 
                     flyout.Hide();
-                    _ = WaitUntil(window.Dispatcher, 2000, () => !flyout.IsOpen);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -311,9 +312,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_TeachingTip_Open_PresentsTipAtRestWithoutClocks()
+        public Task ReducedMotion_TeachingTip_Open_PresentsTipAtRestWithoutClocksAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -334,7 +335,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     tip.IsOpen = true;
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded).ConfigureAwait(true),
                         "IsOpen=true should open the host popup and load the tip.");
 
                     TranslateTransform translate =
@@ -350,7 +351,7 @@ namespace Fluence.Wpf.Tests
                         "With motion disabled the reveal fade must not leave an animation clock.");
 
                     tip.IsOpen = false;
-                    _ = WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false });
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -361,9 +362,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_ContentDialog_Hide_TearsDownSynchronouslyWithoutClocks()
+        public Task ReducedMotion_ContentDialog_Hide_TearsDownSynchronouslyWithoutClocksAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -380,8 +381,8 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     System.Threading.Tasks.Task<ContentDialogResult> task = dialog.ShowAsync();
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => FindVisualChildByName<System.Windows.Controls.Primitives.ButtonBase>(dialog, "PART_CloseButton") is not null),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<System.Windows.Controls.Primitives.ButtonBase>(dialog, "PART_CloseButton") is not null).ConfigureAwait(true),
                         "The dialog template must apply before Hide is called.");
 
                     dialog.Hide();
@@ -409,9 +410,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocks()
+        public Task ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocksAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -452,9 +453,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnob()
+        public Task ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -472,7 +473,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.True(tx.HasAnimatedProperties,
                         "With motion enabled the knob slide must animate, proving the gate is the only change.");
-                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(tx.X - 20.0) < 0.01),
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => Math.Abs(tx.X - 20.0) < 0.01).ConfigureAwait(true),
                         "The animated knob must settle at the on offset.");
                 }
                 finally

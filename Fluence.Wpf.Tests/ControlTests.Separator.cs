@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -44,9 +45,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Separator_DefaultStyle_Applies()
+        public Task Separator_DefaultStyle_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -63,9 +64,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Separator_Height_IsOne()
+        public Task Separator_Height_IsOneAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -81,9 +82,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Separator_Background_UsesDividerStrokeColorDefaultBrush()
+        public Task Separator_Background_UsesDividerStrokeColorDefaultBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -102,9 +103,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Separator_ThemeCycle_StyleRemainsApplied()
+        public Task Separator_ThemeCycle_StyleRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

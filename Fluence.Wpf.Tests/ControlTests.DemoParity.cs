@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Demo.Pages;
@@ -38,9 +39,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void GalleryInputsPage_SliderSamplesIncludeHorizontalAndVerticalTicks()
+        public Task GalleryInputsPage_SliderSamplesIncludeHorizontalAndVerticalTicksAsync()
         {
-            RunDemoPageTest(static () => new GalleryInputsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryInputsPage(), static window =>
             {
                 Controls.Slider horizontal = Assert.IsAssignableFrom<Controls.Slider>(FindVisualChildByName<Controls.Slider>(window, "HorizontalTickSlider"));
                 Controls.Slider vertical = Assert.IsAssignableFrom<Controls.Slider>(FindVisualChildByName<Controls.Slider>(window, "VerticalTickSlider"));
@@ -53,9 +54,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryButtonsPage_RepeatButtonIncrementsNearbyCountText()
+        public Task GalleryButtonsPage_RepeatButtonIncrementsNearbyCountTextAsync()
         {
-            RunDemoPageTest(static () => new GalleryButtonsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
                 Controls.RepeatButton button = Assert.IsAssignableFrom<Controls.RepeatButton>(FindVisualChildByName<Controls.RepeatButton>(window, "RepeatCounterButton"));
                 TextBlock count = Assert.IsAssignableFrom<TextBlock>(FindVisualChildByName<TextBlock>(window, "RepeatButtonCountText"));
@@ -73,9 +74,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryButtonsPage_ToggleButtonSampleUpdatesStateText()
+        public Task GalleryButtonsPage_ToggleButtonSampleUpdatesStateTextAsync()
         {
-            RunDemoPageTest(() => new GalleryButtonsPage(), window =>
+            return RunDemoPageTestAsync(() => new GalleryButtonsPage(), window =>
             {
                 Controls.ToggleButton wrapToggle = Assert.IsAssignableFrom<Controls.ToggleButton>(FindVisualChildByName<Controls.ToggleButton>(window, "WrapToggleButton"));
                 Controls.ToggleButton threeStateToggle = Assert.IsAssignableFrom<Controls.ToggleButton>(FindVisualChildByName<Controls.ToggleButton>(window, "ThreeStateToggleButton"));
@@ -95,9 +96,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryButtonsPage_ToggleSplitButtonSampleTogglesStateText()
+        public Task GalleryButtonsPage_ToggleSplitButtonSampleTogglesStateTextAsync()
         {
-            RunDemoPageTest(() => new GalleryButtonsPage(), window =>
+            return RunDemoPageTestAsync(() => new GalleryButtonsPage(), window =>
             {
                 Controls.ToggleSplitButton listToggle = Assert.IsAssignableFrom<Controls.ToggleSplitButton>(FindVisualChildByName<Controls.ToggleSplitButton>(window, "ListToggleSplitButton"));
                 TextBlock stateText = Assert.IsAssignableFrom<TextBlock>(FindVisualChildByName<TextBlock>(window, "ToggleSplitButtonStateText"));
@@ -121,9 +122,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySelectionPage_CheckBoxSamplesMatchWinUIGalleryStates()
+        public Task GallerySelectionPage_CheckBoxSamplesMatchWinUIGalleryStatesAsync()
         {
-            RunDemoPageTest(static () => new GallerySelectionPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GallerySelectionPage(), static window =>
             {
                 Controls.CheckBox twoState = Assert.IsAssignableFrom<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "TwoStateCheckBox"));
                 Controls.CheckBox threeState = Assert.IsAssignableFrom<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "ThreeStateCheckBox"));
@@ -150,9 +151,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySelectionPage_RatingAndRequestedToggleSamplesArePresent()
+        public Task GallerySelectionPage_RatingAndRequestedToggleSamplesArePresentAsync()
         {
-            RunDemoPageTest(static () => new GallerySelectionPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GallerySelectionPage(), static window =>
             {
                 Controls.RatingControl rating = Assert.IsAssignableFrom<Controls.RatingControl>(FindVisualChildByName<Controls.RatingControl>(window, "RatingSample"));
                 Controls.RatingControl readOnlyRating = Assert.IsAssignableFrom<Controls.RatingControl>(FindVisualChildByName<Controls.RatingControl>(window, "ReadOnlyRatingSample"));
@@ -181,9 +182,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryTreesPage_IncludesMultipleSelectionTreeView()
+        public Task GalleryTreesPage_IncludesMultipleSelectionTreeViewAsync()
         {
-            RunDemoPageTest(static () => new GalleryTreesPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
             {
                 Controls.TreeView treeView = Assert.IsAssignableFrom<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"));
 
@@ -192,9 +193,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryLayoutPage_ExpanderStartsCollapsed()
+        public Task GalleryLayoutPage_ExpanderStartsCollapsedAsync()
         {
-            RunDemoPageTest(static () => new GalleryLayoutPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryLayoutPage(), static window =>
             {
                 Controls.Expander expander = Assert.IsAssignableFrom<Controls.Expander>(FindVisualChildByName<Controls.Expander>(window, "AdvancedOptionsExpander"));
 
@@ -203,9 +204,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryDataPage_ListBoxSamplesExposeSelectionModes()
+        public Task GalleryDataPage_ListBoxSamplesExposeSelectionModesAsync()
         {
-            RunDemoPageTest(static () => new GalleryDataPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryDataPage(), static window =>
             {
                 Controls.ListBox singleSelect = Assert.IsAssignableFrom<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox"));
                 Controls.ListBox multiSelect = Assert.IsAssignableFrom<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox"));
@@ -219,30 +220,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryDataAndTreeSamplesExposeThemedBorders()
+        public async Task GalleryDataAndTreeSamplesExposeThemedBordersAsync()
         {
-            RunDemoPageTest(static () => new GalleryDataPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryDataPage(), static window =>
             {
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "SimpleListView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "RichListView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox"));
-            });
+            }).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryDataBindingPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryDataBindingPage(), static window =>
             {
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "BoundListView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "SelectionModeListView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "DataTemplateListView"));
-            });
+            }).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryTreesPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
             {
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "HierarchyTreeView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "SelectionTreeView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"));
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "ExpansionTreeView"));
-            });
+            }).ConfigureAwait(true);
         }
 
         private static void AssertControlHasThemedBorder(Control? control)
@@ -268,9 +269,9 @@ namespace Fluence.Wpf.Tests
             return FindVisualChildren<Controls.RepeatButton>(root).FirstOrDefault(repeatButton => string.Equals(repeatButton.Content as string, content, StringComparison.Ordinal));
         }
 
-        private static void RunDemoPageTest(Func<UserControl> createPage, Action<Window> verify)
+        private static Task RunDemoPageTestAsync(Func<UserControl> createPage, Action<Window> verify)
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

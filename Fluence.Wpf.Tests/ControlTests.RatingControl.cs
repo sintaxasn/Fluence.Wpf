@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -48,9 +49,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void RatingControl_DefaultStyle_Applies()
+        public Task RatingControl_DefaultStyle_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -67,9 +68,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_DefaultMaxRating_GeneratesFiveStars()
+        public Task RatingControl_DefaultMaxRating_GeneratesFiveStarsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -86,9 +87,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_Value_UpdatesFilledStars()
+        public Task RatingControl_Value_UpdatesFilledStarsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -116,9 +117,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_FilledStars_UseAccentBrush()
+        public Task RatingControl_FilledStars_UseAccentBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -141,9 +142,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_EmptyStars_UseSecondaryTextBrush()
+        public Task RatingControl_EmptyStars_UseSecondaryTextBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -165,9 +166,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_Caption_ShowsWhenSet()
+        public Task RatingControl_Caption_ShowsWhenSetAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -185,9 +186,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_Caption_CollapsedWhenEmpty()
+        public Task RatingControl_Caption_CollapsedWhenEmptyAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -204,9 +205,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_Value_CoercedToMaxRating()
+        public Task RatingControl_Value_CoercedToMaxRatingAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -226,9 +227,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_ThemeCycle_StyleRemainsApplied()
+        public Task RatingControl_ThemeCycle_StyleRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -247,9 +248,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_AutomationPeer_ExposesRangeValueAndIsKeyboardSettable()
+        public Task RatingControl_AutomationPeer_ExposesRangeValueAndIsKeyboardSettableAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -285,9 +286,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabled()
+        public Task RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);

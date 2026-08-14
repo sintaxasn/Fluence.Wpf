@@ -27,6 +27,7 @@
  */
 
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Xunit;
@@ -36,9 +37,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void TreeView_DefaultSelectionModeIsSingleWithLiveSelectedItems()
+        public Task TreeView_DefaultSelectionModeIsSingleWithLiveSelectedItemsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -62,9 +63,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeView_MultipleSelectionShowsCheckboxAndSyncsSelectedItems()
+        public Task TreeView_MultipleSelectionShowsCheckboxAndSyncsSelectedItemsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -119,9 +120,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeView_MultipleSelectionSpaceTogglesItemCheckState()
+        public Task TreeView_MultipleSelectionSpaceTogglesItemCheckStateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -180,9 +181,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeView_NoneSelectionHidesCheckboxAndClearsSelection()
+        public Task TreeView_NoneSelectionHidesCheckboxAndClearsSelectionAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -227,9 +228,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeView_MultipleSelectionCascadesAndComputesParentState()
+        public Task TreeView_MultipleSelectionCascadesAndComputesParentStateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -63,9 +64,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RadioButton_OuterRing_UsesControlStrongStrokeBrush()
+        public Task RadioButton_OuterRing_UsesControlStrongStrokeBrushAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -109,9 +110,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RadioButton_OuterRing_SwitchesToDisabledStrokeWhenDisabled()
+        public Task RadioButton_OuterRing_SwitchesToDisabledStrokeWhenDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -156,9 +157,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void CheckBox_CheckedGlyph_UsesIndeterminateDashStrokeWeight()
+        public Task CheckBox_CheckedGlyph_UsesIndeterminateDashStrokeWeightAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -188,7 +189,7 @@ namespace Fluence.Wpf.Tests
                     // The check-in storyboard now fades the glyph in, so sample until it
                     // settles at the trigger setter steady state instead of asserting
                     // immediately after the window shows.
-                    Assert.True(WaitUntil(window.Dispatcher, 3000, () => checkGlyph.Opacity >= 0.99),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 3000, () => checkGlyph.Opacity >= 0.99).ConfigureAwait(true),
                         "Checked CheckBox state should show the check glyph once the check-in animation settles.");
                     Assert.Equal(0.0, indeterminateDash.Opacity, 0.01);
                     Assert.Equal(indeterminateDash.Height, checkGlyph.StrokeThickness, 0.01);
@@ -208,9 +209,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void CheckBox_CheckIn_GlyphAnimatesInAndUncheckRevertsInstantly()
+        public Task CheckBox_CheckIn_GlyphAnimatesInAndUncheckRevertsInstantlyAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -246,11 +247,11 @@ namespace Fluence.Wpf.Tests
                     // ScaleTransform. WPF keeps the finished clocks attached (so
                     // HasAnimatedProperties stays true); the observable contract is that
                     // the stopped clocks hold nothing and the base values win.
-                    bool settled = WaitUntil(window.Dispatcher, 5000, () =>
+                    bool settled = await WaitUntilAsync(window.Dispatcher, 5000, () =>
                         checkGlyph.RenderTransform is ScaleTransform liveScale
                         && checkGlyph.Opacity >= 0.9999
                         && liveScale.ScaleX >= 0.9999
-                        && liveScale.ScaleY >= 0.9999);
+                        && liveScale.ScaleY >= 0.9999).ConfigureAwait(true);
                     Assert.True(settled,
                         "The check-in storyboard should complete and hand the glyph back to the trigger setter steady state.");
 
@@ -273,11 +274,11 @@ namespace Fluence.Wpf.Tests
                     // (SnapshotAndReplace hands off the finished clocks).
                     checkBox.IsChecked = true;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    bool resettled = WaitUntil(window.Dispatcher, 5000, () =>
+                    bool resettled = await WaitUntilAsync(window.Dispatcher, 5000, () =>
                         checkGlyph.RenderTransform is ScaleTransform liveScale
                         && checkGlyph.Opacity >= 0.9999
                         && liveScale.ScaleX >= 0.9999
-                        && liveScale.ScaleY >= 0.9999);
+                        && liveScale.ScaleY >= 0.9999).ConfigureAwait(true);
                     Assert.True(resettled,
                         "Re-checking must replay the check-in storyboard and settle at the steady state again.");
                 }
@@ -295,9 +296,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_Click_FiresOnMouseDownThenUp_WhenIsClickable()
+        public Task Card_Click_FiresOnMouseDownThenUp_WhenIsClickableAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -347,9 +348,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_Click_DoesNotFire_WhenNotClickable()
+        public Task Card_Click_DoesNotFire_WhenNotClickableAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -397,9 +398,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_Left_ContentBorder_HasWinUiCornerRadiusAndStroke()
+        public Task NavigationView_Left_ContentBorder_HasWinUiCornerRadiusAndStrokeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -455,9 +456,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_ContentBorder_HasWinUiCornerRadiusAndStroke()
+        public Task NavigationView_LeftCompact_ContentBorder_HasWinUiCornerRadiusAndStrokeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -512,9 +513,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_DefaultStyle_AppliesLeftTemplate()
+        public Task NavigationView_DefaultStyle_AppliesLeftTemplateAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

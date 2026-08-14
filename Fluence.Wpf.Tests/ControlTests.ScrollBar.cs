@@ -28,6 +28,7 @@
 
 using System.Collections;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -100,9 +101,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ScrollBar_ScrollViewerTemplate_ContainsBothScrollBarParts()
+        public Task ScrollBar_ScrollViewerTemplate_ContainsBothScrollBarPartsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -145,9 +146,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ScrollBar_VSM_MouseIndicator_ExpandsVerticalWidth()
+        public Task ScrollBar_VSM_MouseIndicator_ExpandsVerticalWidthAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -191,9 +192,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ScrollBar_VSM_NoIndicator_CollapsesVerticalWidth()
+        public Task ScrollBar_VSM_NoIndicator_CollapsesVerticalWidthAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -239,9 +240,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ScrollBar_VSM_MouseIndicator_ExpandsHorizontalHeight()
+        public Task ScrollBar_VSM_MouseIndicator_ExpandsHorizontalHeightAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -283,9 +284,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ScrollBar_DefaultLayout_ReservesExpandedSlotWithCompactIndicator()
+        public Task ScrollBar_DefaultLayout_ReservesExpandedSlotWithCompactIndicatorAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -330,9 +331,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ScrollBar_Disabled_OpacityReducedOrElementDisabled()
+        public Task ScrollBar_Disabled_OpacityReducedOrElementDisabledAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -375,9 +376,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ScrollBar_ThemeCycle_BrushesResolveAfterEachSwitch()
+        public Task ScrollBar_ThemeCycle_BrushesResolveAfterEachSwitchAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

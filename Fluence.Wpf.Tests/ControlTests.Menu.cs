@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Menu_StyleApplies_BackgroundIsTransparent()
+        public Task Menu_StyleApplies_BackgroundIsTransparentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -66,9 +67,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Menu_StyleApplies_BorderThicknessIsZero()
+        public Task Menu_StyleApplies_BorderThicknessIsZeroAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -87,9 +88,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Menu_AcceptsMenuItemItems()
+        public Task Menu_AcceptsMenuItemItemsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -111,9 +112,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Menu_ThemeCycle_BackgroundRemainsTransparent()
+        public Task Menu_ThemeCycle_BackgroundRemainsTransparentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

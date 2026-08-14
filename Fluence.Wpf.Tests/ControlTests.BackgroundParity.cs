@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -42,9 +43,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void SelectionControls_OffStateBackgrounds_UseWinUiAltFillRoles()
+        public Task SelectionControls_OffStateBackgrounds_UseWinUiAltFillRolesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -110,9 +111,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressBar_TrackBackground_UsesWinUiStrongStrokeRole()
+        public Task ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -147,9 +148,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ScrollBar_RailBackground_UsesWinUiTrackFillRole()
+        public Task ScrollBar_RailBackground_UsesWinUiTrackFillRoleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -189,9 +190,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSampleControl_Chrome_UsesWinUiGalleryBackgroundRoles()
+        public Task DemoSampleControl_Chrome_UsesWinUiGalleryBackgroundRolesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -252,9 +253,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSharedResources_DoNotShadowNativeFluenceSurfaceRoles()
+        public Task DemoSharedResources_DoNotShadowNativeFluenceSurfaceRolesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -271,9 +272,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSharedResources_NativeBrushesResolveInLightAndHighContrast()
+        public Task DemoSharedResources_NativeBrushesResolveInLightAndHighContrastAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -293,9 +294,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BackgroundParityBrushes_ResolveAcrossThemesAndDeterministicAccent()
+        public Task BackgroundParityBrushes_ResolveAcrossThemesAndDeterministicAccentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);

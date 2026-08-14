@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
@@ -46,9 +47,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void InfoBar_StyleApplies_RootBorderFound()
+        public Task InfoBar_StyleApplies_RootBorderFoundAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_SeverityLevelsVSM_AllStatesAccessible()
+        public Task InfoBar_SeverityLevelsVSM_AllStatesAccessibleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -91,9 +92,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_CloseButton_UsesFluentSubtlePlate()
+        public Task InfoBar_CloseButton_UsesFluentSubtlePlateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -127,7 +128,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(primary.Color, buttonForeground.Color);
 
                     FontIcon glyph = Assert.IsAssignableFrom<FontIcon>(FindVisualChildren<FontIcon>(close).FirstOrDefault());
-                    Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
+                    Assert.Equal("\uE711", glyph.Glyph, StringComparer.Ordinal);
                     SolidColorBrush glyphForeground = Assert.IsType<SolidColorBrush>(glyph.Foreground);
                     Assert.Equal(primary.Color, glyphForeground.Color);
                 }
@@ -139,9 +140,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_DefaultSeverity_IndicatorBarHasBackground()
+        public Task InfoBar_DefaultSeverity_IndicatorBarHasBackgroundAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -158,9 +159,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_InformationalAccentBrushes_TrackAccentColorChange()
+        public Task InfoBar_InformationalAccentBrushes_TrackAccentColorChangeAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -190,9 +191,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_SeverityChange_IndicatorBarBackgroundUpdates()
+        public Task InfoBar_SeverityChange_IndicatorBarBackgroundUpdatesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -216,9 +217,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_DeclaresPoliteLiveSetting()
+        public Task InfoBar_DeclaresPoliteLiveSettingAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -235,9 +236,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_ActionButton_IsNotClippedByRootBorder()
+        public Task InfoBar_ActionButton_IsNotClippedByRootBorderAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

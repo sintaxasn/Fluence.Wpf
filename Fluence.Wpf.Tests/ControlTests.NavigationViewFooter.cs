@@ -27,6 +27,7 @@
  */
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -43,7 +44,7 @@ namespace Fluence.Wpf.Tests
             footer = new NavigationViewItem
             {
                 Content = "Settings",
-                Icon = new FontIcon { Glyph = "", IconFontSize = 16 },
+                Icon = new FontIcon { Glyph = "\uE713", IconFontSize = 16 },
             };
             NavigationView nav = new()
             {
@@ -52,16 +53,16 @@ namespace Fluence.Wpf.Tests
                 PaneDisplayMode = mode,
                 IsPaneOpen = isPaneOpen,
             };
-            _ = nav.Items.Add(new NavigationViewItem { Content = "Home", Icon = new FontIcon { Glyph = "" } });
-            _ = nav.Items.Add(new NavigationViewItem { Content = "Docs", Icon = new FontIcon { Glyph = "" } });
+            _ = nav.Items.Add(new NavigationViewItem { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } });
+            _ = nav.Items.Add(new NavigationViewItem { Content = "Docs", Icon = new FontIcon { Glyph = "\uE8A5" } });
             nav.FooterMenuItems.Add(footer);
             return nav;
         }
 
         [Fact]
-        public void NavigationView_FooterItem_ResolvesOwningNavigationView()
+        public Task NavigationView_FooterItem_ResolvesOwningNavigationViewAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -90,9 +91,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_FooterItem_Invoke_SelectsAndClearsMainSelection()
+        public Task NavigationView_FooterItem_Invoke_SelectsAndClearsMainSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -130,9 +131,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_MainSelection_ClearsFooterSelection()
+        public Task NavigationView_MainSelection_ClearsFooterSelectionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -167,9 +168,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_FooterSelectionIndicator_BecomesVisibleOnFooterSelection()
+        public Task NavigationView_FooterSelectionIndicator_BecomesVisibleOnFooterSelectionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -204,9 +205,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_FooterItem_StretchesToPaneWidth_InLeftOpen()
+        public Task NavigationView_FooterItem_StretchesToPaneWidth_InLeftOpenAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -217,7 +218,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     // Settle until the footer item has stretched to the asserted pane width.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => { window.UpdateLayout(); return footer.ActualWidth > 200.0; });
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => { window.UpdateLayout(); return footer.ActualWidth > 200.0; }).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     // The footer item lives in a stretching StackPanel, so its hover/selection surface
@@ -236,9 +237,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_FooterItem_IconCentered_InLeftCompactClosed()
+        public Task NavigationView_FooterItem_IconCentered_InLeftCompactClosedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -248,7 +249,7 @@ namespace Fluence.Wpf.Tests
                     window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.LeftCompact, isPaneOpen: false);
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 300).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     ContentPresenter iconPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer, "IconPresenter"));
@@ -268,9 +269,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_Automation_GetSelection_ReportsFooterSelection()
+        public Task NavigationView_Automation_GetSelection_ReportsFooterSelectionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

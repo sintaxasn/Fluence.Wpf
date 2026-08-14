@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Xunit;
@@ -41,9 +42,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void ListBox_SelectionIndicator_CanonicalGeometryAndCentered()
+        public Task ListBox_SelectionIndicator_CanonicalGeometryAndCenteredAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -73,9 +74,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ListBox_SelectionIndicator_SlidesInAtFullSizeWhenSelected()
+        public Task ListBox_SelectionIndicator_SlidesInAtFullSizeWhenSelectedAsync()
         {
-            WpfTestSta.Invoke(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -92,11 +93,11 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(0.0, indicator.Opacity, 0.01);
 
                 lb.SelectedIndex = 0;
-                bool shown = WaitUntil(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99);
+                bool shown = await WaitUntilAsync(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99).ConfigureAwait(true);
                 Assert.True(shown, "SelectionIndicator must animate to full opacity when the item is selected.");
 
                 TranslateTransform translate = Assert.IsType<TranslateTransform>(indicator.RenderTransform);
-                bool settled = WaitUntil(w.Dispatcher, 1000, () => System.Math.Abs(translate.X) < 0.01);
+                bool settled = await WaitUntilAsync(w.Dispatcher, 1000, () => System.Math.Abs(translate.X) < 0.01).ConfigureAwait(true);
                 Assert.True(settled, "SelectionIndicator must slide to its resting position when selected.");
 
                 Assert.Equal(16.0, indicator.ActualHeight, 0.5);

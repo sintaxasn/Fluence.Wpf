@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -45,9 +46,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void SplitButton_AppearanceProperty_DefaultIsStandard()
+        public Task SplitButton_AppearanceProperty_DefaultIsStandardAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -60,9 +61,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SplitButton_AppearanceProperty_CanBeSetToAccent()
+        public Task SplitButton_AppearanceProperty_CanBeSetToAccentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -80,9 +81,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SplitButton_DividerRectangle_PresentInTemplate()
+        public Task SplitButton_DividerRectangle_PresentInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -99,14 +100,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyle()
+        public async Task SplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyleAsync()
         {
             // The per-half focus rings previously lived in the template behind
             // IsKeyboardFocused triggers, which mouse clicks also satisfy, so the rings
             // rendered on click. Each half now carries the DefaultControlFocusVisualStyle
             // adorner instead, which WPF shows only for keyboard navigation (Tab),
             // matching DropDownButton.
-            WpfTestSta.Invoke(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -139,13 +140,13 @@ namespace Fluence.Wpf.Tests
                     Keyboard.ClearFocus();
                     window.Close();
                 }
-            });
+            }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void SplitButton_Accent_DividerFillDiffersFromStandard()
+        public Task SplitButton_Accent_DividerFillDiffersFromStandardAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

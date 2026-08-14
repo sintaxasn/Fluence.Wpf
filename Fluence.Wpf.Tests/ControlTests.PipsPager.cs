@@ -28,6 +28,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -49,9 +50,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_DefaultStyle_AppliesAndTemplatePartsResolve()
+        public Task PipsPager_DefaultStyle_AppliesAndTemplatePartsResolveAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -88,9 +89,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_FivePages_RendersFivePips()
+        public Task PipsPager_FivePages_RendersFivePipsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -125,9 +126,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_PipClick_SelectsPageAndRaisesSelectedIndexChanged()
+        public Task PipsPager_PipClick_SelectsPageAndRaisesSelectedIndexChangedAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -182,9 +183,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_NavigationButtons_ChangeSelectionAndRespectBounds()
+        public Task PipsPager_NavigationButtons_ChangeSelectionAndRespectBoundsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -239,9 +240,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_MaxVisiblePips_WindowsAroundSelection()
+        public Task PipsPager_MaxVisiblePips_WindowsAroundSelectionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -289,9 +290,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_SelectedPageIndex_CoercesIntoRange()
+        public Task PipsPager_SelectedPageIndex_CoercesIntoRangeAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -327,9 +328,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_VerticalOrientation_StacksPipsVerticallyAndSwapsChevrons()
+        public Task PipsPager_VerticalOrientation_StacksPipsVerticallyAndSwapsChevronsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -376,9 +377,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_ButtonVisibilityEnum_ControlsNavigationButtonVisibility()
+        public Task PipsPager_ButtonVisibilityEnum_ControlsNavigationButtonVisibilityAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -422,9 +423,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_ArrowKeys_MoveSelectionWhileFocusIsInside()
+        public Task PipsPager_ArrowKeys_MoveSelectionWhileFocusIsInsideAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -474,9 +475,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_ThemeCycle_PipBrushesResolve()
+        public Task PipsPager_ThemeCycle_PipBrushesResolveAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -504,9 +505,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_PipFills_UseNeutralStrongFillRoles()
+        public Task PipsPager_PipFills_UseNeutralStrongFillRolesAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -565,7 +566,7 @@ namespace Fluence.Wpf.Tests
 
                     // The selected size is animated (83ms ControlFasterAnimationDuration), so
                     // sample the dot until the storyboard settles at the 6px selected size.
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => Math.Abs(selectedDot.Width - 6.0) < 0.01),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(selectedDot.Width - 6.0) < 0.01).ConfigureAwait(true),
                         "The selected pip dot must grow to the 6px selected size.");
 
                     pager.IsEnabled = false;
@@ -580,9 +581,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_PipSizeMorph_AnimatesSelectionAndSurvivesWindowRebuild()
+        public Task PipsPager_PipSizeMorph_AnimatesSelectionAndSurvivesWindowRebuildAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -617,7 +618,7 @@ namespace Fluence.Wpf.Tests
                     // Pips are created with IsChecked already true, so the IsChecked
                     // EnterActions must run when the template applies and settle the
                     // selected dot at 6x6 (83ms ControlFasterAnimationDuration morph).
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 6.0)),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 6.0)).ConfigureAwait(true),
                         "The initially selected pip must animate to the 6px selected size at load.");
                     Assert.True(IsDotSize(DotAt(host, 1), 4.0), "An unselected pip must rest at 4px.");
 
@@ -625,9 +626,9 @@ namespace Fluence.Wpf.Tests
                     // the old pip's ExitActions shrink it back to 4 while the new pip grows to 6.
                     pager.SelectedPageIndex = 1;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)).ConfigureAwait(true),
                         "The newly selected pip must animate up to the 6px selected size.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 4.0)),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 4.0)).ConfigureAwait(true),
                         "The previously selected pip must animate back to the 4px rest size.");
 
                     // Window rebuild (mid-range selection recreates the pips): the recreated
@@ -636,7 +637,7 @@ namespace Fluence.Wpf.Tests
                     pager.SelectedPageIndex = 5;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)).ConfigureAwait(true),
                         "A recreated selected pip must animate to the 6px selected size.");
                     Assert.True(IsDotSize(DotAt(host, 0), 4.0), "A recreated unselected pip must rest at 4px.");
                     Assert.True(IsDotSize(DotAt(host, 2), 4.0), "A recreated unselected pip must rest at 4px.");
@@ -649,9 +650,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void PipsPager_AutomationPeer_ReportsGroupClassNameAndName()
+        public Task PipsPager_AutomationPeer_ReportsGroupClassNameAndNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

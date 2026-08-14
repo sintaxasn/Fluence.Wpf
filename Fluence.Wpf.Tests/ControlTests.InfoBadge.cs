@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -48,9 +49,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void InfoBadge_DisplayKindStates_GroupExists()
+        public Task InfoBadge_DisplayKindStates_GroupExistsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -78,9 +79,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_DefaultState_IsDot()
+        public Task InfoBadge_DefaultState_IsDotAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -101,9 +102,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_ValueSet_ShowsBadgeBorder()
+        public Task InfoBadge_ValueSet_ShowsBadgeBorderAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -122,9 +123,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_ValueBadge_UsesStableScreenshotPillMetrics()
+        public Task InfoBadge_ValueBadge_UsesStableScreenshotPillMetricsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -158,9 +159,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBadge_DisplayKindStates_HasAllFourStates()
+        public Task InfoBadge_DisplayKindStates_HasAllFourStatesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

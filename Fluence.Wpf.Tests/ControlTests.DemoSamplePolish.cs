@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -42,9 +43,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void GalleryButtonsPage_EnableCheckBoxControlsOnlyVisibleButtonVariants()
+        public Task GalleryButtonsPage_EnableCheckBoxControlsOnlyVisibleButtonVariantsAsync()
         {
-            RunDemoPageTest(static () => new GalleryButtonsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
                 Controls.CheckBox enable = Assert.IsAssignableFrom<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "ButtonEnableCheckBox"));
                 Controls.Button standard = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Standard"));
@@ -69,9 +70,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoSampleControl_SourceExpander_ReopensAfterCollapse()
+        public Task DemoSampleControl_SourceExpander_ReopensAfterCollapseAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -100,12 +101,12 @@ namespace Fluence.Wpf.Tests
 
                     expander.IsExpanded = true;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d),
+                        await WaitUntilAsync(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d).ConfigureAwait(true),
                         "First expand should open the source content row.");
 
                     expander.IsExpanded = false;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) <= 0.5d),
+                        await WaitUntilAsync(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) <= 0.5d).ConfigureAwait(true),
                         "Collapse should close the source content row.");
 
                     // Regression guard: re-expanding after a collapse must reopen the row.
@@ -114,7 +115,7 @@ namespace Fluence.Wpf.Tests
                     // re-animate the row back open or the dropdown never comes back.
                     expander.IsExpanded = true;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d),
+                        await WaitUntilAsync(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d).ConfigureAwait(true),
                         "Re-expanding after a collapse must reopen the source content row.");
                 }
                 finally
@@ -131,9 +132,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryButtonsPage_SubtleButtonsUseWinUiTransparentRestBorderAndToggleButtonSampleIsRemoved()
+        public Task GalleryButtonsPage_SubtleButtonsUseWinUiTransparentRestBorderAndToggleButtonSampleIsRemovedAsync()
         {
-            RunDemoPageTest(static () => new GalleryButtonsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
                 Controls.Button subtle = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Subtle"));
                 Controls.Button refresh = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Refresh"));
@@ -146,9 +147,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGallery()
+        public Task GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGalleryAsync()
         {
-            RunDemoPageTest(static () => new GalleryIconsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryIconsPage(), static window =>
             {
                 List<TextBlock> titles = [.. FindVisualChildren<TextBlock>(window)
                     .Where(static text => string.Equals(text.Text, "Iconography", StringComparison.Ordinal))];
@@ -162,9 +163,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryIconsPage_SearchFiltersCatalogAndSelectsFirstResult()
+        public Task GalleryIconsPage_SearchFiltersCatalogAndSelectsFirstResultAsync()
         {
-            RunDemoPageTest(() => new GalleryIconsPage(), window =>
+            return RunDemoPageTestAsync(() => new GalleryIconsPage(), window =>
             {
                 Controls.AutoSuggestBox search = Assert.IsAssignableFrom<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(window, "IconSearchBox"));
                 Controls.ListView list = Assert.IsAssignableFrom<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "IconCatalogList"));
@@ -190,9 +191,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryIconsPage_ClickingTileSelectsIconAndPopulatesSidebar()
+        public Task GalleryIconsPage_ClickingTileSelectsIconAndPopulatesSidebarAsync()
         {
-            RunDemoPageTest(() => new GalleryIconsPage(), window =>
+            return RunDemoPageTestAsync(() => new GalleryIconsPage(), window =>
             {
                 Controls.ListView list = Assert.IsAssignableFrom<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "IconCatalogList"));
 
@@ -219,9 +220,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryIconsPage_SidebarGlyphFieldsMatchWinUiGalleryFormats()
+        public Task GalleryIconsPage_SidebarGlyphFieldsMatchWinUiGalleryFormatsAsync()
         {
-            RunDemoPageTest(() => new GalleryIconsPage(), window =>
+            return RunDemoPageTestAsync(() => new GalleryIconsPage(), window =>
             {
                 Controls.AutoSuggestBox search = Assert.IsAssignableFrom<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(window, "IconSearchBox"));
 
@@ -260,9 +261,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryButtonsPage_DemoContentPresenterCentersButtonGroups()
+        public Task GalleryButtonsPage_DemoContentPresenterCentersButtonGroupsAsync()
         {
-            RunDemoPageTest(static () => new GalleryButtonsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
                 List<DemoSampleControl> samples = [.. FindVisualChildren<DemoSampleControl>(window)];
                 Assert.True(samples.Count > 0, "Buttons page should render DemoSampleControl samples.");
@@ -277,9 +278,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GallerySelectionPage_BasicRadioGroupStartsAtGroupLeftEdge()
+        public Task GallerySelectionPage_BasicRadioGroupStartsAtGroupLeftEdgeAsync()
         {
-            RunDemoPageTest(static () => new GallerySelectionPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GallerySelectionPage(), static window =>
             {
                 Controls.RadioButton optionA = Assert.IsAssignableFrom<Controls.RadioButton>(FindRadioButtonByContent(window, "Option A"));
                 Controls.RadioButton optionB = Assert.IsAssignableFrom<Controls.RadioButton>(FindRadioButtonByContent(window, "Option B"));
@@ -293,9 +294,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryDataBindingPage_AddItemRailIsWider()
+        public Task GalleryDataBindingPage_AddItemRailIsWiderAsync()
         {
-            RunDemoPageTest(static () => new GalleryDataBindingPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryDataBindingPage(), static window =>
             {
                 Controls.TextBox newItemBox = Assert.IsAssignableFrom<Controls.TextBox>(FindVisualChildByName<Controls.TextBox>(window, "NewItemBox"));
                 StackPanel rightRailStack = Assert.IsType<StackPanel>(newItemBox?.Parent);
@@ -306,9 +307,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryNavigationPage_CompactSampleShowsBackAndPaneToggleButtons()
+        public Task GalleryNavigationPage_CompactSampleShowsBackAndPaneToggleButtonsAsync()
         {
-            RunDemoPageTest(static () => new GalleryNavigationPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryNavigationPage(), static window =>
             {
                 Controls.NavigationView compact = Assert.IsAssignableFrom<Controls.NavigationView>(FindVisualChildByName<Controls.NavigationView>(window, "CompactNavigationDemo"));
                 Controls.CheckBox backEnabled = Assert.IsAssignableFrom<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "BackEnabledToggle"));
@@ -338,9 +339,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryFormsPage_ActionsAlignAndOutputHasStableSpace()
+        public Task GalleryFormsPage_ActionsAlignAndOutputHasStableSpaceAsync()
         {
-            RunDemoPageTest(static () => new GalleryFormsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryFormsPage(), static window =>
             {
                 Controls.Button signIn = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(window, "SignInButton"));
                 StackPanel? checkoutButtons = FindVisualChildByName<StackPanel>(window, "CheckoutButtonsPanel");
@@ -359,25 +360,25 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryPages_RemoveRequestedOutputRegions()
+        public async Task GalleryPages_RemoveRequestedOutputRegionsAsync()
         {
-            RunDemoPageTest(static () => new GalleryInputsPage(), static window =>
-                Assert.Null(FindVisualChildByName<TextBlock>(window, "CharCountLabel")));
+            await RunDemoPageTestAsync(static () => new GalleryInputsPage(), static window =>
+                Assert.Null(FindVisualChildByName<TextBlock>(window, "CharCountLabel"))).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryDataBindingPage(), static window =>
-                Assert.Null(FindVisualChildByName<TextBlock>(window, "ItemCountLabel")));
+            await RunDemoPageTestAsync(static () => new GalleryDataBindingPage(), static window =>
+                Assert.Null(FindVisualChildByName<TextBlock>(window, "ItemCountLabel"))).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryTreesPage(), static window =>
-                Assert.Null(FindVisualChildByName<TextBlock>(window, "TreeSelectionLabel")));
+            await RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
+                Assert.Null(FindVisualChildByName<TextBlock>(window, "TreeSelectionLabel"))).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryNavigationPage(), static window =>
-                Assert.Null(FindVisualChildByName<TextBlock>(window, "CompactNavigationOutputText")));
+            await RunDemoPageTestAsync(static () => new GalleryNavigationPage(), static window =>
+                Assert.Null(FindVisualChildByName<TextBlock>(window, "CompactNavigationOutputText"))).ConfigureAwait(true);
         }
 
         [Fact]
-        public void GalleryStatusPage_NumberBoxDrivesFirstProgressBar()
+        public Task GalleryStatusPage_NumberBoxDrivesFirstProgressBarAsync()
         {
-            RunDemoPageTest(static () => new GalleryStatusPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryStatusPage(), static window =>
             {
                 Controls.NumberBox numberBox = Assert.IsAssignableFrom<Controls.NumberBox>(FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox"));
                 Controls.ProgressBar progressBar = Assert.IsAssignableFrom<Controls.ProgressBar>(FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar"));
@@ -415,9 +416,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryFormsPage_CheckoutFieldsUseStableNamesAndAlignOptionalInput()
+        public Task GalleryFormsPage_CheckoutFieldsUseStableNamesAndAlignOptionalInputAsync()
         {
-            RunDemoPageTest(static () => new GalleryFormsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryFormsPage(), static window =>
             {
                 Grid checkoutGrid = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(window, "CheckoutFieldsGrid"));
                 Controls.NumberBox quantity = Assert.IsAssignableFrom<Controls.NumberBox>(FindVisualChildByName<Controls.NumberBox>(window, "QuantityNumberBox"));
@@ -433,9 +434,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryDataPage_ListBackgroundsAndPersonPicturesUseExpectedAssets()
+        public Task GalleryDataPage_ListBackgroundsAndPersonPicturesUseExpectedAssetsAsync()
         {
-            RunDemoPageTest(static () => new GalleryDataPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryDataPage(), static window =>
             {
                 Border simpleBackground = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(window, "SimpleListViewBackground"));
                 Border richBackground = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(window, "RichListViewBackground"));
@@ -464,24 +465,24 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryPages_RightRailControlsUseRequestedAlignment()
+        public async Task GalleryPages_RightRailControlsUseRequestedAlignmentAsync()
         {
-            RunDemoPageTest(static () => new GalleryDataBindingPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryDataBindingPage(), static window =>
             {
                 StackPanel selectionRail = Assert.IsAssignableFrom<StackPanel>(FindVisualChildByName<StackPanel>(window, "SelectionModeRail"));
                 Assert.Equal(VerticalAlignment.Center, selectionRail.VerticalAlignment);
-            });
+            }).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryTreesPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
             {
                 StackPanel treeExpansionActions = Assert.IsAssignableFrom<StackPanel>(FindVisualChildByName<StackPanel>(window, "TreeExpansionActionsPanel"));
                 Assert.Equal(HorizontalAlignment.Center, treeExpansionActions.HorizontalAlignment);
                 Assert.Equal(VerticalAlignment.Center, treeExpansionActions.VerticalAlignment);
                 Assert.True(treeExpansionActions.Children.OfType<Controls.Button>().All(static button => button.MinWidth >= 140.0),
                     "Tree expansion buttons should be wider than the default compact command width.");
-            });
+            }).ConfigureAwait(true);
 
-            RunDemoPageTest(static () => new GalleryAccessibilityPage(), static window =>
+            await RunDemoPageTestAsync(static () => new GalleryAccessibilityPage(), static window =>
             {
                 string[] buttonNames =
                 [
@@ -500,13 +501,13 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(36.0, button.MinWidth, 0.1);
                     Assert.Equal(0.0, button.Padding.Left, 0.1);
                 }
-            });
+            }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void GalleryNavigationPage_IconsAreDefaultSizeAndInfoBadgePaneStartsExpanded()
+        public Task GalleryNavigationPage_IconsAreDefaultSizeAndInfoBadgePaneStartsExpandedAsync()
         {
-            RunDemoPageTest(static () => new GalleryNavigationPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryNavigationPage(), static window =>
             {
                 Controls.NavigationView leftNavigation = Assert.IsAssignableFrom<Controls.NavigationView>(FindVisualChildByName<Controls.NavigationView>(window, "LeftNavigationDemo"));
 
@@ -525,9 +526,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryTabsPage_PlacementSampleUsesLeftPlacementOnly()
+        public Task GalleryTabsPage_PlacementSampleUsesLeftPlacementOnlyAsync()
         {
-            RunDemoPageTest(static () => new GalleryTabsPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryTabsPage(), static window =>
             {
                 Dictionary<string, TabItem> items = FindVisualChildren<TabItem>(window)
                     .Where(static item => item.Header is string)
@@ -548,9 +549,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryLayoutPage_SeparatesStructuralPrimitiveSamples()
+        public Task GalleryLayoutPage_SeparatesStructuralPrimitiveSamplesAsync()
         {
-            RunDemoPageTest(static () => new GalleryLayoutPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryLayoutPage(), static window =>
             {
                 List<string> descriptions = [.. FindVisualChildren<DemoSampleControl>(window).Select(static sample => sample.SampleDescription)];
 
@@ -568,9 +569,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void GalleryAccessibilityPage_RtlSampleDefaultsOn()
+        public Task GalleryAccessibilityPage_RtlSampleDefaultsOnAsync()
         {
-            RunDemoPageTest(static () => new GalleryAccessibilityPage(), static window =>
+            return RunDemoPageTestAsync(static () => new GalleryAccessibilityPage(), static window =>
             {
                 Controls.ToggleSwitch toggle = Assert.IsAssignableFrom<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(window, "RtlToggle"));
                 Controls.Card card = Assert.IsAssignableFrom<Controls.Card>(FindVisualChildByName<Controls.Card>(window, "RtlDemoCard"));

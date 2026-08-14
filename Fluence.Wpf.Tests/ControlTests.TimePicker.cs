@@ -28,6 +28,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -71,9 +72,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_DefaultStyle_AppliesTemplateParts()
+        public Task TimePicker_DefaultStyle_AppliesTemplatePartsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -113,9 +114,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholder()
+        public Task TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholderAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -178,9 +179,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_FieldClick_OpensPopupAndPopulatesColumns()
+        public Task TimePicker_FieldClick_OpensPopupAndPopulatesColumnsAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -209,7 +210,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
                     // The open reveal (slide down from Y=-8 with a fade) must exist in the
@@ -217,8 +218,8 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform translate =
                         Assert.IsType<TranslateTransform>(template.FindName("FlyoutSurfaceTranslate", picker));
                     Border surface = Assert.IsType<Border>(template.FindName("FlyoutSurface", picker));
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0).ConfigureAwait(true),
                         "The flyout reveal must settle at Y=0 and full opacity.");
 
                     CultureInfo culture = CultureInfo.CurrentCulture;
@@ -241,9 +242,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_TwentyFourHourClock_PopulatesHoursAndHidesPeriodColumn()
+        public Task TimePicker_TwentyFourHourClock_PopulatesHoursAndHidesPeriodColumnAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -280,7 +281,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, secondDivider.Visibility);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
                     Assert.Equal(24, hourList.Items.Count);
@@ -299,9 +300,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_ClockIdentifierAndMinuteIncrement_CoerceInvalidValues()
+        public Task TimePicker_ClockIdentifierAndMinuteIncrement_CoerceInvalidValuesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -332,9 +333,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_Accept_CommitsSelectionAndRaisesSelectedTimeChanged()
+        public Task TimePicker_Accept_CommitsSelectionAndRaisesSelectedTimeChangedAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -365,7 +366,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the accept scenario.");
 
                     TimePickerSelectedValueChangedEventArgs? captured = null;
@@ -384,11 +385,11 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(captured);
                     Assert.Equal(oldTime, captured.OldTime);
                     Assert.Equal(noon, captured.NewTime);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Accept must close the selector flyout.");
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must reopen for the midnight scenario.");
 
                     Assert.Equal(11, hourList.SelectedIndex);
@@ -412,9 +413,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_Cancel_RevertsPendingSelection()
+        public Task TimePicker_Cancel_RevertsPendingSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -441,7 +442,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the cancel scenario.");
 
                     bool raised = false;
@@ -456,7 +457,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.Equal(original, picker.SelectedTime);
                     Assert.False(raised, "Cancel must not raise SelectedTimeChanged.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Cancel must close the selector flyout.");
                 }
                 finally
@@ -467,9 +468,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_AutomationPeer_ReportsNameFromTimeOrPlaceholder()
+        public Task TimePicker_AutomationPeer_ReportsNameFromTimeOrPlaceholderAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -504,9 +505,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_BlankCultureDesignators_FallBackToInvariantAmPm()
+        public Task TimePicker_BlankCultureDesignators_FallBackToInvariantAmPmAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -547,7 +548,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal("AM", periodText.Text, StringComparer.Ordinal);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
                     Assert.Equal(2, periodList.Items.Count);
@@ -563,9 +564,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTab()
+        public Task TimePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTabAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -592,13 +593,13 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(KeyboardNavigationMode.Cycle, KeyboardNavigation.GetTabNavigation(popup.Child));
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () =>
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () =>
                             popup.Child is Visual root
                             && Keyboard.FocusedElement is Visual focused
-                            && focused.IsDescendantOf(root)),
+                            && focused.IsDescendantOf(root)).ConfigureAwait(true),
                         "Opening the flyout must move keyboard focus inside the popup.");
                 }
                 finally
@@ -609,9 +610,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_FlyoutEscape_ClosesWithoutCommitting()
+        public Task TimePicker_FlyoutEscape_ClosesWithoutCommittingAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -637,7 +638,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the Escape scenario.");
                     Assert.NotNull(popup.Child);
 
@@ -650,7 +651,7 @@ namespace Fluence.Wpf.Tests
 
                     RaiseKeyEvent(popup.Child, Key.Escape, UIElement.PreviewKeyDownEvent);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Escape must close the selector flyout.");
                     Assert.Equal(original, picker.SelectedTime);
                     Assert.False(raised, "Escape must not raise SelectedTimeChanged.");
@@ -663,9 +664,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_FlyoutEnter_CommitsPendingSelection()
+        public Task TimePicker_FlyoutEnter_CommitsPendingSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -691,7 +692,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the Enter scenario.");
                     Assert.NotNull(popup.Child);
 
@@ -702,7 +703,7 @@ namespace Fluence.Wpf.Tests
 
                     RaiseKeyEvent(popup.Child, Key.Enter, UIElement.PreviewKeyDownEvent);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Enter must close the selector flyout.");
                     Assert.Equal(new TimeSpan(12, 30, 0), picker.SelectedTime);
                 }
@@ -714,9 +715,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_OutOfRangeSelectedTime_NormalizesFieldText()
+        public Task TimePicker_OutOfRangeSelectedTime_NormalizesFieldTextAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -762,9 +763,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
+        public Task TimePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopenAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -784,7 +785,7 @@ namespace Fluence.Wpf.Tests
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the light dismiss is simulated.");
 
                     // A light dismiss closes the popup outside the control's own pipeline,
@@ -799,9 +800,9 @@ namespace Fluence.Wpf.Tests
                         "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
 
                     // Once the lockout has elapsed, the field opens the flyout again.
-                    System.Threading.Thread.Sleep(300);
+                    await Task.Delay(300, TestContext.Current.CancellationToken).ConfigureAwait(true);
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "A field click after the lockout must reopen the flyout.");
                 }
                 finally
@@ -812,9 +813,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_SurfaceBrushes_ResolveAfterThemeCycle()
+        public Task TimePicker_SurfaceBrushes_ResolveAfterThemeCycleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

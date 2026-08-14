@@ -28,6 +28,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -45,14 +46,14 @@ namespace Fluence.Wpf.Tests
     /// </summary>
     public partial class ControlTests
     {
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Default values + template part
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_Defaults_AreCanonical()
+        public Task ProgressRing_Defaults_AreCanonicalAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -71,9 +72,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_Template_ContainsDeterminateArcPart()
+        public Task ProgressRing_Template_ContainsDeterminateArcPartAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -88,14 +89,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Indeterminate template - pulsing arc path + rotate transform
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_Indeterminate_TemplateContainsAnimatedArc()
+        public Task ProgressRing_Indeterminate_TemplateContainsAnimatedArcAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -104,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
-                WaitForAnimationAndDrain(w.Dispatcher, 200);
+                await WaitForAnimationAndDrainAsync(w.Dispatcher, 200).ConfigureAwait(true);
 
                 Path arc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.Equal(Visibility.Visible, arc.Visibility);
@@ -122,16 +123,16 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Template settings - diameter + offset match WinUI ProgressRingTemplateSettings
         // diameter = (width × 0.1) + (width ≤ 40 ? 1 : 0)
-        // anchor   = (width × 0.5) − diameter
-        // ──────────────────────────────────────────────────────────────────────
+        // anchor   = (width × 0.5) - diameter
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_TemplateSettings_AtWidth32_MatchWinUiFormula()
+        public Task ProgressRing_TemplateSettings_AtWidth32_MatchWinUiFormulaAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -141,7 +142,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // 32 × 0.1 + 1 = 4.2 ;  32 × 0.5 − 4.2 = 11.8
+                // 32 × 0.1 + 1 = 4.2 ;  32 × 0.5 - 4.2 = 11.8
                 Assert.Equal(4.2, ring.EllipseDiameter, 0.001);
                 Assert.Equal(11.8, ring.EllipseOffset.Top, 0.001);
 
@@ -150,9 +151,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_TemplateSettings_AtWidth64_DropAdditiveTerm()
+        public Task ProgressRing_TemplateSettings_AtWidth64_DropAdditiveTermAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -162,7 +163,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // 64 × 0.1 + 0 = 6.4 ;  64 × 0.5 − 6.4 = 25.6
+                // 64 × 0.1 + 0 = 6.4 ;  64 × 0.5 - 6.4 = 25.6
                 Assert.Equal(6.4, ring.EllipseDiameter, 0.001);
                 Assert.Equal(25.6, ring.EllipseOffset.Top, 0.001);
 
@@ -170,14 +171,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Determinate arc geometry
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_Determinate_PathDataIsPopulatedForNonZeroValue()
+        public Task ProgressRing_Determinate_PathDataIsPopulatedForNonZeroValueAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -203,9 +204,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_Determinate_PathDataIsNullWhenValueIsZero()
+        public Task ProgressRing_Determinate_PathDataIsNullWhenValueIsZeroAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -231,9 +232,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_SwitchToIndeterminate_ClearsArcGeometry()
+        public Task ProgressRing_SwitchToIndeterminate_ClearsArcGeometryAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -262,9 +263,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_SwitchToDeterminate_ClearsIndeterminateArcGeometry()
+        public Task ProgressRing_SwitchToDeterminate_ClearsIndeterminateArcGeometryAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -279,7 +280,7 @@ namespace Fluence.Wpf.Tests
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
-                WaitForAnimationAndDrain(w.Dispatcher, 200);
+                await WaitForAnimationAndDrainAsync(w.Dispatcher, 200).ConfigureAwait(true);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.NotNull(indeterminateArc.Data);
@@ -294,9 +295,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_Unloaded_ClearsIndeterminateArcGeometry()
+        public Task ProgressRing_Unloaded_ClearsIndeterminateArcGeometryAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -311,7 +312,7 @@ namespace Fluence.Wpf.Tests
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
-                WaitForAnimationAndDrain(w.Dispatcher, 200);
+                await WaitForAnimationAndDrainAsync(w.Dispatcher, 200).ConfigureAwait(true);
 
                 Path indeterminateArc = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"));
                 Assert.NotNull(indeterminateArc.Data);
@@ -323,14 +324,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Foreground brush honours theme tokens
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_Foreground_ResolvesToAccentFillColorDefaultBrush()
+        public Task ProgressRing_Foreground_ResolvesToAccentFillColorDefaultBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -350,9 +351,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_PausedState_UsesCautionBrushForBothArcs()
+        public Task ProgressRing_PausedState_UsesCautionBrushForBothArcsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -386,9 +387,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_PausedState_TracksCautionBrushAcrossThemeChange()
+        public Task ProgressRing_PausedState_TracksCautionBrushAcrossThemeChangeAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -426,9 +427,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_IndeterminateAnimation_UsesArcPulseAndRotationModel()
+        public Task ProgressRing_IndeterminateAnimation_UsesArcPulseAndRotationModelAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 DoubleAnimationUsingKeyFrames sweep =
                     InvokePrivateAnimationFactory<DoubleAnimationUsingKeyFrames>("CreateIndeterminateSweepAnimation");
@@ -461,9 +462,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_PausedState_RendersStaticIndeterminateArc()
+        public Task ProgressRing_PausedState_RendersStaticIndeterminateArcAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -485,7 +486,7 @@ namespace Fluence.Wpf.Tests
                 Assert.NotNull(indeterminateArc.Data);
 
                 Rect initialBounds = indeterminateArc.Data.Bounds;
-                WaitForAnimationAndDrain(w.Dispatcher, 400);
+                await WaitForAnimationAndDrainAsync(w.Dispatcher, 400).ConfigureAwait(true);
                 Rect laterBounds = indeterminateArc.Data.Bounds;
 
                 Assert.Equal(initialBounds.X, laterBounds.X, 0.01);
@@ -504,9 +505,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_ErrorState_UsesCriticalBrushThroughThemeCycle()
+        public Task ProgressRing_ErrorState_UsesCriticalBrushThroughThemeCycleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -542,14 +543,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Orthogonal ShowError / ShowPaused flags + ProgressState alias
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_ShowError_ColorsArcsWithCriticalBrush()
+        public Task ProgressRing_ShowError_ColorsArcsWithCriticalBrushAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -589,9 +590,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_ShowPaused_RendersStaticCautionHalfArc()
+        public Task ProgressRing_ShowPaused_RendersStaticCautionHalfArcAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -630,9 +631,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_Indeterminate_StopsAnimationWhenCollapsedAndRestartsWhenVisible()
+        public Task ProgressRing_Indeterminate_StopsAnimationWhenCollapsedAndRestartsWhenVisibleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -649,7 +650,7 @@ namespace Fluence.Wpf.Tests
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 RotateTransform rotate = Assert.IsAssignableFrom<RotateTransform>(GetIndeterminateRotateTransform(ring));
-                Assert.True(WaitUntil(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties),
+                Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties).ConfigureAwait(true),
                     "The indeterminate animation must run while the ring is loaded and visible.");
 
                 ring.Visibility = Visibility.Collapsed;
@@ -662,7 +663,7 @@ namespace Fluence.Wpf.Tests
                 ring.Visibility = Visibility.Visible;
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.True(WaitUntil(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties),
+                Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => rotate.HasAnimatedProperties).ConfigureAwait(true),
                     "Restoring visibility must restart the indeterminate animation.");
 
                 w.Close();
@@ -674,9 +675,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_ProgressStateAlias_MapsOntoStateFlags()
+        public Task ProgressRing_ProgressStateAlias_MapsOntoStateFlagsAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -719,9 +720,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ProgressRing_ThemeCycle_TemplateRemainsApplied()
+        public Task ProgressRing_ThemeCycle_TemplateRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -740,14 +741,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
         // Live region + RangeValue accessibility
-        // ──────────────────────────────────────────────────────────────────────
+        // ----------------------------------------------------------------------
 
         [Fact]
-        public void ProgressRing_DeclaresPoliteLiveSetting()
+        public Task ProgressRing_DeclaresPoliteLiveSettingAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

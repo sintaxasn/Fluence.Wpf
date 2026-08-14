@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void TabView_PART_ScrollBackButton_ExistsInTemplate()
+        public Task TabView_PART_ScrollBackButton_ExistsInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -63,9 +64,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabView_PART_ScrollForwardButton_ExistsInTemplate()
+        public Task TabView_PART_ScrollForwardButton_ExistsInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -83,9 +84,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabView_PART_TabContentScroller_ExistsInTemplate()
+        public Task TabView_PART_TabContentScroller_ExistsInTemplateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -102,9 +103,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabView_ScrollButtons_HiddenWhenNoTabOverflow()
+        public Task TabView_ScrollButtons_HiddenWhenNoTabOverflowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

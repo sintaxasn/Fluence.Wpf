@@ -29,6 +29,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -70,9 +71,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_DefaultStyle_GeneratesBreadcrumbBarItemContainers()
+        public Task BreadcrumbBar_DefaultStyle_GeneratesBreadcrumbBarItemContainersAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -107,9 +108,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_LastItem_HidesChevronAndUsesPrimaryTypography()
+        public Task BreadcrumbBar_LastItem_HidesChevronAndUsesPrimaryTypographyAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -140,7 +141,7 @@ namespace Fluence.Wpf.Tests
 
                         // WinUI BreadcrumbBarChevronLeftToRight is E974 painted in
                         // BreadcrumbBarNormalForegroundBrush (TextFillColorPrimaryBrush).
-                        Assert.Equal("", chevron.Glyph, StringComparer.Ordinal);
+                        Assert.Equal("\uE974", chevron.Glyph, StringComparer.Ordinal);
                         SolidColorBrush chevronForeground = Assert.IsType<SolidColorBrush>(chevron.Foreground);
                         Assert.Equal(primaryBrush.Color, chevronForeground.Color);
 
@@ -167,9 +168,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_CrumbClick_RaisesItemClickedWithItemAndIndex()
+        public Task BreadcrumbBar_CrumbClick_RaisesItemClickedWithItemAndIndexAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -221,9 +222,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBarItem_MouseAndKeyboard_ActivateCrumb()
+        public Task BreadcrumbBarItem_MouseAndKeyboard_ActivateCrumbAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -290,9 +291,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_ItemsChanges_UpdateLastItemState()
+        public Task BreadcrumbBar_ItemsChanges_UpdateLastItemStateAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -314,8 +315,8 @@ namespace Fluence.Wpf.Tests
                     Assert.True(documents.IsLastItem, "The final crumb must start with IsLastItem=true.");
 
                     crumbs.Add("Design");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                        () => bar.ItemContainerGenerator.ContainerFromIndex(2) is Controls.BreadcrumbBarItem { IsLastItem: true }),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                        () => bar.ItemContainerGenerator.ContainerFromIndex(2) is Controls.BreadcrumbBarItem { IsLastItem: true }).ConfigureAwait(true),
                         "Adding a crumb must realize a new last container with IsLastItem=true.");
                     Assert.False(documents.IsLastItem,
                         "The previously last crumb must lose IsLastItem after an append.");
@@ -337,9 +338,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_ThemeCycle_CrumbBrushesResolve()
+        public Task BreadcrumbBar_ThemeCycle_CrumbBrushesResolveAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -365,9 +366,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBar_AutomationPeer_ReportsGroupClassNameAndName()
+        public Task BreadcrumbBar_AutomationPeer_ReportsGroupClassNameAndNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -400,9 +401,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BreadcrumbBarItem_Pressed_AnimatesContentPlatePressScale()
+        public Task BreadcrumbBarItem_Pressed_AnimatesContentPlatePressScaleAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -428,14 +429,14 @@ namespace Fluence.Wpf.Tests
 
                     // Press: the Button.xaml press-scale storyboard settles at 0.98.
                     first.SimulateMouseDown();
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => pressScale.ScaleX <= 0.98 && pressScale.ScaleY <= 0.98),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX <= 0.98 && pressScale.ScaleY <= 0.98).ConfigureAwait(true),
                         "Pressing a crumb must animate its content plate down to the 0.98 press scale.");
 
                     // Release: the release storyboard restores 1.0.
                     first.SimulateMouseUp();
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => pressScale.ScaleX >= 1.0 && pressScale.ScaleY >= 1.0),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX >= 1.0 && pressScale.ScaleY >= 1.0).ConfigureAwait(true),
                         "Releasing a crumb must animate its content plate back to 1.0 scale.");
                 }
                 finally

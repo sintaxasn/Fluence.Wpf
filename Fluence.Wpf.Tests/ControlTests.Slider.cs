@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -46,9 +47,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Slider_StyleApplies_PartTrackFound()
+        public Task Slider_StyleApplies_PartTrackFoundAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Slider_DefaultState_ThumbScaleIsOne()
+        public Task Slider_DefaultState_ThumbScaleIsOneAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -89,9 +90,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Slider_ThumbTemplate_HasEllipseAndInnerDot()
+        public Task Slider_ThumbTemplate_HasEllipseAndInnerDotAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

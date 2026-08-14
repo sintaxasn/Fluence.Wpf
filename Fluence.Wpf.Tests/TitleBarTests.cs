@@ -29,6 +29,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -40,22 +41,22 @@ using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
-    public sealed class TitleBarTests : IDisposable
+    public sealed class TitleBarTests : IAsyncLifetime
     {
-        public TitleBarTests()
+        public ValueTask InitializeAsync()
         {
-            WpfTestSta.Invoke(ResetSharedWpfState);
+            return new ValueTask(WpfTestSta.RunOnStaAsync(ResetSharedWpfStateAsync));
         }
 
-        public void Dispose()
+        public ValueTask DisposeAsync()
         {
-            WpfTestSta.Invoke(ResetSharedWpfState);
+            return new ValueTask(WpfTestSta.RunOnStaAsync(ResetSharedWpfStateAsync));
         }
 
         [Fact]
-        public void TitleBar_Template_ExposesNavigationButtons()
+        public Task TitleBar_Template_ExposesNavigationButtonsAsync()
         {
-            RunWithTitleBar(
+            return RunWithTitleBarAsync(
                 static delegate
                 {
                     return new Controls.TitleBar
@@ -80,9 +81,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TitleBar_BackButton_UsesCompactSlot()
+        public Task TitleBar_BackButton_UsesCompactSlotAsync()
         {
-            RunWithTitleBar(
+            return RunWithTitleBarAsync(
                 static delegate
                 {
                     return new Controls.TitleBar
@@ -109,14 +110,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequested()
+        public async Task TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequestedAsync()
         {
             object parameter = new();
             RecordingCommand command = new(canExecute: true);
             int eventCount = 0;
             int commandCountObservedByEvent = -1;
 
-            RunWithTitleBar(
+            await RunWithTitleBarAsync(
                 delegate
                 {
                     return new Controls.TitleBar
@@ -140,17 +141,17 @@ namespace Fluence.Wpf.Tests
                     Assert.Same(parameter, command.LastParameter);
                     Assert.Equal(1, eventCount);
                     Assert.Equal(1, commandCountObservedByEvent);
-                });
+                }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void TitleBar_BackButtonVisibilityAndCommand_Work()
+        public async Task TitleBar_BackButtonVisibilityAndCommand_WorkAsync()
         {
             object parameter = new();
             RecordingCommand command = new(canExecute: true);
             int eventCount = 0;
 
-            RunWithTitleBar(
+            await RunWithTitleBarAsync(
                 delegate
                 {
                     return new Controls.TitleBar
@@ -176,16 +177,16 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(1, command.ExecuteCount);
                     Assert.Same(parameter, command.LastParameter);
                     Assert.Equal(1, eventCount);
-                });
+                }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlers()
+        public async Task TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlersAsync()
         {
             RecordingCommand backCommand = new(canExecute: true);
             RecordingCommand paneToggleCommand = new(canExecute: true);
 
-            RunWithTitleBar(
+            await RunWithTitleBarAsync(
                 delegate
                 {
                     return new Controls.TitleBar
@@ -206,12 +207,12 @@ namespace Fluence.Wpf.Tests
 
                     Assert.Equal(1, backCommand.CanExecuteUnsubscriptionCount);
                     Assert.Equal(1, paneToggleCommand.CanExecuteUnsubscriptionCount);
-                });
+                }).ConfigureAwait(true);
         }
 
-        private static void RunWithTitleBar(Func<Controls.TitleBar> titleBarFactory, Action<Controls.TitleBar> testBody)
+        private static Task RunWithTitleBarAsync(Func<Controls.TitleBar> titleBarFactory, Action<Controls.TitleBar> testBody)
         {
-            WpfTestSta.RunOnSta(delegate
+            return WpfTestSta.RunOnStaAsync(delegate
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -302,7 +303,7 @@ namespace Fluence.Wpf.Tests
             return dictionaries?.Count > 0 ? dictionaries[^1] : null;
         }
 
-        private static void ResetSharedWpfState()
+        private static async Task ResetSharedWpfStateAsync()
         {
             Application application = WpfTestSta.EnsureApplication();
             Keyboard.ClearFocus();
@@ -314,9 +315,9 @@ namespace Fluence.Wpf.Tests
             }
 
             Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-            _ = dispatcher.Invoke(DispatcherPriority.Loaded, new Action(static delegate { }));
-            _ = dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(static delegate { }));
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Loaded, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ContextIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();

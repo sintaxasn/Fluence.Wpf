@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -38,9 +39,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void GlyphButtons_InPickersAndSpinners_HaveAutomationNames()
+        public Task GlyphButtons_InPickersAndSpinners_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -80,9 +81,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindow_CaptionButtons_HaveAutomationNames()
+        public Task FluenceWindow_CaptionButtons_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -117,9 +118,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AutoSuggestBox_QueryButton_HasAutomationName()
+        public Task AutoSuggestBox_QueryButton_HasAutomationNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -129,7 +130,7 @@ namespace Fluence.Wpf.Tests
                 Controls.AutoSuggestBox autoSuggestBox = new()
                 {
                     Width = 200,
-                    QueryIcon = new Controls.FontIcon { Glyph = "" },
+                    QueryIcon = new Controls.FontIcon { Glyph = "\uE721" },
                 };
                 Window window = new() { Content = autoSuggestBox, Width = 300, Height = 80 };
 
@@ -155,9 +156,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_AcceptCancelButtons_HaveAutomationNames()
+        public Task DatePicker_AcceptCancelButtons_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -195,9 +196,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TimePicker_AcceptCancelButtons_HaveAutomationNames()
+        public Task TimePicker_AcceptCancelButtons_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -235,9 +236,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBarAndPipsPager_GlyphButtons_HaveAutomationNames()
+        public Task InfoBarAndPipsPager_GlyphButtons_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -310,9 +311,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabViewItem_CloseButton_HasAutomationName()
+        public Task TabViewItem_CloseButton_HasAutomationNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -351,9 +352,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_PaneToggleAndBackButtons_HaveAutomationNames()
+        public Task NavigationView_PaneToggleAndBackButtons_HaveAutomationNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -398,9 +399,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopPane_BackButton_HasAutomationName()
+        public Task NavigationView_TopPane_BackButton_HasAutomationNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -442,9 +443,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FontIcon_AutomationPeer_IsExcludedFromControlTree()
+        public Task FontIcon_AutomationPeer_IsExcludedFromControlTreeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -479,9 +480,9 @@ namespace Fluence.Wpf.Tests
         // report (TeachingTip.xaml line 209, AutomationProperties.Name="Close").
 
         [Fact]
-        public void AppBarButton_Label_BecomesAccessibleName()
+        public Task AppBarButton_Label_BecomesAccessibleNameAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

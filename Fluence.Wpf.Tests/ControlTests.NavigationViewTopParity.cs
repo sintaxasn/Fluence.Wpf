@@ -27,6 +27,7 @@
  */
 
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
@@ -37,9 +38,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void NavigationView_InFluenceWindow_LeftAndTopCoerceTitleBarExtension()
+        public Task NavigationView_InFluenceWindow_LeftAndTopCoerceTitleBarExtensionAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -84,9 +85,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMode_CoercesPaneOpenAndToggleHidden()
+        public Task NavigationView_TopMode_CoercesPaneOpenAndToggleHiddenAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -132,9 +133,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMode_KeepsItemIconAndTextVisibleWithoutScrollViewer()
+        public Task NavigationView_TopMode_KeepsItemIconAndTextVisibleWithoutScrollViewerAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -206,9 +207,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMode_OverflowMenuInvokesHiddenItem()
+        public Task NavigationView_TopMode_OverflowMenuInvokesHiddenItemAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -289,9 +290,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMode_ReservesOverflowButtonByMovingLastFittingItemToMenu()
+        public Task NavigationView_TopMode_ReservesOverflowButtonByMovingLastFittingItemToMenuAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -347,9 +348,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_TopMode_OverflowButtonStaysLeftOfClippedItem()
+        public Task NavigationView_TopMode_OverflowButtonStaysLeftOfClippedItemAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);

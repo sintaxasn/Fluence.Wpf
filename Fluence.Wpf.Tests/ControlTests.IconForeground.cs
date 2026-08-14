@@ -27,6 +27,7 @@
  */
 
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void Button_FontIconIcon_MatchesTextForeground_AcrossStatesAndThemes()
+        public Task Button_FontIconIcon_MatchesTextForeground_AcrossStatesAndThemesAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -83,7 +84,7 @@ namespace Fluence.Wpf.Tests
                     button.IsEnabled = true;
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 2000, () => IconMatchesText(button, "MainContentPresenter")),
+                        await WaitUntilAsync(window.Dispatcher, 2000, () => IconMatchesText(button, "MainContentPresenter")).ConfigureAwait(true),
                         "Button icon must keep matching the text foreground after a Light to Dark theme switch.");
                 }
                 finally
@@ -96,9 +97,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Button_ExplicitIconForeground_LocalValueStillWins()
+        public Task Button_ExplicitIconForeground_LocalValueStillWinsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -133,9 +134,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void HyperlinkButton_FontIconIcon_MatchesTextForeground_AtRestAndDisabled()
+        public Task HyperlinkButton_FontIconIcon_MatchesTextForeground_AtRestAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -173,9 +174,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationViewItem_FontIconIcon_MatchesTextForeground_RestSelectedAndDisabled()
+        public Task NavigationViewItem_FontIconIcon_MatchesTextForeground_RestSelectedAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -220,9 +221,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TabViewItem_FontIconIcon_MatchesTextForeground_UnselectedAndSelected()
+        public Task TabViewItem_FontIconIcon_MatchesTextForeground_UnselectedAndSelectedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -270,9 +271,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MenuItem_CustomFontIconIcon_MatchesTextForeground_RestAndDisabled()
+        public Task MenuItem_CustomFontIconIcon_MatchesTextForeground_RestAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -313,9 +314,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void InfoBar_CustomFontIconIcon_FollowsTextForeground_NotSeverityColor()
+        public Task InfoBar_CustomFontIconIcon_FollowsTextForeground_NotSeverityColorAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -373,9 +374,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Card_FontIconIcon_MatchesHeaderForeground_RestAndDisabled()
+        public Task Card_FontIconIcon_MatchesHeaderForeground_RestAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -417,9 +418,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ComboBox_FontIconIcon_MatchesTextForeground_RestAndDisabled()
+        public Task ComboBox_FontIconIcon_MatchesTextForeground_RestAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -460,9 +461,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TextBox_FontIconIcon_MatchesTextForeground_RestAndDisabled()
+        public Task TextBox_FontIconIcon_MatchesTextForeground_RestAndDisabledAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -504,9 +505,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void AppBarButton_FontIconIcon_MatchesTextForeground_SecondaryAndCompact()
+        public Task AppBarButton_FontIconIcon_MatchesTextForeground_SecondaryAndCompactAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -580,8 +581,8 @@ namespace Fluence.Wpf.Tests
                     // Switch to Dark theme; icon must re-resolve to the new Foreground brush value.
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Assert.True(
-                        WaitUntil(compactWindow.Dispatcher, 2000, () =>
-                            GetControlForegroundColor(compact) == GetIconForegroundColor(compact)),
+                        await WaitUntilAsync(compactWindow.Dispatcher, 2000, () =>
+                            GetControlForegroundColor(compact) == GetIconForegroundColor(compact)).ConfigureAwait(true),
                         "Compact AppBarButton icon must keep matching the control Foreground after a Light to Dark theme switch.");
                 }
                 finally

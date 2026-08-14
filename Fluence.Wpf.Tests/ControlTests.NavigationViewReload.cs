@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
@@ -36,9 +37,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void NavigationView_AfterUnloadReload_SelectionIndicatorStillUpdates()
+        public Task NavigationView_AfterUnloadReload_SelectionIndicatorStillUpdatesAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -54,8 +55,8 @@ namespace Fluence.Wpf.Tests
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                     };
-                    NavigationViewItem home = new() { Content = "Home", Icon = new FontIcon { Glyph = "" } };
-                    NavigationViewItem files = new() { Content = "Files", Icon = new FontIcon { Glyph = "" } };
+                    NavigationViewItem home = new() { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } };
+                    NavigationViewItem files = new() { Content = "Files", Icon = new FontIcon { Glyph = "\uE8B7" } };
                     _ = nav.Items.Add(home);
                     _ = nav.Items.Add(files);
 
@@ -66,7 +67,7 @@ namespace Fluence.Wpf.Tests
                     nav.SelectedItem = home;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    WaitForAnimationAndDrain(window.Dispatcher, 400);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
 
                     // Simulate navigating away from the cached page and back: the NavigationView is
                     // unloaded (template parts nulled) and reloaded against the same instance.
@@ -76,7 +77,7 @@ namespace Fluence.Wpf.Tests
                     host.Content = nav;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    WaitForAnimationAndDrain(window.Dispatcher, 400);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
 
                     FrameworkElement indicator = Assert.IsAssignableFrom<FrameworkElement>(nav.GetSelectionIndicatorForTesting());
                     double homeY = GetSelectionIndicatorTranslate(indicator).Y;
@@ -86,7 +87,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     // Settle until the indicator slide animation has reached its hold-end (no longer
                     // animating), so the sampled filesY is the final settled offset.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => !GetSelectionIndicatorTranslate(indicator).HasAnimatedProperties);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => !GetSelectionIndicatorTranslate(indicator).HasAnimatedProperties).ConfigureAwait(true);
 
                     Assert.Same(files, nav.SelectedItem);
                     double filesY = GetSelectionIndicatorTranslate(indicator).Y;

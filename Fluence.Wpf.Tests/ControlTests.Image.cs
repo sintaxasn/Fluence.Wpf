@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Image_DefaultStyle_TemplatePartsPresent()
+        public Task Image_DefaultStyle_TemplatePartsPresentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -84,9 +85,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Image_SourceAndStretch_FlowToInnerImage()
+        public Task Image_SourceAndStretch_FlowToInnerImageAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -105,9 +106,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Image_CornerRadius_SetsAndClearsInnerClip()
+        public Task Image_CornerRadius_SetsAndClearsInnerClipAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -133,9 +134,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Image_ThemeCycle_StyleRemainsApplied()
+        public Task Image_ThemeCycle_StyleRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -155,9 +156,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Image_AutomationPeer_IsImageAutomationPeer()
+        public Task Image_AutomationPeer_IsImageAutomationPeerAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -182,9 +183,9 @@ namespace Fluence.Wpf.Tests
         /// stayed in the content view a screen reader would announce an empty image element.
         /// </summary>
         [Fact]
-        public void Image_AutomationPeer_UnnamedImageIsExcludedFromBothViews()
+        public Task Image_AutomationPeer_UnnamedImageIsExcludedFromBothViewsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -209,9 +210,9 @@ namespace Fluence.Wpf.Tests
         /// both automation views and report that name.
         /// </summary>
         [Fact]
-        public void Image_AutomationPeer_NamedImageIsIncludedInBothViews()
+        public Task Image_AutomationPeer_NamedImageIsIncludedInBothViewsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -239,9 +240,9 @@ namespace Fluence.Wpf.Tests
         /// tree. This is why the peer checks LabeledBy as well as Name.
         /// </summary>
         [Fact]
-        public void Image_AutomationPeer_LabeledByImageIsIncludedInBothViews()
+        public Task Image_AutomationPeer_LabeledByImageIsIncludedInBothViewsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

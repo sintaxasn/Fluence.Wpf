@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -47,9 +48,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void TreeView_DefaultStyle_Applies()
+        public Task TreeView_DefaultStyle_AppliesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -70,9 +71,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_TemplateParts_Present()
+        public Task TreeViewItem_TemplateParts_PresentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -94,9 +95,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_Expander_VisibleWhenHasChildren()
+        public Task TreeViewItem_Expander_VisibleWhenHasChildrenAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -118,9 +119,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_Expander_CollapsedWhenNoChildren()
+        public Task TreeViewItem_Expander_CollapsedWhenNoChildrenAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -140,9 +141,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_IsExpanded_MakesChildrenVisible()
+        public Task TreeViewItem_IsExpanded_MakesChildrenVisibleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -170,9 +171,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_SelectedState_ChangesBackground()
+        public Task TreeViewItem_SelectedState_ChangesBackgroundAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -202,9 +203,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_HoverTriggers_AreScopedToHeaderBorder()
+        public Task TreeViewItem_HoverTriggers_AreScopedToHeaderBorderAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -261,9 +262,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeView_ThemeCycle_StyleRemainsApplied()
+        public Task TreeView_ThemeCycle_StyleRemainsAppliedAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -285,9 +286,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void TreeViewItem_ChevronGlyph_PresentInExpander()
+        public Task TreeViewItem_ChevronGlyph_PresentInExpanderAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);

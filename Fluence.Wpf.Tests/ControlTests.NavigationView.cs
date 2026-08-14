@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -55,7 +56,7 @@ namespace Fluence.Wpf.Tests
         // Pump the dispatcher for `milliseconds` so any in-flight storyboard
         // (e.g. the LeftCompact pane's 167 ms Width animation) reaches its
         // HoldEnd state before the test samples layout values.
-        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
         {
             DispatcherFrame frame = new();
             DispatcherTimer timer = new(
@@ -66,17 +67,17 @@ namespace Fluence.Wpf.Tests
             timer.Start();
             Dispatcher.PushFrame(frame);
             timer.Stop();
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
         }
 
-        private static bool WaitUntil(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        private static async Task<bool> WaitUntilAsync(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
         {
             DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
             CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
             do
             {
-                _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+                await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
                 if (condition())
                 {
                     return true;
@@ -94,21 +95,21 @@ namespace Fluence.Wpf.Tests
             }
             while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
 
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
             return condition();
         }
 
-        private static void AssertContentOffsetEventually(
+        private static async Task AssertContentOffsetEventuallyAsync(
             Window window,
             FrameworkElement nav,
             FrameworkElement presenter,
             double expectedOffset)
         {
-            _ = WaitUntil(window.Dispatcher, 3000, delegate
+            _ = await WaitUntilAsync(window.Dispatcher, 3000, delegate
             {
                 window.UpdateLayout();
                 return Math.Abs(GetContentOffsetX(nav, presenter) - expectedOffset) <= 1.0;
-            });
+            }).ConfigureAwait(true);
 
             window.UpdateLayout();
             Assert.Equal(expectedOffset, GetContentOffsetX(nav, presenter), 1.0);
@@ -130,14 +131,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsed()
+        public async Task DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsedAsync()
         {
             // Regression: the Settings footer item must keep its icon at the pane's left edge at every
             // pane width. As a FooterMenuItems entry it is hosted in a stretching StackPanel (like the
             // main items), so the fixed 40px icon column keeps the icon anchored at the left regardless
             // of the animating pane width. We force intermediate closed pane widths against the real
             // gallery MainWindow and assert the footer icon stays at the left.
-            WpfTestSta.RunOnSta(() =>
+            await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -156,7 +157,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(mw.Dispatcher);
                     // Settle until the shell's NavigationView is realized rather than padding a
                     // fixed delay; returns as soon as the visual tree is up.
-                    _ = WaitUntil(mw.Dispatcher, 2000, () => FindVisualChildByName<NavigationView>(mw, "DemoNav") is not null);
+                    _ = await WaitUntilAsync(mw.Dispatcher, 2000, () => FindVisualChildByName<NavigationView>(mw, "DemoNav") is not null).ConfigureAwait(true);
                     mw.UpdateLayout();
 
                     NavigationView nav = Assert.IsAssignableFrom<NavigationView>(FindVisualChildByName<NavigationView>(mw, "DemoNav"));
@@ -165,7 +166,7 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter footerIcon = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter"));
 
                     nav.IsPaneOpen = false;
-                    WaitForAnimationAndDrain(mw.Dispatcher, 300);
+                    await WaitForAnimationAndDrainAsync(mw.Dispatcher, 300).ConfigureAwait(true);
                     mw.UpdateLayout();
 
                     ColumnDefinition paneColumn = Assert.IsType<ColumnDefinition>(nav.Template.FindName("PaneColumn", nav));
@@ -187,13 +188,13 @@ namespace Fluence.Wpf.Tests
                     mw.Close();
                     WpfTestSta.DrainDispatcher(mw.Dispatcher);
                 }
-            });
+            }).ConfigureAwait(true);
         }
 
         [Fact]
-        public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
+        public Task NavigationView_PaneDisplayMode_Left_RendersVerticalPaneAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -229,9 +230,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_PaneDisplayMode_Top_RendersHorizontalPane()
+        public Task NavigationView_PaneDisplayMode_Top_RendersHorizontalPaneAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -267,9 +268,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyle()
+        public Task NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -290,9 +291,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_ClosedPaneKeepsIconFooterVisible()
+        public Task NavigationView_LeftCompact_ClosedPaneKeepsIconFooterVisibleAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -325,7 +326,7 @@ namespace Fluence.Wpf.Tests
 
                     nav.IsPaneOpen = true;
                     // Settle until the footer host reaches the asserted Visible state.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => footerHost.Visibility is Visibility.Visible);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => footerHost.Visibility is Visibility.Visible).ConfigureAwait(true);
 
                     Assert.Equal(Visibility.Visible, footerHost.Visibility);
                 }
@@ -341,9 +342,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftClosedPaneItemsKeepFullIconWidth()
+        public Task NavigationView_LeftClosedPaneItemsKeepFullIconWidthAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -390,9 +391,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidth()
+        public Task NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidthAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -439,9 +440,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemIcons()
+        public Task NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemIconsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -476,9 +477,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftChrome_BackPrecedesPaneToggle()
+        public Task NavigationView_LeftChrome_BackPrecedesPaneToggleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -525,9 +526,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftMode_DefaultFontIconSizeIs16()
+        public Task NavigationView_LeftMode_DefaultFontIconSizeIs16Async()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -562,9 +563,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationViewItem_Template_RendersInfoBadge()
+        public Task NavigationViewItem_Template_RendersInfoBadgeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -605,9 +606,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_SelectedItem_UpdatesOnItemClick()
+        public Task NavigationView_SelectedItem_UpdatesOnItemClickAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -650,9 +651,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_ItemInvoked_FiresBeforeSelectionChanges()
+        public Task NavigationView_ItemInvoked_FiresBeforeSelectionChangesAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -716,9 +717,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_SelectionFollowsFocus_True_SelectsOnFocus()
+        public Task NavigationView_SelectionFollowsFocus_True_SelectsOnFocusAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -760,9 +761,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_SelectionFollowsFocus_False_DoesNotSelectOnFocus()
+        public Task NavigationView_SelectionFollowsFocus_False_DoesNotSelectOnFocusAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -804,9 +805,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_IsBackButtonVisible_False_HidesBackButton()
+        public Task NavigationView_IsBackButtonVisible_False_HidesBackButtonAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -843,9 +844,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_IsBackEnabled_False_CollapsesBackButton()
+        public Task NavigationView_IsBackEnabled_False_CollapsesBackButtonAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -884,9 +885,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftModes_ForcePaneToggleVisible()
+        public Task NavigationView_LeftModes_ForcePaneToggleVisibleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -954,9 +955,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_BackRequested_FiresOnBackClick()
+        public Task NavigationView_BackRequested_FiresOnBackClickAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -998,9 +999,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_ThemeSwitch_UpdatesBrushes()
+        public Task NavigationView_ThemeSwitch_UpdatesBrushesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1044,9 +1045,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_SharedIndicator_ExistsInTemplate_AndVisibleWhenSelected()
+        public Task NavigationView_SharedIndicator_ExistsInTemplate_AndVisibleWhenSelectedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1092,9 +1093,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_PreTemplateSelection_PositionsSharedIndicatorAfterTemplateApplied()
+        public Task NavigationView_PreTemplateSelection_PositionsSharedIndicatorAfterTemplateAppliedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1137,9 +1138,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacement()
+        public Task NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacementAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1175,7 +1176,7 @@ namespace Fluence.Wpf.Tests
 
                     nav.SelectedIndex = 1;
                     // Settle until the indicator slide reaches the asserted child-item offset.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 53.0) <= 0.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 53.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -1194,9 +1195,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelections()
+        public Task NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelectionsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1242,7 +1243,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.True(translate.HasAnimatedProperties,
                         "Changing selection should animate the shared indicator transform.");
-                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 600).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -1256,9 +1257,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftMode_RapidReselection_IndicatorSettlesOnFinalTarget()
+        public Task NavigationView_LeftMode_RapidReselection_IndicatorSettlesOnFinalTargetAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1305,12 +1306,12 @@ namespace Fluence.Wpf.Tests
                     // Reference pass: settle on the last item once to learn its resting slot.
                     nav.SelectedIndex = 2;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 3000, delegate
+                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
                             return !translate.HasAnimatedProperties
                                 && Math.Abs(indicator.Opacity - 1.0) <= 0.01
                                 && Math.Abs(translate.Y - homeY) > 1.0;
-                        }),
+                        }).ConfigureAwait(true),
                         "Reference selection of the last item should settle the indicator on its slot.");
                     double settingsX = translate.X;
                     double settingsY = translate.Y;
@@ -1318,12 +1319,12 @@ namespace Fluence.Wpf.Tests
                     // Back to the first item so the rapid burst has to cross multiple slots.
                     nav.SelectedIndex = 0;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 3000, delegate
+                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
                             return !translate.HasAnimatedProperties
                                 && Math.Abs(indicator.Opacity - 1.0) <= 0.01
                                 && Math.Abs(translate.Y - homeY) <= 0.5;
-                        }),
+                        }).ConfigureAwait(true),
                         "The indicator should settle back on the first item before the rapid burst.");
 
                     // Rapid burst: retarget to the middle item and then immediately to the last
@@ -1331,13 +1332,13 @@ namespace Fluence.Wpf.Tests
                     nav.SelectedIndex = 1;
                     nav.SelectedIndex = 2;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 3000, delegate
+                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.Y - settingsY) <= 0.5
                                 && Math.Abs(indicator.Opacity - 1.0) <= 0.01
                                 && Math.Abs(scale.ScaleX - 1.0) <= 0.01
                                 && Math.Abs(scale.ScaleY - 1.0) <= 0.01;
-                        }),
+                        }).ConfigureAwait(true),
                         "After a rapid mid-flight retarget, the indicator should settle on the final item's slot.");
                     Assert.Equal(settingsX, translate.X, 0.5);
                     Assert.Equal(settingsY, translate.Y, 0.5);
@@ -1357,9 +1358,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndent()
+        public Task NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndentAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1408,10 +1409,10 @@ topMode: false,
 
                     nav.SelectedIndex = 1;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 3000, delegate
+                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.X - 53.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
-                        }),
+                        }).ConfigureAwait(true),
                         "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
                     Assert.Equal(53.0, translate.X, 0.5);
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
@@ -1428,9 +1429,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAbove()
+        public Task NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAboveAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1479,10 +1480,10 @@ topMode: false,
 
                     nav.SelectedIndex = 0;
                     Assert.True(
-                        WaitUntil(window.Dispatcher, 3000, delegate
+                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
                             return Math.Abs(translate.X - 9.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
-                        }),
+                        }).ConfigureAwait(true),
                         "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
                     Assert.Equal(9.0, translate.X, 0.5);
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
@@ -1499,9 +1500,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndent()
+        public Task NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndentAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1536,7 +1537,7 @@ topMode: false,
 
                     nav.SelectedIndex = 1;
                     // Settle until the indicator returns to the icon-item offset (the asserted value).
-                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - iconItemX) <= 0.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - iconItemX) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -1555,9 +1556,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationViewItem_FocusVisual_StaysInsideItemBounds()
+        public Task NavigationViewItem_FocusVisual_StaysInsideItemBoundsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1586,9 +1587,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_SharedIndicator_HidesWhenSelectionCleared()
+        public Task NavigationView_SharedIndicator_HidesWhenSelectionClearedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1635,9 +1636,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_TopMode_SharedIndicator_VisibleWhenSelected()
+        public Task NavigationView_TopMode_SharedIndicator_VisibleWhenSelectedAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1678,9 +1679,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_FullThemeCycle_NoExceptions()
+        public Task NavigationView_FullThemeCycle_NoExceptionsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1731,9 +1732,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_PaneModeSwitch_IndicatorSurvives()
+        public Task NavigationView_PaneModeSwitch_IndicatorSurvivesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1779,9 +1780,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_PaneCollapse_IndicatorSurvives()
+        public Task NavigationView_PaneCollapse_IndicatorSurvivesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1834,9 +1835,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationViewItem_DisabledState_ChangesForeground()
+        public Task NavigationViewItem_DisabledState_ChangesForegroundAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1878,9 +1879,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_Left_PaneClosedInitially_ContentStartsAt48px_Inline()
+        public Task NavigationView_Left_PaneClosedInitially_ContentStartsAt48px_InlineAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1919,9 +1920,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_Left_ContentStarts42pxBelowWindowTop()
+        public Task NavigationView_Left_ContentStarts42pxBelowWindowTopAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -1960,9 +1961,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_Left_HeaderContentUsesAutoHeight()
+        public Task NavigationView_Left_HeaderContentUsesAutoHeightAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2002,9 +2003,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_Left_PaneToggle_ResizesPushingContent()
+        public Task NavigationView_Left_PaneToggle_ResizesPushingContentAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2028,15 +2029,15 @@ topMode: false,
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
 
                     nav.IsPaneOpen = false;
                     Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Closing Left mode should animate from the expanded width instead of snapping immediately to 48.");
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 48.0).ConfigureAwait(true);
 
                     nav.IsPaneOpen = true;
                     Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Opening Left mode should animate from the compact width instead of snapping immediately to 320.");
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2052,9 +2053,9 @@ topMode: false,
         // Switching pane display mode between Left and LeftCompact animates the pane width with the
         // same GridLength flight as the collapse/expand toggle, instead of snapping.
         [Fact]
-        public void NavigationView_PaneDisplayModeChange_AnimatesPaneWidth_LeftAndLeftCompact()
+        public Task NavigationView_PaneDisplayModeChange_AnimatesPaneWidth_LeftAndLeftCompactAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2074,7 +2075,7 @@ topMode: false,
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     // Settle until the open pane reaches the asserted 320px expanded width.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
                     Assert.Equal(320.0, nav.GetPaneColumnWidthForTesting(), 0.5);
 
@@ -2083,7 +2084,7 @@ topMode: false,
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Switching Left -> LeftCompact should animate the pane width, not snap immediately to 48.");
-                    _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() <= 48.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() <= 48.5).ConfigureAwait(true);
                     Assert.Equal(48.0, nav.GetPaneColumnWidthForTesting(), 0.5);
 
                     // LeftCompact -> Left, reopened the way an app does it (open the pane, then switch
@@ -2092,7 +2093,7 @@ topMode: false,
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Switching LeftCompact -> Left (reopened) should animate the pane width, not snap immediately to 320.");
-                    _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() >= 319.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() >= 319.5).ConfigureAwait(true);
                     Assert.Equal(320.0, nav.GetPaneColumnWidthForTesting(), 0.5);
                 }
                 finally
@@ -2108,9 +2109,9 @@ topMode: false,
 
         // LeftCompact pane still resizes inline and pushes sibling content.
         [Fact]
-        public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_Inline()
+        public Task NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_InlineAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2132,12 +2133,12 @@ topMode: false,
                     window.UpdateLayout();
                     // Pane-open enter animation is 167 ms (CubicEase EaseOut). Settle until the pane
                     // reaches its 320px open width rather than padding past HoldEnd.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2151,9 +2152,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_HeaderContentUsesAutoHeight()
+        public Task NavigationView_LeftCompact_HeaderContentUsesAutoHeightAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2174,7 +2175,7 @@ topMode: false,
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 300).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
@@ -2194,9 +2195,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_Inline()
+        public Task NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_InlineAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2220,7 +2221,7 @@ topMode: false,
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 48.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2234,9 +2235,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_BackEnabledClosedPane_KeepsPaneToggleVisible()
+        public Task NavigationView_LeftCompact_BackEnabledClosedPane_KeepsPaneToggleVisibleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2272,7 +2273,7 @@ topMode: false,
                     Assert.Equal(Visibility.Visible, back.Visibility);
                     Assert.Equal(Visibility.Visible, paneToggle.Visibility);
                     Assert.Equal(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0);
-                    AssertContentOffsetEventually(window, nav, presenter, 96.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 96.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2286,9 +2287,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_LeftCompact_PaneToggle_ResizesPushingContent()
+        public Task NavigationView_LeftCompact_PaneToggle_ResizesPushingContentAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2310,20 +2311,20 @@ topMode: false,
                     window.UpdateLayout();
                     // Pane enter animation is 167 ms (CubicEase). Settle until the pane reaches its
                     // 320px open width before sampling layout, rather than padding past HoldEnd.
-                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
 
                     ContentPresenter presenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter));
 
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
 
                     nav.IsPaneOpen = false;
                     Assert.True(nav.GetPaneColumnWidthForTesting() > 48.0, "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 48.0).ConfigureAwait(true);
 
                     nav.IsPaneOpen = true;
                     Assert.True(nav.GetPaneColumnWidthForTesting() < 320.0, "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 320.");
-                    AssertContentOffsetEventually(window, nav, presenter, 320.0);
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2339,9 +2340,9 @@ topMode: false,
         // NavigationView.ContentBackground must default to NavigationViewContentBackgroundBrush
         // (semi-transparent tint that allows Mica/Acrylic backdrop to show through the content area).
         [Fact]
-        public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
+        public Task NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBaseAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2379,9 +2380,9 @@ topMode: false,
         // WI-1 F3 supporting guard: NavigationViewItemHeader must be a first-class pane child
         // (placed via Items), styled distinctly from NavigationViewItem, and not selectable.
         [Fact]
-        public void NavigationView_Header_InPane_IsRendered_NotSelectable()
+        public Task NavigationView_Header_InPane_IsRendered_NotSelectableAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2424,9 +2425,9 @@ topMode: false,
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void NavigationView_BackButtonStates_BothStatesAccessible()
+        public Task NavigationView_BackButtonStates_BothStatesAccessibleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2458,9 +2459,9 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationView_IsBackButtonVisible_True_ShowsBackButton()
+        public Task NavigationView_IsBackButtonVisible_True_ShowsBackButtonAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2493,9 +2494,9 @@ topMode: false,
         // NavigationView.ContentBackground must resolve to NavigationViewContentBackgroundBrush
         // across all themes (semi-transparent tint; color changes per theme file).
         [Fact]
-        public void NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemes()
+        public Task NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2545,13 +2546,13 @@ topMode: false,
         // Both replaced by NavigationView_PaneBorders_AreTransparent below.
 
         [Fact]
-        public void NavigationView_PaneBorders_AreTransparent()
+        public async Task NavigationView_PaneBorders_AreTransparentAsync()
         {
             // Regression guard: pane borders (PaneBorder, CompactPane, PaneHeaderBorder) must
             // be Transparent (or null) so the DWM Mica/Acrylic backdrop shows through. The
             // WI-3 B15 commit wrongly set them to LayerFillColorAltBrush, which blocked the
             // backdrop entirely. This test asserts the reverted state is preserved.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2634,7 +2635,7 @@ topMode: false,
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            });
+            }).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -2710,14 +2711,14 @@ topMode: false,
         }
 
         [Fact]
-        public void NavigationViewItem_Template_HasNoInnerSelectionIndicator()
+        public async Task NavigationViewItem_Template_HasNoInnerSelectionIndicatorAsync()
         {
             // Regression: per-item Border named "SelectionIndicator" was duplicating the
             // pane-level PART_SelectionIndicator (animated by NavigationView code-behind),
             // producing two visible accent pills on the selected item. The pane-level
             // indicator is canonical (WinUI 3) and is wired in NavigationView.cs; the
             // per-item one must NOT exist in the template.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2748,7 +2749,7 @@ topMode: false,
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            });
+            }).ConfigureAwait(true);
         }
     }
 }

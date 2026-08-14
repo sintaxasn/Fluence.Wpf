@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -49,9 +50,9 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public void DatePicker_DefaultStyle_AppliesTemplateParts()
+        public Task DatePicker_DefaultStyle_AppliesTemplatePartsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -91,9 +92,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_SelectedDate_UpdatesFieldSegmentsAndPlaceholder()
+        public Task DatePicker_SelectedDate_UpdatesFieldSegmentsAndPlaceholderAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -146,9 +147,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_FieldClick_OpensPopupAndPopulatesColumns()
+        public Task DatePicker_FieldClick_OpensPopupAndPopulatesColumnsAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -174,7 +175,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
                     // The open reveal (slide down from Y=-8 with a fade) must exist in the
@@ -182,8 +183,8 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform translate =
                         Assert.IsType<TranslateTransform>(template.FindName("FlyoutSurfaceTranslate", picker));
                     Border surface = Assert.IsType<Border>(template.FindName("FlyoutSurface", picker));
-                    Assert.True(WaitUntil(window.Dispatcher, 2000,
-                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0).ConfigureAwait(true),
                         "The flyout reveal must settle at Y=0 and full opacity.");
 
                     Assert.Equal(12, monthList.Items.Count);
@@ -201,9 +202,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_Accept_CommitsSelectionAndRaisesSelectedDateChanged()
+        public Task DatePicker_Accept_CommitsSelectionAndRaisesSelectedDateChangedAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -231,7 +232,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the accept scenario.");
 
                     DatePickerSelectedValueChangedEventArgs? captured = null;
@@ -250,7 +251,7 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(captured);
                     Assert.Equal(oldDate, captured.OldDate);
                     Assert.Equal(expected, captured.NewDate);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Accept must close the selector flyout.");
                 }
                 finally
@@ -261,9 +262,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_Cancel_RevertsPendingSelection()
+        public Task DatePicker_Cancel_RevertsPendingSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -290,7 +291,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the cancel scenario.");
 
                     bool raised = false;
@@ -305,7 +306,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.Equal(original, picker.SelectedDate);
                     Assert.False(raised, "Cancel must not raise SelectedDateChanged.");
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Cancel must close the selector flyout.");
                 }
                 finally
@@ -316,9 +317,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_DayColumn_AdjustsToMonthLength()
+        public Task DatePicker_DayColumn_AdjustsToMonthLengthAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -344,7 +345,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the day-count scenario.");
 
                     Assert.Equal(31, dayList.Items.Count);
@@ -369,9 +370,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_AutomationPeer_ReportsNameFromDateOrPlaceholder()
+        public Task DatePicker_AutomationPeer_ReportsNameFromDateOrPlaceholderAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -406,9 +407,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTab()
+        public Task DatePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTabAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -434,13 +435,13 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(KeyboardNavigationMode.Cycle, KeyboardNavigation.GetTabNavigation(popup.Child));
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "Clicking the field must open the selector flyout.");
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () =>
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () =>
                             popup.Child is Visual root
                             && Keyboard.FocusedElement is Visual focused
-                            && focused.IsDescendantOf(root)),
+                            && focused.IsDescendantOf(root)).ConfigureAwait(true),
                         "Opening the flyout must move keyboard focus inside the popup.");
                 }
                 finally
@@ -451,9 +452,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_FlyoutEscape_ClosesWithoutCommitting()
+        public Task DatePicker_FlyoutEscape_ClosesWithoutCommittingAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -479,7 +480,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the Escape scenario.");
                     Assert.NotNull(popup.Child);
 
@@ -492,7 +493,7 @@ namespace Fluence.Wpf.Tests
 
                     RaiseKeyEvent(popup.Child, Key.Escape, UIElement.PreviewKeyDownEvent);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Escape must close the selector flyout.");
                     Assert.Equal(original, picker.SelectedDate);
                     Assert.False(raised, "Escape must not raise SelectedDateChanged.");
@@ -505,9 +506,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_FlyoutEnter_CommitsPendingSelection()
+        public Task DatePicker_FlyoutEnter_CommitsPendingSelectionAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -533,7 +534,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the Enter scenario.");
                     Assert.NotNull(popup.Child);
 
@@ -544,7 +545,7 @@ namespace Fluence.Wpf.Tests
 
                     RaiseKeyEvent(popup.Child, Key.Enter, UIElement.PreviewKeyDownEvent);
 
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Enter must close the selector flyout.");
                     Assert.Equal(new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), picker.SelectedDate);
                 }
@@ -556,9 +557,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_SurfaceBrushes_ResolveAfterThemeCycle()
+        public Task DatePicker_SurfaceBrushes_ResolveAfterThemeCycleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -577,9 +578,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_NonGregorianDefaultCulture_UsesGregorianMonthNames()
+        public Task DatePicker_NonGregorianDefaultCulture_UsesGregorianMonthNamesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -640,9 +641,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DatePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
+        public Task DatePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopenAsync()
         {
-            WpfTestSta.RunOnSta(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -663,7 +664,7 @@ namespace Fluence.Wpf.Tests
                     ButtonBase acceptButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_AcceptButton", picker));
 
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the light dismiss is simulated.");
 
                     // A light dismiss closes the popup outside the control's own pipeline,
@@ -678,17 +679,17 @@ namespace Fluence.Wpf.Tests
                         "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
 
                     // Once the lockout has elapsed, the field opens the flyout again.
-                    System.Threading.Thread.Sleep(300);
+                    await Task.Delay(300, TestContext.Current.CancellationToken).ConfigureAwait(true);
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "A field click after the lockout must reopen the flyout.");
 
                     // Accept-driven closes do not arm the lockout: an immediate reopen works.
                     RaiseButtonClick(acceptButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true),
                         "Accept must close the selector flyout.");
                     RaiseButtonClick(flyoutButton);
-                    Assert.True(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "A field click right after an accept close must reopen the flyout immediately.");
                 }
                 finally

@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -45,9 +46,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Expander_StyleApplies_RootBorderFound()
+        public Task Expander_StyleApplies_RootBorderFoundAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_ChevronPath_ExistsWithRotateTransformOnParent()
+        public Task Expander_ChevronPath_ExistsWithRotateTransformOnParentAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -88,9 +89,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_Expanded_ContentVisibilityIsVisible()
+        public Task Expander_Expanded_ContentVisibilityIsVisibleAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -107,9 +108,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_HeaderBorder_CornerRadius4()
+        public Task Expander_HeaderBorder_CornerRadius4Async()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -130,9 +131,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void Expander_ContentSlideParts_PresentWithClipAndInlineTranslate()
+        public Task Expander_ContentSlideParts_PresentWithClipAndInlineTranslateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -162,9 +163,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_ExpandSlide_RestsAtZeroWithStarContentRow()
+        public Task Expander_ExpandSlide_RestsAtZeroWithStarContentRowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -186,11 +187,11 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, grid.RowDefinitions[1].Height.Value, 0.001);
 
                     expander.IsExpanded = true;
-                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => translate.Y < 0).ConfigureAwait(true),
                         "The expand slide must start from a negative offset (content behind the clip).");
                     Assert.True(
-                        WaitUntil(w.Dispatcher, 4000,
-                            () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[1].Height.IsStar),
+                        await WaitUntilAsync(w.Dispatcher, 4000,
+                            () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[1].Height.IsStar).ConfigureAwait(true),
                         "The content must rest at translate 0 with a star content row after the expand slide.");
                 }
                 finally
@@ -201,9 +202,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_CollapseSlide_ClosesRowAndResetsTranslate()
+        public Task Expander_CollapseSlide_ClosesRowAndResetsTranslateAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -227,10 +228,10 @@ namespace Fluence.Wpf.Tests
 
                     expander.IsExpanded = false;
                     Assert.True(
-                        WaitUntil(w.Dispatcher, 4000,
+                        await WaitUntilAsync(w.Dispatcher, 4000,
                             () => !grid.RowDefinitions[1].Height.IsStar
                                 && grid.RowDefinitions[1].Height.Value < 0.001
-                                && Math.Abs(translate.Y) < 0.001),
+                                && Math.Abs(translate.Y) < 0.001).ConfigureAwait(true),
                         "Collapse must close the content row at slide completion and reset the translate.");
                 }
                 finally
@@ -241,9 +242,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_RapidToggleMidFlight_SettlesCollapsedWithoutStuckOffset()
+        public Task Expander_RapidToggleMidFlight_SettlesCollapsedWithoutStuckOffsetAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -264,15 +265,15 @@ namespace Fluence.Wpf.Tests
 
                     // Interrupt the 333 ms expand slide mid-flight with a collapse.
                     expander.IsExpanded = true;
-                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y < 0),
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => translate.Y < 0).ConfigureAwait(true),
                         "The expand slide must be in flight before the interrupting collapse.");
                     expander.IsExpanded = false;
 
                     Assert.True(
-                        WaitUntil(w.Dispatcher, 4000,
+                        await WaitUntilAsync(w.Dispatcher, 4000,
                             () => !grid.RowDefinitions[1].Height.IsStar
                                 && grid.RowDefinitions[1].Height.Value < 0.001
-                                && Math.Abs(translate.Y) < 0.001),
+                                && Math.Abs(translate.Y) < 0.001).ConfigureAwait(true),
                         "A collapse interrupting the expand slide must settle collapsed with no stuck offset.");
                 }
                 finally
@@ -283,9 +284,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Expander_ExpandUp_SlidesFromBelowIntoTopContentRow()
+        public Task Expander_ExpandUp_SlidesFromBelowIntoTopContentRowAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -314,11 +315,11 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, grid.RowDefinitions[0].Height.Value, 0.001);
 
                     expander.IsExpanded = true;
-                    Assert.True(WaitUntil(w.Dispatcher, 2000, () => translate.Y > 0),
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => translate.Y > 0).ConfigureAwait(true),
                         "The Up expand slide must start from a positive offset (content below the header).");
                     Assert.True(
-                        WaitUntil(w.Dispatcher, 4000,
-                            () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[0].Height.IsStar),
+                        await WaitUntilAsync(w.Dispatcher, 4000,
+                            () => Math.Abs(translate.Y) < 0.001 && grid.RowDefinitions[0].Height.IsStar).ConfigureAwait(true),
                         "The Up content must rest at translate 0 with a star top row after the expand slide.");
                 }
                 finally

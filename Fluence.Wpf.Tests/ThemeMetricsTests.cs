@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Effects;
 using Xunit;
@@ -52,9 +53,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ControlCornerRadius_PresentInLightTheme()
+        public Task ControlCornerRadius_PresentInLightThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -64,9 +65,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ControlCornerRadius_PresentInDarkTheme()
+        public Task ControlCornerRadius_PresentInDarkThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Dark, app);
@@ -76,9 +77,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ControlCornerRadius_PresentInHighContrastTheme()
+        public Task ControlCornerRadius_PresentInHighContrastThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.HighContrast, app);
@@ -92,9 +93,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void OverlayCornerRadius_PresentInLightTheme()
+        public Task OverlayCornerRadius_PresentInLightThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -104,9 +105,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void OverlayCornerRadius_PresentInDarkTheme()
+        public Task OverlayCornerRadius_PresentInDarkThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Dark, app);
@@ -116,9 +117,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void OverlayCornerRadius_PresentInHighContrastTheme()
+        public Task OverlayCornerRadius_PresentInHighContrastThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.HighContrast, app);
@@ -132,9 +133,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void FlyoutShadowEffect_PresentInAllThemes()
+        public Task FlyoutShadowEffect_PresentInAllThemesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
@@ -147,9 +148,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FlyoutShadowEffect_HasExpectedProperties()
+        public Task FlyoutShadowEffect_HasExpectedPropertiesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -166,9 +167,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void DefaultControlFocusVisualStyle_PresentInAllThemes()
+        public Task DefaultControlFocusVisualStyle_PresentInAllThemesAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
@@ -185,9 +186,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void CornerRadiusTokens_SurviveFullThemeCycle()
+        public Task CornerRadiusTokens_SurviveFullThemeCycleAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -208,9 +209,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void DefaultCollectionFocusVisualStyle_PresentInLightTheme()
+        public Task DefaultCollectionFocusVisualStyle_PresentInLightThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -220,9 +221,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DefaultCollectionFocusVisualStyle_PresentInDarkTheme()
+        public Task DefaultCollectionFocusVisualStyle_PresentInDarkThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Dark, app);
@@ -231,9 +232,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void DefaultCollectionFocusVisualStyle_PresentInHighContrastTheme()
+        public Task DefaultCollectionFocusVisualStyle_PresentInHighContrastThemeAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.HighContrast, app);

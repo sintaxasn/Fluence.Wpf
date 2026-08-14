@@ -27,9 +27,9 @@
  */
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
@@ -44,21 +44,6 @@ namespace Fluence.Wpf.Tests
     /// </summary>
     public class FluenceWindowHardenTests
     {
-        private static string GetRepositoryFilePath(params string[] relativeSegments)
-        {
-            string root = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
-            string[] pathParts = new string[relativeSegments.Length + 1];
-            pathParts[0] = root;
-            Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
-            return Path.Join(pathParts);
-        }
-
-        private static string ReadRepositoryFile(params string[] relativeSegments)
-        {
-            string path = GetRepositoryFilePath(relativeSegments);
-            Assert.True(File.Exists(path), "Repository file must be readable at: " + path);
-            return File.ReadAllText(path);
-        }
 
         private static void ResetAndApply(ApplicationTheme theme, Application app)
         {
@@ -74,9 +59,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void SystemBackdropType_Default_IsAuto()
+        public Task SystemBackdropType_Default_IsAutoAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -90,10 +75,10 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SystemBackdropType_CanSetAllValues()
+        public async Task SystemBackdropType_CanSetAllValuesAsync()
         {
             // Verifies that the DP accepts all four BackdropType values without throwing.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -107,7 +92,7 @@ namespace Fluence.Wpf.Tests
                     }
                 }
                 finally { w.Close(); }
-            });
+            }).ConfigureAwait(true);
         }
 
         // ---------------------------------------------------------------------------
@@ -115,9 +100,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ThemeCycle_LightDarkHcLight_KeyBrushesResolveAfterEachStep()
+        public Task ThemeCycle_LightDarkHcLight_KeyBrushesResolveAfterEachStepAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -146,19 +131,19 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ThemeCycle_HighContrast_SystemFillColorCriticalBrush_Resolves()
+        public async Task ThemeCycle_HighContrast_SystemFillColorCriticalBrush_ResolvesAsync()
         {
             // HC theme maps SystemFillColorCriticalBrush to WindowTextColorKey (white on black).
             // Caption close-button chrome uses its own DynamicResource tokens; this guard keeps the
             // general critical brush available for controls that intentionally consume it.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
                 object brush = Assert.IsAssignableFrom<object>(app.TryFindResource("SystemFillColorCriticalBrush"));
-            });
+            }).ConfigureAwait(true);
         }
 
         // ---------------------------------------------------------------------------
@@ -166,9 +151,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void FluenceWindowXaml_CloseButtonHover_UsesCanonicalCloseButtonBrushTokens()
+        public async Task FluenceWindowXaml_CloseButtonHover_UsesCanonicalCloseButtonBrushTokensAsync()
         {
-            string xaml = ReadRepositoryFile("Fluence.Wpf", "Themes", "Controls", "FluenceWindow.xaml");
+            string xaml = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Themes", "Controls", "FluenceWindow.xaml").ConfigureAwait(true);
 
             Assert.Contains("WindowCloseButtonBackgroundPointerOverBrush", xaml, StringComparison.Ordinal);
             Assert.Contains("WindowCloseButtonBackgroundPressedBrush", xaml, StringComparison.Ordinal);
@@ -187,12 +172,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void FluenceWindowCloseButtonThemeTokens_AreThemeIndependentAndResolve()
+        public async Task FluenceWindowCloseButtonThemeTokens_AreThemeIndependentAndResolveAsync()
         {
             // The three Windows close-button Color tokens are theme-independent - the Windows shell
             // uses the same red across Light, Dark, and HighContrast - so they are seeded in code by
             // BaseColorTables, not duplicated across per-theme XAML. BrushFactory emits the *Brush twins.
-            WpfTestSta.RunOnSta(static () =>
+            await WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -200,7 +185,7 @@ namespace Fluence.Wpf.Tests
                 AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPointerOverBrush", Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C));
                 AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPressedBrush", Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C));
                 AssertCloseButtonBrush(app, "WindowCloseButtonForegroundPointerOverBrush", Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF));
-            });
+            }).ConfigureAwait(true);
         }
 
         private static void AssertCloseButtonBrush(Application app, string key, Color expected)
@@ -320,9 +305,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void Constructor_DoesNotSubscribeToManagers()
+        public Task Constructor_DoesNotSubscribeToManagersAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -340,9 +325,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ShowThenClose_LeavesNoNetManagerSubscriptions()
+        public Task ShowThenClose_LeavesNoNetManagerSubscriptionsAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -384,9 +369,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ShowThenDrain_NeverCloaksWindow()
+        public Task ShowThenDrain_NeverCloaksWindowAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -418,9 +403,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void RedirectionSurface_MatchesContentBackground_AcrossBackdropSwap()
+        public Task RedirectionSurface_MatchesContentBackground_AcrossBackdropSwapAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -472,9 +457,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ShowThenClose_ReleasesHwndSourceHookAndThemeWatcherRegistration()
+        public Task ShowThenClose_ReleasesHwndSourceHookAndThemeWatcherRegistrationAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
@@ -505,9 +490,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void SystemThemeWatcher_AutoReleasesWatchedWindow_OnClose_WithoutExplicitUnWatch()
+        public Task SystemThemeWatcher_AutoReleasesWatchedWindow_OnClose_WithoutExplicitUnWatchAsync()
         {
-            WpfTestSta.RunOnSta(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);

@@ -27,6 +27,7 @@
  */
 
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -43,9 +44,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ContextMenu_DefaultStyle_StyleRegistered()
+        public Task ContextMenu_DefaultStyle_StyleRegisteredAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -55,9 +56,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ContextMenu_DefaultStyle_BackgroundAndBorderBrushResolve()
+        public Task ContextMenu_DefaultStyle_BackgroundAndBorderBrushResolveAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -68,9 +69,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void ContextMenu_DefaultStyle_HasDropShadowSetterTrue()
+        public Task ContextMenu_DefaultStyle_HasDropShadowSetterTrueAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -90,9 +91,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void MenuItem_DefaultStyle_StyleRegistered()
+        public Task MenuItem_DefaultStyle_StyleRegisteredAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -102,9 +103,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MenuItem_DefaultStyle_HoverBrushResolves()
+        public Task MenuItem_DefaultStyle_HoverBrushResolvesAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -115,9 +116,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void MenuItem_DefaultStyle_FontSize14()
+        public Task MenuItem_DefaultStyle_FontSize14Async()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -136,9 +137,9 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public void ContextMenu_ThemeCycle_BrushesResolveAfterEachSwitch()
+        public Task ContextMenu_ThemeCycle_BrushesResolveAfterEachSwitchAsync()
         {
-            WpfTestSta.Invoke(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
