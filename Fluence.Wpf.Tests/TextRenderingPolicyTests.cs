@@ -288,12 +288,9 @@ namespace Fluence.Wpf.Tests
         private static IEnumerable<string> FindBannedFragments(string path, IEnumerable<string> bannedFragments)
         {
             string source = File.ReadAllText(path);
-            foreach (string bannedFragment in bannedFragments)
+            foreach (string bannedFragment in bannedFragments.Where(bannedFragment => source.Contains(bannedFragment, StringComparison.Ordinal)))
             {
-                if (source.Contains(bannedFragment, StringComparison.Ordinal))
-                {
-                    yield return GetRepoRelativePath(path) + ": " + bannedFragment;
-                }
+                yield return GetRepoRelativePath(path) + ": " + bannedFragment;
             }
         }
 

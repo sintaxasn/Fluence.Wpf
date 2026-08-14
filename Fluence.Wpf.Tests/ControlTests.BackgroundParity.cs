@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -418,12 +419,9 @@ namespace Fluence.Wpf.Tests
             }
 
             // The retired scripts must be gone, and no new script should reference their names.
-            foreach (string retired in retiredScriptNames)
+            foreach (string retired in retiredScriptNames.Where(retired => File.Exists(Path.Join(scriptsRoot, retired))))
             {
-                if (File.Exists(Path.Join(scriptsRoot, retired)))
-                {
-                    violations.Add(retired + " should have been removed.");
-                }
+                violations.Add(retired + " should have been removed.");
             }
 
             Assert.Empty(violations);
@@ -536,30 +534,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsLiteralBackgroundValue(string value)
         {
-            if (value.Length is 0)
-            {
-                return false;
-            }
-
-            if (value[0] == '#')
-            {
-                return true;
-            }
-
-            if (value[0] == '{')
-            {
-                return false;
-            }
-
-            foreach (char character in value)
-            {
-                if (!char.IsLetter(character))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return value.Length is not 0 && (value[0] == '#' || (value[0] != '{' && value.All(char.IsLetter)));
         }
 
         private static void AssertBrushColor(Brush? actualBrush, string resourceKey)
@@ -622,15 +597,7 @@ namespace Fluence.Wpf.Tests
                 "#FF00E8",
             ];
 
-            foreach (string accentSwatch in accentSwatches)
-            {
-                if (string.Equals(accentSwatch, value, StringComparison.Ordinal))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return accentSwatches.Any(accentSwitch => string.Equals(accentSwitch, value, StringComparison.Ordinal));
         }
 
         private static string GetRepoRelativePath(string path)

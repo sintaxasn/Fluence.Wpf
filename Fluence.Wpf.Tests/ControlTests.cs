@@ -826,17 +826,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TextBlock? glyphTextBlock = null;
-                    foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
-                    {
-                        if (string.Equals(textBlock.Text, "\uE710", StringComparison.Ordinal))
-                        {
-                            glyphTextBlock = textBlock;
-                            break;
-                        }
-                    }
-
-                    Assert.NotNull(glyphTextBlock);
+                    TextBlock glyphTextBlock = Assert.IsType<TextBlock>(FindVisualChildren<TextBlock>(button).FirstOrDefault(textBlock => string.Equals(textBlock.Text, "\uE710", StringComparison.Ordinal)));
                     Assert.True(glyphTextBlock.IsVisible, "Left-placed button icons should be visible, not just present in the tree.");
                     Assert.True(glyphTextBlock.ActualWidth > 0, "Left-placed button icons should occupy layout space.");
                 }
@@ -2831,30 +2821,12 @@ namespace Fluence.Wpf.Tests
 
         private static TextBlock? FindButtonIconTextBlock(Controls.Button button)
         {
-            foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
-            {
-                FontFamily fontFamily = textBlock.FontFamily;
-                if (fontFamily is not null &&
-                    fontFamily.Source?.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    return textBlock;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<TextBlock>(button).FirstOrDefault(textBlock => textBlock.FontFamily is FontFamily fontFamily && fontFamily.Source?.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         private static TextBlock? FindButtonGlyphTextBlock(Controls.Button button, string glyph)
         {
-            foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
-            {
-                if (string.Equals(textBlock.Text, glyph, StringComparison.Ordinal))
-                {
-                    return textBlock;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<TextBlock>(button).FirstOrDefault(textBlock => string.Equals(textBlock.Text, glyph, StringComparison.Ordinal));
         }
 
         private static void AssertGlyphWithinButtonBounds(Window window, Controls.Button button, string glyph)
@@ -2879,32 +2851,13 @@ namespace Fluence.Wpf.Tests
 
         private static Controls.Button? FindFluentButtonByContent(DependencyObject root, string content)
         {
-            foreach (Controls.Button button in FindVisualChildren<Controls.Button>(root))
-            {
-                if (string.Equals(button.Content as string, content, StringComparison.Ordinal))
-                {
-                    return button;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<Controls.Button>(root).FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
         }
 
         private static void AssertContentGroupIsCentered(Window window, Controls.Button button, string content, string glyph)
         {
             TextBlock glyphTextBlock = Assert.IsAssignableFrom<TextBlock>(FindButtonGlyphTextBlock(button, glyph));
-
-            ContentPresenter? textPresenter = null;
-            foreach (ContentPresenter presenter in FindVisualChildren<ContentPresenter>(button))
-            {
-                if (string.Equals(presenter.Content as string, content, StringComparison.Ordinal))
-                {
-                    textPresenter = presenter;
-                    break;
-                }
-            }
-
-            Assert.NotNull(textPresenter);
+            ContentPresenter textPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildren<ContentPresenter>(button).FirstOrDefault(presenter => string.Equals(presenter.Content as string, content, StringComparison.Ordinal)));
 
             Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
             double buttonCenter = buttonOrigin.X + (button.ActualWidth / 2.0);

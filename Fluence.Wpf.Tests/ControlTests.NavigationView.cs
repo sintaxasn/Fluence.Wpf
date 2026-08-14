@@ -26,17 +26,18 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Threading;
 using System.Windows.Threading;
-using Fluence.Wpf.Controls;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
@@ -1564,18 +1565,7 @@ topMode: false,
                 try
                 {
                     Style style = Assert.IsType<Style>(application?.TryFindResource("NavigationViewItemFocusVisual"));
-
-                    ControlTemplate? template = null;
-                    foreach (SetterBase? setterBase in style.Setters)
-                    {
-                        if (setterBase is Setter setter && setter.Property == Control.TemplateProperty)
-                        {
-                            template = setter.Value as ControlTemplate;
-                            break;
-                        }
-                    }
-
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(setter => setter.Property == Control.TemplateProperty)?.Value as ControlTemplate);
                     DependencyObject root = template.LoadContent();
                     Assert.NotNull(root);
 

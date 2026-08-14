@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -236,18 +237,15 @@ namespace Fluence.Wpf.Tests
 
                     if (triggerBase is MultiTrigger multiTrigger)
                     {
-                        foreach (Condition condition in multiTrigger.Conditions)
+                        foreach (Condition condition in multiTrigger.Conditions.Where(condition => condition.Property == UIElement.IsMouseOverProperty))
                         {
-                            if (condition.Property == UIElement.IsMouseOverProperty)
+                            if (condition.SourceName.Equals("ItemBorder", StringComparison.Ordinal))
                             {
-                                if (condition.SourceName.Equals("ItemBorder", StringComparison.Ordinal))
-                                {
-                                    hasHeaderHoverTrigger = true;
-                                }
-                                else
-                                {
-                                    hasAncestorHoverTrigger = true;
-                                }
+                                hasHeaderHoverTrigger = true;
+                            }
+                            else
+                            {
+                                hasAncestorHoverTrigger = true;
                             }
                         }
                     }

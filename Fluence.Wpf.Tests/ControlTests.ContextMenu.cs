@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Linq;
 using System.Windows;
 using Fluence.Wpf.Controls;
 using Xunit;
@@ -79,18 +80,8 @@ namespace Fluence.Wpf.Tests
                 // HasDropShadow only activates when the Popup opens; verify the
                 // Setter is present and declared True rather than applying the style
                 // without a live popup (which returns the default value).
-                bool found = false;
-                foreach (SetterBase? setter in style.Setters)
-                {
-                    if (setter is Setter s && s.Property == System.Windows.Controls.ContextMenu.HasDropShadowProperty
-                        && true.Equals(s.Value))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                Assert.True(found,
-                    "ContextMenu style must contain <Setter Property='HasDropShadow' Value='True'/>.");
+                bool found = style.Setters.OfType<Setter>().Any(s => s.Property == System.Windows.Controls.ContextMenu.HasDropShadowProperty && true.Equals(s.Value));
+                Assert.True(found, "ContextMenu style must contain <Setter Property='HasDropShadow' Value='True'/>.");
             });
         }
 

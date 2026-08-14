@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -358,15 +359,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool HasTriggerCondition(MultiTrigger multiTrigger, DependencyProperty property, object? value)
         {
-            foreach (Condition condition in multiTrigger.Conditions)
-            {
-                if (condition.Property == property && Equals(condition.Value, value))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return multiTrigger.Conditions.Any(condition => condition.Property == property && Equals(condition.Value, value));
         }
 
         private static bool IsToggleHoverTrigger(TriggerBase triggerBase, object? isCheckedValue)

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -593,23 +594,13 @@ namespace Fluence.Wpf.Tests
                     CultureInfo culture = CultureInfo.GetCultureInfo("ar-SA");
                     System.Threading.Thread.CurrentThread.CurrentCulture = culture;
 
-                    DateTimeFormatInfo gregorianFormat = (DateTimeFormatInfo)culture.DateTimeFormat.Clone();
-                    GregorianCalendar? gregorian = null;
-                    foreach (System.Globalization.Calendar optionalCalendar in culture.OptionalCalendars)
-                    {
-                        if (optionalCalendar is GregorianCalendar candidate)
-                        {
-                            gregorian = candidate;
-                            break;
-                        }
-                    }
-
-                    if (gregorian is null)
+                    if (culture.OptionalCalendars.OfType<GregorianCalendar>().FirstOrDefault() is not GregorianCalendar gregorian)
                     {
                         Assert.Skip("ar-SA offers no optional Gregorian calendar on this runtime.");
                         return;
                     }
 
+                    DateTimeFormatInfo gregorianFormat = (DateTimeFormatInfo)culture.DateTimeFormat.Clone();
                     gregorianFormat.Calendar = gregorian;
                     DateTime march = new(2024, 3, 15, 0, 0, 0, DateTimeKind.Unspecified);
                     string expectedMonthName = gregorianFormat.GetMonthName(3);

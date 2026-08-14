@@ -598,28 +598,12 @@ namespace Fluence.Wpf.Tests
 
         private static Controls.ToggleButton? FindToggleButtonByContent(DependencyObject root, string content)
         {
-            foreach (Controls.ToggleButton button in FindVisualChildren<Controls.ToggleButton>(root))
-            {
-                if (string.Equals(button.Content as string, content, StringComparison.Ordinal))
-                {
-                    return button;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<Controls.ToggleButton>(root).FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
         }
 
         private static Controls.RadioButton? FindRadioButtonByContent(DependencyObject root, string content)
         {
-            foreach (Controls.RadioButton radioButton in FindVisualChildren<Controls.RadioButton>(root))
-            {
-                if (string.Equals(radioButton.Content as string, content, StringComparison.Ordinal))
-                {
-                    return radioButton;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<Controls.RadioButton>(root).FirstOrDefault(radioButton => string.Equals(radioButton.Content as string, content, StringComparison.Ordinal));
         }
     }
 }

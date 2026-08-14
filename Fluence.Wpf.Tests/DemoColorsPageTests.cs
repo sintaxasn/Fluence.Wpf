@@ -173,12 +173,9 @@ namespace Fluence.Wpf.Tests
                         ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
                         ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                        foreach (string resourceKey in resourceKeys)
+                        foreach (string resourceKey in resourceKeys.Where(resourceKey => application.TryFindResource(resourceKey) is null))
                         {
-                            if (application.TryFindResource(resourceKey) is null)
-                            {
-                                unresolved.Add(theme + ": " + resourceKey);
-                            }
+                            unresolved.Add(theme + ": " + resourceKey);
                         }
                     }
 
@@ -210,16 +207,7 @@ namespace Fluence.Wpf.Tests
                 "FluenceToggleButton",
             ];
 
-            List<string> violations = [];
-            foreach (string value in forbidden)
-            {
-                if (source.Contains(value, StringComparison.Ordinal))
-                {
-                    violations.Add(value);
-                }
-            }
-
-            Assert.Empty(violations);
+            Assert.DoesNotContain(forbidden, value => source.Contains(value, StringComparison.Ordinal));
         }
 
         private static SortedSet<string> CollectColorTokenResourceKeys(GalleryColorsPage page, Dispatcher dispatcher)
@@ -330,15 +318,7 @@ namespace Fluence.Wpf.Tests
         private static T? FindByName<T>(DependencyObject? root, string name)
             where T : FrameworkElement
         {
-            foreach (T item in FindVisualChildren<T>(root))
-            {
-                if (string.Equals(item.Name, name, StringComparison.Ordinal))
-                {
-                    return item;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<T>(root).FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
         }
 
         private static T? FindVisualChild<T>(DependencyObject root)

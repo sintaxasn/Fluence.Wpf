@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
@@ -243,15 +244,10 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertTemplatePart(object[] attributes, string name)
         {
-            foreach (object attribute in attributes)
+            if (!attributes.OfType<TemplatePartAttribute>().Any(attribute => string.Equals(attribute.Name, name, StringComparison.Ordinal) && attribute.Type == typeof(System.Windows.Controls.Button)))
             {
-                if (attribute is TemplatePartAttribute templatePath && string.Equals(templatePath.Name, name, StringComparison.Ordinal) && templatePath.Type == typeof(System.Windows.Controls.Button))
-                {
-                    return;
-                }
+                Assert.Fail("FluenceWindow must declare TemplatePart '" + name + "' with type System.Windows.Controls.Button.");
             }
-
-            Assert.Fail("FluenceWindow must declare TemplatePart '" + name + "' with type System.Windows.Controls.Button.");
         }
 
         // ---------------------------------------------------------------------------

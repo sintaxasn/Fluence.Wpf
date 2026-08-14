@@ -1401,16 +1401,7 @@ namespace Fluence.Wpf.Tests
                         object content = GetSelectedPageContent(window);
                         DependencyObject root = Assert.IsAssignableFrom<DependencyObject>(content);
 
-                        bool found = false;
-                        foreach (DemoSampleControl sample in FindAllVisualChildren<DemoSampleControl>(root))
-                        {
-                            if (!string.IsNullOrWhiteSpace(sample.XamlSource))
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
+                        bool found = FindAllVisualChildren<DemoSampleControl>(root).Any(sample => !string.IsNullOrWhiteSpace(sample.XamlSource));
                         Assert.True(found, "Page must expose at least one inline XAML source sample: " + expectation.PageType.Name);
                     }
                 }
@@ -2253,20 +2244,9 @@ namespace Fluence.Wpf.Tests
         private static T? FindByName<T>(DependencyObject? root, string name)
             where T : FrameworkElement
         {
-            if (root is FrameworkElement element && element.FindName(name) is T named)
-            {
-                return named;
-            }
-
-            foreach (T item in FindAllVisualChildren<T>(root))
-            {
-                if (string.Equals(item.Name, name, StringComparison.Ordinal))
-                {
-                    return item;
-                }
-            }
-
-            return null;
+            return root is not FrameworkElement element || element.FindName(name) is not T named
+                ? FindAllVisualChildren<T>(root).FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal))
+                : named;
         }
 
         private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root)

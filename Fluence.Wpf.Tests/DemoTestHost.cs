@@ -95,15 +95,7 @@ namespace Fluence.Wpf.Tests
         internal static T? FindByName<T>(DependencyObject? root, string name)
             where T : FrameworkElement
         {
-            foreach (T item in FindVisualChildren<T>(root))
-            {
-                if (string.Equals(item.Name, name, StringComparison.Ordinal))
-                {
-                    return item;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<T>(root).FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
         }
 
         // Logical+visual descendant search with cycle guarding. Forwards to the canonical

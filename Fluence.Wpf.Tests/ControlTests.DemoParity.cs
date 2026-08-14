@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Demo.Pages;
@@ -264,15 +265,7 @@ namespace Fluence.Wpf.Tests
 
         private static Controls.RepeatButton? FindRepeatButtonByContent(DependencyObject root, string content)
         {
-            foreach (Controls.RepeatButton repeatButton in FindVisualChildren<Controls.RepeatButton>(root))
-            {
-                if (string.Equals(repeatButton.Content as string, content, StringComparison.Ordinal))
-                {
-                    return repeatButton;
-                }
-            }
-
-            return null;
+            return FindVisualChildren<Controls.RepeatButton>(root).FirstOrDefault(repeatButton => string.Equals(repeatButton.Content as string, content, StringComparison.Ordinal));
         }
 
         private static void RunDemoPageTest(Func<UserControl> createPage, Action<Window> verify)
