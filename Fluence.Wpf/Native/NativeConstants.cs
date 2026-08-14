@@ -36,30 +36,6 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // ---------------------------------------------------------------------
-        // DWM window corner preferences (DWM_WINDOW_CORNER_PREFERENCE).
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// Let the system decide whether to round the corners.
-        /// </summary>
-        public const int DWMWCP_DEFAULT = 0;
-
-        /// <summary>
-        /// Never round the corners.
-        /// </summary>
-        public const int DWMWCP_DONOTROUND = 1;
-
-        /// <summary>
-        /// Round the corners with the full radius.
-        /// </summary>
-        public const int DWMWCP_ROUND = 2;
-
-        /// <summary>
-        /// Round the corners with the small radius.
-        /// </summary>
-        public const int DWMWCP_ROUNDSMALL = 3;
-
-        // ---------------------------------------------------------------------
         // DWM color sentinels for the caption/border color attributes.
         // ---------------------------------------------------------------------
 

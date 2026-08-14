@@ -353,20 +353,20 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <remarks>
         /// <see cref="CornerPreference.Default"/> and <see cref="CornerPreference.Round"/> both
-        /// map to <see cref="NativeConstants.DWMWCP_ROUND"/> because <c>Default</c> in the
+        /// map to DWMWCP_ROUND because <c>Default</c> in the
         /// Fluence library means "the library default," which is rounded on Windows 11.
         /// </remarks>
         /// <param name="preference">The requested corner style.</param>
         /// <returns>The <c>DWMWCP_*</c> constant to write via
         /// <c>DWMWA_WINDOW_CORNER_PREFERENCE</c>.</returns>
-        internal static int GetCornerPreference(CornerPreference preference)
+        internal static DWM_WINDOW_CORNER_PREFERENCE GetCornerPreference(CornerPreference preference)
         {
             return preference switch
             {
-                CornerPreference.DoNotRound => NativeConstants.DWMWCP_DONOTROUND,
-                CornerPreference.RoundSmall => NativeConstants.DWMWCP_ROUNDSMALL,
-                CornerPreference.Default or CornerPreference.Round => NativeConstants.DWMWCP_ROUND,
-                _ => NativeConstants.DWMWCP_ROUND,
+                CornerPreference.DoNotRound => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
+                CornerPreference.RoundSmall => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
+                CornerPreference.Default or CornerPreference.Round => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
+                _ => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
             };
         }
 

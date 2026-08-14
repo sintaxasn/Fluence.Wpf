@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void GetCornerPreference_Round_MapsToDwmwcpRound()
         {
-            Assert.Equal(NativeConstants.DWMWCP_ROUND,
+            Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
                 WindowPolicy.GetCornerPreference(CornerPreference.Round));
         }
 
@@ -347,21 +347,21 @@ namespace Fluence.Wpf.Tests
         {
             // FluenceWindow exposes CornerPreference.Default as "library default" - which in a
             // Fluent library means rounded on Win11. The policy normalises Default to Round.
-            Assert.Equal(NativeConstants.DWMWCP_ROUND,
+            Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
                 WindowPolicy.GetCornerPreference(CornerPreference.Default));
         }
 
         [Fact]
         public void GetCornerPreference_DoNotRound_MapsToDwmwcpDoNotRound()
         {
-            Assert.Equal(NativeConstants.DWMWCP_DONOTROUND,
+            Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
                 WindowPolicy.GetCornerPreference(CornerPreference.DoNotRound));
         }
 
         [Fact]
         public void GetCornerPreference_RoundSmall_MapsToDwmwcpRoundSmall()
         {
-            Assert.Equal(NativeConstants.DWMWCP_ROUNDSMALL,
+            Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
                 WindowPolicy.GetCornerPreference(CornerPreference.RoundSmall));
         }
 

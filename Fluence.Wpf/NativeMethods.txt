@@ -1,4 +1,5 @@
 ﻿DWM_SYSTEMBACKDROP_TYPE
+DWM_WINDOW_CORNER_PREFERENCE
 DwmExtendFrameIntoClientArea
 DwmGetWindowAttribute
 DwmIsCompositionEnabled

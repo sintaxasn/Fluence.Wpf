@@ -133,9 +133,9 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         /// <param name="cornerPreference">The <c>DWMWCP_*</c> value.</param>
         /// <returns><see langword="true"/> on success.</returns>
-        public static bool SetWindowCornerPreference(IntPtr hwnd, int cornerPreference)
+        public static bool SetWindowCornerPreference(IntPtr hwnd, DWM_WINDOW_CORNER_PREFERENCE cornerPreference)
         {
-            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, cornerPreference);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (int)cornerPreference);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool RoundWindowCorner(IntPtr hwnd)
         {
-            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, NativeConstants.DWMWCP_ROUND);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (int)DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND);
         }
 
         #endregion DWM attribute helpers
