@@ -98,7 +98,7 @@ namespace Fluence.Wpf.Tests
                     Height = 100,
                     VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
                     HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
-                    Style = app?.TryFindResource("ScrollViewerStyle") as Style,
+                    Style = app.TryFindResource("ScrollViewerStyle") as Style,
                 };
 
                 StackPanel sp = new();
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
                 ScrollBar sb = new()
                 {
                     Orientation = Orientation.Vertical,
-                    Style = app?.TryFindResource("VerticalScrollBarStyle") as Style,
+                    Style = app.TryFindResource("VerticalScrollBarStyle") as Style,
                     Minimum = 0,
                     Maximum = 100,
                     Value = 0,
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Tests
                 ScrollBar sb = new()
                 {
                     Orientation = Orientation.Vertical,
-                    Style = app?.TryFindResource("VerticalScrollBarStyle") as Style,
+                    Style = app.TryFindResource("VerticalScrollBarStyle") as Style,
                     Minimum = 0,
                     Maximum = 100,
                     Value = 0,
@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Tests
                 ScrollBar sb = new()
                 {
                     Orientation = Orientation.Horizontal,
-                    Style = app?.TryFindResource("HorizontalScrollBarStyle") as Style,
+                    Style = app.TryFindResource("HorizontalScrollBarStyle") as Style,
                     Minimum = 0,
                     Maximum = 100,
                     Value = 0,
@@ -278,7 +278,7 @@ namespace Fluence.Wpf.Tests
                 ScrollBar sb = new()
                 {
                     Orientation = Orientation.Vertical,
-                    Style = app?.TryFindResource("VerticalScrollBarStyle") as Style,
+                    Style = app.TryFindResource("VerticalScrollBarStyle") as Style,
                     Minimum = 0,
                     Maximum = 100,
                     Value = 0,
@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Tests
                 ScrollBar sb = new()
                 {
                     Orientation = Orientation.Vertical,
-                    Style = app?.TryFindResource("VerticalScrollBarStyle") as Style,
+                    Style = app.TryFindResource("VerticalScrollBarStyle") as Style,
                     Minimum = 0,
                     Maximum = 100,
                     Value = 0,
@@ -381,7 +381,7 @@ namespace Fluence.Wpf.Tests
                     ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
                     foreach (string? key in keys)
                     {
-                        Assert.NotNull(app?.TryFindResource(key));
+                        Assert.NotNull(app.TryFindResource(key));
                     }
                 }
             });
