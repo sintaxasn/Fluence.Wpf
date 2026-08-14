@@ -29,6 +29,10 @@
 using System;
 using System.Runtime.InteropServices;
 using Fluence.Wpf.Helpers;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.SystemInformation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Fluence.Wpf.Native
 {
@@ -50,85 +54,9 @@ namespace Fluence.Wpf.Native
         private const string Dwmapi = "dwmapi.dll";
         private const string User32 = "user32.dll";
         private const string UxTheme = "uxtheme.dll";
-        private const string Ntdll = "ntdll.dll";
         private const string Shell32 = "shell32.dll";
 
-        private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
-
-        // SW_* arguments for ShowWindow (winuser.h). Only the states the caption buttons need.
-        private const int SW_MAXIMIZE = 3;
-        private const int SW_MINIMIZE = 6;
-        private const int SW_RESTORE = 9;
-
-        /// <summary>
-        /// The <c>HWND_BROADCAST</c> pseudo-handle for broadcasting a settings change.
-        /// </summary>
-        public const int HWND_BROADCAST = 0xFFFF;
-
-        /// <summary>
-        /// The <c>SMTO_ABORTIFHUNG</c> flag for <see cref="SendMessageTimeout"/>.
-        /// </summary>
-        public const uint SMTO_ABORTIFHUNG = 0x0002;
-
-        #region P/Invoke declarations - User32 window styles and presentation
-
-        [DllImport(User32, SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport(User32, SetLastError = true)]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool IsIconic(IntPtr hWnd);
-
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool IsZoomed(IntPtr hWnd);
-
-        /// <summary>
-        /// Returns whether <paramref name="hWnd"/> is a valid existing window handle.
-        /// </summary>
-        /// <param name="hWnd">The window handle to evaluate.</param>
-        /// <returns><see langword="true"/> if the handle is valid; otherwise, <see langword="false"/>.</returns>
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindow(IntPtr hWnd);
-
-        /// <summary>
-        /// Sends a window message with a timeout. Used by the tests to broadcast
-        /// <c>WM_SETTINGCHANGE</c>/<c>ImmersiveColorSet</c> so the theme watcher re-reads the palette.
-        /// </summary>
-        /// <param name="hWnd">The target window handle, or <see cref="HWND_BROADCAST"/> to send to all top-level windows.</param>
-        /// <param name="Msg">The message to send.</param>
-        /// <param name="wParam">The WPARAM to send.</param>
-        /// <param name="lParam">The LPARAM to send.</param>
-        /// <param name="fuFlags">The flags for the message.</param>
-        /// <param name="uTimeout">The timeout for the message.</param>
-        /// <param name="lpdwResult">The result of the message.</param>
-        [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern IntPtr SendMessageTimeout(
-            IntPtr hWnd,
-            uint Msg,
-            IntPtr wParam,
-            string lParam,
-            uint fuFlags,
-            uint uTimeout,
-            out IntPtr lpdwResult);
-
-        #endregion P/Invoke declarations - User32 window styles and presentation
-
-        #region P/Invoke declarations - Ntdll
-
-        [DllImport(Ntdll, SetLastError = true)]
-        private static extern int RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
-
-        #endregion P/Invoke declarations - Ntdll
 
         #region P/Invoke declarations - DWM
 
@@ -512,8 +440,8 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         public static void HideAllWindowButtons(IntPtr hwnd)
         {
-            int style = GetWindowLong(hwnd, GWL_STYLE);
-            _ = SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
+            int style = PInvoke.GetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            _ = PInvoke.SetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style & ~WS_SYSMENU);
         }
 
         /// <summary>
@@ -529,7 +457,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> when the window is (or becomes) minimized.</returns>
         public static bool MinimizeWindowNative(IntPtr hwnd)
         {
-            return hwnd != IntPtr.Zero && (IsIconic(hwnd) || ShowWindow(hwnd, SW_MINIMIZE));
+            return hwnd != IntPtr.Zero && (PInvoke.IsIconic((HWND)hwnd) || PInvoke.ShowWindow((HWND)hwnd, SHOW_WINDOW_CMD.SW_MINIMIZE));
         }
 
         /// <summary>
@@ -539,7 +467,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> when the window is (or becomes) maximized.</returns>
         public static bool MaximizeWindowNative(IntPtr hwnd)
         {
-            return hwnd != IntPtr.Zero && (IsZoomed(hwnd) || ShowWindow(hwnd, SW_MAXIMIZE));
+            return hwnd != IntPtr.Zero && (PInvoke.IsZoomed((HWND)hwnd) || PInvoke.ShowWindow((HWND)hwnd, SHOW_WINDOW_CMD.SW_MAXIMIZE));
         }
 
         /// <summary>
@@ -549,7 +477,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> when the restore call succeeds.</returns>
         public static bool RestoreWindowNative(IntPtr hwnd)
         {
-            return hwnd != IntPtr.Zero && ShowWindow(hwnd, SW_RESTORE);
+            return hwnd != IntPtr.Zero && PInvoke.ShowWindow((HWND)hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
         }
 
         #endregion Window style and presentation helpers
@@ -564,19 +492,18 @@ namespace Fluence.Wpf.Native
         /// <exception cref="InvalidOperationException">Thrown when <c>RtlGetVersion</c> fails.</exception>
         public static Version GetRealOsVersion()
         {
-            OSVERSIONINFOEX versionInfo = new()
+            OSVERSIONINFOW versionInfo = new()
             {
-                OSVersionInfoSize = Marshal.SizeOf<OSVERSIONINFOEX>(),
-                CSDVersion = string.Empty,
+                dwOSVersionInfoSize = (uint)Marshal.SizeOf<OSVERSIONINFOW>(),
             };
 
-            int result = RtlGetVersion(ref versionInfo);
+            int result = Windows.Wdk.PInvoke.RtlGetVersion(ref versionInfo);
             return result is not 0
                 ? throw new InvalidOperationException("RtlGetVersion failed.")
                 : new Version(
-                    versionInfo.MajorVersion,
-                    versionInfo.MinorVersion,
-                    versionInfo.BuildNumber);
+                    (int)versionInfo.dwMajorVersion,
+                    (int)versionInfo.dwMinorVersion,
+                    (int)versionInfo.dwBuildNumber);
         }
 
         /// <summary>

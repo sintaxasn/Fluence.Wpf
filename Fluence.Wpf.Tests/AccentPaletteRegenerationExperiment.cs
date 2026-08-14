@@ -26,12 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Win32;
 using Fluence.Wpf.Native;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
@@ -146,9 +149,17 @@ namespace Fluence.Wpf.Tests
 
                 if (writeMode is WriteMode.AllAccentValuesAndBroadcast)
                 {
-                    _ = NativeMethods.SendMessageTimeout(new IntPtr(NativeMethods.HWND_BROADCAST),
-                        NativeConstants.WM_SETTINGCHANGE, IntPtr.Zero, "ImmersiveColorSet",
-                        NativeMethods.SMTO_ABORTIFHUNG, 1000, out IntPtr _);
+                    nint lParam = Marshal.StringToHGlobalUni("ImmersiveColorSet");
+                    try
+                    {
+                        _ = PInvoke.SendMessageTimeout(HWND.HWND_BROADCAST,
+                            PInvoke.WM_SETTINGCHANGE, default, lParam,
+                            SEND_MESSAGE_TIMEOUT_FLAGS.SMTO_ABORTIFHUNG, 1000, out nuint _);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(lParam);
+                    }
                 }
 
                 await Task.Delay(waitMs, TestContext.Current.CancellationToken).ConfigureAwait(true);
@@ -192,9 +203,17 @@ namespace Fluence.Wpf.Tests
                     key.SetValue(AccentPaletteValue, originalPalette, RegistryValueKind.Binary);
                 }
                 // Broadcast restore.
-                _ = NativeMethods.SendMessageTimeout(new IntPtr(NativeMethods.HWND_BROADCAST),
-                    NativeConstants.WM_SETTINGCHANGE, IntPtr.Zero, "ImmersiveColorSet",
-                    NativeMethods.SMTO_ABORTIFHUNG, 1000, out IntPtr _);
+                nint lParam = Marshal.StringToHGlobalUni("ImmersiveColorSet");
+                try
+                {
+                    _ = PInvoke.SendMessageTimeout(HWND.HWND_BROADCAST,
+                        PInvoke.WM_SETTINGCHANGE, default, lParam,
+                        SEND_MESSAGE_TIMEOUT_FLAGS.SMTO_ABORTIFHUNG, 1000, out nuint _);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(lParam);
+                }
             }
         }
 

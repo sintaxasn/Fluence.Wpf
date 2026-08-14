@@ -1,0 +1,10 @@
+﻿GetWindowLong
+HWND_BROADCAST
+IsIconic
+IsZoomed
+RtlGetVersion
+SEND_MESSAGE_TIMEOUT_FLAGS
+SendMessageTimeout
+SetWindowLong
+ShowWindow
+WM_SETTINGCHANGE
