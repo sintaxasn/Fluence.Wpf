@@ -57,8 +57,6 @@ namespace Fluence.Wpf.Native
     {
         private const string UxTheme = "uxtheme.dll";
 
-        private const int WS_SYSMENU = 0x80000;
-
         #region P/Invoke declarations
 
         /// <summary>
@@ -332,8 +330,8 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         public static void HideAllWindowButtons(IntPtr hwnd)
         {
-            int style = PInvoke.GetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
-            _ = PInvoke.SetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style & ~WS_SYSMENU);
+            WINDOW_STYLE style = (WINDOW_STYLE)PInvoke.GetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            _ = PInvoke.SetWindowLong((HWND)hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, (int)(style & ~WINDOW_STYLE.WS_SYSMENU));
         }
 
         /// <summary>
