@@ -36,65 +36,6 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // ---------------------------------------------------------------------
-        // DWMWINDOWATTRIBUTE ordinals (dwmapi.h). Passed to Dwm{Set,Get}WindowAttribute.
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// Cloaks (set) the window so DWM composes it off-screen without presenting it.
-        /// </summary>
-        public const int DWMWA_CLOAK = 13;
-
-        /// <summary>
-        /// Reads the cloak reason flags; zero means the window is not cloaked.
-        /// </summary>
-        public const int DWMWA_CLOAKED = 14;
-
-        /// <summary>
-        /// Pre-1903 immersive dark-mode attribute (Windows 10 builds 17763 to 18361).
-        /// </summary>
-        public const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
-
-        /// <summary>
-        /// Immersive dark-mode attribute used from Windows 10 build 18362 (1903) onward.
-        /// </summary>
-        public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-
-        /// <summary>
-        /// Selects the rounded-corner preference (one of the <c>DWMWCP_*</c> values).
-        /// </summary>
-        public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
-
-        /// <summary>
-        /// Sets the window border color as a <c>COLORREF</c>.
-        /// </summary>
-        public const int DWMWA_BORDER_COLOR = 34;
-
-        /// <summary>
-        /// Sets the title-bar caption color as a <c>COLORREF</c>.
-        /// </summary>
-        public const int DWMWA_CAPTION_COLOR = 35;
-
-        /// <summary>
-        /// Sets the caption text color as a <c>COLORREF</c>.
-        /// </summary>
-        public const int DWMWA_TEXT_COLOR = 36;
-
-        /// <summary>
-        /// Reads the visible (DPI-scaled) frame border thickness.
-        /// </summary>
-        public const int DWMWA_VISIBLE_FRAME_BORDER_THICKNESS = 37;
-
-        /// <summary>
-        /// Selects the system backdrop (one of the <c>DWMSBT_*</c> values); build 22621+.
-        /// </summary>
-        public const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
-
-        /// <summary>
-        /// Legacy Mica toggle for Windows 11 21H2 (builds 22000 to 22620).
-        /// </summary>
-        public const int DWMWA_MICA_EFFECT = 1029;
-
-        // ---------------------------------------------------------------------
         // UxTheme window-theme attributes (uxtheme.h). Passed to SetWindowThemeAttribute.
         // ---------------------------------------------------------------------
 

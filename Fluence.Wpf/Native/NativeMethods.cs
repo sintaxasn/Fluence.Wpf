@@ -27,11 +27,14 @@
  */
 
 using System;
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using Fluence.Wpf.Helpers;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.System.SystemInformation;
+using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Fluence.Wpf.Native
@@ -51,7 +54,6 @@ namespace Fluence.Wpf.Native
     /// </summary>
     internal static class NativeMethods
     {
-        private const string Dwmapi = "dwmapi.dll";
         private const string User32 = "user32.dll";
         private const string UxTheme = "uxtheme.dll";
         private const string Shell32 = "shell32.dll";
@@ -61,53 +63,10 @@ namespace Fluence.Wpf.Native
         #region P/Invoke declarations - DWM
 
         /// <summary>
-        /// Sets a DWM window attribute from a 4-byte integer value.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="attr">The DWM attribute to set.</param>
-        /// <param name="attrValue">The value to set for the attribute.</param>
-        /// <param name="attrSize">The size of the attribute value.</param>
-        [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
-        /// <summary>
-        /// Reads a DWM window attribute into a 4-byte integer value.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="attr">The DWM attribute to read.</param>
-        /// <param name="attrValue">The value of the attribute.</param>
-        /// <param name="attrSize">The size of the attribute value.</param>
-        [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int attr, out int attrValue, int attrSize);
-
-        /// <summary>
-        /// Extends the DWM frame into the client area using the supplied margins.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="pMarInset">The margins to extend the frame into the client area.</param>
-        [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS pMarInset);
-
-        /// <summary>
-        /// Reads the current DWM colorization color and its opaque-blend flag.
-        /// </summary>
-        /// <param name="pcrColorization">The colorization color.</param>
-        /// <param name="pfOpaqueBlend">Whether the colorization is opaque.</param>
-        [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmGetColorizationColor(out uint pcrColorization, out bool pfOpaqueBlend);
-
-        /// <summary>
-        /// Reports whether DWM desktop composition is enabled.
-        /// </summary>
-        /// <param name="pfEnabled">Whether DWM desktop composition is enabled.</param>
-        [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
-
-        /// <summary>
         /// Reads the undocumented DWM colorization parameters (ordinal-127 export).
         /// </summary>
         /// <param name="parameters">The colorization parameters.</param>
-        [DllImport(Dwmapi, EntryPoint = "#127", PreserveSig = false)]
+        [DllImport("dwmapi.dll", EntryPoint = "#127", PreserveSig = false), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern void DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
 
         #endregion P/Invoke declarations - DWM
@@ -234,9 +193,11 @@ namespace Fluence.Wpf.Native
         /// <param name="attribute">The <c>DWMWA_*</c> attribute id.</param>
         /// <param name="value">The 4-byte value to set.</param>
         /// <returns><see langword="true"/> when DWM returns <c>S_OK</c>.</returns>
-        public static bool SetWindowAttribute(IntPtr hwnd, int attribute, int value)
+        public static bool SetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, int value)
         {
-            int result = DwmSetWindowAttribute(hwnd, attribute, ref value, sizeof(int));
+            Span<byte> valueSpan = stackalloc byte[sizeof(int)];
+            BinaryPrimitives.WriteInt32LittleEndian(valueSpan, value);
+            int result = PInvoke.DwmSetWindowAttribute((HWND)hwnd, attribute, valueSpan);
             return result is 0;
         }
 
@@ -248,24 +209,25 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetWindowCornerPreference(IntPtr hwnd, int cornerPreference)
         {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, cornerPreference);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, cornerPreference);
         }
 
         /// <summary>
         /// Selects the DWM immersive dark-mode window attribute id for a given OS build. The
-        /// attribute moved from <see cref="NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD"/>
-        /// (19) to <see cref="NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE"/> (20) starting at
+        /// attribute moved from DWMWA_USE_IMMERSIVE_DARK_MODE_OLD
+        /// (19) to DWMWA_USE_IMMERSIVE_DARK_MODE (20) starting at
         /// Windows 10 build 18362 (version 1903). Builds 17763..18361 (1809 era) must use 19, or
         /// the dark caption silently fails to apply. This selector is pure so it can be unit
         /// tested without a window handle.
         /// </summary>
         /// <param name="osBuild">The OS build number (for example <c>18362</c>).</param>
-        /// <returns>The DWM attribute id to pass to <see cref="DwmSetWindowAttribute"/>.</returns>
-        public static int GetImmersiveDarkModeAttribute(int osBuild)
+        /// <returns>The DWM attribute id to pass to DwmSetWindowAttribute.</returns>
+        public static DWMWINDOWATTRIBUTE GetImmersiveDarkModeAttribute(int osBuild)
         {
+            const DWMWINDOWATTRIBUTE DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = (DWMWINDOWATTRIBUTE)19;
             return osBuild >= 18362
-                ? NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE
-                : NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
+                ? DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE
+                : DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
         }
 
         /// <summary>
@@ -288,11 +250,11 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetSystemBackdropType(IntPtr hwnd, int backdropType)
         {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_SYSTEMBACKDROP_TYPE, backdropType);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, backdropType);
         }
 
         /// <summary>
-        /// Cloaks or uncloaks a window via <see cref="NativeConstants.DWMWA_CLOAK"/>. While cloaked,
+        /// Cloaks or uncloaks a window via DWMWA_CLOAK. While cloaked,
         /// DWM keeps the window fully composed off-screen and does not present it. Retained as part
         /// of the interop contract; <see cref="Controls.FluenceWindow"/> deliberately
         /// does not cloak (its first-paint flash is solved by clearing the redirection surface), so
@@ -306,11 +268,11 @@ namespace Fluence.Wpf.Native
         public static bool SetWindowCloak(IntPtr hwnd, bool cloak)
         {
             int value = cloak ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAK, value);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_CLOAK, value);
         }
 
         /// <summary>
-        /// Reads the read-only <see cref="NativeConstants.DWMWA_CLOAKED"/> attribute, returning the
+        /// Reads the read-only DWMWA_CLOAKED attribute, returning the
         /// reason flags for why the window is cloaked. Zero means the window is not cloaked. Returns
         /// zero on any failure (for example when DWM composition is disabled).
         /// </summary>
@@ -322,8 +284,9 @@ namespace Fluence.Wpf.Native
             {
                 return 0;
             }
-            int result = DwmGetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAKED, out int cloaked, sizeof(int));
-            return result is 0 ? cloaked : 0;
+            Span<byte> cloakedSpan = stackalloc byte[sizeof(int)];
+            int result = PInvoke.DwmGetWindowAttribute((HWND)hwnd, DWMWINDOWATTRIBUTE.DWMWA_CLOAKED, cloakedSpan);
+            return result is 0 ? BinaryPrimitives.ReadInt32LittleEndian(cloakedSpan) : 0;
         }
 
         /// <summary>
@@ -334,8 +297,9 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetMicaEffect(IntPtr hwnd, bool enabled)
         {
+            const DWMWINDOWATTRIBUTE DWMWA_MICA_EFFECT = (DWMWINDOWATTRIBUTE)1029;
             int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_MICA_EFFECT, value);
+            return SetWindowAttribute(hwnd, DWMWA_MICA_EFFECT, value);
         }
 
         /// <summary>
@@ -346,7 +310,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetCaptionColor(IntPtr hwnd, int color)
         {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CAPTION_COLOR, color);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
         }
 
         /// <summary>
@@ -379,7 +343,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetBorderColor(IntPtr hwnd, int color)
         {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_BORDER_COLOR, color);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, color);
         }
 
         /// <summary>
@@ -391,13 +355,13 @@ namespace Fluence.Wpf.Native
         public static bool ExtendFrameIntoClientArea(IntPtr hwnd)
         {
             MARGINS margins = new() { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
-            int result = DwmExtendFrameIntoClientArea(hwnd, ref margins);
+            int result = PInvoke.DwmExtendFrameIntoClientArea((HWND)hwnd, in margins);
             return result is 0;
         }
 
         /// <summary>
         /// Packs a <see cref="System.Windows.Media.Color"/> into the <c>0x00BBGGRR</c> COLORREF
-        /// layout that DWM color attributes such as <see cref="NativeConstants.DWMWA_BORDER_COLOR"/>
+        /// layout that DWM color attributes such as DWMWA_BORDER_COLOR
         /// expect; the alpha channel is ignored. Despite the historical "ABGR" naming, the byte
         /// order produced here is COLORREF, so callers must not reuse it for an attribute that
         /// genuinely expects ABGR with a meaningful alpha channel.
@@ -415,7 +379,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> when composition is enabled.</returns>
         public static bool IsCompositionEnabled()
         {
-            int result = DwmIsCompositionEnabled(out bool enabled);
+            int result = PInvoke.DwmIsCompositionEnabled(out BOOL enabled);
             return result is 0 && enabled;
         }
 
@@ -426,7 +390,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool RoundWindowCorner(IntPtr hwnd)
         {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, NativeConstants.DWMWCP_ROUND);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, NativeConstants.DWMWCP_ROUND);
         }
 
         #endregion DWM attribute helpers

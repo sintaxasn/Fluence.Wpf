@@ -1,4 +1,8 @@
-﻿GetWindowLong
+﻿DwmExtendFrameIntoClientArea
+DwmGetWindowAttribute
+DwmIsCompositionEnabled
+DwmSetWindowAttribute
+GetWindowLong
 HWND_BROADCAST
 IsIconic
 IsZoomed
