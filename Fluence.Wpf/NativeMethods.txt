@@ -4,6 +4,8 @@ DwmExtendFrameIntoClientArea
 DwmGetWindowAttribute
 DwmIsCompositionEnabled
 DwmSetWindowAttribute
+DWMWA_COLOR_DEFAULT
+DWMWA_COLOR_NONE
 GetDC
 GetMonitorInfo
 GetWindowLong

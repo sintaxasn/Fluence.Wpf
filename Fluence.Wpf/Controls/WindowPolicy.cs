@@ -31,6 +31,7 @@ using Fluence.Wpf.Native;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shell;
+using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 
 namespace Fluence.Wpf.Controls
@@ -168,7 +169,7 @@ namespace Fluence.Wpf.Controls
         ///       When the OS supports <c>DWMWA_BORDER_COLOR</c> and the window is active with
         ///       accent borders, the COLORREF derived from <paramref name="accentColor"/> is
         ///       emitted. Otherwise
-        ///       <see cref="NativeConstants.DWMWA_COLOR_DEFAULT"/> is used, which tells DWM to
+        ///       DWMWA_COLOR_DEFAULT is used, which tells DWM to
         ///       restore its own border.
         ///     </description>
         ///   </item>
@@ -200,7 +201,7 @@ namespace Fluence.Wpf.Controls
                 ? "CardStrokeColorDefaultSolidBrush"
                 : "SystemAccentColorBrush";
 
-            int dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
+            uint dwmBorderColor = PInvoke.DWMWA_COLOR_DEFAULT;
             if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
             {
                 dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
@@ -273,7 +274,7 @@ namespace Fluence.Wpf.Controls
         ///   </item>
         ///   <item>
         ///     <c>None</c> effective backdrop gets a solid fallback background and
-        ///     <see cref="NativeConstants.DWMWA_COLOR_DEFAULT"/> for the caption. On 22H2+ the plan
+        ///     DWMWA_COLOR_DEFAULT for the caption. On 22H2+ the plan
         ///     emits DWMSBT_NONE to explicitly clear any previous Mica
         ///     or Acrylic; on Windows 10 no <c>DWMWA_SYSTEMBACKDROP_TYPE</c> write is attempted.
         ///   </item>
@@ -315,7 +316,7 @@ namespace Fluence.Wpf.Controls
                     BackdropType.None,
                     useTransparentBackground: false,
                     fallbackBackgroundColor,
-                    NativeConstants.DWMWA_COLOR_DEFAULT,
+                    PInvoke.DWMWA_COLOR_DEFAULT,
                     clearedSystemBackdrop,
                     useLegacyMicaEffect: false,
                     isDark);
@@ -330,7 +331,7 @@ namespace Fluence.Wpf.Controls
                     BackdropType.Mica,
                     useTransparentBackground: true,
                     Colors.Transparent,
-                    NativeConstants.DWMWA_COLOR_NONE,
+                    PInvoke.DWMWA_COLOR_NONE,
                     systemBackdropType: null,
                     useLegacyMicaEffect: true,
                     isDark);
@@ -341,7 +342,7 @@ namespace Fluence.Wpf.Controls
                 effectiveBackdrop,
                 useTransparentBackground: true,
                 Colors.Transparent,
-                NativeConstants.DWMWA_COLOR_NONE,
+                PInvoke.DWMWA_COLOR_NONE,
                 MapSystemBackdropType(effectiveBackdrop),
                 useLegacyMicaEffect: false,
                 isDark);

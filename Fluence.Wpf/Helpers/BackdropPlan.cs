@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Helpers
         BackdropType effectiveBackdrop,
         bool useTransparentBackground,
         Color backgroundColor,
-        int captionColor,
+        uint captionColor,
         DWM_SYSTEMBACKDROP_TYPE? systemBackdropType,
         bool useLegacyMicaEffect,
         bool useImmersiveDarkMode)
@@ -80,12 +80,12 @@ namespace Fluence.Wpf.Helpers
 
         /// <summary>
         /// Gets the value to write to <c>DWMWA_CAPTION_COLOR</c>.
-        /// <see cref="Native.NativeConstants.DWMWA_COLOR_NONE"/> when a transparent
+        /// DWMWA_COLOR_NONE when a transparent
         /// backdrop is active (so the system backdrop shows through the caption strip);
-        /// <see cref="Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> for
+        /// DWMWA_COLOR_DEFAULT for
         /// <see cref="BackdropType.None"/> (leave the DWM default in place).
         /// </summary>
-        internal int CaptionColor { get; } = captionColor;
+        internal uint CaptionColor { get; } = captionColor;
 
         /// <summary>
         /// Gets the <c>DWMSBT_*</c> value to write via <c>DWMWA_SYSTEMBACKDROP_TYPE</c>, or

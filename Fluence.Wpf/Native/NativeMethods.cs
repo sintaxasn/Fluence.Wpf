@@ -119,10 +119,10 @@ namespace Fluence.Wpf.Native
         /// <param name="attribute">The <c>DWMWA_*</c> attribute id.</param>
         /// <param name="value">The 4-byte value to set.</param>
         /// <returns><see langword="true"/> when DWM returns <c>S_OK</c>.</returns>
-        public static bool SetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, int value)
+        public static bool SetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, uint value)
         {
-            Span<byte> valueSpan = stackalloc byte[sizeof(int)];
-            BinaryPrimitives.WriteInt32LittleEndian(valueSpan, value);
+            Span<byte> valueSpan = stackalloc byte[sizeof(uint)];
+            BinaryPrimitives.WriteUInt32LittleEndian(valueSpan, value);
             int result = PInvoke.DwmSetWindowAttribute((HWND)hwnd, attribute, valueSpan);
             return result is 0;
         }
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetWindowCornerPreference(IntPtr hwnd, DWM_WINDOW_CORNER_PREFERENCE cornerPreference)
         {
-            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (int)cornerPreference);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (uint)cornerPreference);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetImmersiveDarkMode(IntPtr hwnd, bool enabled)
         {
-            int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
+            uint value = enabled ? 1u : 0u;
             return SetWindowAttribute(hwnd, GetImmersiveDarkModeAttribute(OsVersionHelper.OsBuild), value);
         }
 
@@ -176,7 +176,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetSystemBackdropType(IntPtr hwnd, DWM_SYSTEMBACKDROP_TYPE backdropType)
         {
-            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, (int)backdropType);
+            return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, (uint)backdropType);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Fluence.Wpf.Native
         /// <returns><see langword="true"/> on success.</returns>
         public static bool SetWindowCloak(IntPtr hwnd, bool cloak)
         {
-            int value = cloak ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
+            uint value = cloak ? 1u : 0u;
             return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_CLOAK, value);
         }
 
@@ -224,7 +224,7 @@ namespace Fluence.Wpf.Native
         public static bool SetMicaEffect(IntPtr hwnd, bool enabled)
         {
             const DWMWINDOWATTRIBUTE DWMWA_MICA_EFFECT = (DWMWINDOWATTRIBUTE)1029;
-            int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
+            uint value = enabled ? 1u : 0u;
             return SetWindowAttribute(hwnd, DWMWA_MICA_EFFECT, value);
         }
 
@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         /// <param name="color">The caption color value.</param>
         /// <returns><see langword="true"/> on success.</returns>
-        public static bool SetCaptionColor(IntPtr hwnd, int color)
+        public static bool SetCaptionColor(IntPtr hwnd, uint color)
         {
             return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_COLOR, color);
         }
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Native
         /// <param name="hwnd">The target window handle.</param>
         /// <param name="color">The border color value.</param>
         /// <returns><see langword="true"/> on success.</returns>
-        public static bool SetBorderColor(IntPtr hwnd, int color)
+        public static bool SetBorderColor(IntPtr hwnd, uint color)
         {
             return SetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, color);
         }
@@ -296,9 +296,9 @@ namespace Fluence.Wpf.Native
         /// </summary>
         /// <param name="color">The source color.</param>
         /// <returns>The packed COLORREF value.</returns>
-        public static int ColorToColorRef(System.Windows.Media.Color color)
+        public static uint ColorToColorRef(System.Windows.Media.Color color)
         {
-            return (color.B << 16) | (color.G << 8) | color.R;
+            return (uint)((color.B << 16) | (color.G << 8) | color.R);
         }
 
         /// <summary>

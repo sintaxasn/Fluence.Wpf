@@ -32,7 +32,7 @@ using System.Windows.Media;
 using System.Windows.Shell;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
-using Fluence.Wpf.Native;
+using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Xunit;
 
@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Tests
             Assert.False(plan.UseTransparentBackground,
                 "None must paint a solid background - transparency would reveal the glass frame.");
             Assert.Equal(fallback, plan.BackgroundColor);
-            Assert.Equal(NativeConstants.DWMWA_COLOR_DEFAULT, plan.CaptionColor);
+            Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.CaptionColor);
             Assert.True(plan.SystemBackdropType is not null,
                 "On 22H2 DWM exposes DWMWA_SYSTEMBACKDROP_TYPE - None must emit DWMSBT_NONE to explicitly clear Mica/Acrylic.");
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType.Value);
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
             Assert.True(plan.UseTransparentBackground,
                 "Mica requires a transparent window client so DWM can composite the backdrop.");
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
-            Assert.Equal(NativeConstants.DWMWA_COLOR_NONE, plan.CaptionColor);
+            Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.CaptionColor);
             Assert.False(plan.SystemBackdropType is not null,
                 "Pre-22H2 must not emit DWMWA_SYSTEMBACKDROP_TYPE - only DWMWA_MICA_EFFECT is legal there.");
             Assert.True(plan.UseLegacyMicaEffect,
@@ -467,7 +467,7 @@ namespace Fluence.Wpf.Tests
 
             Assert.Equal(new Thickness(2), plan.TemplateBorderThickness);
             Assert.Equal("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
-            Assert.NotEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
+            Assert.NotEqual(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
         [Fact]
@@ -506,7 +506,7 @@ namespace Fluence.Wpf.Tests
                 capabilities: Caps(),
                 accentColor: Colors.Red);
 
-            Assert.Equal(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
+            Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
         #endregion BuildFramePlan - accent border selection

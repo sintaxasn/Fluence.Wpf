@@ -36,20 +36,6 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // ---------------------------------------------------------------------
-        // DWM color sentinels for the caption/border color attributes.
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// <c>DWMWA_COLOR_NONE</c>: suppress the color so the backdrop shows through.
-        /// </summary>
-        public const int DWMWA_COLOR_NONE = unchecked((int)0xFFFFFFFE);
-
-        /// <summary>
-        /// <c>DWMWA_COLOR_DEFAULT</c>: reset the color to the system default.
-        /// </summary>
-        public const int DWMWA_COLOR_DEFAULT = unchecked((int)0xFFFFFFFF);
-
-        // ---------------------------------------------------------------------
         // Window messages (winuser.h).
         // ---------------------------------------------------------------------
 
@@ -262,20 +248,6 @@ namespace Fluence.Wpf.Native
         /// <c>ABE_BOTTOM</c>.
         /// </summary>
         public const uint ABE_BOTTOM = 3;
-
-        // ---------------------------------------------------------------------
-        // DWM boolean attribute values (a BOOL marshalled as a 4-byte int).
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// The DWM <c>TRUE</c> value for a BOOL window attribute.
-        /// </summary>
-        public const int DWM_TRUE = 1;
-
-        /// <summary>
-        /// The DWM <c>FALSE</c> value for a BOOL window attribute.
-        /// </summary>
-        public const int DWM_FALSE = 0;
 
         // ---------------------------------------------------------------------
         // Registry paths (relative to HKEY_CURRENT_USER).
