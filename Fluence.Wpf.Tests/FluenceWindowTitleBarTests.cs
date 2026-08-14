@@ -1218,14 +1218,14 @@ modifiers: null);
                                             capturedWindow.Close();
                                         }, DispatcherPriority.ApplicationIdle);
                                     }
-                                    catch (Exception exInner)
+                                    catch (Exception exInner) when (exInner.Message is not null)
                                     {
                                         scenarioExceptionInfo = ExceptionDispatchInfo.Capture(exInner);
                                         capturedWindow.Close();
                                     }
                                 }, DispatcherPriority.ApplicationIdle);
                             }
-                            catch (Exception exOuter)
+                            catch (Exception exOuter) when (exOuter.Message is not null)
                             {
                                 scenarioExceptionInfo = ExceptionDispatchInfo.Capture(exOuter);
                                 capturedWindow.Close();

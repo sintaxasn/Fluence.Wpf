@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Tests
                 {
                     action();
                 }
-                catch (Exception exception)
+                catch (Exception exception) when (exception.Message is not null)
                 {
                     captured = exception;
                 }
