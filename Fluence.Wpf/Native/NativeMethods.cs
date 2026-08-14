@@ -40,12 +40,6 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Fluence.Wpf.Native
 {
-    // SYSLIB1054 asks for [LibraryImport] source generation, but this assembly multi-targets
-    // net472 (where the source generator is unavailable) and net10, and the two TFMs must expose
-    // an identical interop surface. Classic [DllImport] is the only declaration form that compiles
-    // on both, so the analyzer is suppressed for this single interop file. This is the documented
-    // "exceptional third-party interop" carve-out; no other file may use an inline pragma.
-#pragma warning disable SYSLIB1054
     /// <summary>
     /// The native interop surface for <see cref="Controls.FluenceWindow"/> and its
     /// policy/capability helpers: DWM backdrop and frame attributes, UxTheme caption suppression,
@@ -467,5 +461,4 @@ namespace Fluence.Wpf.Native
 
         #endregion OS version and taskbar helpers
     }
-#pragma warning restore SYSLIB1054
 }
