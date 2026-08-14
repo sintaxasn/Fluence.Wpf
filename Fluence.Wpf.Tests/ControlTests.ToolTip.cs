@@ -49,8 +49,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                object? brush = app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush");
-                Assert.NotNull(brush);
+                object brush = Assert.IsAssignableFrom<object>(app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush"));
             });
         }
 
@@ -62,8 +61,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                object? brush = app?.TryFindResource("SurfaceStrokeColorFlyoutBrush");
-                Assert.NotNull(brush);
+                object brush = Assert.IsAssignableFrom<object>(app?.TryFindResource("SurfaceStrokeColorFlyoutBrush"));
             });
         }
 
@@ -118,9 +116,8 @@ namespace Fluence.Wpf.Tests
                             () => tip.Template?.FindName("ToolTipSurface", tip) is System.Windows.Controls.Border),
                         "The tooltip template must apply once the tooltip opens.");
 
-                    System.Windows.Controls.Border? surface =
-                        tip.Template.FindName("ToolTipSurface", tip) as System.Windows.Controls.Border;
-                    Assert.NotNull(surface);
+                    System.Windows.Controls.Border surface =
+                        Assert.IsType<System.Windows.Controls.Border>(tip.Template.FindName("ToolTipSurface", tip));
 
                     // The 83 ms open fade (WinUI FadeInThemeAnimation parity) must settle at
                     // full opacity. The trigger-begun HoldEnd clock keeps

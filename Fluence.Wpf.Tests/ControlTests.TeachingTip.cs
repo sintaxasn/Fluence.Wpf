@@ -88,18 +88,14 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(336.0, tip.MaxWidth, 0.01);
                     Assert.Equal(new Thickness(16, 15, 16, 17), tip.Padding);
 
-                    Border? surface = FindVisualChildByName<Border>(tip, "TipSurface");
-                    Assert.NotNull(surface);
+                    Border surface = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(tip, "TipSurface"));
                     CornerRadius? overlayRadius = (CornerRadius?)app?.FindResource("OverlayCornerRadius");
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
 
-                    ButtonBase? action = FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton");
-                    ButtonBase? close = FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton");
-                    ButtonBase? alternateClose = FindVisualChildByName<ButtonBase>(tip, "PART_AlternateCloseButton");
-                    Assert.NotNull(action);
-                    Assert.NotNull(close);
-                    Assert.NotNull(alternateClose);
+                    ButtonBase action = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton"));
+                    ButtonBase close = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton"));
+                    ButtonBase alternateClose = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_AlternateCloseButton"));
                     Assert.Equal(Visibility.Collapsed, action.Visibility);
                     Assert.Equal(Visibility.Collapsed, close.Visibility);
                     Assert.Equal(Visibility.Visible, alternateClose.Visibility);
@@ -226,8 +222,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
                         "IsOpen=true must open the host popup.");
 
-                    Popup? popup = tip.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
                     Assert.True(popup.AllowsTransparency, "TeachingTip popups must allow transparency for the rounded surface.");
                     Assert.Equal(PopupAnimation.None, popup.PopupAnimation);
                     Assert.Same(tip, popup.Child);
@@ -254,9 +249,8 @@ namespace Fluence.Wpf.Tests
 
                     // The open reveal (fade plus placement-aware slide, played from
                     // TeachingTip.OnLoaded) must settle at rest once the 167ms slide completes.
-                    System.Windows.Media.TranslateTransform? translate =
-                        tip.Template.FindName("TipTranslate", tip) as System.Windows.Media.TranslateTransform;
-                    Assert.NotNull(translate);
+                    System.Windows.Media.TranslateTransform translate =
+                        Assert.IsType<System.Windows.Media.TranslateTransform>(tip.Template.FindName("TipTranslate", tip));
                     Grid tipRoot = Assert.IsType<Grid>(tip.Template.FindName("TipRoot", tip));
                     Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => Math.Abs(translate.Y) < 0.001 && tipRoot.Opacity >= 1.0),
@@ -345,8 +339,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
                         "IsOpen=true must open the host popup before light dismiss is verified.");
 
-                    Popup? popup = tip.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
                     Assert.False(popup.StaysOpen,
                         "IsLightDismissEnabled=true must map to a light-dismiss popup (StaysOpen=false).");
 
@@ -490,8 +483,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
                         "An untargeted tip must still open its host popup.");
 
-                    Popup? popup = tip.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
                     Assert.NotNull(popup.CustomPopupPlacementCallback);
                     CustomPopupPlacement[] placements = popup.CustomPopupPlacementCallback(new Size(100, 40), new Size(600, 400), default);
@@ -547,8 +539,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
                         "IsOpen=true must open the host popup before placement mapping is verified.");
 
-                    Popup? popup = tip.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
 
                     // The popup side mapping that feeds the shared edge-centering callback.
@@ -804,9 +795,8 @@ namespace Fluence.Wpf.Tests
                             string.Format("The {0} tip must open and load inside its popup.", placement));
                         Assert.Equal(placement, tip.ActualPlacement);
 
-                        System.Windows.Media.TranslateTransform? translate =
-                            tip.Template.FindName("TipTranslate", tip) as System.Windows.Media.TranslateTransform;
-                        Assert.NotNull(translate);
+                        System.Windows.Media.TranslateTransform translate =
+                            Assert.IsType<System.Windows.Media.TranslateTransform>(tip.Template.FindName("TipTranslate", tip));
                         Grid tipRoot = Assert.IsType<Grid>(tip.Template.FindName("TipRoot", tip));
 
                         // The placement-aware reveal must settle at the (0,0) rest position and
@@ -856,9 +846,8 @@ namespace Fluence.Wpf.Tests
                         "The untargeted tip must open and load inside its popup.");
                     Assert.Equal(TeachingTipPlacementMode.Center, tip.ActualPlacement);
 
-                    System.Windows.Media.TranslateTransform? translate =
-                        tip.Template.FindName("TipTranslate", tip) as System.Windows.Media.TranslateTransform;
-                    Assert.NotNull(translate);
+                    System.Windows.Media.TranslateTransform translate =
+                        Assert.IsType<System.Windows.Media.TranslateTransform>(tip.Template.FindName("TipTranslate", tip));
                     Grid tipRoot = Assert.IsType<Grid>(tip.Template.FindName("TipRoot", tip));
 
                     // Center tips fade only: the translate must never receive a nonzero seed or

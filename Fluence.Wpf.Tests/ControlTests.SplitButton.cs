@@ -92,8 +92,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                Rectangle? divider = FindVisualChildByName<Rectangle>(btn, "Divider");
-                Assert.NotNull(divider);
+                Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btn, "Divider"));
                 Assert.NotNull(divider.Fill);
                 w.Close();
             });
@@ -157,8 +156,7 @@ namespace Fluence.Wpf.Tests
                 wStd.Show();
                 DrainDispatcher(wStd.Dispatcher);
 
-                Rectangle? dividerStd = FindVisualChildByName<Rectangle>(btnStd, "Divider");
-                Assert.NotNull(dividerStd);
+                Rectangle dividerStd = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btnStd, "Divider"));
                 SolidColorBrush stdBrush = Assert.IsType<SolidColorBrush>(dividerStd.Fill);
                 wStd.Close();
 
@@ -168,8 +166,7 @@ namespace Fluence.Wpf.Tests
                 wAcc.Show();
                 DrainDispatcher(wAcc.Dispatcher);
 
-                Rectangle? dividerAcc = FindVisualChildByName<Rectangle>(btnAcc, "Divider");
-                Assert.NotNull(dividerAcc);
+                Rectangle dividerAcc = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btnAcc, "Divider"));
                 SolidColorBrush accBrush = Assert.IsType<SolidColorBrush>(dividerAcc.Fill);
 
                 Assert.NotEqual(

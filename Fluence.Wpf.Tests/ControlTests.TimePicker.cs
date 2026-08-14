@@ -90,8 +90,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
 
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
@@ -134,8 +133,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
 
                     TextBlock hourText = Assert.IsType<TextBlock>(template.FindName("HourSegmentText", picker));
                     TextBlock minuteText = Assert.IsType<TextBlock>(template.FindName("MinuteSegmentText", picker));
@@ -200,8 +198,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -217,9 +214,8 @@ namespace Fluence.Wpf.Tests
 
                     // The open reveal (slide down from Y=-8 with a fade) must exist in the
                     // template and settle at rest once the 167ms storyboard completes.
-                    TranslateTransform? translate =
-                        template.FindName("FlyoutSurfaceTranslate", picker) as TranslateTransform;
-                    Assert.NotNull(translate);
+                    TranslateTransform translate =
+                        Assert.IsType<TranslateTransform>(template.FindName("FlyoutSurfaceTranslate", picker));
                     Border surface = Assert.IsType<Border>(template.FindName("FlyoutSurface", picker));
                     Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
@@ -267,8 +263,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -357,8 +352,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -435,8 +429,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -491,8 +484,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    AutomationPeer? peer = UIElementAutomationPeer.CreatePeerForElement(picker);
-                    Assert.NotNull(peer);
+                    AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(picker));
                     _ = Assert.IsAssignableFrom<Automation.TimePickerAutomationPeer>(peer);
                     Assert.Equal("TimePicker", peer.GetClassName(), StringComparer.Ordinal);
                     Assert.Equal(AutomationControlType.Group, peer.GetAutomationControlType());
@@ -538,8 +530,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector periodList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_PeriodList", picker));
@@ -593,8 +584,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Assert.NotNull(popup.Child);
@@ -636,8 +626,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -691,8 +680,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
                     Selector hourList = Assert.IsAssignableFrom<Selector>(template.FindName("PART_HourList", picker));
@@ -745,8 +733,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     TextBlock hourText = Assert.IsType<TextBlock>(template.FindName("HourSegmentText", picker));
                     TextBlock minuteText = Assert.IsType<TextBlock>(template.FindName("MinuteSegmentText", picker));
 
@@ -792,8 +779,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = picker.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(picker.Template);
                     ButtonBase flyoutButton = Assert.IsAssignableFrom<ButtonBase>(template.FindName("PART_FlyoutButton", picker));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_Popup", picker));
 

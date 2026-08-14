@@ -87,8 +87,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
-                    Ellipse? outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
-                    Assert.NotNull(outerEllipse);
+                    Ellipse outerEllipse = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(radio, "OuterEllipse"));
 
                     Brush expected = Assert.IsAssignableFrom<Brush>(radio.FindResource("ControlStrongStrokeColorDefaultBrush"));
                     Assert.Same(expected, outerEllipse.Stroke);
@@ -138,8 +137,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Ellipse? outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
-                    Assert.NotNull(outerEllipse);
+                    Ellipse outerEllipse = Assert.IsAssignableFrom<Ellipse>(FindVisualChildByName<Ellipse>(radio, "OuterEllipse"));
 
                     Brush expected = Assert.IsAssignableFrom<Brush>(radio.FindResource("ControlStrongStrokeColorDisabledBrush"));
                     Assert.Same(expected, outerEllipse.Stroke);
@@ -184,10 +182,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = checkBox.ApplyTemplate();
-                    Path? checkGlyph = FindVisualChildByName<Path>(checkBox, "CheckGlyph");
-                    Border? indeterminateDash = FindVisualChildByName<Border>(checkBox, "IndeterminateDash");
-                    Assert.NotNull(checkGlyph);
-                    Assert.NotNull(indeterminateDash);
+                    Path checkGlyph = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(checkBox, "CheckGlyph"));
+                    Border indeterminateDash = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(checkBox, "IndeterminateDash"));
 
                     // The check-in storyboard now fades the glyph in, so sample until it
                     // settles at the trigger setter steady state instead of asserting
@@ -238,8 +234,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = checkBox.ApplyTemplate();
-                    Path? checkGlyph = FindVisualChildByName<Path>(checkBox, "CheckGlyph");
-                    Assert.NotNull(checkGlyph);
+                    Path checkGlyph = Assert.IsAssignableFrom<Path>(FindVisualChildByName<Path>(checkBox, "CheckGlyph"));
                     Assert.Equal(0.0, checkGlyph.Opacity, 0.001);
 
                     checkBox.IsChecked = true;

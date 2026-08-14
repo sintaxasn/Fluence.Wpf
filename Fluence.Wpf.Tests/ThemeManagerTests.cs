@@ -55,13 +55,12 @@ namespace Fluence.Wpf.Tests
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
 
-                Color? textColor = app.Resources["TextFillColorPrimary"] as Color?;
-                _ = Assert.NotNull(textColor);
+                Color textColor = Assert.IsType<Color>(app.Resources["TextFillColorPrimary"]);
 
-                Assert.Equal(a, textColor.Value.A);
-                Assert.Equal(r, textColor.Value.R);
-                Assert.Equal(g, textColor.Value.G);
-                Assert.Equal(b, textColor.Value.B);
+                Assert.Equal(a, textColor.A);
+                Assert.Equal(r, textColor.R);
+                Assert.Equal(g, textColor.G);
+                Assert.Equal(b, textColor.B);
             });
         }
 

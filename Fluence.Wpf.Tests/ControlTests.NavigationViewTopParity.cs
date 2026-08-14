@@ -168,10 +168,8 @@ namespace Fluence.Wpf.Tests
                     ScrollViewer? topScrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer);
                     Assert.Null(topScrollViewer);
 
-                    ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(item, "IconPresenter");
-                    ContentPresenter? contentPresenter = FindVisualChildByName<ContentPresenter>(item, "ContentPresenter");
-                    Assert.NotNull(iconPresenter);
-                    Assert.NotNull(contentPresenter);
+                    ContentPresenter iconPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "IconPresenter"));
+                    ContentPresenter contentPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "ContentPresenter"));
                     Assert.Equal(Visibility.Visible, iconPresenter.Visibility);
                     Assert.Equal(Visibility.Visible, contentPresenter.Visibility);
                     Assert.Equal(14.0, item.FontSize, 0.01);
@@ -179,10 +177,8 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(16.0, itemIcon.IconFontSize, 0.01);
                     Assert.Equal(new Thickness(4, 0, 2, 0), iconPresenter.Margin);
                     Assert.Equal(new Thickness(2, 0, 2, 0), contentPresenter.Margin);
-                    System.Windows.Controls.Border? outerBorder = FindVisualChildByName<System.Windows.Controls.Border>(item, "OuterBorder");
-                    ContentPresenter? infoBadgePresenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
-                    Assert.NotNull(outerBorder);
-                    Assert.NotNull(infoBadgePresenter);
+                    System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "OuterBorder"));
+                    ContentPresenter infoBadgePresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter"));
                     Assert.Equal(new Thickness(2, 4, 2, 4), outerBorder.Margin);
                     Assert.Equal(new Thickness(4, 0, 6, 0), outerBorder.Padding);
                     Assert.Equal(Visibility.Collapsed, infoBadgePresenter.Visibility);
@@ -194,8 +190,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(0.0, gapColumn.Width.Value, 0.01);
                     Assert.Equal(GridUnitType.Auto, contentColumn.Width.GridUnitType);
 
-                    ContentPresenter? secondIconPresenter = FindVisualChildByName<ContentPresenter>(second, "IconPresenter");
-                    Assert.NotNull(secondIconPresenter);
+                    ContentPresenter secondIconPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(second, "IconPresenter"));
                     double textToNextIconGap = GetNavigationElementX(secondIconPresenter, nav) - GetNavigationElementRight(contentPresenter, nav);
                     Assert.Equal(24.0, textToNextIconGap, 1.5);
                 }
@@ -243,12 +238,10 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Controls.Button? overflowButton = FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton");
-                    Assert.NotNull(overflowButton);
+                    Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
                     Assert.Equal(ControlAppearance.Subtle, overflowButton.Appearance);
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
-                    Grid? topItemsHost = FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost);
-                    Assert.NotNull(topItemsHost);
+                    Grid topItemsHost = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost));
                     double visibleItemsRight = double.MinValue;
                     foreach (object item in nav.Items)
                     {
@@ -325,8 +318,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Controls.Button? overflowButton = FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton");
-                    Assert.NotNull(overflowButton);
+                    Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
                     Assert.Equal(Visibility.Visible, first.Visibility);
                     Assert.Equal(Visibility.Visible, second.Visibility);
@@ -384,10 +376,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Controls.Button? overflowButton = FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton");
-                    Grid? topItemsHost = FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost);
-                    Assert.NotNull(overflowButton);
-                    Assert.NotNull(topItemsHost);
+                    Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"));
+                    Grid topItemsHost = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost));
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
                     Assert.Equal(Visibility.Collapsed, trees.Visibility);
 

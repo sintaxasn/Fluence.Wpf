@@ -57,8 +57,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // Template applied - Border is the root of the template
-                Border? border = FindVisualChild<Border>(sep);
-                Assert.NotNull(border);
+                Border border = Assert.IsAssignableFrom<Border>(FindVisualChild<Border>(sep));
                 w.Close();
             });
         }
@@ -118,8 +117,7 @@ namespace Fluence.Wpf.Tests
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                Border? border = FindVisualChild<Border>(sep);
-                Assert.NotNull(border);
+                Border border = Assert.IsAssignableFrom<Border>(FindVisualChild<Border>(sep));
                 w.Close();
             });
         }

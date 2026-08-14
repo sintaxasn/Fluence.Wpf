@@ -112,8 +112,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the command bar flyout popup.");
 
-                    Popup? popup = flyout.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(flyout.HostPopup);
                     Assert.False(popup.StaysOpen, "CommandBarFlyout popups must be light-dismiss (StaysOpen=false).");
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(popup.Child);
@@ -226,12 +225,10 @@ namespace Fluence.Wpf.Tests
                     Assert.False(presenter.IsExpanded, "The presenter must open collapsed (AlwaysExpanded is omitted for v1).");
                     Assert.Equal(Visibility.Collapsed, secondaryHost.Visibility);
 
-                    System.Windows.Media.ScaleTransform? hostScale =
-                        presenter.Template.FindName("SecondaryHostScale", presenter) as System.Windows.Media.ScaleTransform;
-                    Assert.NotNull(hostScale);
-                    System.Windows.Media.RotateTransform? chevronRotation =
-                        presenter.Template.FindName("MoreButtonIconRotation", presenter) as System.Windows.Media.RotateTransform;
-                    Assert.NotNull(chevronRotation);
+                    System.Windows.Media.ScaleTransform hostScale =
+                        Assert.IsType<System.Windows.Media.ScaleTransform>(presenter.Template.FindName("SecondaryHostScale", presenter));
+                    System.Windows.Media.RotateTransform chevronRotation =
+                        Assert.IsType<System.Windows.Media.RotateTransform>(presenter.Template.FindName("MoreButtonIconRotation", presenter));
 
                     moreButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => presenter.IsExpanded),
@@ -427,9 +424,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Media.ScaleTransform? pressScale =
-                        button.Template.FindName("PressScale", button) as System.Windows.Media.ScaleTransform;
-                    Assert.NotNull(pressScale);
+                    System.Windows.Media.ScaleTransform pressScale =
+                        Assert.IsType<System.Windows.Media.ScaleTransform>(button.Template.FindName("PressScale", button));
                     Assert.Equal(1.0, pressScale.ScaleX, 0.001);
 
                     // Press: the Button.xaml press-scale storyboard settles at 0.98.

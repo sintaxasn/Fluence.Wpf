@@ -62,9 +62,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     CornerRadius? overlayRadius = (CornerRadius?)app?.FindResource("OverlayCornerRadius");
-                    Border? surface = FindVisualChild<Border>(presenter);
+                    Border surface = Assert.IsAssignableFrom<Border>(FindVisualChild<Border>(presenter));
 
-                    Assert.NotNull(surface);
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
                     Assert.Equal(new Thickness(16, 15, 16, 17), presenter.Padding);
@@ -108,8 +107,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(openingRaised, "ShowAt should raise Opening before the popup opens.");
                     Assert.True(openedRaised, "ShowAt should raise Opened after the popup opens.");
 
-                    Popup? popup = flyout.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(flyout.HostPopup);
                     Assert.False(popup.StaysOpen, "Flyout popups must be light-dismiss (StaysOpen=false).");
                     Assert.True(popup.AllowsTransparency, "Flyout popups must allow transparency for the rounded surface.");
                     Assert.Equal(PopupAnimation.None, popup.PopupAnimation);
@@ -123,9 +121,8 @@ namespace Fluence.Wpf.Tests
                     // settle at rest once the 167ms reveal completes.
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => presenter.IsLoaded),
                         "The presenter must load inside the open popup.");
-                    System.Windows.Media.TranslateTransform? translate =
-                        presenter.Template.FindName("PresenterTranslate", presenter) as System.Windows.Media.TranslateTransform;
-                    Assert.NotNull(translate);
+                    System.Windows.Media.TranslateTransform translate =
+                        Assert.IsType<System.Windows.Media.TranslateTransform>(presenter.Template.FindName("PresenterTranslate", presenter));
                     Border surface = Assert.IsType<Border>(presenter.Template.FindName("PresenterSurface", presenter));
                     Assert.True(WaitUntil(window.Dispatcher, 2000,
                             () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
@@ -328,8 +325,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
                         "ShowAt should open the flyout popup before placement mapping is verified.");
 
-                    Popup? popup = flyout.HostPopup;
-                    Assert.NotNull(popup);
+                    Popup popup = Assert.IsAssignableFrom<Popup>(flyout.HostPopup);
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
                     Assert.NotNull(popup.CustomPopupPlacementCallback);
 

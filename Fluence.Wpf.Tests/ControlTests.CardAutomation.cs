@@ -148,8 +148,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
-                    object? pattern = peer.GetPattern(PatternInterface.Invoke);
-                    Assert.NotNull(pattern);
+                    object pattern = Assert.IsAssignableFrom<object>(peer.GetPattern(PatternInterface.Invoke));
                     _ = Assert.IsAssignableFrom<IInvokeProvider>(pattern);
                 }
                 finally

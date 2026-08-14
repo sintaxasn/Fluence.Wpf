@@ -133,10 +133,9 @@ namespace Fluence.Wpf.Tests
                     Assert.NotNull(GetSecondaryButtonPart(button));
 
                     Popup popup = Assert.IsType<Popup>(button.Template?.FindName("PART_Popup", button));
-                    Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
+                    Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(button, "Divider"));
 
                     Assert.False(popup.StaysOpen, "The flyout popup should light-dismiss.");
-                    Assert.NotNull(divider);
                 });
         }
 
@@ -284,15 +283,11 @@ namespace Fluence.Wpf.Tests
                 },
                 (application, button) =>
                 {
-                    Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
-                    Border? secondaryFill = FindVisualChildByName<Border>(button, "SecondaryFill");
-                    Border? primaryBackdrop = FindVisualChildByName<Border>(button, "PrimaryAccentFillBackdrop");
-                    Border? secondaryBackdrop = FindVisualChildByName<Border>(button, "SecondaryAccentFillBackdrop");
+                    Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));
+                    Border secondaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "SecondaryFill"));
+                    Border primaryBackdrop = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryAccentFillBackdrop"));
+                    Border secondaryBackdrop = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "SecondaryAccentFillBackdrop"));
 
-                    Assert.NotNull(primaryFill);
-                    Assert.NotNull(secondaryFill);
-                    Assert.NotNull(primaryBackdrop);
-                    Assert.NotNull(secondaryBackdrop);
 
                     Color accentDefault = GetResolvedBrushColor(application, "AccentFillColorDefaultBrush");
                     Assert.Equal(accentDefault, GetSolidColor(primaryFill.Background));
@@ -314,8 +309,7 @@ namespace Fluence.Wpf.Tests
                 },
                 (application, button) =>
                 {
-                    Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
-                    Assert.NotNull(divider);
+                    Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(button, "Divider"));
 
                     Color uncheckedDivider = GetSolidColor(divider.Fill);
 
@@ -347,11 +341,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
-                    Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
-                    Border? secondaryFill = FindVisualChildByName<Border>(button, "SecondaryFill");
+                    Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));
+                    Border secondaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "SecondaryFill"));
 
-                    Assert.NotNull(primaryFill);
-                    Assert.NotNull(secondaryFill);
 
                     Color accentTertiary = GetResolvedBrushColor(application, "AccentFillColorTertiaryBrush");
                     Assert.Equal(accentTertiary, GetSolidColor(primaryFill.Background));
@@ -374,11 +366,9 @@ namespace Fluence.Wpf.Tests
                 },
                 (application, button) =>
                 {
-                    Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
-                    Border? secondaryFill = FindVisualChildByName<Border>(button, "SecondaryFill");
+                    Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));
+                    Border secondaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "SecondaryFill"));
 
-                    Assert.NotNull(primaryFill);
-                    Assert.NotNull(secondaryFill);
 
                     Color accentDisabled = GetResolvedBrushColor(application, "AccentFillColorDisabledBrush");
                     Assert.Equal(accentDisabled, GetSolidColor(primaryFill.Background));
@@ -507,11 +497,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
-                    Border? primaryFill = FindVisualChildByName<Border>(button, "PrimaryFill");
-                    Rectangle? divider = FindVisualChildByName<Rectangle>(button, "Divider");
+                    Border primaryFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"));
+                    Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(button, "Divider"));
 
-                    Assert.NotNull(primaryFill);
-                    Assert.NotNull(divider);
                     Assert.Equal(GetResolvedBrushColor(application, "AccentFillColorDefaultBrush"), GetSolidColor(primaryFill.Background));
                     Assert.Equal(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), GetSolidColor(divider.Fill));
                     ThemeTestHelpers.AssertKeyThemeBrushesResolve(application);

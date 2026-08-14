@@ -63,8 +63,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ControlTemplate? template = box.Template;
-                    Assert.NotNull(template);
+                    ControlTemplate template = Assert.IsAssignableFrom<ControlTemplate>(box.Template);
 
                     Controls.TextBox textBox = Assert.IsType<Controls.TextBox>(template.FindName("PART_TextBox", box));
                     Popup popup = Assert.IsType<Popup>(template.FindName("PART_SuggestionsPopup", box));

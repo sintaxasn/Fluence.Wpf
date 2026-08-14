@@ -74,36 +74,27 @@ namespace Fluence.Wpf.Tests
                     _ = radioButton.ApplyTemplate();
                     _ = toggleSwitch.ApplyTemplate();
 
-                    Border? indicatorFill = FindVisualChildByName<Border>(checkBox, "IndicatorFill");
-                    Border? indicatorHover = FindVisualChildByName<Border>(checkBox, "IndicatorHover");
-                    Border? indicatorPressed = FindVisualChildByName<Border>(checkBox, "IndicatorPressed");
-                    Assert.NotNull(indicatorFill);
-                    Assert.NotNull(indicatorHover);
-                    Assert.NotNull(indicatorPressed);
+                    Border indicatorFill = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(checkBox, "IndicatorFill"));
+                    Border indicatorHover = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(checkBox, "IndicatorHover"));
+                    Border indicatorPressed = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(checkBox, "IndicatorPressed"));
 
                     AssertBrushColor(indicatorFill.Background, "ControlAltFillColorSecondaryBrush");
                     AssertBrushColor(indicatorHover.Background, "ControlAltFillColorTertiaryBrush");
                     AssertBrushColor(indicatorPressed.Background, "ControlAltFillColorQuarternaryBrush");
                     AssertBrushColor(indicatorPressed.BorderBrush, "ControlStrongStrokeColorDisabledBrush");
 
-                    System.Windows.Shapes.Ellipse? outerEllipse = FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipse");
-                    System.Windows.Shapes.Ellipse? outerEllipseHover = FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipseHover");
-                    System.Windows.Shapes.Ellipse? outerEllipsePressed = FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipsePressed");
-                    Assert.NotNull(outerEllipse);
-                    Assert.NotNull(outerEllipseHover);
-                    Assert.NotNull(outerEllipsePressed);
+                    System.Windows.Shapes.Ellipse outerEllipse = Assert.IsAssignableFrom<System.Windows.Shapes.Ellipse>(FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipse"));
+                    System.Windows.Shapes.Ellipse outerEllipseHover = Assert.IsAssignableFrom<System.Windows.Shapes.Ellipse>(FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipseHover"));
+                    System.Windows.Shapes.Ellipse outerEllipsePressed = Assert.IsAssignableFrom<System.Windows.Shapes.Ellipse>(FindVisualChildByName<System.Windows.Shapes.Ellipse>(radioButton, "OuterEllipsePressed"));
 
                     AssertBrushColor(outerEllipse.Fill, "ControlAltFillColorSecondaryBrush");
                     AssertBrushColor(outerEllipseHover.Fill, "ControlAltFillColorTertiaryBrush");
                     AssertBrushColor(outerEllipsePressed.Fill, "ControlAltFillColorQuarternaryBrush");
                     AssertBrushColor(outerEllipsePressed.Stroke, "ControlStrongStrokeColorDisabledBrush");
 
-                    Border? trackOff = FindVisualChildByName<Border>(toggleSwitch, "TrackOff");
-                    Border? trackOffHover = FindVisualChildByName<Border>(toggleSwitch, "TrackOffHover");
-                    Border? trackOffPressed = FindVisualChildByName<Border>(toggleSwitch, "TrackOffPressed");
-                    Assert.NotNull(trackOff);
-                    Assert.NotNull(trackOffHover);
-                    Assert.NotNull(trackOffPressed);
+                    Border trackOff = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(toggleSwitch, "TrackOff"));
+                    Border trackOffHover = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(toggleSwitch, "TrackOffHover"));
+                    Border trackOffPressed = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(toggleSwitch, "TrackOffPressed"));
 
                     AssertBrushColor(trackOff.Background, "ControlAltFillColorSecondaryBrush");
                     AssertBrushColor(trackOff.BorderBrush, "ControlStrongStrokeColorDefaultBrush");
@@ -144,8 +135,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     _ = progressBar.ApplyTemplate();
 
-                    Border? track = FindVisualChildByName<Border>(progressBar, "PART_Track");
-                    Assert.NotNull(track);
+                    Border track = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(progressBar, "PART_Track"));
                     AssertBrushColor(track.Background, "ControlStrongStrokeColorDefaultBrush");
                 }
                 finally
@@ -187,8 +177,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     _ = scrollBar.ApplyTemplate();
 
-                    Border? trackBackground = FindVisualChildByName<Border>(scrollBar, "TrackBackground");
-                    Assert.NotNull(trackBackground);
+                    Border trackBackground = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(scrollBar, "TrackBackground"));
                     AssertBrushColor(trackBackground.Background, "ScrollBarTrackFillBrush");
                 }
                 finally
@@ -249,10 +238,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    RichTextBox? sourceViewer = FindVisualChildByName<RichTextBox>(sourceExpander, "SourceTextViewer");
-                    Border? copyButtonHost = FindVisualChildByName<Border>(sourceExpander, "CopySourceButtonHost");
-                    Assert.NotNull(sourceViewer);
-                    Assert.NotNull(copyButtonHost);
+                    RichTextBox sourceViewer = Assert.IsAssignableFrom<RichTextBox>(FindVisualChildByName<RichTextBox>(sourceExpander, "SourceTextViewer"));
+                    Border copyButtonHost = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(sourceExpander, "CopySourceButtonHost"));
                     AssertBrushColor(sourceViewer.Background, "SystemFillColorSolidAttentionBackgroundBrush");
                     AssertBrushColor(copyButtonHost.Background, "CardBackgroundFillColorDefaultBrush");
                 }

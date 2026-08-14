@@ -1008,11 +1008,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Controls.ComboBox? themeComboBox = FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox");
-                    TextBlock? themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
+                    Controls.ComboBox themeComboBox = Assert.IsAssignableFrom<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox"));
+                    TextBlock themeStateLabel = Assert.IsAssignableFrom<TextBlock>(FindVisualChildByName<TextBlock>(window, "ThemeStateLabel"));
 
-                    Assert.NotNull(themeComboBox);
-                    Assert.NotNull(themeStateLabel);
 
                     themeComboBox.SelectedIndex = 2;
                     DrainDispatcher(window.Dispatcher);
@@ -1047,11 +1045,9 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    Controls.Button iconLeftButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Left"));
+                    Controls.Button iconRightButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Right"));
 
-                    Assert.NotNull(iconLeftButton);
-                    Assert.NotNull(iconRightButton);
 
                     AssertButtonShowsGlyph(iconLeftButton, "\uE774");
                     AssertButtonShowsGlyph(iconRightButton, "\uE8D6");
@@ -1084,18 +1080,14 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    Controls.Button iconLeftButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Left"));
+                    Controls.Button iconRightButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Right"));
                     SolidColorBrush expectedBrush = Assert.IsType<SolidColorBrush>(application?.Resources["TextFillColorPrimaryBrush"]);
 
-                    Assert.NotNull(iconLeftButton);
-                    Assert.NotNull(iconRightButton);
 
-                    TextBlock? iconLeftGlyph = FindButtonIconTextBlock(iconLeftButton);
-                    TextBlock? iconRightGlyph = FindButtonIconTextBlock(iconRightButton);
+                    TextBlock iconLeftGlyph = Assert.IsAssignableFrom<TextBlock>(FindButtonIconTextBlock(iconLeftButton));
+                    TextBlock iconRightGlyph = Assert.IsAssignableFrom<TextBlock>(FindButtonIconTextBlock(iconRightButton));
 
-                    Assert.NotNull(iconLeftGlyph);
-                    Assert.NotNull(iconRightGlyph);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(iconLeftGlyph.Foreground);
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(iconRightGlyph.Foreground);
                     Assert.Equal(expectedBrush.Color, ((SolidColorBrush)iconLeftGlyph.Foreground).Color);
@@ -1193,10 +1185,8 @@ namespace Fluence.Wpf.Tests
                         "TabControl should not use TabPanel for Fluent headers because its selection overlap can clip rounded corners.");
                     Assert.Equal(Orientation.Horizontal, ((StackPanel)headerPanel).Orientation);
 
-                    Border? selectedBackground = FindVisualChildByName<Border>(selectedTab, "SelectedBackground");
-                    Border? selectionIndicator = FindVisualChildByName<Border>(selectedTab, "SelectionIndicator");
-                    Assert.NotNull(selectedBackground);
-                    Assert.NotNull(selectionIndicator);
+                    Border selectedBackground = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(selectedTab, "SelectedBackground"));
+                    Border selectionIndicator = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(selectedTab, "SelectionIndicator"));
 
                     double backgroundX = selectedBackground.TransformToAncestor(selectedTab).Transform(new Point(0, 0)).X;
                     double indicatorX = selectionIndicator.TransformToAncestor(selectedTab).Transform(new Point(0, 0)).X;
@@ -1441,11 +1431,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Controls.ToggleSwitch? toggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle");
-                    TextBlock? label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");
+                    Controls.ToggleSwitch toggle = Assert.IsAssignableFrom<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle"));
+                    TextBlock label = Assert.IsAssignableFrom<TextBlock>(FindVisualChildByName<TextBlock>(window, "SystemThemeLabel"));
 
-                    Assert.NotNull(toggle);
-                    Assert.NotNull(label);
                     Assert.True(toggle.IsChecked is true, "ThemeWatcherToggle should default to checked.");
                     Assert.Equal("Watching: Yes", label.Text, StringComparer.Ordinal);
 
@@ -1482,11 +1470,9 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    Controls.Button? button = FindFluentButtonByContent(window, "Icon Left");
-                    Assert.NotNull(button);
+                    Controls.Button button = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Left"));
 
-                    TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, "\uE774");
-                    Assert.NotNull(glyphTextBlock);
+                    TextBlock glyphTextBlock = Assert.IsAssignableFrom<TextBlock>(FindButtonGlyphTextBlock(button, "\uE774"));
                     Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
                     Point glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
                     double buttonCenterY = buttonOrigin.Y + (button.ActualHeight / 2.0);
@@ -1521,11 +1507,9 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    Controls.Button iconLeftButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Left"));
+                    Controls.Button iconRightButton = Assert.IsAssignableFrom<Controls.Button>(FindFluentButtonByContent(window, "Icon Right"));
 
-                    Assert.NotNull(iconLeftButton);
-                    Assert.NotNull(iconRightButton);
 
                     AssertGlyphWithinButtonBounds(window, iconLeftButton, "\uE774");
                     AssertGlyphWithinButtonBounds(window, iconRightButton, "\uE8D6");
@@ -1678,9 +1662,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
-                    TranslateTransform? translate =
-                        border.RenderTransform as TranslateTransform;
-                    Assert.NotNull(translate);
+                    TranslateTransform translate =
+                        Assert.IsType<TranslateTransform>(border.RenderTransform);
 
                     // The code-driven reveal (moved out of the template MultiTriggers) must
                     // settle at the rest position with its Stop-fill clocks released.
@@ -2222,10 +2205,8 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
 
-                    Controls.NumberBox? numberBox = FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox");
-                    Controls.ProgressBar? progressBar = FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar");
-                    Assert.NotNull(numberBox);
-                    Assert.NotNull(progressBar);
+                    Controls.NumberBox numberBox = Assert.IsAssignableFrom<Controls.NumberBox>(FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox"));
+                    Controls.ProgressBar progressBar = Assert.IsAssignableFrom<Controls.ProgressBar>(FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar"));
 
                     numberBox.Value = 73;
                     DrainDispatcher(window.Dispatcher);
@@ -2260,8 +2241,7 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
 
-                    Controls.ComboBox? combo = FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo");
-                    Assert.NotNull(combo);
+                    Controls.ComboBox combo = Assert.IsAssignableFrom<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo"));
                     Assert.Equal(3, combo.Items.Count);
 
                     combo.SelectedIndex = 1;
@@ -2571,11 +2551,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = radio.ApplyTemplate();
-                    Grid? indicatorHost = FindVisualChildByName<Grid>(radio, "IndicatorHost");
-                    ContentPresenter? contentPresenter = FindVisualChildByName<ContentPresenter>(radio, "ContentPresenter");
+                    Grid indicatorHost = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(radio, "IndicatorHost"));
+                    ContentPresenter contentPresenter = Assert.IsAssignableFrom<ContentPresenter>(FindVisualChildByName<ContentPresenter>(radio, "ContentPresenter"));
 
-                    Assert.NotNull(indicatorHost);
-                    Assert.NotNull(contentPresenter);
                     Assert.Equal(VerticalAlignment.Center, radio.VerticalContentAlignment);
                     Assert.Equal(VerticalAlignment.Center, indicatorHost.VerticalAlignment);
                     Assert.Equal(new Thickness(0), indicatorHost.Margin);
@@ -2846,8 +2824,7 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertButtonShowsGlyph(Controls.Button button, string glyph)
         {
-            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
-            Assert.NotNull(glyphTextBlock);
+            TextBlock glyphTextBlock = Assert.IsAssignableFrom<TextBlock>(FindButtonGlyphTextBlock(button, glyph));
             Assert.True(glyphTextBlock.IsVisible, "Expected button glyph should be visible.");
             Assert.True(glyphTextBlock.ActualWidth > 0, "Expected button glyph should occupy layout space.");
         }
@@ -2882,9 +2859,8 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertGlyphWithinButtonBounds(Window window, Controls.Button button, string glyph)
         {
-            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
+            TextBlock glyphTextBlock = Assert.IsAssignableFrom<TextBlock>(FindButtonGlyphTextBlock(button, glyph));
 
-            Assert.NotNull(glyphTextBlock);
             Assert.True(glyphTextBlock.IsVisible, "Expected button glyph should be visible.");
             Assert.True(glyphTextBlock.ActualWidth > 0, "Expected button glyph should occupy layout space.");
 
@@ -2916,8 +2892,7 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertContentGroupIsCentered(Window window, Controls.Button button, string content, string glyph)
         {
-            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
-            Assert.NotNull(glyphTextBlock);
+            TextBlock glyphTextBlock = Assert.IsAssignableFrom<TextBlock>(FindButtonGlyphTextBlock(button, glyph));
 
             ContentPresenter? textPresenter = null;
             foreach (ContentPresenter presenter in FindVisualChildren<ContentPresenter>(button))
