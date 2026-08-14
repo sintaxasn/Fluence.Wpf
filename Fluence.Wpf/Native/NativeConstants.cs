@@ -36,40 +36,6 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // ---------------------------------------------------------------------
-        // UxTheme window-theme attributes (uxtheme.h). Passed to SetWindowThemeAttribute.
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// The <c>WTA_NONCLIENT</c> attribute selector for SetWindowThemeAttribute.
-        /// </summary>
-        public const int WTA_NONCLIENT = 1;
-
-        /// <summary>
-        /// Suppresses the non-client caption drawing.
-        /// </summary>
-        public const uint WTNCA_NODRAWCAPTION = 0x00000001;
-
-        /// <summary>
-        /// Suppresses the non-client icon drawing.
-        /// </summary>
-        public const uint WTNCA_NODRAWICON = 0x00000002;
-
-        /// <summary>
-        /// Hides the system menu icon.
-        /// </summary>
-        public const uint WTNCA_NOSYSMENU = 0x00000004;
-
-        /// <summary>
-        /// Disables the mirrored help-button behavior.
-        /// </summary>
-        public const uint WTNCA_NOMIRRORHELP = 0x00000008;
-
-        /// <summary>
-        /// Mask of all valid <c>WTNCA_*</c> bits.
-        /// </summary>
-        public const uint WTNCA_VALIDBITS = 0x0000000F;
-
-        // ---------------------------------------------------------------------
         // DWM system backdrop types (DWM_SYSTEMBACKDROP_TYPE).
         // ---------------------------------------------------------------------
 

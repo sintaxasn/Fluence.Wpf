@@ -29,8 +29,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -38,8 +38,9 @@ using System.Windows.Shell;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Native;
-using Xunit;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.WindowsAndMessaging;
+using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
@@ -1328,10 +1329,10 @@ modifiers: null);
         {
             MINMAXINFO mmi = new()
             {
-                ptMaxPosition = new POINT { X = 10, Y = 20 },
-                ptMaxSize = new POINT { X = 1920, Y = 1040 },
-                ptMaxTrackSize = new POINT { X = 3840, Y = 2160 },
-                ptMinTrackSize = new POINT { X = 200, Y = 150 },
+                ptMaxPosition = new() { X = 10, Y = 20 },
+                ptMaxSize = new() { X = 1920, Y = 1040 },
+                ptMaxTrackSize = new() { X = 3840, Y = 2160 },
+                ptMinTrackSize = new() { X = 200, Y = 150 },
             };
 
             int size = System.Runtime.InteropServices.Marshal.SizeOf<MINMAXINFO>();

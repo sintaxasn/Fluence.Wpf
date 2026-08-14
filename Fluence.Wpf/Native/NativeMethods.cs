@@ -28,6 +28,7 @@
 
 using System;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Fluence.Wpf.Helpers;
 using Windows.Win32;
@@ -55,11 +56,10 @@ namespace Fluence.Wpf.Native
     internal static class NativeMethods
     {
         private const string UxTheme = "uxtheme.dll";
-        private const string Shell32 = "shell32.dll";
 
         private const int WS_SYSMENU = 0x80000;
 
-        #region P/Invoke declarations - DWM
+        #region P/Invoke declarations
 
         /// <summary>
         /// Reads the undocumented DWM colorization parameters (ordinal-127 export).
@@ -68,26 +68,18 @@ namespace Fluence.Wpf.Native
         [DllImport("dwmapi.dll", EntryPoint = "#127", PreserveSig = false), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern void DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
 
-        #endregion P/Invoke declarations - DWM
-
-        #region P/Invoke declarations - Shell32
-
         /// <summary>
         /// Sends an appbar message to the shell (taskbar state and position queries).
         /// </summary>
         /// <param name="dwMessage">The appbar message to send.</param>
         /// <param name="pData">The appbar data structure.</param>
-        [DllImport(Shell32, SetLastError = true)]
+        [DllImport("shell32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern IntPtr SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
-
-        #endregion P/Invoke declarations - Shell32
-
-        #region P/Invoke declarations - UxTheme immersive color set (undocumented ordinals)
 
         /// <summary>
         /// Returns the number of immersive color sets.
         /// </summary>
-        [DllImport(UxTheme, EntryPoint = "#94", CharSet = CharSet.Unicode)]
+        [DllImport(UxTheme, EntryPoint = "#94", CharSet = CharSet.Unicode), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint GetImmersiveColorSetCount();
 
         /// <summary>
@@ -97,18 +89,14 @@ namespace Fluence.Wpf.Native
         /// <param name="dwImmersiveColorType">The immersive color type index.</param>
         /// <param name="bIgnoreHighContrast">Whether to ignore high contrast settings.</param>
         /// <param name="dwHighContrastCacheMode">The high contrast cache mode.</param>
-        [DllImport(UxTheme, EntryPoint = "#95", CharSet = CharSet.Unicode)]
-        public static extern uint GetImmersiveColorFromColorSetEx(
-            uint dwImmersiveColorSet,
-            uint dwImmersiveColorType,
-            bool bIgnoreHighContrast,
-            uint dwHighContrastCacheMode);
+        [DllImport(UxTheme, EntryPoint = "#95", CharSet = CharSet.Unicode), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        public static extern uint GetImmersiveColorFromColorSetEx(uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode);
 
         /// <summary>
         /// Resolves an immersive color type ordinal from its name.
         /// </summary>
         /// <param name="name">The name of the immersive color type.</param>
-        [DllImport(UxTheme, EntryPoint = "#96", CharSet = CharSet.Unicode)]
+        [DllImport(UxTheme, EntryPoint = "#96", CharSet = CharSet.Unicode), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint GetImmersiveColorTypeFromName(string name);
 
         /// <summary>
@@ -116,20 +104,10 @@ namespace Fluence.Wpf.Native
         /// </summary>
         /// <param name="bForceCheckRegistry">Whether to force a registry check.</param>
         /// <param name="bSkipCheckOnFail">Whether to skip the check on failure.</param>
-        [DllImport(UxTheme, EntryPoint = "#98", CharSet = CharSet.Unicode)]
+        [DllImport(UxTheme, EntryPoint = "#98", CharSet = CharSet.Unicode), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern uint GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
 
-        /// <summary>
-        /// Sets a UxTheme non-client window theme attribute (caption suppression).
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="eAttribute">The attribute to set.</param>
-        /// <param name="pvAttribute">A reference to the attribute value.</param>
-        /// <param name="cbAttribute">The size of the attribute value.</param>
-        [DllImport(UxTheme, ExactSpelling = true, PreserveSig = true)]
-        public static extern int SetWindowThemeAttribute(IntPtr hwnd, int eAttribute, ref WTA_OPTIONS pvAttribute, uint cbAttribute);
-
-        #endregion P/Invoke declarations - UxTheme immersive color set (undocumented ordinals)
+        #endregion P/Invoke declarations
 
         #region DWM attribute helpers
 
@@ -274,12 +252,14 @@ namespace Fluence.Wpf.Native
             {
                 return false;
             }
-            WTA_OPTIONS opts = new()
+            Span<byte> optsSpan = stackalloc byte[Marshal.SizeOf<WTA_OPTIONS>()];
+            ref WTA_OPTIONS optsRef = ref Unsafe.As<byte, WTA_OPTIONS>(ref MemoryMarshal.GetReference(optsSpan));
+            optsRef = new()
             {
-                Flags = NativeConstants.WTNCA_NODRAWCAPTION,
-                Mask = NativeConstants.WTNCA_NODRAWCAPTION,
+                dwFlags = PInvoke.WTNCA_NODRAWCAPTION,
+                dwMask = PInvoke.WTNCA_NODRAWCAPTION,
             };
-            int hr = SetWindowThemeAttribute(hwnd, NativeConstants.WTA_NONCLIENT, ref opts, (uint)Marshal.SizeOf<WTA_OPTIONS>());
+            int hr = PInvoke.SetWindowThemeAttribute((HWND)hwnd, WINDOWTHEMEATTRIBUTETYPE.WTA_NONCLIENT, optsSpan);
             return hr >= 0; // S_OK or S_FALSE
         }
 

@@ -8,10 +8,14 @@ GetWindowLong
 HWND_BROADCAST
 IsIconic
 IsZoomed
+MINMAXINFO
 MonitorFromWindow
 RtlGetVersion
 SEND_MESSAGE_TIMEOUT_FLAGS
 SendMessageTimeout
 SetWindowLong
+SetWindowThemeAttribute
 ShowWindow
 WM_SETTINGCHANGE
+WTA_OPTIONS
+WTNCA_NODRAWCAPTION

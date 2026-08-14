@@ -28,6 +28,7 @@
 
 using Fluence.Wpf.Native;
 using Windows.Win32.Graphics.Dwm;
+using Windows.Win32.UI.WindowsAndMessaging;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
