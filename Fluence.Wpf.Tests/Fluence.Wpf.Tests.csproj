@@ -11,7 +11,7 @@
     <TestTfmsInParallel>false</TestTfmsInParallel>
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-    <NoWarn>$(NoWarn);CS1591;CA1031;CA1707;CA2263;VSTHRD001;MA0045</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;CA1031;CA1707;VSTHRD001;MA0045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
