@@ -426,21 +426,20 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
-                    System.Windows.Interop.HwndSource source = Assert.IsAssignableFrom<System.Windows.Interop.HwndSource>(System.Windows.Interop.HwndSource.FromHwnd(handle));
-                    Assert.NotNull(source!.CompositionTarget);
+                    System.Windows.Interop.HwndTarget sourceCompositionTarget = Assert.IsAssignableFrom<System.Windows.Interop.HwndTarget>(System.Windows.Interop.HwndSource.FromHwnd(handle)?.CompositionTarget);
 
                     // The fix: the HWND redirection surface (HwndTarget.BackgroundColor) must be
                     // cleared to the same color WPF paints its content background, so no opaque
                     // black surface is exposed before the DWM backdrop composites.
                     Color content = ((SolidColorBrush)w.Background).Color;
-                    Assert.Equal(content, source.CompositionTarget.BackgroundColor);
+                    Assert.Equal(content, sourceCompositionTarget.BackgroundColor);
 
                     // Swapping to None re-runs ApplyBackdrop; both layers must move together to the
                     // opaque theme fallback so the invariant holds across runtime backdrop changes.
                     w.SystemBackdropType = BackdropType.None;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                     Color contentNone = ((SolidColorBrush)w.Background).Color;
-                    Assert.Equal(contentNone, source.CompositionTarget.BackgroundColor);
+                    Assert.Equal(contentNone, sourceCompositionTarget.BackgroundColor);
                 }
                 finally
                 {

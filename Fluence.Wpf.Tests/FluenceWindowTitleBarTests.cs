@@ -132,19 +132,13 @@ namespace Fluence.Wpf.Tests
 
         private static uint? InvokeHitTestTitleBar(FluenceWindow window, IntPtr lParam)
         {
-            MethodInfo? method = typeof(FluenceWindow).GetMethod(
-                "HitTestTitleBar",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(method);
+            MethodInfo method = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod("HitTestTitleBar", BindingFlags.Instance | BindingFlags.NonPublic));
             return (uint?)method.Invoke(window, [lParam]);
         }
 
         private static IntPtr? InvokeWndProc(FluenceWindow window, uint msg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            MethodInfo? method = typeof(FluenceWindow).GetMethod(
-                "WndProc",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(method);
+            MethodInfo method = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod("WndProc", BindingFlags.Instance | BindingFlags.NonPublic));
 
             object[] args = [IntPtr.Zero, (int)msg, wParam, lParam, false];
             IntPtr? result = (IntPtr?)method.Invoke(window, args);
@@ -288,8 +282,7 @@ namespace Fluence.Wpf.Tests
         {
             return RunWithWindowAsync(static w =>
             {
-                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
-                Assert.NotNull(chrome);
+                WindowChrome chrome = Assert.IsAssignableFrom<WindowChrome>(WindowChrome.GetWindowChrome(w));
                 Assert.Equal(0d, chrome.CaptionHeight);
 
                 w.ExtendsContentIntoTitleBar = true;
@@ -326,8 +319,7 @@ namespace Fluence.Wpf.Tests
         {
             return RunWithWindowAsync(static w =>
             {
-                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
-                Assert.NotNull(chrome);
+                WindowChrome chrome = Assert.IsAssignableFrom<WindowChrome>(WindowChrome.GetWindowChrome(w));
                 Assert.Equal(0d, chrome.CaptionHeight);
             });
         }
@@ -335,11 +327,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public Task WindowChrome_AppliedInConstructorAsync()
         {
-            return RunWithWindowAsync(static w =>
-            {
-                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
-                Assert.NotNull(chrome);
-            });
+            return RunWithWindowAsync(static w => _ = Assert.IsAssignableFrom<WindowChrome>(WindowChrome.GetWindowChrome(w)));
         }
 
         [Fact]
@@ -748,10 +736,9 @@ namespace Fluence.Wpf.Tests
                 _ = Assert.IsAssignableFrom<Brush>(expectedBackground);
                 _ = Assert.IsAssignableFrom<Brush>(expectedForeground);
 
-                MethodInfo? setSnapHover = typeof(FluenceWindow).GetMethod(
+                MethodInfo setSnapHover = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod(
                     "SetSnapHover",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                Assert.NotNull(setSnapHover);
+                    BindingFlags.Instance | BindingFlags.NonPublic));
                 _ = setSnapHover.Invoke(w, [max]);
                 await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
@@ -761,10 +748,9 @@ namespace Fluence.Wpf.Tests
 
                 // ClearSnapHover must restore the template/style defaults via ClearValue, so the
                 // local Background/Foreground values are cleared back to the unset (style-driven) state.
-                MethodInfo? clearSnapHover = typeof(FluenceWindow).GetMethod(
+                MethodInfo clearSnapHover = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod(
                     "ClearSnapHover",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                Assert.NotNull(clearSnapHover);
+                    BindingFlags.Instance | BindingFlags.NonPublic));
                 _ = clearSnapHover.Invoke(w, parameters: null);
                 await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
@@ -917,42 +903,38 @@ namespace Fluence.Wpf.Tests
 
         private static CanExecuteRoutedEventArgs CreateCanExecuteArgs(ICommand command)
         {
-            ConstructorInfo? ctor = typeof(CanExecuteRoutedEventArgs).GetConstructor(
+            ConstructorInfo ctor = Assert.IsAssignableFrom<ConstructorInfo>(typeof(CanExecuteRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
-binder: null,
+                binder: null,
                 [typeof(ICommand), typeof(object)],
-modifiers: null);
-            Assert.NotNull(ctor);
+                modifiers: null));
             return (CanExecuteRoutedEventArgs)ctor.Invoke([command, null]);
         }
 
         private static bool InvokeCanHandler(FluenceWindow window, string handlerName, CanExecuteRoutedEventArgs args)
         {
-            MethodInfo? handler = typeof(FluenceWindow).GetMethod(
+            MethodInfo handler = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod(
                 handlerName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(handler);
+                BindingFlags.Instance | BindingFlags.NonPublic));
             _ = handler.Invoke(window, [window, args]);
             return args.CanExecute;
         }
 
         private static ExecutedRoutedEventArgs CreateExecutedArgs(ICommand command)
         {
-            ConstructorInfo? ctor = typeof(ExecutedRoutedEventArgs).GetConstructor(
+            ConstructorInfo ctor = Assert.IsAssignableFrom<ConstructorInfo>(typeof(ExecutedRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
-binder: null,
+                binder: null,
                 [typeof(ICommand), typeof(object)],
-modifiers: null);
-            Assert.NotNull(ctor);
+                modifiers: null));
             return (ExecutedRoutedEventArgs)ctor.Invoke([command, null]);
         }
 
         private static void InvokeExecutedHandler(FluenceWindow window, string handlerName, ExecutedRoutedEventArgs args)
         {
-            MethodInfo? handler = typeof(FluenceWindow).GetMethod(
+            MethodInfo handler = Assert.IsAssignableFrom<MethodInfo>(typeof(FluenceWindow).GetMethod(
                 handlerName,
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(handler);
+                BindingFlags.Instance | BindingFlags.NonPublic));
             _ = handler.Invoke(window, [window, args]);
         }
 
@@ -1409,7 +1391,7 @@ modifiers: null);
                         Visual? hitVisual = null;
                         VisualTreeHelper.HitTest(
                             window,
-filterCallback: null,
+                            filterCallback: null,
                             new HitTestResultCallback(r =>
                             {
                                 hitVisual = r.VisualHit as Visual;

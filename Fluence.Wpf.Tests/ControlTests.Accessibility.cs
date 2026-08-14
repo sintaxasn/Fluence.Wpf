@@ -453,9 +453,8 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     Controls.FontIcon icon = new() { Glyph = "" };
-                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(icon);
+                    AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(icon));
 
-                    Assert.NotNull(peer);
                     _ = Assert.IsAssignableFrom<Automation.FontIconAutomationPeer>(peer);
                     Assert.False(
                         peer.IsControlElement(),

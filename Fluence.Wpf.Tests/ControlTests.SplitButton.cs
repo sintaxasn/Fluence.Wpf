@@ -93,8 +93,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Rectangle divider = Assert.IsAssignableFrom<Rectangle>(FindVisualChildByName<Rectangle>(btn, "Divider"));
-                Assert.NotNull(divider.Fill);
+                Assert.NotNull(FindVisualChildByName<Rectangle>(btn, "Divider")?.Fill);
                 w.Close();
             });
         }

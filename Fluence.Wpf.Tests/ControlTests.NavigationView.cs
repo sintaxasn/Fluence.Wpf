@@ -686,8 +686,7 @@ namespace Fluence.Wpf.Tests
                         calls.Add("selection:" + ((NavigationViewItem)nav.SelectedItem).Content);
                     };
 
-                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(item1);
-                    Assert.NotNull(peer);
+                    AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(item1));
                     IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
 
                     invokeProvider.Invoke();
@@ -1564,8 +1563,7 @@ topMode: false,
                 {
                     Style style = Assert.IsType<Style>(application.TryFindResource("NavigationViewItemFocusVisual"));
                     ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(setter => setter.Property == Control.TemplateProperty)?.Value as ControlTemplate);
-                    DependencyObject root = template.LoadContent();
-                    Assert.NotNull(root);
+                    DependencyObject root = Assert.IsAssignableFrom<DependencyObject>(template.LoadContent());
 
                     foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
                     {

@@ -161,10 +161,9 @@ namespace Fluence.Wpf.Tests
                 TabView tabs = new();
                 TabViewItem candidate = new();
 
-                MethodInfo? method = typeof(TabView).GetMethod(
+                MethodInfo method = Assert.IsAssignableFrom<MethodInfo>(typeof(TabView).GetMethod(
                     "IsItemItsOwnContainerOverride",
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                Assert.NotNull(method);
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
                 bool? result = (bool?)method.Invoke(tabs, [candidate]);
                 Assert.True(result, "A TabViewItem should be recognized as its own container.");
 

@@ -857,8 +857,7 @@ namespace Fluence.Wpf.Tests
                     SolidColorBrush accentSecondaryBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorSecondaryBrush"]);
                     SolidColorBrush accentTertiaryBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorTertiaryBrush"]);
                     FontFamily fluentFontFamily = Assert.IsType<FontFamily>(application.Resources["FluentFontFamily"]);
-                    TextBlock? contentText = FindVisualChildren<TextBlock>(button)
-                        .FirstOrDefault(static tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal));
+                    TextBlock contentText = Assert.IsType<TextBlock>(FindVisualChildren<TextBlock>(button).FirstOrDefault(static tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal)));
 
                     _ = Assert.IsAssignableFrom<SolidColorBrush>(restFill.Background);
                     _ = Assert.IsAssignableFrom<LinearGradientBrush>(outerBorder.BorderBrush);
@@ -866,7 +865,6 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(accentBorderBrush.GradientStops.Count, ((LinearGradientBrush)outerBorder.BorderBrush).GradientStops.Count);
                     Assert.Null(outerBorder.Effect);
                     Assert.Equal(fluentFontFamily.Source, button.FontFamily.Source, StringComparer.Ordinal);
-                    Assert.NotNull(contentText);
                     Assert.Equal(fluentFontFamily.Source, contentText.FontFamily.Source, StringComparer.Ordinal);
                     Assert.NotEqual(accentDefaultBrush.Color, accentSecondaryBrush.Color);
                     Assert.NotEqual(accentDefaultBrush.Color, accentTertiaryBrush.Color);
@@ -1602,11 +1600,8 @@ namespace Fluence.Wpf.Tests
                     ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(0));
                     _ = item.ApplyTemplate();
 
-                    object outerBorder = item.Template.FindName("OuterBorder", item);
-                    Assert.NotNull(outerBorder);
-
-                    object selectionIndicator = item.Template.FindName("SelectionIndicator", item);
-                    Assert.NotNull(selectionIndicator);
+                    Assert.NotNull(item.Template.FindName("OuterBorder", item));
+                    Assert.NotNull(item.Template.FindName("SelectionIndicator", item));
 
                     combo.IsDropDownOpen = false;
                 }

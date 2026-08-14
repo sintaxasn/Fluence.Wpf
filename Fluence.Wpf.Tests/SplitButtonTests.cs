@@ -304,8 +304,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 SplitButton splitButton = new();
-                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(splitButton);
-                Assert.NotNull(peer);
+                AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(splitButton));
 
                 Assert.Equal(AutomationControlType.SplitButton,
                     peer.GetAutomationControlType());
