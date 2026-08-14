@@ -39,6 +39,9 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 
 namespace Fluence.Wpf.Controls
 {
@@ -1213,14 +1216,14 @@ namespace Fluence.Wpf.Controls
         /// <param name="handled">Indicates whether the message was handled.</param>
         private void HandleGetMinMaxInfo(IntPtr hwnd, IntPtr lParam, ref bool handled)
         {
-            IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
+            HMONITOR monitor = PInvoke.MonitorFromWindow((HWND)hwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
             if (monitor == IntPtr.Zero)
             {
                 return;
             }
 
-            MONITORINFO monitorInfo = new() { cbSize = Marshal.SizeOf<MONITORINFO>() };
-            if (!NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
+            MONITORINFO monitorInfo = new() { cbSize = (uint)Marshal.SizeOf<MONITORINFO>() };
+            if (!PInvoke.GetMonitorInfo(monitor, ref monitorInfo))
             {
                 return;
             }
@@ -1228,16 +1231,16 @@ namespace Fluence.Wpf.Controls
             RECT rcWork = monitorInfo.rcWork;
             RECT rcMonitor = monitorInfo.rcMonitor;
             MINMAXINFO mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
-            mmi.ptMaxPosition.X = rcWork.Left - rcMonitor.Left;
-            mmi.ptMaxPosition.Y = rcWork.Top - rcMonitor.Top;
-            mmi.ptMaxSize.X = rcWork.Width;
-            mmi.ptMaxSize.Y = rcWork.Height;
+            mmi.ptMaxPosition.X = rcWork.left - rcMonitor.left;
+            mmi.ptMaxPosition.Y = rcWork.top - rcMonitor.top;
+            mmi.ptMaxSize.X = rcWork.right - rcWork.left;
+            mmi.ptMaxSize.Y = rcWork.bottom - rcWork.top;
 
             bool workAreaCoversMonitor =
-                rcWork.Left == rcMonitor.Left &&
-                rcWork.Top == rcMonitor.Top &&
-                rcWork.Right == rcMonitor.Right &&
-                rcWork.Bottom == rcMonitor.Bottom;
+                rcWork.left == rcMonitor.left &&
+                rcWork.top == rcMonitor.top &&
+                rcWork.right == rcMonitor.right &&
+                rcWork.bottom == rcMonitor.bottom;
             if (workAreaCoversMonitor && NativeMethods.GetAutoHideTaskbarEdge(monitor) is uint autoHideEdge)
             {
                 NativeMethods.ApplyAutoHideTaskbarShift(ref mmi, autoHideEdge);

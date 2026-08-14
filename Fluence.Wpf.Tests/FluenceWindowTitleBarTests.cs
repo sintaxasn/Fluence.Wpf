@@ -39,6 +39,7 @@ using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Native;
 using Xunit;
+using Windows.Win32.Graphics.Gdi;
 
 namespace Fluence.Wpf.Tests
 {

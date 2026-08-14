@@ -2,10 +2,13 @@
 DwmGetWindowAttribute
 DwmIsCompositionEnabled
 DwmSetWindowAttribute
+GetDC
+GetMonitorInfo
 GetWindowLong
 HWND_BROADCAST
 IsIconic
 IsZoomed
+MonitorFromWindow
 RtlGetVersion
 SEND_MESSAGE_TIMEOUT_FLAGS
 SendMessageTimeout

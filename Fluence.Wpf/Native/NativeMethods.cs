@@ -54,7 +54,6 @@ namespace Fluence.Wpf.Native
     /// </summary>
     internal static class NativeMethods
     {
-        private const string User32 = "user32.dll";
         private const string UxTheme = "uxtheme.dll";
         private const string Shell32 = "shell32.dll";
 
@@ -70,57 +69,6 @@ namespace Fluence.Wpf.Native
         public static extern void DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
 
         #endregion P/Invoke declarations - DWM
-
-        #region P/Invoke declarations - User32 geometry
-
-        /// <summary>
-        /// Reads the screen rectangle of a window.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="lpRect">The screen rectangle of the window.</param>
-        [DllImport(User32, SetLastError = true)]
-        public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
-
-        /// <summary>
-        /// Reads the client rectangle of a window.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="lpRect">The client rectangle of the window.</param>
-        [DllImport(User32, SetLastError = true)]
-        public static extern bool GetClientRect(IntPtr hwnd, out RECT lpRect);
-
-        /// <summary>
-        /// Returns the monitor handle for a window using the supplied fallback flags.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="dwFlags">The fallback flags.</param>
-        [DllImport(User32)]
-        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
-
-        /// <summary>
-        /// Fills <paramref name="lpmi"/> with the monitor and work-area rectangles.
-        /// </summary>
-        /// <param name="hMonitor">The handle to the monitor.</param>
-        /// <param name="lpmi">The monitor information structure to fill.</param>
-        [DllImport(User32, CharSet = CharSet.Unicode)]
-        public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
-
-        /// <summary>
-        /// Acquires a device context for a window.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        [DllImport(User32, SetLastError = true)]
-        public static extern IntPtr GetDC(IntPtr hwnd);
-
-        /// <summary>
-        /// Releases a device context acquired with <see cref="GetDC"/>.
-        /// </summary>
-        /// <param name="hwnd">The handle to the window.</param>
-        /// <param name="hdc">The handle to the device context.</param>
-        [DllImport(User32, SetLastError = true)]
-        public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
-
-        #endregion P/Invoke declarations - User32 geometry
 
         #region P/Invoke declarations - Shell32
 
