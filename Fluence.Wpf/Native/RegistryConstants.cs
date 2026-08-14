@@ -33,51 +33,8 @@ namespace Fluence.Wpf.Native
     /// layer. Values are the documented operating-system ordinals and bit flags; they are pinned
     /// by the interop tests, so changing one here is a wire-contract break, not a refactor.
     /// </summary>
-    internal static class NativeConstants
+    internal static class RegistryConstants
     {
-        // ---------------------------------------------------------------------
-        // Shell AppBar (SHAppBarMessage) messages and state bits.
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// <c>ABM_GETSTATE</c>: query the always-on-top / auto-hide state.
-        /// </summary>
-        public const uint ABM_GETSTATE = 0x00000004;
-
-        /// <summary>
-        /// <c>ABM_GETTASKBARPOS</c>: query the primary taskbar rectangle and edge.
-        /// </summary>
-        public const uint ABM_GETTASKBARPOS = 0x00000005;
-
-        /// <summary>
-        /// <c>ABS_AUTOHIDE</c>: the auto-hide state bit returned by <c>ABM_GETSTATE</c>.
-        /// </summary>
-        public const int ABS_AUTOHIDE = 0x0000001;
-
-        // ---------------------------------------------------------------------
-        // AppBar edges (the uEdge field of APPBARDATA).
-        // ---------------------------------------------------------------------
-
-        /// <summary>
-        /// <c>ABE_LEFT</c>.
-        /// </summary>
-        public const uint ABE_LEFT = 0;
-
-        /// <summary>
-        /// <c>ABE_TOP</c>.
-        /// </summary>
-        public const uint ABE_TOP = 1;
-
-        /// <summary>
-        /// <c>ABE_RIGHT</c>.
-        /// </summary>
-        public const uint ABE_RIGHT = 2;
-
-        /// <summary>
-        /// <c>ABE_BOTTOM</c>.
-        /// </summary>
-        public const uint ABE_BOTTOM = 3;
-
         // ---------------------------------------------------------------------
         // Registry paths (relative to HKEY_CURRENT_USER).
         // ---------------------------------------------------------------------

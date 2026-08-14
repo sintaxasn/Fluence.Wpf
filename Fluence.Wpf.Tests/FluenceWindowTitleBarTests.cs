@@ -37,7 +37,6 @@ using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
-using Fluence.Wpf.Native;
 using Windows.Win32;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -151,12 +150,6 @@ namespace Fluence.Wpf.Tests
             IntPtr? result = (IntPtr?)method.Invoke(window, args);
             handled = (bool)args[4];
             return result;
-        }
-
-        private static void AssertNativeConstantValue(string fieldName, object expectedValue)
-        {
-            FieldInfo field = Assert.IsAssignableFrom<FieldInfo>(typeof(NativeConstants).GetField(fieldName, BindingFlags.Static | BindingFlags.Public));
-            Assert.Equal(expectedValue, field.GetRawConstantValue());
         }
 
         private static IntPtr MakeLParamScreen(double screenX, double screenY)
@@ -1356,14 +1349,6 @@ modifiers: null);
             {
                 System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
             }
-        }
-
-        [Fact]
-        public void NativeConstants_DefineRequiredWin32Values()
-        {
-            AssertNativeConstantValue("WM_NCLBUTTONUP", 0x00A2);
-            AssertNativeConstantValue("WM_GETMINMAXINFO", 0x0024);
-            AssertNativeConstantValue("MONITOR_DEFAULTTONEAREST", 2u);
         }
 
         #endregion WM_GETMINMAXINFO

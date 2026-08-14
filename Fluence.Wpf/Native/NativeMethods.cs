@@ -400,15 +400,15 @@ namespace Fluence.Wpf.Native
 
         /// <summary>
         /// Returns <see langword="true"/> when the Windows taskbar is currently in auto-hide
-        /// mode. Queries the shell with <see cref="NativeConstants.ABM_GETSTATE"/> and tests the
-        /// <see cref="NativeConstants.ABS_AUTOHIDE"/> bit of the returned state.
+        /// mode. Queries the shell with ABM_GETSTATE and tests the
+        /// ABS_AUTOHIDE bit of the returned state.
         /// </summary>
         /// <returns><see langword="true"/> when the taskbar is auto-hide.</returns>
         public static bool IsTaskbarAutoHide()
         {
             APPBARDATA data = new() { cbSize = Marshal.SizeOf<APPBARDATA>() };
-            IntPtr state = SHAppBarMessage(NativeConstants.ABM_GETSTATE, ref data);
-            return (state.ToInt64() & NativeConstants.ABS_AUTOHIDE) != 0;
+            IntPtr state = SHAppBarMessage(PInvoke.ABM_GETSTATE, ref data);
+            return (state.ToInt64() & PInvoke.ABS_AUTOHIDE) != 0;
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace Fluence.Wpf.Native
         /// </summary>
         /// <param name="monitor">
         /// The monitor a caller intends to match the taskbar against. <see cref="SHAppBarMessage"/>
-        /// with <see cref="NativeConstants.ABM_GETTASKBARPOS"/> reports only the primary taskbar,
+        /// with ABM_GETTASKBARPOS reports only the primary taskbar,
         /// so this implementation returns the primary taskbar edge and ignores the monitor on
         /// multi-monitor setups. The parameter is retained so a future caller can match per
         /// monitor without an API break.
@@ -432,7 +432,7 @@ namespace Fluence.Wpf.Native
                 return null;
             }
             APPBARDATA data = new() { cbSize = Marshal.SizeOf<APPBARDATA>() };
-            IntPtr result = SHAppBarMessage(NativeConstants.ABM_GETTASKBARPOS, ref data);
+            IntPtr result = SHAppBarMessage(PInvoke.ABM_GETTASKBARPOS, ref data);
             return result == IntPtr.Zero ? null : data.uEdge;
         }
 
@@ -448,18 +448,18 @@ namespace Fluence.Wpf.Native
         {
             switch (edge)
             {
-                case NativeConstants.ABE_LEFT:
+                case PInvoke.ABE_LEFT:
                     mmi.ptMaxPosition.X += 2;
                     mmi.ptMaxSize.X -= 2;
                     break;
-                case NativeConstants.ABE_TOP:
+                case PInvoke.ABE_TOP:
                     mmi.ptMaxPosition.Y += 2;
                     mmi.ptMaxSize.Y -= 2;
                     break;
-                case NativeConstants.ABE_RIGHT:
+                case PInvoke.ABE_RIGHT:
                     mmi.ptMaxSize.X -= 2;
                     break;
-                case NativeConstants.ABE_BOTTOM:
+                case PInvoke.ABE_BOTTOM:
                     mmi.ptMaxSize.Y -= 2;
                     break;
                 default:
