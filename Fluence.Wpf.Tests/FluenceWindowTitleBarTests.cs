@@ -436,7 +436,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindowXaml_NoStaticResourceForThemeBrushes()
         {
-            string xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Join(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml");
 
@@ -531,7 +531,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void FluenceWindowXaml_CaptionButtonsUseSystemCommands()
         {
-            string xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Join(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml");
             xamlPath = System.IO.Path.GetFullPath(xamlPath);

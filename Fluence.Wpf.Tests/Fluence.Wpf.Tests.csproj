@@ -49,6 +49,7 @@
   <PropertyGroup>
     <MeziantouPolyfill_IncludedPolyfills>
       $(MeziantouPolyfill_IncludedPolyfills)
+      M:System.IO.Path.Join|
       M:System.Linq.Enumerable.Order|
       M:System.String.Join|
       M:System.String.Replace|

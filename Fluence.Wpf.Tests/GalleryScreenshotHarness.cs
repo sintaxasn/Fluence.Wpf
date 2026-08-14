@@ -116,7 +116,7 @@ namespace Fluence.Wpf.Tests
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
             while (directory is not null)
             {
-                if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
+                if (File.Exists(Path.Join(directory.FullName, "Fluence.Wpf.sln")))
                 {
                     return directory.FullName;
                 }
@@ -130,7 +130,7 @@ namespace Fluence.Wpf.Tests
 
         private static string EnsureOutputDirectory()
         {
-            string path = Path.Combine(FindRepoRoot(), "docs", "screenshots");
+            string path = Path.Join(FindRepoRoot(), "docs", "screenshots");
             _ = Directory.CreateDirectory(path);
             return path;
         }
@@ -283,7 +283,7 @@ namespace Fluence.Wpf.Tests
                 window.UpdateLayout();
                 _ = window.Dispatcher.Invoke(DispatcherPriority.Render, new Action(static delegate { }));
 
-                string fullPath = Path.Combine(outputDirectory, Invariant("{0}-{1}.png", outputName, themeSlug));
+                string fullPath = Path.Join(outputDirectory, Invariant("{0}-{1}.png", outputName, themeSlug));
                 SaveElementPng(window, ReferenceScale, fullPath);
             }
             finally
@@ -300,7 +300,7 @@ namespace Fluence.Wpf.Tests
         /// <exception cref="InvalidOperationException">Thrown if the XAML here-string cannot be located.</exception>
         private static string ExtractControlsTourXaml()
         {
-            string scriptPath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "03-ControlsTour.ps1");
+            string scriptPath = Path.Join(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "03-ControlsTour.ps1");
             string[] lines = File.ReadAllLines(scriptPath);
 
             int start = -1;
@@ -355,7 +355,7 @@ namespace Fluence.Wpf.Tests
                     ?? throw new InvalidOperationException("03-ControlsTour.ps1 XAML did not load as a WPF Window.");
 
                 PrepareCaptureWindow(window, PowerShellCaptureWidth, PowerShellCaptureHeight);
-                string fullPath = Path.Combine(outputDirectory, Invariant("powershell-{0}.png", themeSlug));
+                string fullPath = Path.Join(outputDirectory, Invariant("powershell-{0}.png", themeSlug));
                 ShowSettleAndCapture(window, theme, fullPath);
             }
             finally
@@ -403,7 +403,7 @@ namespace Fluence.Wpf.Tests
                 window = new Demo.Mvvm.MainWindow();
                 SeedMvvmScreenshotData(window);
                 PrepareCaptureWindow(window, AppCaptureWidth, AppCaptureHeight);
-                string fullPath = Path.Combine(outputDirectory, Invariant("mvvm-{0}.png", themeSlug));
+                string fullPath = Path.Join(outputDirectory, Invariant("mvvm-{0}.png", themeSlug));
                 ShowSettleAndCapture(window, theme, fullPath);
             }
             finally

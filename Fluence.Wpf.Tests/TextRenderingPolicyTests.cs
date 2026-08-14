@@ -108,9 +108,9 @@ namespace Fluence.Wpf.Tests
             string repoRoot = FindRepoRoot();
             string[] productionRoots =
             [
-                Path.Combine(repoRoot, "Fluence.Wpf"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
+                Path.Join(repoRoot, "Fluence.Wpf"),
+                Path.Join(repoRoot, "Fluence.Wpf.Demo"),
+                Path.Join(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
             ];
 
             const string textOptionsPrefix = "TextOptions.";
@@ -142,12 +142,12 @@ namespace Fluence.Wpf.Tests
             string repoRoot = FindRepoRoot();
             string[] productionRoots =
             [
-                Path.Combine(repoRoot, "Fluence.Wpf"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
+                Path.Join(repoRoot, "Fluence.Wpf"),
+                Path.Join(repoRoot, "Fluence.Wpf.Demo"),
+                Path.Join(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
             ];
 
-            string allowedPath = Path.Combine(
+            string allowedPath = Path.Join(
                 "Fluence.Wpf",
                 "Themes",
                 "Controls",
@@ -317,7 +317,7 @@ namespace Fluence.Wpf.Tests
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
             while (directory is not null)
             {
-                if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
+                if (File.Exists(Path.Join(directory.FullName, "Fluence.Wpf.sln")))
                 {
                     return directory.FullName;
                 }

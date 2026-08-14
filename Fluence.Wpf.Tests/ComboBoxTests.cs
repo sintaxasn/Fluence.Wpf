@@ -122,7 +122,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBoxXaml_HoverUsesSubtleFillBrush()
         {
-            string xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Join(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 
@@ -157,7 +157,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBoxXaml_NoiseOverlay_IsNamed()
         {
-            string xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Join(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 
@@ -178,7 +178,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void ComboBoxXaml_UpwardTrigger_SetsNoiseOverlayCornerRadius()
         {
-            string xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Join(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 

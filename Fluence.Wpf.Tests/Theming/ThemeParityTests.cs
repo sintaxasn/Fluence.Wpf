@@ -170,12 +170,12 @@ namespace Fluence.Wpf.Tests.Theming
             foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
             {
                 IReadOnlyDictionary<string, (Color color, Color brush)> map = CaptureResolved(theme);
-                string dir = Path.Combine(FindRepoRoot(), "data", "theme-golden");
+                string dir = Path.Join(FindRepoRoot(), "data", "theme-golden");
                 _ = Directory.CreateDirectory(dir);
                 List<string> lines = [.. map.Keys.Order(StringComparer.Ordinal)
                     .Select(k => string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}",
                         k, Hex(map[k].color), Hex(map[k].brush)))];
-                File.WriteAllLines(Path.Combine(dir, theme + ".txt"), lines);
+                File.WriteAllLines(Path.Join(dir, theme + ".txt"), lines);
                 Assert.True(map.Count > 50, "Expected many resolved theme keys for " + theme);
             }
         }
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Tests.Theming
             foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
             {
                 IReadOnlyDictionary<string, (Color color, Color brush)> actual = CaptureResolved(theme);
-                string goldenPath = Path.Combine(AppContext.BaseDirectory, "Theming", "golden", theme + ".txt");
+                string goldenPath = Path.Join(AppContext.BaseDirectory, "Theming", "golden", theme + ".txt");
                 Dictionary<string, (string, string)> golden = File.ReadAllLines(goldenPath)
                     .Select(static l => l.Split('|'))
                     .ToDictionary(static a => a[0], static a => (a[1], a[2]), StringComparer.Ordinal);
@@ -368,7 +368,7 @@ namespace Fluence.Wpf.Tests.Theming
         internal static string FindRepoRoot()
         {
             DirectoryInfo? d = new(AppContext.BaseDirectory);
-            while (d is not null && !File.Exists(Path.Combine(d.FullName, "Fluence.Wpf.sln"))) { d = d.Parent; }
+            while (d is not null && !File.Exists(Path.Join(d.FullName, "Fluence.Wpf.sln"))) { d = d.Parent; }
             return d?.FullName ?? AppContext.BaseDirectory;
         }
     }

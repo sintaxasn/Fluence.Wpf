@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// <returns>The path of the generated XAML file for the specified theme.</returns>
         internal static string PathFor(ApplicationTheme theme)
         {
-            return Path.Combine(RepoRoot(), "Fluence.Wpf", "Properties", "DesignTime." + theme + ".xaml");
+            return Path.Join(RepoRoot(), "Fluence.Wpf", "Properties", "DesignTime." + theme + ".xaml");
         }
 
         // Live-OS SystemColors aliases: their snapshot value depends on the host machine's OS theme
@@ -232,7 +232,7 @@ namespace Fluence.Wpf.Tests.Theming
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
             while (directory is not null)
             {
-                if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
+                if (File.Exists(Path.Join(directory.FullName, "Fluence.Wpf.sln")))
                 {
                     return directory.FullName;
                 }

@@ -370,7 +370,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PowerShellDemoScripts_FollowCanonicalBootstrap()
         {
-            string scriptsRoot = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell");
+            string scriptsRoot = Path.Join(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell");
             string[] scriptNames =
             [
                 "01-HelloWorld.ps1",
@@ -388,7 +388,7 @@ namespace Fluence.Wpf.Tests
 
             foreach (string scriptName in scriptNames)
             {
-                string path = Path.Combine(scriptsRoot, scriptName);
+                string path = Path.Join(scriptsRoot, scriptName);
                 if (!File.Exists(path))
                 {
                     violations.Add(scriptName + " is missing.");
@@ -420,7 +420,7 @@ namespace Fluence.Wpf.Tests
             // The retired scripts must be gone, and no new script should reference their names.
             foreach (string retired in retiredScriptNames)
             {
-                if (File.Exists(Path.Combine(scriptsRoot, retired)))
+                if (File.Exists(Path.Join(scriptsRoot, retired)))
                 {
                     violations.Add(retired + " should have been removed.");
                 }
@@ -432,7 +432,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void PowerShellDemoXaml_UsesCurrentFluenceWindowProperties()
         {
-            string path = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "MainWindow.xaml");
+            string path = Path.Join(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "MainWindow.xaml");
             string source = File.ReadAllText(path);
 
             Assert.False(ContainsOrdinal(source, "WindowCorners"),
@@ -451,8 +451,8 @@ namespace Fluence.Wpf.Tests
             string repoRoot = FindRepoRoot();
             string[] roots =
             [
-                Path.Combine(repoRoot, "Fluence.Wpf", "Themes", "Controls"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
+                Path.Join(repoRoot, "Fluence.Wpf", "Themes", "Controls"),
+                Path.Join(repoRoot, "Fluence.Wpf.Demo"),
             ];
             List<string> violations = [];
 
@@ -653,7 +653,7 @@ namespace Fluence.Wpf.Tests
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
             while (directory is not null)
             {
-                if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
+                if (File.Exists(Path.Join(directory.FullName, "Fluence.Wpf.sln")))
                 {
                     return directory.FullName;
                 }

@@ -319,11 +319,11 @@ namespace Fluence.Wpf.Tests
 
         private static string GetRepositoryFilePath(params string[] relativeSegments)
         {
-            string root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
+            string root = Path.GetFullPath(Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
             string[] pathParts = new string[relativeSegments.Length + 1];
             pathParts[0] = root;
             Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
-            return Path.Combine(pathParts);
+            return Path.Join(pathParts);
         }
 
         private static string GetTriggerBlock(string xaml, string firstCondition, string secondCondition)
