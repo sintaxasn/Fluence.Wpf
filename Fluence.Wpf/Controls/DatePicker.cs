@@ -593,16 +593,7 @@ defaultValue: null,
         /// </summary>
         private Selector? GetFirstVisibleSelectorColumn()
         {
-            foreach (DateField field in GetOrderedVisibleFields())
-            {
-                Selector? column = GetSelector(field);
-                if (column?.Visibility is Visibility.Visible)
-                {
-                    return column;
-                }
-            }
-
-            return null;
+            return GetOrderedVisibleFields().Select(GetSelector).FirstOrDefault(column => column?.Visibility is Visibility.Visible);
         }
 
         private void OnMonthOrYearSelectionChanged(object sender, SelectionChangedEventArgs e)
