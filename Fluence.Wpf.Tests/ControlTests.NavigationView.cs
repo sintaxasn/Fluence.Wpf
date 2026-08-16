@@ -129,14 +129,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsedAsync()
+        public Task DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsedAsync()
         {
             // Regression: the Settings footer item must keep its icon at the pane's left edge at every
             // pane width. As a FooterMenuItems entry it is hosted in a stretching StackPanel (like the
             // main items), so the fixed 40px icon column keeps the icon anchored at the left regardless
             // of the animating pane width. We force intermediate closed pane widths against the real
             // gallery MainWindow and assert the footer icon stays at the left.
-            await WpfTestSta.RunOnStaAsync(async () =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(application);
@@ -185,7 +185,7 @@ namespace Fluence.Wpf.Tests
                     mw.Close();
                     WpfTestSta.DrainDispatcher(mw.Dispatcher);
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]
@@ -2541,13 +2541,13 @@ topMode: false,
         // Both replaced by NavigationView_PaneBorders_AreTransparent below.
 
         [Fact]
-        public async Task NavigationView_PaneBorders_AreTransparentAsync()
+        public Task NavigationView_PaneBorders_AreTransparentAsync()
         {
             // Regression guard: pane borders (PaneBorder, CompactPane, PaneHeaderBorder) must
             // be Transparent (or null) so the DWM Mica/Acrylic backdrop shows through. The
             // WI-3 B15 commit wrongly set them to LayerFillColorAltBrush, which blocked the
             // backdrop entirely. This test asserts the reverted state is preserved.
-            await WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2630,7 +2630,7 @@ topMode: false,
                         _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         /// <summary>
@@ -2706,14 +2706,14 @@ topMode: false,
         }
 
         [Fact]
-        public async Task NavigationViewItem_Template_HasNoInnerSelectionIndicatorAsync()
+        public Task NavigationViewItem_Template_HasNoInnerSelectionIndicatorAsync()
         {
             // Regression: per-item Border named "SelectionIndicator" was duplicating the
             // pane-level PART_SelectionIndicator (animated by NavigationView code-behind),
             // producing two visible accent pills on the selected item. The pane-level
             // indicator is canonical (WinUI 3) and is wired in NavigationView.cs; the
             // per-item one must NOT exist in the template.
-            await WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -2744,7 +2744,7 @@ topMode: false,
                         _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
     }
 }

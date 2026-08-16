@@ -139,13 +139,13 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task NumberBox_SpinButton_UsesClickModePressAsync()
+        public Task NumberBox_SpinButton_UsesClickModePressAsync()
         {
             // Regression: the spin buttons must fire Click immediately on MouseDown so
             // a quick press-release updates the value. With the default ClickMode=Release
             // the internal RepeatButton timer only raises Click after Delay elapses
             // (~250 ms on most systems), which users perceive as "the button is broken."
-            await WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Tests
                         _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]
@@ -228,12 +228,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task NumberBox_SpinPanel_HasWinUiCanonicalMarginAsync()
+        public Task NumberBox_SpinPanel_HasWinUiCanonicalMarginAsync()
         {
             // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from
             // border edge).  Before this fix Fluence used "0,1,0,1" which butted the buttons
             // flush against the right border of the control.
-            await WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Tests
                         _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]

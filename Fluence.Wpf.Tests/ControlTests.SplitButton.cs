@@ -99,14 +99,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task SplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyleAsync()
+        public Task SplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyleAsync()
         {
             // The per-half focus rings previously lived in the template behind
             // IsKeyboardFocused triggers, which mouse clicks also satisfy, so the rings
             // rendered on click. Each half now carries the DefaultControlFocusVisualStyle
             // adorner instead, which WPF shows only for keyboard navigation (Tab),
             // matching DropDownButton.
-            await WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Tests
                     Keyboard.ClearFocus();
                     window.Close();
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]

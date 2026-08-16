@@ -711,7 +711,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task SetSnapHover_UsesSubtleFillTokens_MatchingTemplatePointerOverAsync()
+        public Task SetSnapHover_UsesSubtleFillTokens_MatchingTemplatePointerOverAsync()
         {
             // The Windows 11 snap-layout flyout hover over the maximize/restore button is driven by
             // SetSnapHover, because the WM_NCHITTEST/HTMAXBUTTON path bypasses the XAML IsMouseOver
@@ -722,7 +722,7 @@ namespace Fluence.Wpf.Tests
             // paths cannot silently drift apart again. SetSnapHover is invoked directly (rather than
             // through WndProc) so the assertion does not depend on the machine's snap-layout setting,
             // OS build, or IsMaximizable gate that WM_NCHITTEST applies before reaching it.
-            await RunWithShownWindowAsync(async static w =>
+            return RunWithShownWindowAsync(async static w =>
             {
                 System.Windows.Controls.Button max = Assert.IsAssignableFrom<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_maximizeButton"));
                 Assert.True(max.IsEnabled,
@@ -756,7 +756,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.Equal(DependencyProperty.UnsetValue, max.ReadLocalValue(System.Windows.Controls.Control.BackgroundProperty));
                 Assert.Equal(DependencyProperty.UnsetValue, max.ReadLocalValue(System.Windows.Controls.Control.ForegroundProperty));
-            }).ConfigureAwait(true);
+            });
         }
 
         #endregion Caption button hit-test (WM_NCHITTEST vs WPF commands)
@@ -1000,7 +1000,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task OnMinimizeWindow_DrivesWindowStateMinimized_EvenAfterSysMenuStrippedAsync()
+        public Task OnMinimizeWindow_DrivesWindowStateMinimized_EvenAfterSysMenuStrippedAsync()
         {
             // RunWithShownWindow triggers OnSourceInitialized → ApplyWindowShell →
             // HideNativeCaptionButtons → NativeMethods.HideAllWindowButtons, which strips
@@ -1010,7 +1010,7 @@ namespace Fluence.Wpf.Tests
             // symptom that made the AllowMinimize caption button look clickable but
             // refuse to actually minimize. The Executed handler must bypass the sysmenu gate
             // by assigning WindowState directly so the transition always lands.
-            await RunWithShownWindowAsync(async static w =>
+            return RunWithShownWindowAsync(async static w =>
             {
                 Assert.Equal(WindowState.Normal, w.WindowState);
 
@@ -1022,7 +1022,7 @@ namespace Fluence.Wpf.Tests
                 await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
                 Assert.Equal(WindowState.Minimized, w.WindowState);
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]
@@ -1064,7 +1064,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public async Task MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderPsadtConfigAsync()
+        public Task MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderPsadtConfigAsync()
         {
             // Reproduces the exact PSADT FluentDialog topology: Topmost=True + ResizeMode=NoResize
             // + ExtendsContentIntoTitleBar=True + IsMinimizeButtonVisible flipped from
@@ -1074,7 +1074,7 @@ namespace Fluence.Wpf.Tests
             // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
             // Minimized. If this ever regresses to "visible but inert" we'll catch it here
             // instead of only in manual QA.
-            await WpfTestSta.RunOnStaAsync(async static () =>
+            return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -1137,11 +1137,11 @@ namespace Fluence.Wpf.Tests
                         _ = app.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         [Fact]
-        public async Task MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfigAsync()
+        public Task MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfigAsync()
         {
             // Same topology as the Show() variant above, but uses ShowDialog() which is what
             // PSADT's DialogManager actually invokes (see DialogManager.ShowModalDialog -> dialog.ShowDialog()).
@@ -1149,7 +1149,7 @@ namespace Fluence.Wpf.Tests
             // PSADT case are also Topmost - a combination that can mask bugs a Show() test misses.
             // We schedule the click via Dispatcher.BeginInvoke(ApplicationIdle) from Loaded so
             // the command fires after the modal frame is pumping, then verify WindowState.
-            await WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -1244,7 +1244,7 @@ namespace Fluence.Wpf.Tests
                         _ = app.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
-            }).ConfigureAwait(true);
+            });
         }
 
         #endregion Caption button DP overrides (authoritative when explicitly set)
