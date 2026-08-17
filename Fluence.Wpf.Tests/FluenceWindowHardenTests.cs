@@ -449,6 +449,135 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // ---------------------------------------------------------------------------
+        // 8. Single-border wiring.
+        //
+        // DWM composites its own 1 px window border semi-transparently, so a COLORREF written to
+        // DWMWA_BORDER_COLOR can never resolve to the same on-screen colour as the opaque template
+        // border painted just inside the client area. The DWM border is therefore suppressed with
+        // the DWMWA_COLOR_NONE sentinel and WindowPolicy.BuildFramePlan owns the one border that
+        // remains: ApplyFrame writes its thickness to BorderThickness on every activation and
+        // state change, which is why the maximized template trigger no longer sets it.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task ShownWindow_BorderThickness_ComesFromFramePlanNotTemplateTriggerAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    FramePlan plan = WindowPolicy.BuildFramePlan(
+                        w.WindowState,
+                        w.IsActive,
+                        ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled,
+                        WindowCapabilities.Current);
+
+                    Assert.Equal(new Thickness(1), plan.TemplateBorderThickness);
+                    Assert.Equal(plan.TemplateBorderThickness, w.BorderThickness);
+
+                    // ApplyFrame is the single writer: perturb the value and re-run it.
+                    w.SetCurrentValue(System.Windows.Controls.Control.BorderThicknessProperty, new Thickness(9));
+                    Assert.Equal(new Thickness(9), w.BorderThickness);
+
+                    MethodInfo applyFrame = Assert.IsAssignableFrom<MethodInfo>(
+                        typeof(FluenceWindow).GetMethod("ApplyFrame", BindingFlags.NonPublic | BindingFlags.Instance));
+                    _ = applyFrame.Invoke(w, parameters: null);
+                    Assert.Equal(plan.TemplateBorderThickness, w.BorderThickness);
+
+                    // The maximized trigger keeps the corner-radius reset and nothing else; a
+                    // BorderThickness setter there would fight the plan on every maximize.
+                    System.Windows.Controls.ControlTemplate template =
+                        Assert.IsAssignableFrom<System.Windows.Controls.ControlTemplate>(w.Template);
+                    Trigger maximized = Assert.Single(
+                        template.Triggers.OfType<Trigger>(),
+                        trigger => trigger.Property == Window.WindowStateProperty
+                            && Equals(trigger.Value, WindowState.Maximized));
+
+                    Assert.DoesNotContain(
+                        maximized.Setters.OfType<Setter>(),
+                        setter => setter.Property == System.Windows.Controls.Control.BorderThicknessProperty);
+                    Assert.Contains(
+                        maximized.Setters.OfType<Setter>(),
+                        setter => setter.Property == System.Windows.Controls.Border.CornerRadiusProperty);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task CornerStyle_DrivesTemplateBorderCornerRadiusAsync()
+        {
+            // The template border is the only outline the window draws, so its radius has to follow
+            // CornerStyle the way the DWM corner preference already does. Otherwise a DoNotRound or
+            // RoundSmall window keeps painting the default large radius inside squared-off or
+            // small-radius DWM corners.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(
+                        w.Template.FindName("WindowBorder", w));
+                    CornerRadius overlay = Assert.IsType<CornerRadius>(app.TryFindResource("OverlayCornerRadius"));
+                    CornerRadius small = Assert.IsType<CornerRadius>(app.TryFindResource("ControlCornerRadius"));
+
+                    Assert.Equal(CornerPreference.Round, w.CornerStyle);
+                    Assert.Equal(overlay, border.CornerRadius);
+
+                    w.CornerStyle = CornerPreference.DoNotRound;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.Equal(new CornerRadius(0), border.CornerRadius);
+
+                    w.CornerStyle = CornerPreference.RoundSmall;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.Equal(small, border.CornerRadius);
+
+                    w.CornerStyle = CornerPreference.Default;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.Equal(overlay, border.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
         private static int GetWatchedWindowCount()
         {
             FieldInfo field = Assert.IsAssignableFrom<FieldInfo>(typeof(SystemThemeWatcher).GetField("_watchedWindows", BindingFlags.NonPublic | BindingFlags.Static));

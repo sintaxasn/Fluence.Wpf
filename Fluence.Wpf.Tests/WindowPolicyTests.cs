@@ -450,7 +450,12 @@ namespace Fluence.Wpf.Tests
 
         #endregion GetResizeBorderThickness - maximised / non-resize matrix
 
-        #region BuildFramePlan - accent border selection
+        #region BuildFramePlan - DWM border suppression and brush selection
+
+        // Single-border strategy: the DWM border composites semi-transparently, so it can never
+        // match the opaque template border painted inside the client area. On any OS that exposes
+        // DWMWA_BORDER_COLOR the plan writes the DWMWA_COLOR_NONE suppression sentinel in every
+        // activation state and lets the 1 dp template hairline be the only border on screen.
 
         [Fact]
         public void BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey()
@@ -459,12 +464,11 @@ namespace Fluence.Wpf.Tests
                 WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Color.FromRgb(0x00, 0x78, 0xD4));
+                capabilities: Caps(borderColor: true));
 
-            Assert.Equal(new Thickness(2), plan.TemplateBorderThickness);
+            Assert.Equal(new Thickness(1), plan.TemplateBorderThickness);
             Assert.Equal("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
-            Assert.NotEqual(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
+            Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.DwmBorderColor);
         }
 
         [Fact]
@@ -474,10 +478,24 @@ namespace Fluence.Wpf.Tests
                 WindowState.Normal,
                 isActive: false,
                 isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Colors.Red);
+                capabilities: Caps(borderColor: true));
 
             Assert.Equal("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
+            Assert.Equal(new Thickness(1), plan.TemplateBorderThickness);
+            Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.DwmBorderColor);
+        }
+
+        [Fact]
+        public void BuildFramePlan_AccentBorderDisabled_StillSuppressesDwmBorder()
+        {
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                WindowState.Normal,
+                isActive: true,
+                isAccentBorderEnabled: false,
+                capabilities: Caps(borderColor: true));
+
+            Assert.Equal("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
+            Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.DwmBorderColor);
         }
 
         [Fact]
@@ -487,10 +505,10 @@ namespace Fluence.Wpf.Tests
                 WindowState.Maximized,
                 isActive: true,
                 isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Colors.Red);
+                capabilities: Caps(borderColor: true));
 
             Assert.Equal(new Thickness(0), plan.TemplateBorderThickness);
+            Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.DwmBorderColor);
         }
 
         [Fact]
@@ -500,13 +518,12 @@ namespace Fluence.Wpf.Tests
                 WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
-                capabilities: Caps(),
-                accentColor: Colors.Red);
+                capabilities: Caps());
 
             Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
-        #endregion BuildFramePlan - accent border selection
+        #endregion BuildFramePlan - DWM border suppression and brush selection
 
         #region WindowCapabilities.Current - sanity
 

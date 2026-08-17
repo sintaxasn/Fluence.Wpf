@@ -27,7 +27,6 @@
  */
 
 using Fluence.Wpf.Helpers;
-using Fluence.Wpf.Native;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -152,28 +151,38 @@ namespace Fluence.Wpf.Controls
         /// Computes the <see cref="FramePlan"/> that governs the window border appearance.
         /// </summary>
         /// <remarks>
-        /// The plan has two independent halves:
+        /// The window has exactly one visible border, and it is the WPF-template one. DWM
+        /// composites its own 1 px border semi-transparently over whatever is behind the window,
+        /// so a COLORREF written to <c>DWMWA_BORDER_COLOR</c> never resolves to the same on-screen
+        /// color as the opaque template border painted just inside the client area; the two
+        /// coincident borders read as a shade mismatch along every edge. The plan therefore
+        /// suppresses the DWM border wherever the OS lets it and treats the template border as the
+        /// single source of truth:
         /// <list type="bullet">
         ///   <item>
         ///     <term>WPF-template border</term>
         ///     <description>
-        ///       Active window with accent borders enabled gets a 2 dp border keyed to
-        ///       <c>SystemAccentColorBrush</c>. Inactive windows revert to
-        ///       <c>CardStrokeColorDefaultSolidBrush</c>. Maximized windows get a 0-thick border
-        ///       in every state.
+        ///       A normal-state window gets a 1 dp hairline keyed to <c>SystemAccentColorBrush</c>
+        ///       when it is active and accent borders are enabled, and to
+        ///       <c>CardStrokeColorDefaultSolidBrush</c> when it is inactive or accent borders are
+        ///       off. Maximized windows get a 0-thick border in every state, because a border at
+        ///       the monitor edge would clip against the taskbar or an adjacent monitor.
         ///     </description>
         ///   </item>
         ///   <item>
         ///     <term>DWM border color</term>
         ///     <description>
-        ///       When the OS supports <c>DWMWA_BORDER_COLOR</c> and the window is active with
-        ///       accent borders, the COLORREF derived from <paramref name="accentColor"/> is
-        ///       emitted. Otherwise
-        ///       DWMWA_COLOR_DEFAULT is used, which tells DWM to
-        ///       restore its own border.
+        ///       When the OS supports <c>DWMWA_BORDER_COLOR</c> (Windows 11), the documented
+        ///       DWMWA_COLOR_NONE sentinel is emitted in every activation
+        ///       state, which suppresses the drawing of the DWM window border while keeping the
+        ///       rounded corners. When the attribute is unavailable (Windows 10) the plan records
+        ///       DWMWA_COLOR_DEFAULT; the caller never writes it on
+        ///       that OS.
         ///     </description>
         ///   </item>
         /// </list>
+        /// The accent color itself is not an input: the accent reaches the border through the
+        /// <c>SystemAccentColorBrush</c> resource key, which re-resolves on every accent change.
         /// </remarks>
         /// <param name="windowState">The current <see cref="WindowState"/>.</param>
         /// <param name="isActive">
@@ -184,28 +193,27 @@ namespace Fluence.Wpf.Controls
         ///   is set.
         /// </param>
         /// <param name="capabilities">The OS capability snapshot.</param>
-        /// <param name="accentColor">The current system accent color.</param>
         /// <returns>A <see cref="FramePlan"/> describing the border to apply.</returns>
         internal static FramePlan BuildFramePlan(
             WindowState windowState,
             bool isActive,
             bool isAccentBorderEnabled,
-            WindowCapabilities capabilities,
-            Color accentColor)
+            WindowCapabilities capabilities)
         {
             Thickness templateBorderThickness = windowState is WindowState.Maximized
                 ? new Thickness(0)
-                : new Thickness(2);
+                : new Thickness(1);
 
             string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
                 ? "CardStrokeColorDefaultSolidBrush"
                 : "SystemAccentColorBrush";
 
-            uint dwmBorderColor = PInvoke.DWMWA_COLOR_DEFAULT;
-            if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
-            {
-                dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
-            }
+            // DWMWA_COLOR_NONE suppresses the DWM border outright so the template hairline is the
+            // only border on screen. DWMWA_COLOR_DEFAULT is recorded on Windows 10, where the
+            // caller never writes the attribute at all.
+            uint dwmBorderColor = capabilities.SupportsBorderColor
+                ? PInvoke.DWMWA_COLOR_NONE
+                : PInvoke.DWMWA_COLOR_DEFAULT;
 
             return new FramePlan(templateBorderThickness, templateBorderBrushResourceKey, dwmBorderColor);
         }

@@ -855,9 +855,20 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Applies the template border brush and the DWM border color for the current activation and
-        /// window state. Called on activation, deactivation, state change, and accent change.
+        /// Applies the template border thickness and brush, and the DWM border color, for the
+        /// current activation and window state. Called on activation, deactivation, state change,
+        /// and accent change.
         /// </summary>
+        /// <remarks>
+        /// While the frame plan is active the shell owns both <see cref="Control.BorderThickness"/>
+        /// and <see cref="Control.BorderBrush"/>: every re-apply supersedes whatever a consumer set,
+        /// exactly as the brush assignment already did. The thickness goes through
+        /// <see cref="DependencyObject.SetCurrentValue"/> rather than a plain assignment so the
+        /// property is not promoted to local-value precedence and the style system (and any
+        /// consumer binding on it) stays intact between applies, but the plan value is what shows
+        /// after each one. The maximized 0-thickness case comes from the plan rather than from a
+        /// template trigger, so the border has a single owner in every window state.
+        /// </remarks>
         private void ApplyFrame()
         {
             WindowCapabilities capabilities = WindowCapabilities.Current;
@@ -865,9 +876,9 @@ namespace Fluence.Wpf.Controls
                 WindowState,
                 IsActive,
                 ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled,
-                capabilities,
-                ApplicationAccentColorManager.SystemAccentColor);
+                capabilities);
 
+            SetCurrentValue(BorderThicknessProperty, plan.TemplateBorderThickness);
             BorderBrush = TryFindResource(plan.TemplateBorderBrushResourceKey) as Brush ?? Brushes.Transparent;
             if (_handle != IntPtr.Zero && capabilities.SupportsBorderColor)
             {
@@ -932,20 +943,21 @@ namespace Fluence.Wpf.Controls
         /// client size: the HWND (and <see cref="FrameworkElement.ActualWidth"/> /
         /// <see cref="FrameworkElement.ActualHeight"/>) already reflect the grown size while the
         /// template root <c>Border</c> is still arranged to the previous, smaller desired size. The
-        /// gap reads as a rounded accent border floating inside the DWM border (set via
-        /// <c>DWMWA_BORDER_COLOR</c>) on every edge, because the template border and the DWM border no
-        /// longer coincide. An interactive resize hides it because it ends with a real <c>WM_SIZE</c>
-        /// that re-arranges the content; a SizeToContent first paint or auto-grow never produces that
+        /// gap reads as a rounded border floating inset from the true window edge on every side,
+        /// with the backdrop visible in the strip between the two, because the only border the
+        /// window draws is the template one and it is no longer flush with the client area. An
+        /// interactive resize hides it because it ends with a real <c>WM_SIZE</c> that re-arranges
+        /// the content; a SizeToContent first paint or auto-grow never produces that
         /// <c>WM_SIZE</c>.
         /// <para>
         /// The correction directly arranges the single visual child to a rect of the window's current
         /// <see cref="FrameworkElement.ActualWidth"/> x <see cref="FrameworkElement.ActualHeight"/>
         /// (which equal the client area in DIPs), reproducing the re-arrange a real <c>WM_SIZE</c>
         /// would trigger without freezing <see cref="Window.SizeToContent"/> - so the window still
-        /// grows when its content grows and stays single-bordered after growing. The
-        /// <c>SizeToContent != Manual</c> guard makes it a no-op for fixed-size windows, which already
-        /// render with the borders coincident, and a re-entrancy guard prevents the child arrange from
-        /// recursing through <see cref="FrameworkElement.SizeChanged"/>.
+        /// grows when its content grows and its border stays flush with the window edge after
+        /// growing. The <c>SizeToContent != Manual</c> guard makes it a no-op for fixed-size
+        /// windows, which already render flush, and a re-entrancy guard prevents the child arrange
+        /// from recursing through <see cref="FrameworkElement.SizeChanged"/>.
         /// </para>
         /// </remarks>
         private void FillClientAreaForSizeToContent()
@@ -982,8 +994,8 @@ namespace Fluence.Wpf.Controls
             try
             {
                 // Re-arrange the root visual to the full client area. This mirrors the re-arrange a
-                // real WM_SIZE performs, collapsing the inset so the template border coincides with
-                // the DWM border. SizeToContent stays active for the next content change.
+                // real WM_SIZE performs, collapsing the inset so the template border sits flush
+                // with the window edge. SizeToContent stays active for the next content change.
                 child.Arrange(new Rect(0.0, 0.0, width, height));
             }
             finally
