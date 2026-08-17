@@ -15,6 +15,7 @@ DWMWA_COLOR_DEFAULT
 DWMWA_COLOR_NONE
 GetDC
 GetMonitorInfo
+GetSystemMetrics
 GetWindowLong
 HTCAPTION
 HTCLOSE

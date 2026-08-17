@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Native;
+using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -36,12 +37,16 @@ namespace Fluence.Wpf.Tests
 {
     /// <summary>
     /// Pins the pure, handle-free interop selectors in <see cref="NativeMethods"/>:
-    /// the immersive dark-mode attribute split (19 vs 20) and the auto-hide taskbar
-    /// maximized-rect shift. These tests are deterministic and OS-independent; they do
-    /// not call any P/Invoke whose result depends on the host environment.
+    /// the immersive dark-mode attribute split (19 vs 20), the auto-hide taskbar
+    /// maximized-rect shift, and the maximized resize-frame margin conversion. These tests
+    /// are deterministic and OS-independent; they do not call any P/Invoke whose result
+    /// depends on the host environment, so the live
+    /// <see cref="NativeMethods.GetMaximizedFrameMargin(double, double)"/> path is not covered here.
     /// </summary>
     public sealed class NativeMethodsTests
     {
+        private const double Tolerance = 1e-9;
+
         [Fact]
         public void GetImmersiveDarkModeAttribute_Returns20_For18985AndLater()
         {
@@ -121,6 +126,76 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(200, mmi.ptMaxPosition.Y);
             Assert.Equal(800, mmi.ptMaxSize.X);
             Assert.Equal(600, mmi.ptMaxSize.Y);
+        }
+
+        [Fact]
+        public void ComputeMaximizedFrameMargin_At100Percent_SumsSizeFrameAndPaddedBorder()
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, 1.0, 1.0);
+
+            Assert.Equal(8.0, margin.Left);
+            Assert.Equal(8.0, margin.Top);
+            Assert.Equal(8.0, margin.Right);
+            Assert.Equal(8.0, margin.Bottom);
+        }
+
+        [Fact]
+        public void ComputeMaximizedFrameMargin_TakesHorizontalFromXAndVerticalFromYMetrics()
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 7, 4, 1.0, 1.0);
+
+            Assert.Equal(8.0, margin.Left);
+            Assert.Equal(8.0, margin.Right);
+            Assert.Equal(11.0, margin.Top);
+            Assert.Equal(11.0, margin.Bottom);
+        }
+
+        [Fact]
+        public void ComputeMaximizedFrameMargin_At150Percent_DividesByScale()
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, 1.5, 1.5);
+
+            const double expected = 16.0 / 3.0;
+            Assert.Equal(expected, margin.Left, Tolerance);
+            Assert.Equal(expected, margin.Top, Tolerance);
+            Assert.Equal(expected, margin.Right, Tolerance);
+            Assert.Equal(expected, margin.Bottom, Tolerance);
+        }
+
+        [Fact]
+        public void ComputeMaximizedFrameMargin_ScalesEachAxisIndependently()
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, 2.0, 1.0);
+
+            Assert.Equal(4.0, margin.Left);
+            Assert.Equal(4.0, margin.Right);
+            Assert.Equal(8.0, margin.Top);
+            Assert.Equal(8.0, margin.Bottom);
+        }
+
+        [Theory]
+        [InlineData(0.0, 0.0)]
+        [InlineData(-1.5, -2.0)]
+        [InlineData(double.PositiveInfinity, double.PositiveInfinity)]
+        public void ComputeMaximizedFrameMargin_NonPositiveScale_TreatedAsUnscaled(double dpiScaleX, double dpiScaleY)
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, dpiScaleX, dpiScaleY);
+
+            Assert.Equal(8.0, margin.Left);
+            Assert.Equal(8.0, margin.Top);
+            Assert.Equal(8.0, margin.Right);
+            Assert.Equal(8.0, margin.Bottom);
+        }
+
+        [Fact]
+        public void ComputeMaximizedFrameMargin_GuardsOnlyTheFailingAxis()
+        {
+            Thickness margin = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, 2.0, 0.0);
+
+            Assert.Equal(4.0, margin.Left);
+            Assert.Equal(4.0, margin.Right);
+            Assert.Equal(8.0, margin.Top);
+            Assert.Equal(8.0, margin.Bottom);
         }
 
         private static MINMAXINFO SeedMinMaxInfo()

@@ -607,6 +607,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+        {
+            base.OnDpiChanged(oldDpi, newDpi);
+
+            // MarginMaximized is derived from device-pixel system metrics divided by the window
+            // scale factor, so moving to a monitor with a different scale invalidates it.
+            UpdateShellMetrics();
+        }
+
+        /// <inheritdoc />
         protected override void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
@@ -793,7 +803,24 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateShellMetrics()
         {
-            MarginMaximized = WindowState is WindowState.Maximized ? new Thickness(6) : new Thickness(0);
+            if (WindowState is WindowState.Maximized)
+            {
+                // A maximized WindowChrome window still extends its invisible resize frame past the
+                // work area, so the content has to be inset by that frame. The frame is a live
+                // system metric in device pixels, not a constant, so read it and scale it here.
+                double dpiScaleX = 1.0, dpiScaleY = 1.0;
+                if (_hwndSource?.CompositionTarget is not null)
+                {
+                    Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
+                    dpiScaleX = transform.M11;
+                    dpiScaleY = transform.M22;
+                }
+                MarginMaximized = NativeMethods.GetMaximizedFrameMargin(dpiScaleX, dpiScaleY);
+            }
+            else
+            {
+                MarginMaximized = new Thickness(0);
+            }
             _windowChrome.ResizeBorderThickness = WindowPolicy.GetResizeBorderThickness(WindowState, ResizeMode);
         }
 

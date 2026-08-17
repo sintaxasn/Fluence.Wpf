@@ -367,6 +367,73 @@ namespace Fluence.Wpf.Native
 
         #endregion Window style and presentation helpers
 
+        #region Maximized frame metrics
+
+        /// <summary>
+        /// The historical fixed maximized inset, retained as the fallback when the live system
+        /// metrics are unavailable. It matches the Windows 11 default at 100% scaling closely
+        /// enough that a failed metric read degrades to a slightly generous inset rather than to
+        /// no inset at all, which would let the content bleed under the invisible resize frame.
+        /// </summary>
+        private const double FallbackMaximizedFrameMargin = 6.0;
+
+        /// <summary>
+        /// Converts the raw resize-frame system metrics into the logical inset a maximized
+        /// <see cref="Controls.FluenceWindow"/> must apply to its content. A maximized window with
+        /// custom chrome still extends its invisible resize frame beyond the work area, so the
+        /// client content has to be pushed in by that frame or it is clipped by the monitor edge.
+        /// The inset is the size frame plus the padded border, matching the Win32 non-client
+        /// geometry, converted from device pixels to DIPs. This method is pure so the conversion
+        /// can be unit tested without a window handle or a live desktop.
+        /// </summary>
+        /// <param name="sizeFrameX">The horizontal size frame in device pixels (<c>SM_CXSIZEFRAME</c>).</param>
+        /// <param name="sizeFrameY">The vertical size frame in device pixels (<c>SM_CYSIZEFRAME</c>).</param>
+        /// <param name="paddedBorder">The border padding in device pixels (<c>SM_CXPADDEDBORDER</c>).</param>
+        /// <param name="dpiScaleX">The horizontal device-pixels-per-DIP scale factor.</param>
+        /// <param name="dpiScaleY">The vertical device-pixels-per-DIP scale factor.</param>
+        /// <returns>The maximized content inset in DIPs.</returns>
+        public static System.Windows.Thickness ComputeMaximizedFrameMargin(
+            int sizeFrameX,
+            int sizeFrameY,
+            int paddedBorder,
+            double dpiScaleX,
+            double dpiScaleY)
+        {
+            // A non-positive or non-finite scale would produce an infinite or negative margin, so
+            // treat it as unscaled; a caller with no realised HwndSource legitimately has no scale.
+            double scaleX = dpiScaleX > 0 && !double.IsInfinity(dpiScaleX) ? dpiScaleX : 1.0;
+            double scaleY = dpiScaleY > 0 && !double.IsInfinity(dpiScaleY) ? dpiScaleY : 1.0;
+
+            double horizontal = (sizeFrameX + paddedBorder) / scaleX;
+            double vertical = (sizeFrameY + paddedBorder) / scaleY;
+            return new System.Windows.Thickness(horizontal, vertical, horizontal, vertical);
+        }
+
+        /// <summary>
+        /// Reads the live resize-frame system metrics and returns the maximized content inset in
+        /// DIPs. <c>GetSystemMetrics</c> reports failure by returning zero rather than by setting
+        /// an error code, so a zero in any of the three metrics is treated as a failed read and the
+        /// whole result degrades to <see cref="FallbackMaximizedFrameMargin"/>. That is deliberately
+        /// conservative: a visual theme that genuinely reports a zero padded border gets an inset
+        /// one or two DIPs wider than strictly required, which is invisible, whereas trusting the
+        /// zero would collapse the inset and clip the content of every maximized window.
+        /// </summary>
+        /// <param name="dpiScaleX">The horizontal device-pixels-per-DIP scale factor.</param>
+        /// <param name="dpiScaleY">The vertical device-pixels-per-DIP scale factor.</param>
+        /// <returns>The maximized content inset in DIPs.</returns>
+        public static System.Windows.Thickness GetMaximizedFrameMargin(double dpiScaleX, double dpiScaleY)
+        {
+            int sizeFrameX = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME);
+            int sizeFrameY = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME);
+            int paddedBorder = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
+
+            return sizeFrameX <= 0 || sizeFrameY <= 0 || paddedBorder <= 0
+                ? new System.Windows.Thickness(FallbackMaximizedFrameMargin)
+                : ComputeMaximizedFrameMargin(sizeFrameX, sizeFrameY, paddedBorder, dpiScaleX, dpiScaleY);
+        }
+
+        #endregion Maximized frame metrics
+
         #region OS version and taskbar helpers
 
         /// <summary>
