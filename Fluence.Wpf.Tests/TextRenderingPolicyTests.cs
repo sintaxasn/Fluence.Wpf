@@ -104,6 +104,102 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task PopupBackplates_OpaqueSurfacesEnableClearTypeAsync()
+        {
+            // Popups with AllowsTransparency="True" are layered windows, which silently drop text
+            // to grayscale anti-aliasing. RenderOptions.ClearTypeHint="Enabled" on the opaque
+            // backplate restores subpixel rendering for that subtree without touching the window
+            // root, which stays at Auto for the reasons documented in FluenceWindow.xaml.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResetApplication(application);
+
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.AutoSuggestBox(), "SuggestionsSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.DatePicker(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.TimePicker(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.DropDownButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.SplitButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.ToggleSplitButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.FlyoutPresenter(), "PresenterSurface");
+                AssertHostedSurfaceEnablesClearType(
+                    new Fluence.Wpf.Controls.MenuItem { Header = "Open" },
+                    "SubMenuBorder");
+            });
+        }
+
+        [Fact]
+        public Task ContextMenuSurface_EnablesClearTypeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResetApplication(application);
+
+                // A ContextMenu only resolves its implicit style once it is hosted, so this is the
+                // one surface that has to be opened rather than inspected straight off the template.
+                Fluence.Wpf.Controls.ContextMenu contextMenu = new();
+                _ = contextMenu.Items.Add(new Fluence.Wpf.Controls.MenuItem { Header = "Open" });
+
+                Window window = new()
+                {
+                    Width = 400,
+                    Height = 300,
+                    ContextMenu = contextMenu,
+                };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    contextMenu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AssertSurfaceEnablesClearType(contextMenu, "MenuSurface");
+                }
+                finally
+                {
+                    contextMenu.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBoxDropdownSurface_KeepsDefaultClearTypeHintAsync()
+        {
+            // PART_DropdownBorder paints AcrylicBackgroundFillColorDefaultBrush (alpha F0) under a
+            // noise overlay, so it is translucent and must stay at the WPF default. Forcing ClearType
+            // over a translucent layered surface degrades text rather than sharpening it.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResetApplication(application);
+
+                Window window = new() { Width = 400, Height = 300 };
+                Fluence.Wpf.Controls.ComboBox comboBox = new();
+
+                try
+                {
+                    window.Content = comboBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border surface = FindTemplatedSurface(comboBox, "PART_DropdownBorder");
+
+                    Assert.Equal(ClearTypeHint.Auto, RenderOptions.GetClearTypeHint(surface));
+                    Assert.NotEqual(byte.MaxValue, Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public async Task ProductionSources_DoNotSetWpfTextOptionsRenderingPolicyAsync()
         {
             string repoRoot = FindRepoRoot();
@@ -234,6 +330,52 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(17d, textBlock.LineHeight, 0.01d);
                 Assert.Equal(LineStackingStrategy.MaxHeight, textBlock.LineStackingStrategy);
             });
+        }
+
+        private static void AssertHostedSurfaceEnablesClearType(Control control, string surfaceName)
+        {
+            Window window = new()
+            {
+                Width = 400,
+                Height = 300,
+                Content = control,
+            };
+
+            try
+            {
+                window.Show();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                window.UpdateLayout();
+
+                AssertSurfaceEnablesClearType(control, surfaceName);
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        private static void AssertSurfaceEnablesClearType(Control control, string surfaceName)
+        {
+            System.Windows.Controls.Border surface = FindTemplatedSurface(control, surfaceName);
+
+            Assert.Equal(
+                ClearTypeHint.Enabled,
+                RenderOptions.GetClearTypeHint(surface));
+
+            // ClearType only helps on an opaque backplate, so the treated surface must stay opaque.
+            Assert.Equal(
+                byte.MaxValue,
+                Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
+        }
+
+        private static System.Windows.Controls.Border FindTemplatedSurface(Control control, string surfaceName)
+        {
+            ControlTemplate template = control.Template ??
+                throw new InvalidOperationException(
+                    control.GetType().Name + " did not resolve a default template.");
+
+            return Assert.IsType<System.Windows.Controls.Border>(template.FindName(surfaceName, control));
         }
 
         private static void ResetApplication(Application application)

@@ -142,6 +142,7 @@
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
                                 CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                RenderOptions.ClearTypeHint="Enabled"
                                 UseLayoutRounding="True">
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="FlyoutSurfaceTranslate" />
