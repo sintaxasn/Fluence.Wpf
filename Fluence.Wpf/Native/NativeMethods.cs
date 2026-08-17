@@ -133,17 +133,18 @@ namespace Fluence.Wpf.Native
         /// <summary>
         /// Selects the DWM immersive dark-mode window attribute id for a given OS build. The
         /// attribute moved from DWMWA_USE_IMMERSIVE_DARK_MODE_OLD
-        /// (19) to DWMWA_USE_IMMERSIVE_DARK_MODE (20) starting at
-        /// Windows 10 build 18362 (version 1903). Builds 17763..18361 (1809 era) must use 19, or
-        /// the dark caption silently fails to apply. This selector is pure so it can be unit
+        /// (19) to DWMWA_USE_IMMERSIVE_DARK_MODE (20) at
+        /// Windows 10 build 18985, the first 20H1 Insider build to carry the new id. Builds
+        /// 17763..18984, which include retail 1809, 1903 (18362), and 1909 (18363), must use 19,
+        /// or the dark caption silently fails to apply. This selector is pure so it can be unit
         /// tested without a window handle.
         /// </summary>
-        /// <param name="osBuild">The OS build number (for example <c>18362</c>).</param>
+        /// <param name="osBuild">The OS build number (for example <c>18985</c>).</param>
         /// <returns>The DWM attribute id to pass to DwmSetWindowAttribute.</returns>
         public static DWMWINDOWATTRIBUTE GetImmersiveDarkModeAttribute(int osBuild)
         {
             const DWMWINDOWATTRIBUTE DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = (DWMWINDOWATTRIBUTE)19;
-            return osBuild >= 18362
+            return osBuild >= 18985
                 ? DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE
                 : DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
         }

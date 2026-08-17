@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Tests: the xunit.v3 port now leverages v3-native features. Repeated per-theme and per-accent `[Fact]` families collapsed into `[Theory]` rows (`ThemeManagerTests`, `ThemeEngineUnitTests`, `AccentRampTests`); environment-gated tests use declarative `SkipUnless` conditions instead of body-level `Assert.Skip` (`AccentRampTests`, `GalleryScreenshotHarness`), letting the `xUnit1004` suppression be removed; manual/maintainer probes are `[Fact(Explicit = true)]`; the shared `WaitUntil` polling helper honours `TestContext.Current.CancellationToken`; and the project runs natively on Microsoft Testing Platform (`UseMicrosoftTestingPlatformRunner` + `TestingPlatformDotnetTestSupport`).
 - Tests: nullable `as`-cast + `Assert.NotNull` pairs (493 sites) replaced with `Assert.IsType<T>(...)` / `Assert.IsAssignableFrom<T>(...)` assignments, so variables are declared non-nullable and CodeQL's "may be null at this access" findings on the old pattern are resolved. `IsAssignableFrom` is used where the runtime type is a subtype of the declared target (base classes, interfaces, and the Fluence `TextBox` template parts).
 
+### Fixed
+
+- Dark caption on Windows 10 1903 and 1909: the immersive dark-mode DWM attribute threshold in `NativeMethods.GetImmersiveDarkModeAttribute` is corrected from build 18362 to 18985, the build that introduced `DWMWA_USE_IMMERSIVE_DARK_MODE` (20). Builds 18362 through 18984 now request the pre-20H1 attribute 19 instead of an id the OS does not recognise, so `FluenceWindow` renders a dark caption on those releases rather than silently staying light.
+
 ## [0.8.13-Preview] - 2026-08-13
 
 ### Added

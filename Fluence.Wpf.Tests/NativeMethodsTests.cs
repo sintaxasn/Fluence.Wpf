@@ -43,21 +43,24 @@ namespace Fluence.Wpf.Tests
     public sealed class NativeMethodsTests
     {
         [Fact]
-        public void GetImmersiveDarkModeAttribute_Returns20_For18362AndLater()
+        public void GetImmersiveDarkModeAttribute_Returns20_For18985AndLater()
         {
-            Assert.Equal(DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, NativeMethods.GetImmersiveDarkModeAttribute(18362));
+            Assert.Equal(DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, NativeMethods.GetImmersiveDarkModeAttribute(18985));
             Assert.Equal(DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, NativeMethods.GetImmersiveDarkModeAttribute(19041));
             Assert.Equal(DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, NativeMethods.GetImmersiveDarkModeAttribute(22000));
             Assert.Equal(DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, NativeMethods.GetImmersiveDarkModeAttribute(22631));
         }
 
         [Fact]
-        public void GetImmersiveDarkModeAttribute_Returns19_ForPre18362Builds()
+        public void GetImmersiveDarkModeAttribute_Returns19_ForPre18985Builds()
         {
             const DWMWINDOWATTRIBUTE DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = (DWMWINDOWATTRIBUTE)19;
             Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(17763));
             Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(18000));
             Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(18361));
+            Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(18362));
+            Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(18363));
+            Assert.Equal(DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, NativeMethods.GetImmersiveDarkModeAttribute(18984));
         }
 
         [Fact]
