@@ -141,7 +141,8 @@ Apply(themeRequest):
                   + all accent-derived keys computed once here
                   + title-bar colors (TitleBarActiveColor, TitleBarInactiveColor, WindowBorderColor)
   4. gate    = PublishFingerprint.Capture(theme, colors)   // resolved theme + the whole color map
-                  + the live SystemColors members SpecialBrushes reads outside the map.
+                  + the live SystemColors members SpecialBrushes reads outside the map
+                  + the Settings "Transparency effects" flag (RegistryHelper.GetEnableTransparency).
                   Equal to the last PUBLISHED fingerprint (and slot [0] still holds that
                   dictionary)? return; steps 5 to 7 are skipped, no events are raised
   5. dict    = BrushFactory.Build(colors)             // one ResourceDictionary: every Color token
@@ -154,7 +155,7 @@ Apply(themeRequest):
 
 There is no key promotion, no swap-vs-mutate split, and no per-key copy-up into top-level `Application.Resources`. Every color and brush is built fresh and published as one dictionary replacement.
 
-**Redundant-publish gate.** Windows emits several theme-relevant broadcasts for a single user action, and the 100 ms debounce in `SystemThemeWatcher` does not collapse all of them. Step 4 exists so a broadcast that changes nothing does not rebuild every brush and force a `DynamicResource` re-resolution storm. The fingerprint is exhaustive by construction: the color map already subsumes the accent ramp, the per-theme base tables, the registry-driven chrome, and the deterministic-chrome test switch. A publish that fails because `Application.Current` is null stores no fingerprint, so the next apply retries. `FluenceThemeEngine.ResetForTesting` clears it. Adding a new input to the published output means adding it to `PublishFingerprint`, or the gate will skip a change that should have shipped.
+**Redundant-publish gate.** Windows emits several theme-relevant broadcasts for a single user action, and the 100 ms debounce in `SystemThemeWatcher` does not collapse all of them. Step 4 exists so a broadcast that changes nothing does not rebuild every brush and force a `DynamicResource` re-resolution storm. The fingerprint is exhaustive by construction: the color map already subsumes the accent ramp, the per-theme base tables, the registry-driven chrome, and the deterministic-chrome test switch. One input is carried separately because no color reflects it: the Settings "Transparency effects" flag. Toggling it broadcasts `ImmersiveColorSet` and changes what a window's backdrop should be, but not a single computed color, so without that field in the fingerprint the gate would swallow the broadcast, `Changed` would never fire, and the Windows 10 legacy-acrylic path in `FluenceWindow.ApplyBackdrop` would never re-read the setting. A publish that fails because `Application.Current` is null stores no fingerprint, so the next apply retries. `FluenceThemeEngine.ResetForTesting` clears it. Adding a new input to the published output means adding it to `PublishFingerprint`, or the gate will skip a change that should have shipped.
 
 **Accent intent** is sticky and resolved on every Apply call. `AccentIntent.System` (the default) reads the full OS palette from the registry first; if that fails it falls back to the DWM colorization color and then to default blue. `Apply(theme)` alone uses the OS palette - there is no "must also call `ApplySystemAccent`" footgun. `ApplyCustomAccent(Color)` pins the ramp to the given color using the HSV generator; `ApplyCustomAccent(Color light, Color dark)` carries per-theme seeds resolved inside the engine on every apply (high contrast follows the dark seed); `ApplySystemAccent()` resets the intent to System.
 

@@ -27,6 +27,12 @@
         window. WinUI's edge-pip scale-down animation is a deliberate omission.
     -->
 
+    <!--
+        The 20x20 pip box below is mirrored in code by PipsPager.PipBoxSize, which the viewport
+        sizing and the scroll offsets are computed from. A style that replaces this key under the
+        same name has to keep the same box size, or the run scrolls by a stride that does not match
+        what it renders.
+    -->
     <Style x:Key="PipsPagerPipStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />

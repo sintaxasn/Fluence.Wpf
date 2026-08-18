@@ -281,6 +281,64 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        /// <summary>
+        /// Both halves of the bring-into-view contract. A pip asking to be brought into view must
+        /// not move the pager's own viewport, which the pager scrolls on its own terms, but the
+        /// request must still reach the ancestors so an app scroller brings the whole pager on
+        /// screen (WinUI re-raises the same way from PipsPager::OnScrollViewerBringIntoViewRequested).
+        /// </summary>
+        [Fact]
+        public Task PipsPager_PipBringIntoView_KeepsTheViewportStillAndScrollsTheOuterViewerAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
+                System.Windows.Controls.StackPanel content = new();
+                _ = content.Children.Add(new System.Windows.Controls.Border { Height = 400 });
+                _ = content.Children.Add(pager);
+                System.Windows.Controls.ScrollViewer outerViewer = new()
+                {
+                    Height = 100,
+                    VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+                    Content = content,
+                };
+
+                try
+                {
+                    window.Content = outerViewer;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.StackPanel host = Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"));
+                    System.Windows.Controls.ScrollViewer viewer = Assert.IsAssignableFrom<System.Windows.Controls.ScrollViewer>(FindVisualChildByName<System.Windows.Controls.ScrollViewer>(pager, "PART_PipsScrollViewer"));
+
+                    Assert.Equal(0.0, viewer.HorizontalOffset, 0.5);
+                    Assert.Equal(0.0, outerViewer.VerticalOffset, 0.5);
+
+                    // The last pip sits well past the three-pip viewport, so an unsuppressed
+                    // request would scroll the run to its far end.
+                    System.Windows.Controls.Primitives.ToggleButton lastPip =
+                        Assert.IsAssignableFrom<System.Windows.Controls.Primitives.ToggleButton>(GetPipAt(host, 9));
+                    lastPip.BringIntoView();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(0.0, viewer.HorizontalOffset, 0.5);
+                    Assert.True(outerViewer.VerticalOffset > 0.0,
+                        "The suppressed request must still be re-raised so an outer scroller brings the pager into view.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
         [Fact]
         public Task PipsPager_SelectionInsideViewport_LeavesTheScrollOffsetStationaryAsync()
         {

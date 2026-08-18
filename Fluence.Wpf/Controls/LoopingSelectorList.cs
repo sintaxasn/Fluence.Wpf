@@ -206,12 +206,14 @@ namespace Fluence.Wpf.Controls
         /// Maps the navigation keys onto scrolling rather than onto selection movement, since
         /// the selection follows the offset. Home and End are swallowed: on a looping column
         /// there is no meaningful first or last value, and on a padded column both ends are
-        /// placeholder rows.
+        /// placeholder rows. Without the template's scroll viewer there is nothing to scroll, so
+        /// the keys are left to the base ListBox behavior rather than swallowed.
         /// </summary>
         /// <param name="e">The event data.</param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Key is not (Key.Up or Key.Down or Key.PageUp or Key.PageDown or Key.Home or Key.End))
+            if (_scrollViewer is null
+                || e.Key is not (Key.Up or Key.Down or Key.PageUp or Key.PageDown or Key.Home or Key.End))
             {
                 base.OnKeyDown(e);
                 return;
@@ -219,19 +221,19 @@ namespace Fluence.Wpf.Controls
 
             if (e.Key is Key.Up)
             {
-                _scrollViewer?.LineUp();
+                _scrollViewer.LineUp();
             }
             else if (e.Key is Key.Down)
             {
-                _scrollViewer?.LineDown();
+                _scrollViewer.LineDown();
             }
             else if (e.Key is Key.PageUp)
             {
-                _scrollViewer?.PageUp();
+                _scrollViewer.PageUp();
             }
             else if (e.Key is Key.PageDown)
             {
-                _scrollViewer?.PageDown();
+                _scrollViewer.PageDown();
             }
 
             e.Handled = true;

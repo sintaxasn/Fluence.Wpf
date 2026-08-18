@@ -57,6 +57,14 @@ namespace Fluence.Wpf.Native
         /// <summary>
         /// The size in bytes of the payload <see cref="Data"/> points at.
         /// </summary>
+        /// <remarks>
+        /// Native declares this field as <c>SIZE_T</c>, which is eight bytes on x64, so the managed
+        /// <see cref="int"/> covers only its low dword. That is safe solely because the struct is
+        /// zero-initialized and the four bytes of trailing padding the layout adds after this field
+        /// are therefore zero, which is exactly the high dword the callee reads. Never write to the
+        /// padding or reuse an instance without re-zeroing it, or the size arrives with garbage in
+        /// its top half and the call is rejected.
+        /// </remarks>
         public int SizeOfData;
     }
 }

@@ -485,6 +485,13 @@ namespace Fluence.Wpf.Native
         private const double FallbackMaximizedFrameMargin = 6.0;
 
         /// <summary>
+        /// The unscaled Windows DPI. One DIP is one device pixel at this DPI, so it is both the
+        /// divisor that turns a raw DPI into a scale factor and the safe substitute when
+        /// <c>GetDpiForWindow</c> cannot answer.
+        /// </summary>
+        private const uint DefaultDpi = 96;
+
+        /// <summary>
         /// Converts the raw resize-frame system metrics into the logical inset a maximized
         /// <see cref="Controls.FluenceWindow"/> must apply to its content. A maximized window with
         /// custom chrome still extends its invisible resize frame beyond the work area, so the
@@ -525,6 +532,14 @@ namespace Fluence.Wpf.Native
         /// one or two DIPs wider than strictly required, which is invisible, whereas trusting the
         /// zero would collapse the inset and clip the content of every maximized window.
         /// </summary>
+        /// <remarks>
+        /// Prefer the <see cref="GetMaximizedFrameMargin(IntPtr)"/> overload whenever a window
+        /// handle is available. <c>GetSystemMetrics</c> answers at the process system DPI, which
+        /// under per-monitor v2 awareness is not the DPI of the monitor the window is on, so
+        /// dividing its result by that window's scale mixes two DPIs and produces a wrong inset on
+        /// every monitor but the primary one. This overload stays for the handle-less case, where
+        /// there is no window DPI to ask for in the first place.
+        /// </remarks>
         /// <param name="dpiScaleX">The horizontal device-pixels-per-DIP scale factor.</param>
         /// <param name="dpiScaleY">The vertical device-pixels-per-DIP scale factor.</param>
         /// <returns>The maximized content inset in DIPs.</returns>
@@ -537,6 +552,42 @@ namespace Fluence.Wpf.Native
             return sizeFrameX <= 0 || sizeFrameY <= 0 || paddedBorder <= 0
                 ? new System.Windows.Thickness(FallbackMaximizedFrameMargin)
                 : ComputeMaximizedFrameMargin(sizeFrameX, sizeFrameY, paddedBorder, dpiScaleX, dpiScaleY);
+        }
+
+        /// <summary>
+        /// Reads the resize-frame system metrics at the DPI of the monitor hosting
+        /// <paramref name="hwnd"/> and returns the maximized content inset in DIPs. This is the
+        /// overload every realised window should use.
+        /// </summary>
+        /// <remarks>
+        /// The metrics have to be asked for at the window's own DPI. <c>GetSystemMetrics</c> is
+        /// answered at the DPI the process was awarded at start-up, so under per-monitor v2
+        /// awareness it keeps reporting primary-monitor pixels while the window lives on a monitor
+        /// at another scale; dividing those pixels by the window's scale then yields an inset that
+        /// is wrong by the ratio between the two DPIs. <c>GetSystemMetricsForDpi</c> reports the
+        /// same metrics at an explicit DPI, so pairing it with <c>GetDpiForWindow</c> keeps both
+        /// halves of the conversion on the same monitor. Both APIs ship in Windows 10 1607, below
+        /// the library's 1809 baseline. A DPI read of zero (an unrealised or already destroyed
+        /// handle) falls back to 96, which reproduces the unscaled metrics.
+        /// </remarks>
+        /// <param name="hwnd">The window handle whose monitor DPI the metrics are read at.</param>
+        /// <returns>The maximized content inset in DIPs.</returns>
+        public static System.Windows.Thickness GetMaximizedFrameMargin(IntPtr hwnd)
+        {
+            uint dpi = hwnd == IntPtr.Zero ? 0u : PInvoke.GetDpiForWindow((HWND)hwnd);
+            if (dpi is 0)
+            {
+                dpi = DefaultDpi;
+            }
+
+            int sizeFrameX = PInvoke.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME, dpi);
+            int sizeFrameY = PInvoke.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME, dpi);
+            int paddedBorder = PInvoke.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER, dpi);
+
+            double scale = dpi / (double)DefaultDpi;
+            return sizeFrameX <= 0 || sizeFrameY <= 0 || paddedBorder <= 0
+                ? new System.Windows.Thickness(FallbackMaximizedFrameMargin)
+                : ComputeMaximizedFrameMargin(sizeFrameX, sizeFrameY, paddedBorder, scale, scale);
         }
 
         #endregion Maximized frame metrics

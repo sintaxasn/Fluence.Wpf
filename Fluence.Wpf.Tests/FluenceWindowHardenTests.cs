@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void BuildBackdropPlan_Acrylic_FallsBackToMica_WhenMicaEffectButNoSystemBackdrop()
         {
-            // Windows 10 21H2: supports DwmSetWindowAttribute(DWMWA_MICA_EFFECT) but NOT
+            // Windows 11 21H2: supports DwmSetWindowAttribute(DWMWA_MICA_EFFECT) but NOT
             // DWMWA_SYSTEMBACKDROP_TYPE. Acrylic request must downgrade to Mica.
             WindowCapabilities caps = new(
                 supportsSystemBackdropType: false,

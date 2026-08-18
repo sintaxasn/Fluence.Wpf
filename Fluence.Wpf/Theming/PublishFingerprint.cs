@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Theming
 {
@@ -40,7 +41,7 @@ namespace Fluence.Wpf.Theming
     /// the OS fires several theme or accent broadcasts for a single user action.
     /// </summary>
     /// <remarks>
-    /// The three captured inputs are exhaustive for the pipeline as it stands:
+    /// The four captured inputs are exhaustive for the pipeline as it stands:
     /// <list type="bullet">
     /// <item><description>The resolved concrete theme, which selects the
     /// <see cref="SpecialBrushes"/> branch (elevation gradients versus high-contrast overrides)
@@ -53,6 +54,14 @@ namespace Fluence.Wpf.Theming
     /// <see cref="SpecialBrushes"/> reads directly rather than through the color map. Note that
     /// <c>AddSystemColorAliases</c> reads them in <b>every</b> theme, not only high contrast, so the
     /// snapshot is unconditional.</description></item>
+    /// <item><description>The Settings "Transparency effects" toggle
+    /// (<c>RegistryHelper.GetEnableTransparency</c>). It changes no computed color, so on its own
+    /// the map cannot see it, but the Windows 10 legacy-acrylic path in
+    /// <c>Fluence.Wpf.Controls.FluenceWindow</c> re-reads the setting from the publish chain: the
+    /// toggle broadcasts ImmersiveColorSet, and if the gate swallowed that broadcast no
+    /// <c>Changed</c> event would fire and every open window would keep the acrylic the old setting
+    /// asked for. Carrying the flag makes the toggle a fingerprint mismatch and so a
+    /// republish.</description></item>
     /// </list>
     /// The map is compared by count plus pairwise lookup rather than hashed: at roughly 250 entries
     /// that is cheaper than building a hash and cannot collide.
@@ -69,17 +78,24 @@ namespace Fluence.Wpf.Theming
         private readonly ApplicationTheme _theme;
         private readonly IReadOnlyDictionary<string, Color> _colors;
         private readonly Color[] _systemColors;
+        private readonly bool _transparencyEnabled;
 
-        private PublishFingerprint(ApplicationTheme theme, IReadOnlyDictionary<string, Color> colors, Color[] systemColors)
+        private PublishFingerprint(
+            ApplicationTheme theme,
+            IReadOnlyDictionary<string, Color> colors,
+            Color[] systemColors,
+            bool transparencyEnabled)
         {
             _theme = theme;
             _colors = colors;
             _systemColors = systemColors;
+            _transparencyEnabled = transparencyEnabled;
         }
 
         /// <summary>
         /// Captures a fingerprint for the given resolved theme and computed color map, reading the
-        /// live <see cref="SystemColors"/> members as part of the snapshot.
+        /// live <see cref="SystemColors"/> members and the transparency-effects setting as part of
+        /// the snapshot.
         /// </summary>
         /// <param name="theme">The resolved concrete theme (Light, Dark, or HighContrast).</param>
         /// <param name="colors">
@@ -89,7 +105,24 @@ namespace Fluence.Wpf.Theming
         /// </param>
         internal static PublishFingerprint Capture(ApplicationTheme theme, IReadOnlyDictionary<string, Color> colors)
         {
-            return new PublishFingerprint(theme, colors, CaptureSystemColors());
+            return Capture(theme, colors, RegistryHelper.GetEnableTransparency());
+        }
+
+        /// <summary>
+        /// Captures a fingerprint with the transparency-effects flag supplied rather than read from
+        /// the registry, so the flag's contribution to <see cref="Matches"/> can be exercised
+        /// without writing to the user's Personalize key.
+        /// </summary>
+        /// <param name="theme">The resolved concrete theme (Light, Dark, or HighContrast).</param>
+        /// <param name="colors">The computed color map, under the same no-mutation contract as the
+        /// two-argument overload.</param>
+        /// <param name="transparencyEnabled">The transparency-effects setting to record.</param>
+        internal static PublishFingerprint Capture(
+            ApplicationTheme theme,
+            IReadOnlyDictionary<string, Color> colors,
+            bool transparencyEnabled)
+        {
+            return new PublishFingerprint(theme, colors, CaptureSystemColors(), transparencyEnabled);
         }
 
         /// <summary>
@@ -100,6 +133,7 @@ namespace Fluence.Wpf.Theming
         internal bool Matches(PublishFingerprint other)
         {
             return _theme == other._theme
+                && _transparencyEnabled == other._transparencyEnabled
                 && SystemColorsEqual(_systemColors, other._systemColors)
                 && ColorMapsEqual(_colors, other._colors);
         }

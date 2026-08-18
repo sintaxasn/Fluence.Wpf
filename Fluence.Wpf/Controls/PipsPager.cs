@@ -573,7 +573,7 @@ namespace Fluence.Wpf.Controls
             return (defaultPipSize * (pipsToDisplay - 1)) + selectedPipSize;
         }
 
-        private static void OnPipsBringIntoViewRequested(object sender, RequestBringIntoViewEventArgs e)
+        private void OnPipsBringIntoViewRequested(object sender, RequestBringIntoViewEventArgs e)
         {
             // Focusing a pip makes WPF ask the enclosing viewport to scroll that pip into view,
             // which would both jump past the pager's own animation and re-align the run in a way
@@ -583,6 +583,14 @@ namespace Fluence.Wpf.Controls
             // rather than on the viewer matters: ScrollViewer services the request from a class
             // handler, which runs before any instance handler attached to the viewer itself.
             e.Handled = true;
+
+            // Suppressing the request must not cost the pager its own visibility: WinUI re-raises
+            // for the ancestors (PipsPager::OnScrollViewerBringIntoViewRequested asks the viewer
+            // itself to come into view) so an app ScrollViewer further out still brings the whole
+            // pager on screen when a pip takes focus. The new request originates at the viewer, so
+            // it routes away from PART_PipsHost and cannot re-enter this handler, and the viewer's
+            // own class handler ignores a request whose target is the viewer.
+            _pipsScrollViewer?.BringIntoView();
         }
 
         private void OnPipsScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)

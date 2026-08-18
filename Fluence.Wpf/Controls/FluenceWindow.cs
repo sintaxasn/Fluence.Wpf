@@ -808,14 +808,26 @@ namespace Fluence.Wpf.Controls
                 // A maximized WindowChrome window still extends its invisible resize frame past the
                 // work area, so the content has to be inset by that frame. The frame is a live
                 // system metric in device pixels, not a constant, so read it and scale it here.
-                double dpiScaleX = 1.0, dpiScaleY = 1.0;
-                if (_hwndSource?.CompositionTarget is not null)
+                // Reading it from the handle keeps the metrics and the scale on the same monitor:
+                // under per-monitor v2 awareness the process-wide system metrics belong to a
+                // different DPI than this window's, and mixing the two misplaces the inset.
+                if (_handle != IntPtr.Zero)
                 {
-                    Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
-                    dpiScaleX = transform.M11;
-                    dpiScaleY = transform.M22;
+                    MarginMaximized = NativeMethods.GetMaximizedFrameMargin(_handle);
                 }
-                MarginMaximized = NativeMethods.GetMaximizedFrameMargin(dpiScaleX, dpiScaleY);
+                else
+                {
+                    // No handle yet, so there is no window DPI to ask for. Fall back to the
+                    // system-DPI metrics scaled by whatever the composition target reports.
+                    double dpiScaleX = 1.0, dpiScaleY = 1.0;
+                    if (_hwndSource?.CompositionTarget is not null)
+                    {
+                        Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
+                        dpiScaleX = transform.M11;
+                        dpiScaleY = transform.M22;
+                    }
+                    MarginMaximized = NativeMethods.GetMaximizedFrameMargin(dpiScaleX, dpiScaleY);
+                }
             }
             else
             {

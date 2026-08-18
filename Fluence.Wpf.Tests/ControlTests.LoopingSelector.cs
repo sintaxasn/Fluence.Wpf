@@ -203,6 +203,47 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        /// <summary>
+        /// A row has to be reachable by keyboard and has to show where focus landed, or the picker
+        /// flyout is a dead end for anyone not using a pointer. The container style therefore keeps
+        /// the ListBoxItem default <c>IsTabStop</c> and carries the shared collection focus visual,
+        /// matching ListBox.xaml; only the column itself suppresses the focus visual.
+        /// </summary>
+        [Fact]
+        public Task LoopingSelectorList_Rows_AreKeyboardReachableWithAFocusVisualAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 300, Height = 600 };
+                Controls.LoopingSelectorList list = new();
+
+                try
+                {
+                    LoopingSelectorColumns.SetLoopingSource(list, BuildLoopingValues(20), 5);
+                    window.Content = list;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ListBoxItem row = Assert.IsAssignableFrom<ListBoxItem>(
+                        list.ItemContainerGenerator.ContainerFromIndex(list.SelectedIndex));
+
+                    Assert.True(row.IsTabStop, "A selector row must stay in the tab order.");
+                    Assert.True(row.Focusable, "A selector row must be focusable.");
+                    _ = Assert.IsType<Style>(row.FocusVisualStyle);
+                    Assert.Same(app.TryFindResource("DefaultCollectionFocusVisualStyle"), row.FocusVisualStyle);
+                    Assert.Null(list.FocusVisualStyle);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
         [Fact]
         public Task LoopingSelectorList_ScrollAndSelection_StayInStepAsync()
         {

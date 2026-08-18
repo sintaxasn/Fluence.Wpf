@@ -16,17 +16,19 @@
         and sits behind every column, so a selected row only flips its foreground to
         TextOnAccentFillColorPrimaryBrush. Hover is suppressed while the column scrolls
         (SuppressItemMouseOver) so rows sliding under a stationary pointer do not flicker.
+        Rows stay tab stops and carry DefaultCollectionFocusVisualStyle exactly as ListBox.xaml
+        does, so a keyboard user can reach each column of the flyout and see where focus is; the
+        column itself keeps a null focus visual, again matching the ListBox precedent.
     -->
 
     <!--  LoopingSelectorList row container  -->
     <Style x:Key="LoopingSelectorListItemStyle" TargetType="{x:Type controls:ListBoxItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Height" Value="{Binding ItemHeight, RelativeSource={RelativeSource AncestorType={x:Type controls:LoopingSelectorList}}}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="MinHeight" Value="0" />
         <Setter Property="Padding" Value="2,0" />

@@ -14,8 +14,10 @@ DwmSetWindowAttribute
 DWMWA_COLOR_DEFAULT
 DWMWA_COLOR_NONE
 GetDC
+GetDpiForWindow
 GetMonitorInfo
 GetSystemMetrics
+GetSystemMetricsForDpi
 GetWindowLong
 HTCAPTION
 HTCLOSE

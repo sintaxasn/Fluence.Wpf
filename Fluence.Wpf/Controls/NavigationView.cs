@@ -1905,6 +1905,7 @@ defaultValue: null,
                         SetTopOverflowButtonOffset(0.0);
                     }
 
+                    ClearTopOverflowMenu();
                     return;
                 }
 
@@ -1920,6 +1921,7 @@ defaultValue: null,
                 double availableWidth = _topItemsHost.ActualWidth;
                 if (availableWidth <= 0.0)
                 {
+                    ClearTopOverflowMenu();
                     return;
                 }
 
@@ -1930,13 +1932,14 @@ defaultValue: null,
                 }
 
                 _topOverflowButton.Visibility = Visibility.Visible;
-                _topOverflowButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
+                // MeasureElementWidth measures the button itself, so no separate Measure pass here.
                 double overflowButtonWidth = MeasureElementWidth(_topOverflowButton);
                 if (totalItemWidth <= availableWidth)
                 {
                     _topOverflowButton.Visibility = Visibility.Collapsed;
                     SetTopOverflowButtonOffset(0.0);
+                    ClearTopOverflowMenu();
                     return;
                 }
 
@@ -1981,6 +1984,7 @@ defaultValue: null,
                 {
                     _topOverflowButton.Visibility = Visibility.Collapsed;
                     SetTopOverflowButtonOffset(0.0);
+                    ClearTopOverflowMenu();
                     return;
                 }
 
@@ -2067,18 +2071,61 @@ defaultValue: null,
                 }
 
                 menuItem.Header = GetOverflowItemText(navItem);
-                menuItem.Icon = CreateOverflowIcon(navItem);
+                SyncOverflowIcon(menuItem, navItem);
                 menuItem.Tag = navItem;
             }
 
             return _topOverflowMenu;
         }
 
-        private static object? CreateOverflowIcon(NavigationViewItem navItem)
+        /// <summary>
+        /// Drops every entry from the reused overflow menu and unhooks its click handler. Entries
+        /// hold their source <see cref="NavigationViewItem"/> in <see cref="FrameworkElement.Tag"/>,
+        /// so a pass that ends with nothing in overflow has to empty the menu or it keeps pinning
+        /// containers the pane no longer shows.
+        /// </summary>
+        private void ClearTopOverflowMenu()
+        {
+            if (_topOverflowMenu is null)
+            {
+                return;
+            }
+
+            ItemCollection menuItems = _topOverflowMenu.Items;
+            foreach (object entry in menuItems)
+            {
+                if (entry is MenuItem staleItem)
+                {
+                    staleItem.Click -= OnTopOverflowMenuItemClick;
+                    staleItem.Tag = null;
+                }
+            }
+
+            menuItems.Clear();
+        }
+
+        /// <summary>
+        /// Brings one menu entry's icon in line with its source item, reusing the icon already on
+        /// the entry whenever it renders the same glyph. A resize pass runs for every few pixels of
+        /// drag, so recreating an identical <see cref="FontIcon"/> each time would allocate an
+        /// element (and a resource reference) per entry per pass for no visual change.
+        /// </summary>
+        /// <param name="menuItem">The overflow menu entry to update.</param>
+        /// <param name="navItem">The top-pane item the entry stands in for.</param>
+        private static void SyncOverflowIcon(MenuItem menuItem, NavigationViewItem navItem)
         {
             if (navItem.Icon is not FontIcon fontIcon)
             {
-                return null;
+                menuItem.Icon = null;
+                return;
+            }
+
+            if (menuItem.Icon is FontIcon currentIcon
+                && string.Equals(currentIcon.Glyph, fontIcon.Glyph, StringComparison.Ordinal)
+                && Equals(currentIcon.IconFontFamily, fontIcon.IconFontFamily)
+                && currentIcon.MirroredWhenRightToLeft == fontIcon.MirroredWhenRightToLeft)
+            {
+                return;
             }
 
             FontIcon overflowIcon = new()
@@ -2090,7 +2137,7 @@ defaultValue: null,
             };
             overflowIcon.SetResourceReference(ForegroundProperty, "TextFillColorSecondaryBrush");
 
-            return overflowIcon;
+            menuItem.Icon = overflowIcon;
         }
 
         private static string GetOverflowItemText(NavigationViewItem navItem)

@@ -369,6 +369,31 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
+        /// The Settings "Transparency effects" toggle moves no computed color and no system color,
+        /// so the map-plus-theme half of the fingerprint is blind to it. The flag has to make the
+        /// comparison fail on its own, because the Windows 10 legacy-acrylic path re-reads the
+        /// setting only when a publish raises Changed; a gated-out toggle leaves every open window
+        /// on the acrylic the previous setting asked for.
+        /// </summary>
+        [Fact]
+        public Task Fingerprint_SameColorsDifferentTransparencySetting_DoesNotMatchAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                _ = WpfTestSta.EnsureApplication();
+                Dictionary<string, Color> colors = new(StringComparer.Ordinal) { ["A"] = Colors.Red };
+
+                PublishFingerprint transparencyOn = PublishFingerprint.Capture(ApplicationTheme.Light, colors, transparencyEnabled: true);
+                PublishFingerprint sameOn = PublishFingerprint.Capture(ApplicationTheme.Light, colors, transparencyEnabled: true);
+                PublishFingerprint transparencyOff = PublishFingerprint.Capture(ApplicationTheme.Light, colors, transparencyEnabled: false);
+
+                Assert.True(transparencyOn.Matches(sameOn));
+                Assert.False(transparencyOn.Matches(transparencyOff));
+                Assert.False(transparencyOff.Matches(transparencyOn));
+            });
+        }
+
+        /// <summary>
         /// Seeds the three resource slots with the Light theme and a pinned accent seed, so that
         /// every assertion in this fixture is independent of the host machine's OS accent color,
         /// and returns the live merged-dictionary collection.

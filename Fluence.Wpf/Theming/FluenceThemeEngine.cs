@@ -104,7 +104,9 @@ namespace Fluence.Wpf.Theming
         /// returns without touching <see cref="BrushFactory"/>, <see cref="Publish"/>, or
         /// <see cref="Published"/>. The engine state properties are still assigned, but they are
         /// identical by construction: the resolved theme and every rung of the accent ramp are part
-        /// of the fingerprint.
+        /// of the fingerprint. The fingerprint also carries the transparency-effects setting, which
+        /// changes no computed color but does change what a window's backdrop should be, so the
+        /// gate lets that toggle through to <see cref="Published"/> instead of swallowing it.
         /// </remarks>
         /// <param name="request">The requested application theme.</param>
         /// <returns><see langword="true"/> when a dictionary was rebuilt and published (and

@@ -42,8 +42,10 @@ namespace Fluence.Wpf.Tests
     /// maximized-rect shift, the maximized resize-frame margin conversion, and the
     /// accent-policy color packing. These tests
     /// are deterministic and OS-independent; they do not call any P/Invoke whose result
-    /// depends on the host environment, so the live
-    /// <see cref="NativeMethods.GetMaximizedFrameMargin(double, double)"/> path is not covered here.
+    /// depends on the host environment, so neither live margin reader
+    /// (<see cref="NativeMethods.GetMaximizedFrameMargin(double, double)"/> and
+    /// <see cref="NativeMethods.GetMaximizedFrameMargin(System.IntPtr)"/>) is covered here; both funnel
+    /// their metrics through the pure conversion that is.
     /// </summary>
     public sealed class NativeMethodsTests
     {
@@ -187,6 +189,26 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(8.0, margin.Top);
             Assert.Equal(8.0, margin.Right);
             Assert.Equal(8.0, margin.Bottom);
+        }
+
+        /// <summary>
+        /// The DPI-aware reader pairs metrics taken at the window's own DPI with that same DPI as
+        /// the scale, so a 150% monitor reports 150% metrics and the two cancel back to the inset a
+        /// 100% monitor gets. Pinning it here is what makes mixing a system-DPI metric with a
+        /// per-monitor scale visibly wrong: at 4/4/4 against a 1.5 scale the same call yields 5.33
+        /// DIPs instead of 8.
+        /// </summary>
+        [Fact]
+        public void ComputeMaximizedFrameMargin_MetricsAndScaleFromTheSameDpi_MatchTheUnscaledInset()
+        {
+            Thickness at96 = NativeMethods.ComputeMaximizedFrameMargin(4, 4, 4, 1.0, 1.0);
+            Thickness at144 = NativeMethods.ComputeMaximizedFrameMargin(6, 6, 6, 1.5, 1.5);
+
+            Assert.Equal(at96.Left, at144.Left, Tolerance);
+            Assert.Equal(at96.Top, at144.Top, Tolerance);
+            Assert.Equal(at96.Right, at144.Right, Tolerance);
+            Assert.Equal(at96.Bottom, at144.Bottom, Tolerance);
+            Assert.Equal(8.0, at144.Left, Tolerance);
         }
 
         [Fact]
