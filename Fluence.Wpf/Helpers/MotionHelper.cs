@@ -27,15 +27,17 @@
  */
 
 using System.Windows;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Helpers
 {
     /// <summary>
     /// Central gate for whether Fluence controls play motion. Respects the Windows
     /// "Show animations in Windows" accessibility setting via
-    /// <see cref="SystemParameters.ClientAreaAnimation"/>. Controls consult this gate at
-    /// each code-driven animation entry point and jump to their final visual state when
-    /// motion is disabled, matching how Windows itself behaves with the toggle off.
+    /// <see cref="SystemParameters.ClientAreaAnimation"/>, and additionally requires
+    /// hardware-accelerated rendering. Controls consult this gate at each code-driven
+    /// animation entry point and jump to their final visual state when motion is
+    /// disabled, matching how Windows itself behaves with the toggle off.
     /// </summary>
     internal static class MotionHelper
     {
@@ -46,8 +48,16 @@ namespace Fluence.Wpf.Helpers
         internal static bool? OverrideIsMotionEnabled { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether animations should play.
+        /// Gets a value indicating whether animations should play. When
+        /// <see cref="OverrideIsMotionEnabled"/> is null, motion requires both conditions:
+        /// the Windows "Show animations in Windows" accessibility setting is on
+        /// (<see cref="SystemParameters.ClientAreaAnimation"/>), and the process is rendering
+        /// with hardware acceleration. Software rendering (render tier 0) makes every animated
+        /// frame a CPU composite, so motion is dropped rather than played back at a stutter.
+        /// The rendering tier lives in the high word of <see cref="RenderCapability.Tier"/>, so
+        /// it must be shifted right by 16 before comparison; the raw value is not a tier number.
         /// </summary>
-        internal static bool IsMotionEnabled => OverrideIsMotionEnabled ?? SystemParameters.ClientAreaAnimation;
+        internal static bool IsMotionEnabled =>
+            OverrideIsMotionEnabled ?? (SystemParameters.ClientAreaAnimation && (RenderCapability.Tier >> 16) > 0);
     }
 }
