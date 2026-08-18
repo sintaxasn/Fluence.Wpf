@@ -835,7 +835,9 @@ namespace Fluence.Wpf.Controls
                 SystemBackdropType,
                 ApplicationThemeManager.GetResolvedTheme(),
                 capabilities,
-                GetFallbackBackgroundColor());
+                GetFallbackBackgroundColor(),
+                RegistryHelper.GetEnableTransparency(),
+                GetLegacyAcrylicTintColor());
 
             SolidColorBrush backgroundBrush = new(plan.BackgroundColor);
             backgroundBrush.Freeze();
@@ -879,6 +881,63 @@ namespace Fluence.Wpf.Controls
             {
                 _ = NativeMethods.SetMicaEffect(_handle, plan.UseLegacyMicaEffect);
             }
+            ApplyLegacyAcrylic(plan);
+        }
+
+        /// <summary>
+        /// Applies or clears the Windows 10 legacy acrylic accent policy for the given plan.
+        /// </summary>
+        /// <remarks>
+        /// The clear branch is guarded on <see cref="_legacyAcrylicActive"/> rather than run
+        /// unconditionally, because writing <c>ACCENT_DISABLED</c> to a window that never had an
+        /// accent policy is a pointless call on every apply, and on Windows 11 it would fight the
+        /// DWM system backdrop. It is the direct analogue of the explicit <c>DWMSBT_NONE</c> write
+        /// on 22H2+: the accent policy is sticky on the handle, so swapping away from Acrylic has
+        /// to remove it rather than simply stop setting it.
+        /// </remarks>
+        /// <param name="plan">The resolved backdrop plan.</param>
+        private void ApplyLegacyAcrylic(BackdropPlan plan)
+        {
+            if (plan.UseLegacyAcrylic)
+            {
+                _legacyAcrylicTintAbgr = NativeMethods.ColorToAbgr(plan.LegacyAcrylicTintColor);
+                _ = NativeMethods.SetAccentPolicy(
+                    _handle,
+                    NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND,
+                    _legacyAcrylicTintAbgr);
+                _legacyAcrylicActive = true;
+                _legacyAcrylicDragDowngraded = false;
+            }
+            else if (_legacyAcrylicActive)
+            {
+                _ = NativeMethods.SetAccentPolicy(_handle, NativeMethods.ACCENT_DISABLED, 0);
+                _legacyAcrylicActive = false;
+                _legacyAcrylicDragDowngraded = false;
+            }
+        }
+
+        /// <summary>
+        /// Resolves the tint color handed to the Windows 10 legacy acrylic accent policy from the
+        /// live theme resources, so a theme change re-tints the window through the ordinary
+        /// <see cref="ApplyBackdrop"/> re-run with no separate subscription.
+        /// </summary>
+        /// <remarks>
+        /// Unlike the DWM system backdrops, the legacy accent policy supplies no tint of its own:
+        /// without one the window shows raw blurred desktop. The
+        /// <c>AcrylicBackgroundFillColorDefault</c> token carries the WinUI tint including its
+        /// alpha, and that alpha is used as-is. Some reference implementations scale the token's
+        /// alpha by a further constant (iNKORE uses 0.8) to compensate for the legacy blur being
+        /// weaker than DWM acrylic; Fluence does not, so a Windows 10 window matches the token that
+        /// every other acrylic surface in the library is drawn from. The theme fallback background
+        /// is used when the token is missing, which keeps the window opaque and legible rather than
+        /// letting a transparent-black default erase the tint entirely.
+        /// </remarks>
+        /// <returns>The tint color for the accent policy.</returns>
+        private Color GetLegacyAcrylicTintColor()
+        {
+            return TryFindResource("AcrylicBackgroundFillColorDefault") is Color tintColor
+                ? tintColor
+                : GetFallbackBackgroundColor();
         }
 
         /// <summary>
@@ -1242,7 +1301,57 @@ namespace Fluence.Wpf.Controls
             {
                 HandleMaxButtonClick(ref handled);
             }
+            else if (msg == PInvoke.WM_ENTERSIZEMOVE)
+            {
+                DowngradeLegacyAcrylicForDrag();
+            }
+            else if (msg == PInvoke.WM_EXITSIZEMOVE)
+            {
+                RestoreLegacyAcrylicAfterDrag();
+            }
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Swaps the Windows 10 legacy acrylic for the cheaper Aero blur while the window is being
+        /// moved or resized. No-op unless the acrylic is currently applied.
+        /// </summary>
+        /// <remarks>
+        /// Windows 10 acrylic is composited per-frame against the desktop behind the window, so a
+        /// drag makes the OS re-sample and re-blur continuously and the window visibly lags the
+        /// cursor. <c>ACCENT_ENABLE_BLURBEHIND</c> is the classic Aero blur: same shape, far cheaper
+        /// to composite, and close enough in appearance that the swap reads as a slight softening
+        /// rather than as a mode change. The cheaper-still option is
+        /// <c>ACCENT_ENABLE_GRADIENT</c> with the opaque theme color, which removes the blur cost
+        /// entirely but pops visibly at both ends of the drag; switch to it only if the blur still
+        /// lags on the target hardware. Neither this message nor its partner is marked handled: the
+        /// window still needs WPF's and <c>WindowChrome</c>'s ordinary move/size processing.
+        /// </remarks>
+        private void DowngradeLegacyAcrylicForDrag()
+        {
+            if (!_legacyAcrylicActive || _legacyAcrylicDragDowngraded)
+            {
+                return;
+            }
+            _ = NativeMethods.SetAccentPolicy(_handle, NativeMethods.ACCENT_ENABLE_BLURBEHIND, 0);
+            _legacyAcrylicDragDowngraded = true;
+        }
+
+        /// <summary>
+        /// Restores the Windows 10 legacy acrylic with the cached tint after a move or resize ends.
+        /// No-op unless <see cref="DowngradeLegacyAcrylicForDrag"/> actually downgraded.
+        /// </summary>
+        private void RestoreLegacyAcrylicAfterDrag()
+        {
+            if (!_legacyAcrylicDragDowngraded)
+            {
+                return;
+            }
+            _ = NativeMethods.SetAccentPolicy(
+                _handle,
+                NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND,
+                _legacyAcrylicTintAbgr);
+            _legacyAcrylicDragDowngraded = false;
         }
 
         /// <summary>
@@ -1696,6 +1805,27 @@ namespace Fluence.Wpf.Controls
         /// <see cref="OnClosed(EventArgs)"/>.
         /// </summary>
         private HwndSource? _hwndSource;
+
+        /// <summary>
+        /// <see langword="true"/> while the Windows 10 legacy acrylic accent policy is applied to
+        /// <see cref="_handle"/>. The accent policy is sticky on the handle, so this tracks whether
+        /// a clear is owed when the window swaps to another backdrop.
+        /// </summary>
+        private bool _legacyAcrylicActive;
+
+        /// <summary>
+        /// The tint last written to the legacy acrylic accent policy, packed as
+        /// <c>0xAABBGGRR</c>. Cached so the drag-lag mitigation can restore the exact tint without
+        /// re-resolving the theme resource on <c>WM_EXITSIZEMOVE</c>.
+        /// </summary>
+        private uint _legacyAcrylicTintAbgr;
+
+        /// <summary>
+        /// <see langword="true"/> while the legacy acrylic is temporarily downgraded to the cheaper
+        /// Aero blur for a move or resize, so the restore on <c>WM_EXITSIZEMOVE</c> only fires for a
+        /// downgrade this window actually performed.
+        /// </summary>
+        private bool _legacyAcrylicDragDowngraded;
 
         /// <summary>
         /// The caption button currently showing the synthetic snap-layout hover visual, or

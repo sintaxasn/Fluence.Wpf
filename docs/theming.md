@@ -94,7 +94,16 @@ Caveats:
 
 `BackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
 
-Which backdrops work depends on OS support. Mica and Tabbed require Windows 11; Acrylic is available on Windows 10 1809+. Unsupported combinations fall back silently per `FluenceWindow` / `SystemBackdropType` logic.
+Which backdrops work depends on OS support, and unsupported combinations fall back silently per the `WindowPolicy` resolution rules.
+
+| Requested | Windows 11 22H2+ (build 22621) | Windows 11 21H2 (22000 to 22620) | Windows 10 17063+ | Windows 10 below 17063 |
+| --- | --- | --- | --- | --- |
+| `Auto`, `Mica` | Mica (`DWMSBT_MAINWINDOW`) | Mica (legacy `DWMWA_MICA_EFFECT`) | None | None |
+| `Acrylic` | Acrylic (`DWMSBT_TRANSIENTWINDOW`) | Mica | Legacy acrylic | None |
+| `Tabbed` | Tabbed (`DWMSBT_TABBEDWINDOW`) | Mica | None | None |
+| `None` | None | None | None | None |
+
+On Windows 10 build 17063 and later, `Acrylic` is applied through the undocumented `SetWindowCompositionAttribute` accent policy (`ACCENT_ENABLE_ACRYLICBLURBEHIND`) rather than through DWM, tinted with the `AcrylicBackgroundFillColorDefault` theme token including its alpha. That path is disabled, and the window falls back to an opaque `None`, in two cases: when the Windows "Transparency effects" setting is off, and under the high contrast theme. While the window is being moved or resized it drops to the cheaper Aero blur (`ACCENT_ENABLE_BLURBEHIND`) and restores the acrylic on release, because per-frame acrylic recomposition makes a Windows 10 drag visibly lag the cursor.
 
 ## System theme watcher
 

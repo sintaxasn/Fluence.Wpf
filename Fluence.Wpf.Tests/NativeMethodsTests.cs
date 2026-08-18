@@ -28,6 +28,7 @@
 
 using Fluence.Wpf.Native;
 using System.Windows;
+using System.Windows.Media;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -38,7 +39,8 @@ namespace Fluence.Wpf.Tests
     /// <summary>
     /// Pins the pure, handle-free interop selectors in <see cref="NativeMethods"/>:
     /// the immersive dark-mode attribute split (19 vs 20), the auto-hide taskbar
-    /// maximized-rect shift, and the maximized resize-frame margin conversion. These tests
+    /// maximized-rect shift, the maximized resize-frame margin conversion, and the
+    /// accent-policy color packing. These tests
     /// are deterministic and OS-independent; they do not call any P/Invoke whose result
     /// depends on the host environment, so the live
     /// <see cref="NativeMethods.GetMaximizedFrameMargin(double, double)"/> path is not covered here.
@@ -196,6 +198,39 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(4.0, margin.Right);
             Assert.Equal(8.0, margin.Top);
             Assert.Equal(8.0, margin.Bottom);
+        }
+
+        [Fact]
+        public void ColorToAbgr_PacksAlphaBlueGreenRed()
+        {
+            // #80402010 is A=0x80 R=0x40 G=0x20 B=0x10; the accent policy wants 0xAABBGGRR, so the
+            // red and blue bytes swap places relative to the source ARGB.
+            uint packed = NativeMethods.ColorToAbgr(Color.FromArgb(0x80, 0x40, 0x20, 0x10));
+
+            Assert.Equal(0x80102040u, packed);
+        }
+
+        [Fact]
+        public void ColorToAbgr_PreservesAlpha_UnlikeColorToColorRef()
+        {
+            // The DWM COLORREF packer drops alpha; the accent-policy packer must not, because the
+            // alpha is the tint opacity over the blurred desktop.
+            Color tint = Color.FromArgb(0xF0, 0xF9, 0xF9, 0xF9);
+
+            Assert.Equal(0xF0F9F9F9u, NativeMethods.ColorToAbgr(tint));
+            Assert.Equal(0x00F9F9F9u, NativeMethods.ColorToColorRef(tint));
+        }
+
+        [Fact]
+        public void ColorToAbgr_FullyOpaqueWhite_SetsEveryByte()
+        {
+            Assert.Equal(0xFFFFFFFFu, NativeMethods.ColorToAbgr(Colors.White));
+        }
+
+        [Fact]
+        public void ColorToAbgr_TransparentBlack_IsZero()
+        {
+            Assert.Equal(0u, NativeMethods.ColorToAbgr(Color.FromArgb(0, 0, 0, 0)));
         }
 
         private static MINMAXINFO SeedMinMaxInfo()

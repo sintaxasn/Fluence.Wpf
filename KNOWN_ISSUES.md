@@ -6,6 +6,25 @@ maintainers.
 
 ## Current follow-ups (not defects)
 
+- **Windows 10 legacy acrylic is unverified on real hardware** - the
+  `SetWindowCompositionAttribute` acrylic path (`BackdropType.Acrylic` on
+  Windows 10 build 17063+) is covered by pure policy tests only. The resolution
+  rules, the plan values, and the `0xAABBGGRR` tint packing are pinned by
+  `WindowPolicyTests` and `NativeMethodsTests`, but nothing in the suite can
+  exercise the accent policy itself, because every CI and development machine
+  here runs Windows 11, where the path is deliberately unreachable. Three things
+  need a look on a real Windows 10 box before this is considered done: whether
+  the tint alpha taken straight from `AcrylicBackgroundFillColorDefault` reads
+  correctly (some reference implementations scale it by a further 0.8 to
+  compensate for the weaker legacy blur); whether the drag downgrade to
+  `ACCENT_ENABLE_BLURBEHIND` is enough on low-end hardware or whether the
+  opaque `ACCENT_ENABLE_GRADIENT` fallback documented in
+  `FluenceWindow.DowngradeLegacyAcrylicForDrag` is needed; and whether the
+  `-1` glass frame thickness that `WindowPolicy.GetGlassFrameThickness` returns
+  for a requested backdrop produces a visible artifact around an
+  accent-blurred window, in which case that method should be driven by the
+  effective backdrop instead of the requested one.
+
 - **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
   tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
   modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**

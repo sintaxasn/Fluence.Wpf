@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Tests
                 supportsBorderColor: false);
 
             Color light = Color.FromRgb(0xFA, 0xFA, 0xFA);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.None, ApplicationTheme.Light, caps, light);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.None, ApplicationTheme.Light, caps, light, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.False(plan.UseTransparentBackground,
                 "BackdropType.None must NOT use transparent background.");
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
                 supportsBorderColor: true);
 
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.True(plan.UseTransparentBackground,
                 "Mica backdrop on a capable OS must use transparent background.");
@@ -267,7 +267,7 @@ namespace Fluence.Wpf.Tests
                 supportsCaptionColor: false);
 
             Color fallback = Color.FromRgb(0x20, 0x20, 0x20);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
 
             // Should fall back to Mica (legacy) and use transparent background.
             Assert.True(plan.UseTransparentBackground,
