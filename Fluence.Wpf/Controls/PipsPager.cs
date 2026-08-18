@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -33,6 +34,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 // IMPORTANT: every reference to ToggleButton / ButtonBase / Panel in this file
 // is fully qualified (System.Windows.Controls.Primitives.ToggleButton,
@@ -54,41 +56,57 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Pips are generated in code into the <c>PART_PipsHost</c> panel (the same approach as
-    /// <see cref="RatingControl"/>). When <see cref="NumberOfPages"/> exceeds
-    /// <see cref="MaxVisiblePips"/>, the pager shows a sliding window of
-    /// <see cref="MaxVisiblePips"/> pips centered on the selection where possible and clamped
-    /// at the ends. Subscribe to <see cref="SelectedIndexChanged"/> to react to selection
-    /// moves from any input path.
+    /// One pip per page is generated in code into the <c>PART_PipsHost</c> panel (the same
+    /// approach as <see cref="RatingControl"/>) and the whole run is hosted in the
+    /// <c>PART_PipsScrollViewer</c> viewport. When <see cref="NumberOfPages"/> exceeds
+    /// <see cref="MaxVisiblePips"/> the viewport is clamped to <see cref="MaxVisiblePips"/>
+    /// pip boxes along the orientation axis and stays put while the selection moves inside
+    /// it, scrolling only far enough to bring a selection that has left the viewport back to
+    /// the nearest edge. Subscribe to <see cref="SelectedIndexChanged"/> to react to
+    /// selection moves from any input path.
     /// </para>
     /// <para>
-    /// Two WinUI behaviors are deliberate v1 omissions: the scale-down animation of edge pips
-    /// inside the scrolling viewport (the window simply re-renders), and WinUI's
-    /// edge-scrolling window (which keeps the window still until the selection reaches its
-    /// edge) in favor of the simpler centered window. Navigation buttons in
-    /// <see cref="PipsPagerButtonVisibility.VisibleOnPointerOver"/> mode collapse when the
-    /// pointer leaves, so the pager's desired size changes with hover.
+    /// Pips are realized eagerly rather than virtualized, so a pager is meant for the page
+    /// counts a page indicator is readable at, not for thousands of pages. One WinUI behavior
+    /// remains a deliberate omission: the scale-down of the pips at the viewport edges.
+    /// Navigation buttons in <see cref="PipsPagerButtonVisibility.VisibleOnPointerOver"/>
+    /// mode collapse when the pointer leaves, so the pager's desired size changes with hover.
     /// </para>
     /// </remarks>
     [TemplatePart(Name = PART_PreviousButton, Type = typeof(System.Windows.Controls.Primitives.ButtonBase))]
     [TemplatePart(Name = PART_NextButton, Type = typeof(System.Windows.Controls.Primitives.ButtonBase))]
     [TemplatePart(Name = PART_PipsHost, Type = typeof(Panel))]
+    [TemplatePart(Name = PART_PipsScrollViewer, Type = typeof(ScrollViewer))]
     public class PipsPager : Control
     {
         // Template part names. These must match the names used in the default control template.
         private const string PART_PreviousButton = "PART_PreviousButton";
         private const string PART_NextButton = "PART_NextButton";
         private const string PART_PipsHost = "PART_PipsHost";
+        private const string PART_PipsScrollViewer = "PART_PipsScrollViewer";
 
         // Resource key of the ToggleButton style applied to every generated pip.
         private const string PipStyleKey = "PipsPagerPipStyle";
 
+        // Every pip occupies one fixed square touch target from PipsPagerPipStyle (the dot
+        // inside it morphs between 4, 5, and 6 px, but the box never changes). WinUI sizes the
+        // viewport from a separate rest and selected box, so the two sizes are kept as distinct
+        // arguments to CalculateViewportExtent even though this template feeds it one value.
+        private const double PipBoxSize = 20.0;
+
+        // Typography.xaml ControlFastAnimationDuration, mirrored by value because a code-built
+        // animation cannot reference the resource (the ContentDialog and ComboBox precedent).
+        private const double ScrollAnimationMilliseconds = 167.0;
+
         private System.Windows.Controls.Primitives.ButtonBase? _previousButton;
         private System.Windows.Controls.Primitives.ButtonBase? _nextButton;
         private Panel? _pipsHost;
+        private ScrollViewer? _pipsScrollViewer;
 
-        // Page index of the first pip currently realized in PART_PipsHost; -1 until built.
-        private int _windowStart = -1;
+        // Offset the viewport is scrolling toward along the orientation axis. Read as the
+        // starting point for the next edge-scroll so that selections arriving faster than the
+        // animation still compose from the destination rather than from a mid-flight offset.
+        private double _targetScrollOffset;
 
         /// <summary>
         /// Initializes static members of the PipsPager class and overrides the default style
@@ -157,10 +175,10 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(5, OnMaxVisiblePipsChanged, CoerceMaxVisiblePips));
 
         /// <summary>
-        /// Gets or sets the maximum number of pips realized at once. When
-        /// <see cref="NumberOfPages"/> exceeds this count, the pager shows a sliding window
-        /// of this many pips centered on the selection where possible. Values below 1 coerce
-        /// to 1. Default is 5, matching WinUI.
+        /// Gets or sets the maximum number of pips visible at once. Every page still gets a
+        /// pip; when <see cref="NumberOfPages"/> exceeds this count the pip run scrolls inside
+        /// a viewport this many pips long. Values below 1 coerce to 1. Default is 5, matching
+        /// WinUI.
         /// </summary>
         public int MaxVisiblePips
         {
@@ -176,7 +194,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Orientation),
                 typeof(Orientation),
                 typeof(PipsPager),
-                new FrameworkPropertyMetadata(Orientation.Horizontal));
+                new FrameworkPropertyMetadata(Orientation.Horizontal, OnOrientationChanged));
 
         /// <summary>
         /// Gets or sets whether the pips flow horizontally or vertically. The default
@@ -246,15 +264,22 @@ namespace Fluence.Wpf.Controls
             _previousButton?.Click -= OnPreviousButtonClick;
             _nextButton?.Click -= OnNextButtonClick;
             UnhookPips();
+            _pipsHost?.RequestBringIntoView -= OnPipsBringIntoViewRequested;
+            _pipsHost?.KeyDown -= OnPipsHostKeyDown;
+            _pipsScrollViewer?.ScrollChanged -= OnPipsScrollViewerScrollChanged;
 
             _previousButton = GetTemplateChild(PART_PreviousButton) as System.Windows.Controls.Primitives.ButtonBase;
             _nextButton = GetTemplateChild(PART_NextButton) as System.Windows.Controls.Primitives.ButtonBase;
             _pipsHost = GetTemplateChild(PART_PipsHost) as Panel;
-            _windowStart = -1;
+            _pipsScrollViewer = GetTemplateChild(PART_PipsScrollViewer) as ScrollViewer;
 
             _previousButton?.Click += OnPreviousButtonClick;
             _nextButton?.Click += OnNextButtonClick;
+            _pipsHost?.RequestBringIntoView += OnPipsBringIntoViewRequested;
+            _pipsHost?.KeyDown += OnPipsHostKeyDown;
+            _pipsScrollViewer?.ScrollChanged += OnPipsScrollViewerScrollChanged;
 
+            ResetScrollOffset();
             UpdatePips();
         }
 
@@ -268,6 +293,22 @@ namespace Fluence.Wpf.Controls
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+            TryMoveSelection(e);
+        }
+
+        private void OnPipsHostKeyDown(object sender, KeyEventArgs e)
+        {
+            // The pips sit inside PART_PipsScrollViewer, and a ScrollViewer claims the arrow keys
+            // for its own line scrolling as the event bubbles past it, well before the pager's
+            // OnKeyDown would see them. Moving the selection here, on the host panel one element
+            // below the viewport, keeps arrow-key navigation working and leaves the viewport
+            // offset entirely pager-driven. Keys arriving from the chevron buttons are outside
+            // the viewport and still reach OnKeyDown normally.
+            TryMoveSelection(e);
+        }
+
+        private void TryMoveSelection(KeyEventArgs e)
+        {
             if (e.Handled || NumberOfPages <= 0)
             {
                 return;
@@ -329,6 +370,16 @@ namespace Fluence.Wpf.Controls
             ((PipsPager)d).UpdatePips();
         }
 
+        private static void OnOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // The offset lives on whichever axis the pips flow along, so a flip has to release
+            // the old axis before the new one is driven; a stale cross-axis offset would leave
+            // the run scrolled with no way to scroll it back.
+            PipsPager pager = (PipsPager)d;
+            pager.ResetScrollOffset();
+            pager.UpdatePips();
+        }
+
         private void OnPreviousButtonClick(object sender, RoutedEventArgs e)
         {
             // Coercion clamps at the first page.
@@ -348,13 +399,13 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            int offset = _pipsHost.Children.IndexOf(pip);
-            if (offset < 0)
+            int pageIndex = _pipsHost.Children.IndexOf(pip);
+            if (pageIndex < 0)
             {
                 return;
             }
 
-            SetCurrentValue(SelectedPageIndexProperty, _windowStart + offset);
+            SetCurrentValue(SelectedPageIndexProperty, pageIndex);
 
             // Re-clicking the already selected pip toggles its IsChecked off without changing
             // SelectedPageIndex (no change callback fires), so re-assert the pip states.
@@ -362,15 +413,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Recomputes the visible pip window and the navigation button states. The host is
-        /// rebuilt only when the window moved or resized; otherwise the realized pips just
-        /// refresh their checked state. Keyboard focus follows the selected pip whenever it
-        /// was inside the host, so arrow-key and click interaction stay coherent across
-        /// window rebuilds.
+        /// Rebuilds or refreshes the pip run, resizes the viewport, and re-runs the edge
+        /// scroll and the navigation button states. The host is rebuilt only when the page
+        /// count changed; otherwise the realized pips just refresh their checked state and the
+        /// viewport animates to its new offset. Keyboard focus follows the selected pip
+        /// whenever it was inside the host, so arrow-key and click interaction stay coherent.
         /// </summary>
         private void UpdatePips()
         {
             UpdateNavigationButtonStates();
+            UpdateViewportSize();
             if (_pipsHost is null)
             {
                 return;
@@ -378,23 +430,17 @@ namespace Fluence.Wpf.Controls
 
             bool keyboardFocusWasInside = _pipsHost.IsKeyboardFocusWithin;
 
-            int pageCount = NumberOfPages;
-            int windowSize = Math.Min(MaxVisiblePips, pageCount);
-            int start = 0;
-            if (pageCount > windowSize)
+            if (_pipsHost.Children.Count != NumberOfPages)
             {
-                // Center the window on the selection, clamped to the valid range.
-                start = SelectedPageIndex - ((windowSize - 1) / 2);
-                start = Math.Max(0, Math.Min(start, pageCount - windowSize));
-            }
-
-            if (_pipsHost.Children.Count != windowSize || _windowStart != start)
-            {
-                RebuildPips(start, windowSize);
+                // A page-count change also moves the content extent, so the offset it lands on
+                // has nothing to animate from; snap instead of tweening from stale geometry.
+                RebuildPips();
+                UpdateScrollOffset(animate: false);
             }
             else
             {
                 RefreshPipStates();
+                UpdateScrollOffset(animate: true);
             }
 
             if (keyboardFocusWasInside)
@@ -403,7 +449,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private void RebuildPips(int start, int windowSize)
+        private void RebuildPips()
         {
             if (_pipsHost is null)
             {
@@ -412,11 +458,10 @@ namespace Fluence.Wpf.Controls
 
             UnhookPips();
             _pipsHost.Children.Clear();
-            _windowStart = start;
 
-            for (int offset = 0; offset < windowSize; offset++)
+            int pageCount = NumberOfPages;
+            for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
             {
-                int pageIndex = start + offset;
                 System.Windows.Controls.Primitives.ToggleButton pip = new();
                 pip.SetResourceReference(StyleProperty, PipStyleKey);
                 AutomationProperties.SetName(
@@ -436,11 +481,11 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            for (int offset = 0; offset < _pipsHost.Children.Count; offset++)
+            for (int pageIndex = 0; pageIndex < _pipsHost.Children.Count; pageIndex++)
             {
-                if (_pipsHost.Children[offset] is System.Windows.Controls.Primitives.ToggleButton pip)
+                if (_pipsHost.Children[pageIndex] is System.Windows.Controls.Primitives.ToggleButton pip)
                 {
-                    pip.IsChecked = _windowStart + offset == SelectedPageIndex;
+                    pip.IsChecked = pageIndex == SelectedPageIndex;
                 }
             }
         }
@@ -468,10 +513,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            int offset = SelectedPageIndex - _windowStart;
-            if (offset >= 0
-                && offset < _pipsHost.Children.Count
-                && _pipsHost.Children[offset] is System.Windows.Controls.Primitives.ToggleButton pip)
+            int pageIndex = SelectedPageIndex;
+            if (pageIndex >= 0
+                && pageIndex < _pipsHost.Children.Count
+                && _pipsHost.Children[pageIndex] is System.Windows.Controls.Primitives.ToggleButton pip)
             {
                 _ = pip.Focus();
             }
@@ -481,6 +526,211 @@ namespace Fluence.Wpf.Controls
         {
             _ = _previousButton?.IsEnabled = NumberOfPages > 0 && SelectedPageIndex > 0;
             _ = _nextButton?.IsEnabled = NumberOfPages > 0 && SelectedPageIndex < NumberOfPages - 1;
+        }
+
+        /// <summary>
+        /// Backs the animated scroll offset of the pip viewport. <see cref="ScrollViewer"/>
+        /// exposes its offsets read-only, so they cannot be animation targets directly; the
+        /// pager animates this property instead and pushes each value into the viewport from
+        /// the change callback (the <see cref="SmoothScrollViewer"/> precedent).
+        /// </summary>
+        private static readonly DependencyProperty ScrollOffsetProperty =
+            DependencyProperty.Register(
+                "ScrollOffset",
+                typeof(double),
+                typeof(PipsPager),
+                new PropertyMetadata(0.0, OnScrollOffsetChanged));
+
+        private static void OnScrollOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PipsPager)d).ApplyScrollOffset((double)e.NewValue);
+        }
+
+        /// <summary>
+        /// WinUI's <c>PipsPager::CalculateScrollViewerSize</c>: the viewport spans the pages it
+        /// can show, sized as every pip but the selected one at the rest box size plus one
+        /// selected box. This template uses a single square box for both states, so both
+        /// arguments arrive as <see cref="PipBoxSize"/>; keeping them separate means a future
+        /// per-state pip box slots straight into the same formula.
+        /// </summary>
+        /// <param name="defaultPipSize">Length of an unselected pip box along the axis.</param>
+        /// <param name="selectedPipSize">Length of the selected pip box along the axis.</param>
+        /// <param name="numberOfPages">Total pages, and so the total pip count.</param>
+        /// <param name="maxVisiblePips">Most pips the viewport may show at once.</param>
+        /// <returns>The viewport length along the orientation axis, or 0 when nothing shows.</returns>
+        private static double CalculateViewportExtent(
+            double defaultPipSize,
+            double selectedPipSize,
+            int numberOfPages,
+            int maxVisiblePips)
+        {
+            if (numberOfPages <= 0 || maxVisiblePips <= 0)
+            {
+                return 0.0;
+            }
+
+            int pipsToDisplay = Math.Min(maxVisiblePips, numberOfPages);
+            return (defaultPipSize * (pipsToDisplay - 1)) + selectedPipSize;
+        }
+
+        private static void OnPipsBringIntoViewRequested(object sender, RequestBringIntoViewEventArgs e)
+        {
+            // Focusing a pip makes WPF ask the enclosing viewport to scroll that pip into view,
+            // which would both jump past the pager's own animation and re-align the run in a way
+            // the edge-scroll never asked for. The pager owns the offset outright, and it has
+            // already put the selection in view. WinUI suppresses the same request in
+            // PipsPager::OnScrollViewerBringIntoViewRequested. Handling it on the host panel
+            // rather than on the viewer matters: ScrollViewer services the request from a class
+            // handler, which runs before any instance handler attached to the viewer itself.
+            e.Handled = true;
+        }
+
+        private void OnPipsScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            // Rebuilding the pips or flipping orientation moves the extent and the viewport, and
+            // the viewer clamps its own offset against the geometry it had at the time. Re-assert
+            // the pager's target once the new geometry is in.
+            if (e.ExtentWidthChange is not 0
+                || e.ExtentHeightChange is not 0
+                || e.ViewportWidthChange is not 0
+                || e.ViewportHeightChange is not 0)
+            {
+                ApplyScrollOffset(_targetScrollOffset);
+            }
+        }
+
+        /// <summary>
+        /// Clamps the viewport to <see cref="MaxVisiblePips"/> pip boxes along the orientation
+        /// axis and frees the cross axis, so a flip cannot leave the previous axis pinned.
+        /// </summary>
+        private void UpdateViewportSize()
+        {
+            if (_pipsScrollViewer is null)
+            {
+                return;
+            }
+
+            double extent = CalculateViewportExtent(PipBoxSize, PipBoxSize, NumberOfPages, MaxVisiblePips);
+            if (Orientation is Orientation.Horizontal)
+            {
+                _pipsScrollViewer.MaxWidth = extent;
+                _pipsScrollViewer.MaxHeight = double.PositiveInfinity;
+            }
+            else
+            {
+                _pipsScrollViewer.MaxHeight = extent;
+                _pipsScrollViewer.MaxWidth = double.PositiveInfinity;
+            }
+        }
+
+        /// <summary>
+        /// Moves the viewport the minimum distance that brings the selected pip back inside it,
+        /// which is none at all while the selection is already in view. This is WinUI's
+        /// edge-scrolling model: the run of pips stays still under a moving selection and only
+        /// slides once the selection would leave the viewport, so the pips do not re-center
+        /// under the pointer on every step.
+        /// </summary>
+        /// <param name="animate">
+        /// True to tween to the new offset, false to snap. Structural changes snap, because the
+        /// offset they land on has no meaningful geometry to travel from.
+        /// </param>
+        private void UpdateScrollOffset(bool animate)
+        {
+            if (_pipsScrollViewer is null || NumberOfPages <= 0)
+            {
+                return;
+            }
+
+            double viewport = CalculateViewportExtent(PipBoxSize, PipBoxSize, NumberOfPages, MaxVisiblePips);
+            double maxOffset = Math.Max(0.0, (NumberOfPages * PipBoxSize) - viewport);
+            double pipStart = SelectedPageIndex * PipBoxSize;
+            double pipEnd = pipStart + PipBoxSize;
+
+            double offset = Clamp(_targetScrollOffset, 0.0, maxOffset);
+            if (pipStart < offset)
+            {
+                offset = pipStart;
+            }
+            else if (pipEnd > offset + viewport)
+            {
+                offset = pipEnd - viewport;
+            }
+
+            offset = Clamp(offset, 0.0, maxOffset);
+            bool offsetMoved = Math.Abs(offset - _targetScrollOffset) > 0.01;
+            _targetScrollOffset = offset;
+
+            // A selection that stayed inside the viewport leaves the offset alone: restarting an
+            // animation toward the offset the viewport already holds would be pure churn.
+            if (offsetMoved || !animate)
+            {
+                AnimateScrollOffsetTo(offset, animate);
+            }
+        }
+
+        private void AnimateScrollOffsetTo(double offset, bool animate)
+        {
+            if (!animate || !MotionHelper.IsMotionEnabled)
+            {
+                // Release any in-flight tween first: an animation holding its end value would
+                // otherwise outrank the local value this sets. ApplyScrollOffset then runs
+                // unconditionally, because an unchanged property value raises no callback and the
+                // viewport may still have reset its own offset behind a geometry change.
+                BeginAnimation(ScrollOffsetProperty, animation: null);
+                SetCurrentValue(ScrollOffsetProperty, offset);
+                ApplyScrollOffset(offset);
+                return;
+            }
+
+            // ControlFastAnimationDuration on ControlFastOutSlowInKeySpline (0.8,0,0,1), the
+            // motion tokens the pip size morph in PipsPager.xaml already rides.
+            DoubleAnimationUsingKeyFrames animation = new()
+            {
+                Duration = new Duration(TimeSpan.FromMilliseconds(ScrollAnimationMilliseconds)),
+                KeyFrames =
+                {
+                    new SplineDoubleKeyFrame(
+                        offset,
+                        KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(ScrollAnimationMilliseconds)),
+                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                },
+            };
+            BeginAnimation(ScrollOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private void ApplyScrollOffset(double offset)
+        {
+            if (_pipsScrollViewer is null)
+            {
+                return;
+            }
+
+            if (Orientation is Orientation.Horizontal)
+            {
+                _pipsScrollViewer.ScrollToHorizontalOffset(offset);
+            }
+            else
+            {
+                _pipsScrollViewer.ScrollToVerticalOffset(offset);
+            }
+        }
+
+        private void ResetScrollOffset()
+        {
+            if (_pipsScrollViewer is not null)
+            {
+                _pipsScrollViewer.ScrollToHorizontalOffset(0.0);
+                _pipsScrollViewer.ScrollToVerticalOffset(0.0);
+            }
+
+            BeginAnimation(ScrollOffsetProperty, animation: null);
+            SetCurrentValue(ScrollOffsetProperty, 0.0);
+            _targetScrollOffset = 0.0;
+        }
+
+        private static double Clamp(double value, double min, double max)
+        {
+            return Math.Min(Math.Max(value, min), max);
         }
     }
 }

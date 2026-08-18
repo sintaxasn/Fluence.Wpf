@@ -236,7 +236,7 @@ Key API:
 <ui:BreadcrumbBar x:Name="Trail" ItemClicked="Trail_ItemClicked" />
 ```
 
-`PipsPager` is a compact page indicator for carousels and onboarding flows: a row (or column) of clickable pip dots with the selected page emphasized, optional previous/next chevron buttons (`PipsPagerButtonVisibility`), and a sliding window of at most `MaxVisiblePips` dots for large page counts. Handle `SelectedIndexChanged` to switch content:
+`PipsPager` is a compact page indicator for carousels and onboarding flows: a row (or column) of clickable pip dots with the selected page emphasized, optional previous/next chevron buttons (`PipsPagerButtonVisibility`), and a scrolling viewport at most `MaxVisiblePips` dots long for large page counts. Every page gets a dot; the viewport holds still while the selection moves inside it and slides only far enough to bring a selection that has left it back to the nearest edge. Handle `SelectedIndexChanged` to switch content:
 
 ```xml
 <ui:PipsPager

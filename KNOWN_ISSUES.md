@@ -68,11 +68,11 @@ maintainers.
   crumbs into an ellipsis (WinUI collapses them into an `E712` ellipsis item
   with a flyout). Long trails extend to their natural width and clip when
   constrained.
-- **`PipsPager` scrolling and nav-button scale** - the pager uses a centered
-  re-rendering window (already noted in code at `PipsPager.cs` around lines
-  65-70). It does **not** implement WinUI's edge-pip scale-down or the
-  stationary edge-scrolling viewport, and the navigation buttons do **not** use
-  WinUI's pressed `0.875` scale.
+- **`PipsPager` edge-pip scale and nav-button scale** - the pager realizes every
+  pip and scrolls them inside the stationary edge-scrolling viewport WinUI
+  describes, but it does **not** scale the pips down as they approach the
+  viewport edges, and the navigation buttons do **not** use WinUI's pressed
+  `0.875` scale.
 - **`NavigationView` Top-overflow fitting deviations** - the overflow pass
   (`NavigationView.UpdateTopOverflow`) no longer forces a layout pass, caches each
   item's measured width on the item, and applies a 5px recovery grace before an
