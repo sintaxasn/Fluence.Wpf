@@ -407,6 +407,68 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [Fact]
+        public Task NavigationView_TopMode_ItemWidthChangeReflowsOverflowAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 520,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    NavigationViewItem first = new() { Content = "One", Icon = new FontIcon { Glyph = "\uE80F" } };
+                    NavigationViewItem second = new() { Content = "Two", Icon = new FontIcon { Glyph = "\uE790" } };
+                    NavigationViewItem third = new() { Content = "Three", Icon = new FontIcon { Glyph = "\uE8A7" } };
+                    _ = nav.Items.Add(first);
+                    _ = nav.Items.Add(second);
+                    _ = nav.Items.Add(third);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PartTopOverflowButton));
+                    Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
+                    Assert.Equal(Visibility.Visible, first.Visibility);
+
+                    // Growing an item has to evict the width the overflow pass cached for it, otherwise
+                    // the next pass keeps fitting the strip against the stale, narrower measurement.
+                    first.Width = 480;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, overflowButton.Visibility);
+                    Assert.Equal(Visibility.Collapsed, first.Visibility);
+                    Assert.Equal(Visibility.Visible, second.Visibility);
+                    Assert.Equal(Visibility.Visible, third.Visibility);
+
+                    System.Windows.Controls.ContextMenu overflowButtonContextMenu = Assert.IsAssignableFrom<System.Windows.Controls.ContextMenu>(overflowButton.ContextMenu);
+                    Controls.MenuItem overflowItem = Assert.IsType<Controls.MenuItem>(Assert.Single(overflowButtonContextMenu.Items));
+                    Assert.Same(first, overflowItem.Tag);
+                    Assert.Equal("One", overflowItem.Header);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         private static double GetNavigationElementX(FrameworkElement element, NavigationView ancestor)
         {
             return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;

@@ -52,14 +52,21 @@ maintainers.
   65-70). It does **not** implement WinUI's edge-pip scale-down or the
   stationary edge-scrolling viewport, and the navigation buttons do **not** use
   WinUI's pressed `0.875` scale.
-- **`NavigationView` Top-overflow synchronous `UpdateLayout()`** - `NavigationView.cs`
-  (`UpdateTopOverflow`, around line 1796) calls `UpdateLayout()` synchronously to
-  force a fresh measure/arrange pass before measuring `_topItemsHost.ActualWidth`.
-  In `PaneDisplayMode="Top"` with a large item set this forces a full layout pass
-  on every resize. This is a jank-only cost, not a correctness defect, and is
-  deferred because reworking the layout path to avoid the forced pass risks
-  regressions in overflow placement for a gain that only shows up under heavy
-  resize with many top-level items.
+- **`NavigationView` Top-overflow fitting deviations** - the overflow pass
+  (`NavigationView.UpdateTopOverflow`) no longer forces a layout pass, caches each
+  item's measured width on the item, and applies a 5px recovery grace before an
+  item returns from the menu. Three deliberate deviations from WinUI's
+  `NavigationView` remain. The available width is the width
+  `PART_TopItemsHost` was last arranged at rather than a width computed inside a
+  measure override: the host is the star-sized column of the pane header grid, so
+  item visibility cannot change it, but a pass that runs before the host's first
+  arrange reads zero and bails, leaving the work to the pass that the following
+  arrange schedules. The cached width is evicted only on a non-zero
+  `SizeChanged` (a zero size is this control collapsing the item into the menu,
+  not a content change), so a content change made while an item is hidden in the
+  menu is not picked up until the item is shown again. Fitting stays first-fit
+  greedy, so a narrow item after a wide one keeps its place on the strip instead
+  of being pushed into the menu with everything that follows it.
 
 ## net472 accessibility API gaps
 

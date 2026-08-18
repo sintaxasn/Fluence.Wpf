@@ -123,6 +123,19 @@ namespace Fluence.Wpf.Controls
                 new PropertyMetadata(defaultValue: false));
 
         /// <summary>
+        /// Caches the natural width a top-pane item last measured at, so the overflow pass measures an
+        /// item only when its size actually changed. The value lives on the item, so it is released
+        /// with the container and cannot keep a removed item alive. <see cref="double.NaN"/> means
+        /// "not measured yet".
+        /// </summary>
+        private static readonly DependencyProperty TopOverflowItemWidthProperty =
+            DependencyProperty.RegisterAttached(
+                "TopOverflowItemWidth",
+                typeof(double),
+                typeof(NavigationView),
+                new PropertyMetadata(double.NaN));
+
+        /// <summary>
         /// Internal inheritable attached flag marking the footer items region. The Top pane template
         /// sets it on <c>PART_FooterItemsHost</c>, so it inherits onto the footer
         /// <see cref="NavigationViewItem"/>s; the item template reads it to render those items
@@ -164,6 +177,12 @@ namespace Fluence.Wpf.Controls
         private const double NavigationItemOuterHorizontalMargin = 9.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
         private const double TopOverflowReservedEndPadding = 12.0;
+
+        // Width an item must clear beyond the fitting limit before the overflow pass brings it back
+        // out of the menu. Without the dead band a slow drag across an item's threshold flaps that
+        // item between the strip and the menu. WinUI reserves the same 5px through
+        // m_topNavigationRecoveryGracePeriodWidth.
+        private const double TopOverflowRecoveryGraceWidth = 5.0;
 
         /// <summary>
         /// Identifies the <see cref="PaneDisplayMode"/> dependency property.
@@ -508,6 +527,14 @@ defaultValue: null,
             UpdateTitleBarExtensionForPaneMode();
             UpdateBackButtonState(useTransitions: false);
             ApplyPaneColumnWidthOnTemplateApplied();
+
+            // A different pane template measures the items differently, so widths cached under the
+            // previous template must not carry into the first overflow pass under this one.
+            foreach (NavigationViewItem navItem in GetTopNavigationItems())
+            {
+                navItem.ClearValue(TopOverflowItemWidthProperty);
+            }
+
             ScheduleTopOverflowUpdate();
             ScheduleIndicatorPosition(animate: false);
         }
@@ -605,6 +632,7 @@ defaultValue: null,
                 navItem.Loaded -= OnNavigationViewItemLoaded;
                 navItem.SizeChanged -= OnNavigationViewItemSizeChanged;
                 navItem.IsVisibleChanged -= OnNavigationViewItemIsVisibleChanged;
+                navItem.ClearValue(TopOverflowItemWidthProperty);
             }
             base.ClearContainerForItemOverride(element, item);
         }
@@ -772,6 +800,7 @@ defaultValue: null,
             footerItem.Loaded -= OnNavigationViewItemLoaded;
             footerItem.SizeChanged -= OnNavigationViewItemSizeChanged;
             footerItem.IsVisibleChanged -= OnFooterItemIsVisibleChanged;
+            footerItem.ClearValue(TopOverflowItemWidthProperty);
         }
 
         private void OnFooterItemIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -866,6 +895,14 @@ defaultValue: null,
 
         private void OnNavigationViewItemSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            // Evict the cached natural width so the next pass re-measures this item. A zero width is
+            // the arrange of an item this control just moved into the overflow menu, not a content
+            // change, so it must not throw away the width the pass measured moments earlier.
+            if (e.NewSize.Width > 0.0 && sender is NavigationViewItem navItem)
+            {
+                navItem.ClearValue(TopOverflowItemWidthProperty);
+            }
+
             ScheduleTopOverflowUpdate();
         }
 
@@ -1843,8 +1880,18 @@ defaultValue: null,
             try
             {
                 List<NavigationViewItem> navItems = GetTopNavigationItems();
-                foreach (NavigationViewItem navItem in navItems.Where(navItem => (bool)navItem.GetValue(IsTopOverflowCollapsedProperty)))
+                List<NavigationViewItem>? recoveringItems = null;
+                foreach (NavigationViewItem navItem in navItems)
                 {
+                    if (!(bool)navItem.GetValue(IsTopOverflowCollapsedProperty))
+                    {
+                        continue;
+                    }
+
+                    // Items the previous pass hid are candidates for recovery in this one, and only
+                    // those items pay the recovery grace below.
+                    recoveringItems ??= [];
+                    recoveringItems.Add(navItem);
                     navItem.Visibility = Visibility.Visible;
                     navItem.ClearValue(IsTopOverflowCollapsedProperty);
                 }
@@ -1864,8 +1911,12 @@ defaultValue: null,
                 _topOverflowButton.Visibility = Visibility.Collapsed;
                 _topOverflowButton.ContextMenu = null;
                 SetTopOverflowButtonOffset(0.0);
-                UpdateLayout();
 
+                // PART_TopItemsHost is the star-sized column of the pane header grid, so the width it
+                // was last arranged at does not depend on how many items are visible; un-collapsing the
+                // items above cannot change it, and no forced layout pass is needed to read it. A width
+                // of zero means the host has not been arranged yet: bail, because that arrange raises
+                // SizeChanged on this control or on its items, either of which schedules another pass.
                 double availableWidth = _topItemsHost.ActualWidth;
                 if (availableWidth <= 0.0)
                 {
@@ -1875,13 +1926,13 @@ defaultValue: null,
                 double totalItemWidth = 0.0;
                 foreach (NavigationViewItem navItem in navItems.Where(navItem => navItem.Visibility is Visibility.Visible))
                 {
-                    totalItemWidth += GetElementWidth(navItem);
+                    totalItemWidth += GetTopItemWidth(navItem);
                 }
 
                 _topOverflowButton.Visibility = Visibility.Visible;
                 _topOverflowButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-                double overflowButtonWidth = GetElementWidth(_topOverflowButton);
+                double overflowButtonWidth = MeasureElementWidth(_topOverflowButton);
                 if (totalItemWidth <= availableWidth)
                 {
                     _topOverflowButton.Visibility = Visibility.Collapsed;
@@ -1892,6 +1943,12 @@ defaultValue: null,
                 double visibleItemsWidthLimit = Math.Max(
                     0.0,
                     availableWidth - overflowButtonWidth - TopOverflowReservedEndPadding);
+
+                // An item that is already in the menu has to clear the limit by the recovery grace
+                // before it returns to the strip, so a drag that walks the pane width back and forth
+                // across a threshold does not flap that item. Items that are visible keep the plain
+                // limit, which leaves a steady-state pass byte-identical to the previous one.
+                double recoveryWidthLimit = Math.Max(0.0, visibleItemsWidthLimit - TopOverflowRecoveryGraceWidth);
                 double usedWidth = 0.0;
                 List<NavigationViewItem> overflowItems = [];
 
@@ -1902,8 +1959,11 @@ defaultValue: null,
                         continue;
                     }
 
-                    double itemWidth = GetElementWidth(navItem);
-                    if (usedWidth + itemWidth <= visibleItemsWidthLimit)
+                    double itemWidth = GetTopItemWidth(navItem);
+                    double itemWidthLimit = recoveringItems?.Contains(navItem) is true
+                        ? recoveryWidthLimit
+                        : visibleItemsWidthLimit;
+                    if (usedWidth + itemWidth <= itemWidthLimit)
                     {
                         usedWidth += itemWidth;
                     }
@@ -1925,7 +1985,7 @@ defaultValue: null,
                 }
 
                 SetTopOverflowButtonOffset(overflowOffset);
-                _topOverflowButton.ContextMenu = CreateTopOverflowMenu(overflowItems);
+                _topOverflowButton.ContextMenu = SyncTopOverflowMenu(overflowItems);
             }
             finally
             {
@@ -1964,24 +2024,54 @@ defaultValue: null,
             }
         }
 
-        private System.Windows.Controls.ContextMenu CreateTopOverflowMenu(IReadOnlyList<NavigationViewItem> overflowItems)
+        /// <summary>
+        /// Brings the reused overflow menu in line with <paramref name="overflowItems"/>. The menu and
+        /// its entries are created on first overflow and then updated in place, so a resize that
+        /// changes which items overflow does not allocate a fresh menu or re-wire its click handlers.
+        /// </summary>
+        /// <param name="overflowItems">The top-pane items currently hidden behind the overflow button.</param>
+        /// <returns>The overflow menu, carrying one entry per hidden item in strip order.</returns>
+        private ContextMenu SyncTopOverflowMenu(IReadOnlyList<NavigationViewItem> overflowItems)
         {
-            ContextMenu menu = new();
-            foreach (NavigationViewItem navItem in overflowItems)
+            _topOverflowMenu ??= new ContextMenu();
+            ItemCollection menuItems = _topOverflowMenu.Items;
+
+            while (menuItems.Count > overflowItems.Count)
             {
-                MenuItem menuItem = new()
+                int lastIndex = menuItems.Count - 1;
+                if (menuItems[lastIndex] is MenuItem staleItem)
                 {
-                    Header = GetOverflowItemText(navItem),
-                    Icon = CreateOverflowIcon(navItem),
-                    MinWidth = 280,
-                    MinHeight = 44,
-                    Tag = navItem,
-                };
-                menuItem.Click += OnTopOverflowMenuItemClick;
-                _ = menu.Items.Add(menuItem);
+                    staleItem.Click -= OnTopOverflowMenuItemClick;
+                }
+
+                menuItems.RemoveAt(lastIndex);
             }
 
-            return menu;
+            for (int index = 0; index < overflowItems.Count; index++)
+            {
+                NavigationViewItem navItem = overflowItems[index];
+                MenuItem menuItem;
+                if (index < menuItems.Count && menuItems[index] is MenuItem reusedItem)
+                {
+                    menuItem = reusedItem;
+                }
+                else
+                {
+                    menuItem = new()
+                    {
+                        MinWidth = 280,
+                        MinHeight = 44,
+                    };
+                    menuItem.Click += OnTopOverflowMenuItemClick;
+                    _ = menuItems.Add(menuItem);
+                }
+
+                menuItem.Header = GetOverflowItemText(navItem);
+                menuItem.Icon = CreateOverflowIcon(navItem);
+                menuItem.Tag = navItem;
+            }
+
+            return _topOverflowMenu;
         }
 
         private static object? CreateOverflowIcon(NavigationViewItem navItem)
@@ -2013,7 +2103,31 @@ defaultValue: null,
             return string.IsNullOrWhiteSpace(text) ? navItem.GetType().Name : text;
         }
 
-        private static double GetElementWidth(FrameworkElement element)
+        /// <summary>
+        /// Returns the natural width of a top-pane item, measuring it only when the cached width is
+        /// missing. A zero measurement means the container is not realized yet and is never cached, so
+        /// the next pass measures it again once it is.
+        /// </summary>
+        /// <param name="navItem">The top-pane item to size.</param>
+        /// <returns>The item's natural width, or zero when it cannot be measured yet.</returns>
+        private static double GetTopItemWidth(NavigationViewItem navItem)
+        {
+            double cachedWidth = (double)navItem.GetValue(TopOverflowItemWidthProperty);
+            if (!double.IsNaN(cachedWidth))
+            {
+                return cachedWidth;
+            }
+
+            double measuredWidth = MeasureElementWidth(navItem);
+            if (measuredWidth > 0.0)
+            {
+                navItem.SetValue(TopOverflowItemWidthProperty, measuredWidth);
+            }
+
+            return measuredWidth;
+        }
+
+        private static double MeasureElementWidth(FrameworkElement element)
         {
             element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             double desiredWidth = Math.Max(element.DesiredSize.Width, element.MinWidth);
@@ -2068,6 +2182,12 @@ defaultValue: null,
         private FrameworkElement? _topItemsHost;
 
         private System.Windows.Controls.Button? _topOverflowButton;
+
+        /// <summary>
+        /// The single overflow menu, created on the first overflow and then reused. Rebuilding it per
+        /// pass would allocate a fresh menu and re-wire its click handlers on every resize tick.
+        /// </summary>
+        private ContextMenu? _topOverflowMenu;
 
         private FluenceWindow? _titleBarExtensionWindow;
 
