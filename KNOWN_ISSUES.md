@@ -40,14 +40,16 @@ maintainers.
   `SolidBackgroundFillColorBaseBrush`. Automated capture of the full
   `FluenceWindow` chrome needs a different approach (e.g. `PrintWindow` /
   GDI screen capture).
-- **`DatePicker` / `TimePicker` selector flyouts** - the flyouts present plain
-  scrollable selector lists. They do **not** implement WinUI's infinitely
-  looping selectors, nor the WinUI centered accent highlight band with the
-  foreground flip over the selected row (`DatePicker_themeresources.xaml`
-  `HighlightRect` / `MonochromaticOverlayPresenter`). The highlight band is
-  coupled to the looping-selector interaction model, so both are deferred
-  together; the looping omission is already noted in code at `DatePicker.cs`
-  (around line 606) and `TimePicker.cs` (around line 511).
+- **`DatePicker` / `TimePicker` highlight band during a scroll** - the flyouts
+  now use WinUI's looping selector columns under a centered accent highlight
+  band (`DatePicker_themeresources.xaml` `HighlightRect`), but the band is a
+  plain `Border` painted behind the columns and the row on it flips its whole
+  foreground to `TextOnAccentFillColorPrimaryBrush`. WinUI instead draws the
+  row glyphs through a `MonochromaticOverlayPresenter`, which splits a glyph at
+  the band boundary so the part inside the band is painted on-accent and the
+  part outside it is not. WPF has no equivalent presenter, so mid-scroll a row
+  straddling the band edge flips as a whole glyph rather than pixel by pixel.
+  At rest the two are indistinguishable.
 - **`ColorPicker` spectrum permutations and layout options** - the picker now
   carries the WinUI gallery-default option surface (preview, color slider, hex,
   More/Less toggle, alpha slider/text, and the RGB/HSV channel text inputs),

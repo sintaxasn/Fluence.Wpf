@@ -187,12 +187,14 @@ namespace Fluence.Wpf.Tests
                             () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0).ConfigureAwait(true),
                         "The flyout reveal must settle at Y=0 and full opacity.");
 
-                    Assert.Equal(12, monthList.Items.Count);
-                    Assert.Equal(31, dayList.Items.Count);
-                    Assert.Equal(picker.MaxYear - picker.MinYear + 1, yearList.Items.Count);
-                    Assert.Equal(4, monthList.SelectedIndex);
-                    Assert.Equal(16, dayList.SelectedIndex);
-                    Assert.Equal(2024 - picker.MinYear, yearList.SelectedIndex);
+                    // All three columns loop, so their item count is a thousand repeats of the
+                    // band; only the band length and the modular selection index are meaningful.
+                    Assert.Equal(12, LoopingColumnSourceCount(monthList));
+                    Assert.Equal(31, LoopingColumnSourceCount(dayList));
+                    Assert.Equal(picker.MaxYear - picker.MinYear + 1, LoopingColumnSourceCount(yearList));
+                    Assert.Equal(4, LoopingColumnSourceIndex(monthList));
+                    Assert.Equal(16, LoopingColumnSourceIndex(dayList));
+                    Assert.Equal(2024 - picker.MinYear, LoopingColumnSourceIndex(yearList));
                 }
                 finally
                 {
@@ -238,9 +240,9 @@ namespace Fluence.Wpf.Tests
                     DatePickerSelectedValueChangedEventArgs? captured = null;
                     picker.SelectedDateChanged += (_, args) => captured = args;
 
-                    monthList.SelectedIndex = 0;
-                    yearList.SelectedIndex = 2025 - picker.MinYear;
-                    dayList.SelectedIndex = 9;
+                    SelectLoopingColumnValue(monthList, 0);
+                    SelectLoopingColumnValue(yearList, 2025 - picker.MinYear);
+                    SelectLoopingColumnValue(dayList, 9);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(acceptButton);
@@ -297,8 +299,8 @@ namespace Fluence.Wpf.Tests
                     bool raised = false;
                     picker.SelectedDateChanged += (_, _) => raised = true;
 
-                    monthList.SelectedIndex = 0;
-                    dayList.SelectedIndex = 0;
+                    SelectLoopingColumnValue(monthList, 0);
+                    SelectLoopingColumnValue(dayList, 0);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseButtonClick(cancelButton);
@@ -348,19 +350,19 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the day-count scenario.");
 
-                    Assert.Equal(31, dayList.Items.Count);
-                    Assert.Equal(30, dayList.SelectedIndex);
+                    Assert.Equal(31, LoopingColumnSourceCount(dayList));
+                    Assert.Equal(30, LoopingColumnSourceIndex(dayList));
 
-                    monthList.SelectedIndex = 1;
+                    SelectLoopingColumnValue(monthList, 1);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Assert.Equal(28, dayList.Items.Count);
-                    Assert.Equal(27, dayList.SelectedIndex);
+                    Assert.Equal(28, LoopingColumnSourceCount(dayList));
+                    Assert.Equal(27, LoopingColumnSourceIndex(dayList));
 
-                    yearList.SelectedIndex = 2024 - picker.MinYear;
+                    SelectLoopingColumnValue(yearList, 2024 - picker.MinYear);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Assert.Equal(29, dayList.Items.Count);
+                    Assert.Equal(29, LoopingColumnSourceCount(dayList));
                 }
                 finally
                 {
@@ -487,8 +489,8 @@ namespace Fluence.Wpf.Tests
                     bool raised = false;
                     picker.SelectedDateChanged += (_, _) => raised = true;
 
-                    monthList.SelectedIndex = 0;
-                    dayList.SelectedIndex = 0;
+                    SelectLoopingColumnValue(monthList, 0);
+                    SelectLoopingColumnValue(dayList, 0);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popupChild, Key.Escape, UIElement.PreviewKeyDownEvent);
@@ -538,9 +540,9 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The selector flyout must open before the Enter scenario.");
 
-                    monthList.SelectedIndex = 0;
-                    yearList.SelectedIndex = 2025 - picker.MinYear;
-                    dayList.SelectedIndex = 9;
+                    SelectLoopingColumnValue(monthList, 0);
+                    SelectLoopingColumnValue(yearList, 2025 - picker.MinYear);
+                    SelectLoopingColumnValue(dayList, 9);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     RaiseKeyEvent(popupChild, Key.Enter, UIElement.PreviewKeyDownEvent);

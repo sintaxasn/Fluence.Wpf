@@ -762,6 +762,8 @@ Up and Down move through the suggestions, Enter raises `QuerySubmitted` (with `C
 
 `DatePicker` and `TimePicker` show a button-styled field that opens a light-dismiss selector flyout; the flyout's accept button commits the pending column selection and cancel discards it.
 
+The flyout columns are `LoopingSelectorList` primitives, the WinUI looping selector: nine 40px rows with the selected row always in the middle, sitting under a centred accent highlight band. Scrolling a column moves its selection, and setting the selection scrolls that row onto the band. The `DatePicker` day, month, and year columns and the `TimePicker` hour and minute columns wrap endlessly, so scrolling past the last value continues at the first; the two-value AM/PM column is padded instead, so it centres without repeating. A wheel notch moves one row, arrow keys and Page Up / Page Down scroll, and Home and End do nothing because a looping column has no first or last value.
+
 `DatePicker` binds `SelectedDate` (`DateTime?`, `null` until the user picks) and raises `SelectedDateChanged` with the old and new dates. The field orders its day, month, and year segments by the current culture's short date pattern; `MinYear` / `MaxYear` (defaults 1900 and 2100) bound the year column, `DayVisible` / `MonthVisible` / `YearVisible` hide individual segments, and the day column rebuilds for the pending month and year, so 29 February is offered only in leap years.
 
 ```xml
