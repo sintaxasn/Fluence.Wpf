@@ -140,18 +140,25 @@ Apply(themeRequest):
                     colors) seeded in code by BaseColorTables; Shared.xaml no longer exists
                   + all accent-derived keys computed once here
                   + title-bar colors (TitleBarActiveColor, TitleBarInactiveColor, WindowBorderColor)
-  4. dict    = BrushFactory.Build(colors)             // one ResourceDictionary: every Color token
+  4. gate    = PublishFingerprint.Capture(theme, colors)   // resolved theme + the whole color map
+                  + the live SystemColors members SpecialBrushes reads outside the map.
+                  Equal to the last PUBLISHED fingerprint (and slot [0] still holds that
+                  dictionary)? return; steps 5 to 7 are skipped, no events are raised
+  5. dict    = BrushFactory.Build(colors)             // one ResourceDictionary: every Color token
                   + a frozen SolidColorBrush twin (key + "Brush") for each; SpecialBrushes.Add adds
                   gradient elevation borders, HC SystemColors overrides, and brush-only exceptions
-  5. publish -> replace MergedDictionaries[0] with dict; DynamicResource consumers re-resolve
-  6. raise FluenceThemeEngine.Published -> facades fire Changed and AccentColorChanged
+  6. publish -> replace MergedDictionaries[0] with dict; DynamicResource consumers re-resolve
+  7. raise FluenceThemeEngine.Published -> ApplicationAccentColorManager fires AccentColorChanged
+                  (ApplicationThemeManager fires its own Changed from Apply, see below)
 ```
 
 There is no key promotion, no swap-vs-mutate split, and no per-key copy-up into top-level `Application.Resources`. Every color and brush is built fresh and published as one dictionary replacement.
 
+**Redundant-publish gate.** Windows emits several theme-relevant broadcasts for a single user action, and the 100 ms debounce in `SystemThemeWatcher` does not collapse all of them. Step 4 exists so a broadcast that changes nothing does not rebuild every brush and force a `DynamicResource` re-resolution storm. The fingerprint is exhaustive by construction: the color map already subsumes the accent ramp, the per-theme base tables, the registry-driven chrome, and the deterministic-chrome test switch. A publish that fails because `Application.Current` is null stores no fingerprint, so the next apply retries. `FluenceThemeEngine.ResetForTesting` clears it. Adding a new input to the published output means adding it to `PublishFingerprint`, or the gate will skip a change that should have shipped.
+
 **Accent intent** is sticky and resolved on every Apply call. `AccentIntent.System` (the default) reads the full OS palette from the registry first; if that fails it falls back to the DWM colorization color and then to default blue. `Apply(theme)` alone uses the OS palette - there is no "must also call `ApplySystemAccent`" footgun. `ApplyCustomAccent(Color)` pins the ramp to the given color using the HSV generator; `ApplyCustomAccent(Color light, Color dark)` carries per-theme seeds resolved inside the engine on every apply (high contrast follows the dark seed); `ApplySystemAccent()` resets the intent to System.
 
-**High contrast** is just another color table. Its tokens are resolved from live `SystemColors` in `SpecialBrushes.AddHighContrastBrushes`; there is no `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply, which rebuilds and republishes the HC brushes from the current `SystemColors` snapshot.
+**High contrast** is just another color table. Its tokens are resolved from live `SystemColors` in `SpecialBrushes.AddHighContrastBrushes`; there is no `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply, which rebuilds and republishes the HC brushes from the current `SystemColors` snapshot. Those `SystemColors` members are part of the publish fingerprint, so an HC variant switch always gets through the gate while a duplicate broadcast for the same variant does not.
 
 ### Merge slots
 
@@ -189,8 +196,8 @@ Every color key generally has a sibling `*Brush` `SolidColorBrush`; template bin
 
 - `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call seeds all three slots; later calls replace `[0]` with a freshly built computed dictionary. `updateAccent` is accepted for signature compatibility but no longer branches behavior.
 - `ApplicationThemeManager.CurrentTheme` / `CurrentBackdrop` - read-only state.
-- `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change.
-- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - set the accent intent and re-run the full pipeline. Subscribe to `AccentColorChanged` for post-apply hooks.
+- `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change. `CurrentTheme` and `CurrentBackdrop` record the caller's *request* and are assigned on every `Apply`, even when the redundant-publish gate skips the rebuild. `Changed` fires when either the computed dictionary was republished or the requested theme or backdrop actually moved, so a backdrop-only change is observable without a dictionary rebuild, and a duplicate OS broadcast raises nothing.
+- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - set the accent intent and re-run the full pipeline. Subscribe to `AccentColorChanged` for post-apply hooks. These bypass `ApplicationThemeManager.Apply`, so they raise only `AccentColorChanged`, and the redundant-publish gate applies: an apply whose resolved ramp matches the one already published raises nothing. Pinning the seed that is already pinned, or calling `ApplyApplicationAccent()` on a host whose OS accent already resolves to the same `#0078D4` ramp, is a no-op. Tests that must observe the event have to make the apply a genuine transition.
 - `SystemThemeWatcher.Watch(Window)` / `UnWatch(Window)` - Win32 settings-change hooks with debounce; fires `Changed` (via `ApplicationThemeManager`) once per logical OS change. **Do not assume more than one `Changed` per user action in tests.**
 - `FluenceWindow` is the canonical WPF window with DWM backdrop, rounded corners, caption extension, and an optional title-bar content slot.
 
