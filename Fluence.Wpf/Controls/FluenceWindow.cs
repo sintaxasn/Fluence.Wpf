@@ -843,12 +843,19 @@ namespace Fluence.Wpf.Controls
         private void ApplyBackdrop()
         {
             WindowCapabilities capabilities = WindowCapabilities.Current;
+            // The transparency-effects toggle only gates the Windows 10 legacy acrylic path,
+            // which WindowPolicy selects solely when neither DWM backdrop attribute exists.
+            // Skip the registry read on OS builds where the flag cannot change the plan.
+            bool transparencyEffectsEnabled =
+                !capabilities.SupportsSystemBackdropType
+                && !capabilities.SupportsMicaEffect
+                && RegistryHelper.GetEnableTransparency();
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 SystemBackdropType,
                 ApplicationThemeManager.GetResolvedTheme(),
                 capabilities,
                 GetFallbackBackgroundColor(),
-                RegistryHelper.GetEnableTransparency(),
+                transparencyEffectsEnabled,
                 GetLegacyAcrylicTintColor());
 
             SolidColorBrush backgroundBrush = new(plan.BackgroundColor);
@@ -913,11 +920,24 @@ namespace Fluence.Wpf.Controls
             if (plan.UseLegacyAcrylic)
             {
                 _legacyAcrylicTintAbgr = NativeMethods.ColorToAbgr(plan.LegacyAcrylicTintColor);
+                _legacyAcrylicActive = true;
+
+                // A theme/accent/transparency broadcast can land mid-drag (dragging across
+                // monitors, Settings applying). Re-applying full acrylic here would stomp the
+                // drag-time Aero-blur downgrade and leave the rest of the drag running per-frame
+                // acrylic, so while a size/move loop is in flight keep the cheap blur and let
+                // WM_EXITSIZEMOVE restore the acrylic with the freshly cached tint.
+                if (_inSizeMove)
+                {
+                    _ = NativeMethods.SetAccentPolicy(_handle, NativeMethods.ACCENT_ENABLE_BLURBEHIND, 0);
+                    _legacyAcrylicDragDowngraded = true;
+                    return;
+                }
+
                 _ = NativeMethods.SetAccentPolicy(
                     _handle,
                     NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND,
                     _legacyAcrylicTintAbgr);
-                _legacyAcrylicActive = true;
                 _legacyAcrylicDragDowngraded = false;
             }
             else if (_legacyAcrylicActive)
@@ -1315,10 +1335,12 @@ namespace Fluence.Wpf.Controls
             }
             else if (msg == PInvoke.WM_ENTERSIZEMOVE)
             {
+                _inSizeMove = true;
                 DowngradeLegacyAcrylicForDrag();
             }
             else if (msg == PInvoke.WM_EXITSIZEMOVE)
             {
+                _inSizeMove = false;
                 RestoreLegacyAcrylicAfterDrag();
             }
             return IntPtr.Zero;
@@ -1838,6 +1860,13 @@ namespace Fluence.Wpf.Controls
         /// downgrade this window actually performed.
         /// </summary>
         private bool _legacyAcrylicDragDowngraded;
+
+        /// <summary>
+        /// <see langword="true"/> between <c>WM_ENTERSIZEMOVE</c> and <c>WM_EXITSIZEMOVE</c>, so a
+        /// backdrop re-apply landing mid-drag (theme, accent, or transparency broadcast) keeps the
+        /// drag-time Aero-blur downgrade instead of re-applying full per-frame acrylic.
+        /// </summary>
+        private bool _inSizeMove;
 
         /// <summary>
         /// The caption button currently showing the synthetic snap-layout hover visual, or
