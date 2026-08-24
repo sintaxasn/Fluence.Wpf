@@ -469,6 +469,130 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [Fact]
+        public Task NavigationView_TopMode_ShrinkingOverflowedItemRecoversItToStripAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 300,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    NavigationViewItem first = new() { Content = "One", Width = 80 };
+                    NavigationViewItem second = new() { Content = "Two", Width = 80 };
+                    NavigationViewItem third = new() { Content = "Three", Width = 200 };
+                    _ = nav.Items.Add(first);
+                    _ = nav.Items.Add(second);
+                    _ = nav.Items.Add(third);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Collapsed, third.Visibility);
+
+                    // An item collapsed in the overflow menu is never measured, so no SizeChanged
+                    // fires for it. Shrinking it must still evict the cached natural width (via the
+                    // measure-affecting property change) and recover it to the strip; before the
+                    // property-change eviction it stayed pinned in the menu on the stale 200px cache.
+                    third.Width = 40;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, third.Visibility);
+                    Controls.Button overflowButton = Assert.IsAssignableFrom<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PartTopOverflowButton));
+                    Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopMode_ExactFitBoundaryDoesNotFlapLastItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 240,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    NavigationViewItem first = new() { Content = "One", Width = 80 };
+                    NavigationViewItem second = new() { Content = "Two", Width = 80 };
+                    NavigationViewItem third = new() { Content = "Three", Width = 80 };
+                    _ = nav.Items.Add(first);
+                    _ = nav.Items.Add(second);
+                    _ = nav.Items.Add(third);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Grid topItemsHost = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost));
+                    Assert.Equal(Visibility.Collapsed, third.Visibility);
+
+                    // The strip measures each item at its natural width (the explicit 80 plus the
+                    // template's outer chrome), so derive the exact-fit total from a live measure
+                    // instead of the raw Width values.
+                    double totalItemWidth = first.DesiredSize.Width * 3.0;
+
+                    // Grow the window so the strip is 2px past exact fit: inside the 5px recovery
+                    // grace. The overflowed item must stay in the menu, because taking the
+                    // all-items-fit exit here is precisely the strip/menu flap the grace damps.
+                    double hostDeficit = totalItemWidth - topItemsHost.ActualWidth;
+                    nav.Width += hostDeficit + 2.0;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Collapsed, third.Visibility);
+
+                    // Clearing the grace (8px past exact fit) must recover the item.
+                    nav.Width += 6.0;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, third.Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         private static double GetNavigationElementX(FrameworkElement element, NavigationView ancestor)
         {
             return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;

@@ -897,13 +897,44 @@ defaultValue: null,
         {
             // Evict the cached natural width so the next pass re-measures this item. A zero width is
             // the arrange of an item this control just moved into the overflow menu, not a content
-            // change, so it must not throw away the width the pass measured moments earlier.
+            // change, so it must not throw away the width the pass measured moments earlier. An
+            // arrange at (effectively) the cached width is not a content change either - it is the
+            // strip arranging an item the pass just recovered from the menu - so only a genuinely
+            // different width evicts; otherwise every recovery would trigger a pointless re-measure.
             if (e.NewSize.Width > 0.0 && sender is NavigationViewItem navItem)
             {
-                navItem.ClearValue(TopOverflowItemWidthProperty);
+                double cachedWidth = (double)navItem.GetValue(TopOverflowItemWidthProperty);
+                if (double.IsNaN(cachedWidth) || Math.Abs(cachedWidth - e.NewSize.Width) > 0.5)
+                {
+                    navItem.ClearValue(TopOverflowItemWidthProperty);
+                }
             }
 
             ScheduleTopOverflowUpdate();
+        }
+
+        /// <summary>
+        /// Returns whether the top-overflow pass has a cached natural width for the item.
+        /// </summary>
+        /// <param name="item">The top-pane item to check.</param>
+        internal static bool HasCachedTopItemWidth(NavigationViewItem item)
+        {
+            return !double.IsNaN((double)item.GetValue(TopOverflowItemWidthProperty));
+        }
+
+        /// <summary>
+        /// Evicts the item's cached natural width and schedules an overflow pass on its owning
+        /// <see cref="NavigationView"/>. Called by <see cref="NavigationViewItem"/> when a
+        /// measure-affecting property changes, because an item sitting collapsed inside the
+        /// overflow menu is never measured and so never raises the <c>SizeChanged</c> that is the
+        /// ordinary eviction path - without this, shrinking an overflowed item's content leaves it
+        /// pinned in the menu on its stale (larger) cached width forever.
+        /// </summary>
+        /// <param name="item">The top-pane item whose cached width is stale.</param>
+        internal static void InvalidateTopItemWidth(NavigationViewItem item)
+        {
+            item.ClearValue(TopOverflowItemWidthProperty);
+            FromItemContainer(item)?.ScheduleTopOverflowUpdate();
         }
 
         private void OnNavigationViewItemIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -1880,7 +1911,7 @@ defaultValue: null,
             try
             {
                 List<NavigationViewItem> navItems = GetTopNavigationItems();
-                List<NavigationViewItem>? recoveringItems = null;
+                HashSet<NavigationViewItem>? recoveringItems = null;
                 foreach (NavigationViewItem navItem in navItems)
                 {
                     if (!(bool)navItem.GetValue(IsTopOverflowCollapsedProperty))
@@ -1891,21 +1922,14 @@ defaultValue: null,
                     // Items the previous pass hid are candidates for recovery in this one, and only
                     // those items pay the recovery grace below.
                     recoveringItems ??= [];
-                    recoveringItems.Add(navItem);
+                    _ = recoveringItems.Add(navItem);
                     navItem.Visibility = Visibility.Visible;
                     navItem.ClearValue(IsTopOverflowCollapsedProperty);
                 }
 
                 if (PaneDisplayMode is not NavigationViewPaneDisplayMode.Top || _topOverflowButton is null || _topItemsHost is null)
                 {
-                    if (_topOverflowButton is not null)
-                    {
-                        _topOverflowButton.Visibility = Visibility.Collapsed;
-                        _topOverflowButton.ContextMenu = null;
-                        SetTopOverflowButtonOffset(0.0);
-                    }
-
-                    ClearTopOverflowMenu();
+                    HideTopOverflowChrome();
                     return;
                 }
 
@@ -1935,11 +1959,18 @@ defaultValue: null,
 
                 // MeasureElementWidth measures the button itself, so no separate Measure pass here.
                 double overflowButtonWidth = MeasureElementWidth(_topOverflowButton);
-                if (totalItemWidth <= availableWidth)
+
+                // The all-items-fit exit pays the same recovery grace as the per-item loop when the
+                // previous pass had anything in the menu. Without it, a width oscillating one pixel
+                // around the exact-fit total alternates between this exit (everything visible) and
+                // the loop below (tail collapsed), flapping the last item - the exact flap the grace
+                // exists to damp. A steady state with nothing overflowed keeps the plain limit.
+                double allFitWidthLimit = recoveringItems is null
+                    ? availableWidth
+                    : Math.Max(0.0, availableWidth - TopOverflowRecoveryGraceWidth);
+                if (totalItemWidth <= allFitWidthLimit)
                 {
-                    _topOverflowButton.Visibility = Visibility.Collapsed;
-                    SetTopOverflowButtonOffset(0.0);
-                    ClearTopOverflowMenu();
+                    HideTopOverflowChrome();
                     return;
                 }
 
@@ -1982,9 +2013,7 @@ defaultValue: null,
 
                 if (overflowItems.Count is 0)
                 {
-                    _topOverflowButton.Visibility = Visibility.Collapsed;
-                    SetTopOverflowButtonOffset(0.0);
-                    ClearTopOverflowMenu();
+                    HideTopOverflowChrome();
                     return;
                 }
 
@@ -2012,6 +2041,22 @@ defaultValue: null,
             }
 
             return navItems;
+        }
+
+        /// <summary>
+        /// Collapses the overflow button, resets its offset, detaches its menu, and empties the
+        /// reused menu. The single exit path for every pass that ends with nothing in overflow.
+        /// </summary>
+        private void HideTopOverflowChrome()
+        {
+            if (_topOverflowButton is not null)
+            {
+                _topOverflowButton.Visibility = Visibility.Collapsed;
+                _topOverflowButton.ContextMenu = null;
+                SetTopOverflowButtonOffset(0.0);
+            }
+
+            ClearTopOverflowMenu();
         }
 
         private void SetTopOverflowButtonOffset(double x)
