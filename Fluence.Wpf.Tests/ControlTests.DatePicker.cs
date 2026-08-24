@@ -37,6 +37,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fluence.Wpf.Helpers;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
@@ -187,14 +188,18 @@ namespace Fluence.Wpf.Tests
                             () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0).ConfigureAwait(true),
                         "The flyout reveal must settle at Y=0 and full opacity.");
 
-                    // All three columns loop, so their item count is a thousand repeats of the
-                    // band; only the band length and the modular selection index are meaningful.
+                    // Day and month loop, so their item count is a thousand repeats of the band
+                    // and only the band length and the modular selection index are meaningful.
+                    // The year column is padded and bounded, mirroring WinUI's non-looping year
+                    // selector, so its count is the year range plus placeholder rows at each end.
                     Assert.Equal(12, LoopingColumnSourceCount(monthList));
                     Assert.Equal(31, LoopingColumnSourceCount(dayList));
-                    Assert.Equal(picker.MaxYear - picker.MinYear + 1, LoopingColumnSourceCount(yearList));
+                    Assert.Equal(
+                        picker.MaxYear - picker.MinYear + 1,
+                        yearList.Items.Count - (2 * LoopingPaddingItemsCount));
                     Assert.Equal(4, LoopingColumnSourceIndex(monthList));
                     Assert.Equal(16, LoopingColumnSourceIndex(dayList));
-                    Assert.Equal(2024 - picker.MinYear, LoopingColumnSourceIndex(yearList));
+                    Assert.Equal(2024 - picker.MinYear, LoopingSelectorColumns.GetPaddedSourceIndex(yearList));
                 }
                 finally
                 {
@@ -241,7 +246,7 @@ namespace Fluence.Wpf.Tests
                     picker.SelectedDateChanged += (_, args) => captured = args;
 
                     SelectLoopingColumnValue(monthList, 0);
-                    SelectLoopingColumnValue(yearList, 2025 - picker.MinYear);
+                    SelectPaddedColumnValue(yearList, 2025 - picker.MinYear);
                     SelectLoopingColumnValue(dayList, 9);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -359,7 +364,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(28, LoopingColumnSourceCount(dayList));
                     Assert.Equal(27, LoopingColumnSourceIndex(dayList));
 
-                    SelectLoopingColumnValue(yearList, 2024 - picker.MinYear);
+                    SelectPaddedColumnValue(yearList, 2024 - picker.MinYear);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(29, LoopingColumnSourceCount(dayList));
@@ -541,7 +546,7 @@ namespace Fluence.Wpf.Tests
                         "The selector flyout must open before the Enter scenario.");
 
                     SelectLoopingColumnValue(monthList, 0);
-                    SelectLoopingColumnValue(yearList, 2025 - picker.MinYear);
+                    SelectPaddedColumnValue(yearList, 2025 - picker.MinYear);
                     SelectLoopingColumnValue(dayList, 9);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 

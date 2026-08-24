@@ -51,9 +51,10 @@ namespace Fluence.Wpf.Tests
     {
         /// <summary>
         /// The number of padding rows a looping column keeps above the selected row; the
-        /// selected row is the middle one of a nine-row viewport.
+        /// selected row is the middle one of a nine-row viewport. Aliases the control's own
+        /// constant so the tests can never drift from the geometry the control actually uses.
         /// </summary>
-        private const int LoopingPaddingItemsCount = 4;
+        private const int LoopingPaddingItemsCount = Controls.LoopingSelectorList.PaddingItemsCount;
 
         /// <summary>
         /// Returns how many distinct values a selector column holds, which for a looping column

@@ -593,9 +593,10 @@ defaultValue: null,
         /// <summary>
         /// Fills the three selector columns from <see cref="SelectedDate"/> (or today when
         /// unset, clamped into the <see cref="MinYear"/>..<see cref="MaxYear"/> range) and
-        /// highlights the matching items. All three columns wrap endlessly like WinUI's
-        /// looping selectors (see <see cref="LoopingSelectorColumns"/>), so the day, month,
-        /// and year values repeat rather than stopping at an end.
+        /// highlights the matching items. Day and month wrap endlessly like WinUI's looping
+        /// selectors (see <see cref="LoopingSelectorColumns"/>); the year column is padded and
+        /// bounded, exactly as WinUI's year <c>LoopingSelector</c> sets <c>ShouldLoop=false</c>,
+        /// so it stops at <see cref="MinYear"/> and <see cref="MaxYear"/>.
         /// </summary>
         private void PopulateSelectorColumns()
         {
@@ -634,7 +635,10 @@ defaultValue: null,
                         years.Add(yearValue);
                     }
 
-                    LoopingSelectorColumns.SetLoopingSource(_yearList, years, year - minYear);
+                    // Padded, not looping: WinUI's DatePicker year column sets ShouldLoop=false,
+                    // so scrolling stops hard at MinYear and MaxYear instead of wrapping a step
+                    // past one bound into the other (a silent multi-decade jump).
+                    LoopingSelectorColumns.SetPaddedSource(_yearList, years, year - minYear);
                 }
 
                 if (_dayList is not null)
@@ -725,7 +729,7 @@ defaultValue: null,
 
         private int GetPendingYear()
         {
-            int yearIndex = LoopingSelectorColumns.GetSourceIndex(_yearList);
+            int yearIndex = LoopingSelectorColumns.GetPaddedSourceIndex(_yearList);
             return yearIndex >= 0 ? _populatedMinYear + yearIndex : _flyoutBaseDate.Year;
         }
 

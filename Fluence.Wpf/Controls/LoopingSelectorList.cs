@@ -75,6 +75,31 @@ namespace Fluence.Wpf.Controls
         public LoopingSelectorList()
         {
             UpdateViewportHeight();
+
+            // The template viewer pans (PanningMode=VerticalOnly), and a pan can settle on a
+            // fractional item-unit offset that leaves the column resting between two rows, off
+            // the highlight band. The viewer marks manipulation events handled internally, so
+            // listen with handledEventsToo and snap to the nearest whole row once the pan (and
+            // its inertia) completes.
+            AddHandler(
+                ManipulationCompletedEvent,
+                new EventHandler<ManipulationCompletedEventArgs>(OnPanCompleted),
+                handledEventsToo: true);
+        }
+
+        private void OnPanCompleted(object? sender, ManipulationCompletedEventArgs e)
+        {
+            if (_scrollViewer is null)
+            {
+                return;
+            }
+
+            double offset = _scrollViewer.VerticalOffset;
+            double settledOffset = Math.Round(offset, MidpointRounding.AwayFromZero);
+            if (Math.Abs(offset - settledOffset) > 0.001)
+            {
+                _scrollViewer.ScrollToVerticalOffset(settledOffset);
+            }
         }
 
         /// <summary>
@@ -241,7 +266,10 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Scrolls one row per wheel notch instead of the system's multi-line step, so a notch
-        /// moves the selection by exactly one value.
+        /// moves the selection by exactly one value. Deltas accumulate across events before a
+        /// row is stepped: a precision touchpad delivers many sub-notch deltas per physical
+        /// notch, and stepping a full row per event would make one gentle notch jump several
+        /// values.
         /// </summary>
         /// <param name="e">The event data.</param>
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
@@ -253,12 +281,24 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            DisableItemMouseOver();
-
-            int lines = Math.Max(1, Math.Abs(e.Delta) / Mouse.MouseWheelDeltaForOneLine);
-            for (int line = 0; line < lines; line++)
+            // Direction flips drop the opposite-sign remainder so a reversal responds instantly.
+            if (Math.Sign(_wheelDeltaAccumulator) != Math.Sign(e.Delta))
             {
-                if (e.Delta > 0)
+                _wheelDeltaAccumulator = 0;
+            }
+
+            _wheelDeltaAccumulator += e.Delta;
+            int lines = _wheelDeltaAccumulator / Mouse.MouseWheelDeltaForOneLine;
+            _wheelDeltaAccumulator -= lines * Mouse.MouseWheelDeltaForOneLine;
+
+            if (lines is not 0)
+            {
+                DisableItemMouseOver();
+            }
+
+            for (int line = 0; line < Math.Abs(lines); line++)
+            {
+                if (lines > 0)
                 {
                     _scrollViewer.LineUp();
                 }
@@ -421,5 +461,11 @@ namespace Fluence.Wpf.Controls
         /// follows the scroll does not immediately restore them.
         /// </summary>
         private bool _ignoreNextMouseMove;
+
+        /// <summary>
+        /// Wheel delta carried between events so sub-notch deltas (precision touchpads) add up
+        /// to whole 120-unit notches before a row is stepped.
+        /// </summary>
+        private int _wheelDeltaAccumulator;
     }
 }
