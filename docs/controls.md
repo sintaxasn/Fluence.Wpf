@@ -101,6 +101,8 @@ The action controls keep standard WPF command, content, and click patterns. Use 
 
 `ToggleSplitButton` derives from `SplitButton` and turns the primary half into a toggle: a primary click flips `IsChecked` and then raises `Click`, so handlers observe the already-toggled state, while the chevron half still opens the `Flyout`. Subscribe to `IsCheckedChanged` (carrying the new state in `ToggleSplitButtonIsCheckedChangedEventArgs`) for state updates from clicks, bindings, or the Toggle automation pattern. Checked renders both halves in the accent palette with the WinUI checked divider stroke. Use it when the primary half switches a mode on or off and the flyout chooses which variant of that mode applies, such as list formatting.
 
+The `Flyout` on `DropDownButton`, `SplitButton`, and `ToggleSplitButton` hosts arbitrary content and light-dismisses on an outside click, matching a WinUI `Flyout`; like WinUI, it does not dismiss itself when something inside it is clicked. Call `CloseFlyout()` from the item's click handler (the WinUI `Flyout.Hide()` pattern) to close it after handling the action.
+
 ### Selection
 
 Key API:
