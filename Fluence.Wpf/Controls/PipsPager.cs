@@ -108,6 +108,13 @@ namespace Fluence.Wpf.Controls
         // animation still compose from the destination rather than from a mid-flight offset.
         private double _targetScrollOffset;
 
+        // Offset most recently written into the viewport by ApplyScrollOffset. A ScrollChanged
+        // whose offset differs from this is external input the hidden scrollbars cannot fully
+        // block (Home/End bubbling from a focused pip, wheel over a vertical pager) and must be
+        // snapped back to the pager-owned target, or the believed and real offsets desync and
+        // later edge-scroll decisions leave the selected pip outside the viewport.
+        private double _lastAppliedScrollOffset;
+
         /// <summary>
         /// Initializes static members of the PipsPager class and overrides the default style
         /// metadata so the control picks up its themed template from Generic.xaml.
@@ -324,6 +331,23 @@ namespace Fluence.Wpf.Controls
                 SetCurrentValue(SelectedPageIndexProperty, SelectedPageIndex + 1);
                 e.Handled = true;
             }
+            else if (e.Key is Key.Home)
+            {
+                SetCurrentValue(SelectedPageIndexProperty, 0);
+                e.Handled = true;
+            }
+            else if (e.Key is Key.End)
+            {
+                SetCurrentValue(SelectedPageIndexProperty, NumberOfPages - 1);
+                e.Handled = true;
+            }
+            else if (e.Key is Key.PageUp or Key.PageDown)
+            {
+                // No page-jump semantics in WinUI's PipsPager, but left unhandled these bubble to
+                // PART_PipsScrollViewer, which pages the viewport itself and desyncs the real
+                // offset from the pager-owned target.
+                e.Handled = true;
+            }
         }
 
         private static object CoerceNumberOfPages(DependencyObject d, object baseValue)
@@ -456,11 +480,23 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            UnhookPips();
-            _pipsHost.Children.Clear();
-
+            // Pips are index-stable (a count change only grows or trims the tail), so adjust the
+            // tail in place instead of tearing every pip down: a full clear re-created, re-styled,
+            // and re-templated the whole run on any page-count delta.
+            UIElementCollection pips = _pipsHost.Children;
             int pageCount = NumberOfPages;
-            for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
+            while (pips.Count > pageCount)
+            {
+                int lastIndex = pips.Count - 1;
+                if (pips[lastIndex] is System.Windows.Controls.Primitives.ToggleButton stalePip)
+                {
+                    stalePip.Click -= OnPipClick;
+                }
+
+                pips.RemoveAt(lastIndex);
+            }
+
+            for (int pageIndex = pips.Count; pageIndex < pageCount; pageIndex++)
             {
                 System.Windows.Controls.Primitives.ToggleButton pip = new();
                 pip.SetResourceReference(StyleProperty, PipStyleKey);
@@ -468,7 +504,7 @@ namespace Fluence.Wpf.Controls
                     pip,
                     string.Format(CultureInfo.InvariantCulture, "Page {0}", pageIndex + 1));
                 pip.Click += OnPipClick;
-                _ = _pipsHost.Children.Add(pip);
+                _ = pips.Add(pip);
             }
 
             RefreshPipStates();
@@ -596,12 +632,22 @@ namespace Fluence.Wpf.Controls
         private void OnPipsScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // Rebuilding the pips or flipping orientation moves the extent and the viewport, and
-            // the viewer clamps its own offset against the geometry it had at the time. Re-assert
-            // the pager's target once the new geometry is in.
+            // the viewer clamps its own offset against the geometry it had at the time. Recompute
+            // the edge scroll once the new geometry is in, so the target itself is re-clamped
+            // against the realized pip size and the viewport the viewer actually got.
             if (e.ExtentWidthChange is not 0
                 || e.ExtentHeightChange is not 0
                 || e.ViewportWidthChange is not 0
                 || e.ViewportHeightChange is not 0)
+            {
+                UpdateScrollOffset(animate: false);
+                return;
+            }
+
+            // An offset-only change the pager did not write is external input (see
+            // _lastAppliedScrollOffset); snap the viewport back to the pager-owned target.
+            double actualOffset = Orientation is Orientation.Horizontal ? e.HorizontalOffset : e.VerticalOffset;
+            if (Math.Abs(actualOffset - _lastAppliedScrollOffset) > 0.5)
             {
                 ApplyScrollOffset(_targetScrollOffset);
             }
@@ -618,7 +664,8 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            double extent = CalculateViewportExtent(PipBoxSize, PipBoxSize, NumberOfPages, MaxVisiblePips);
+            double pipExtent = GetPipBoxExtent();
+            double extent = CalculateViewportExtent(pipExtent, pipExtent, NumberOfPages, MaxVisiblePips);
             if (Orientation is Orientation.Horizontal)
             {
                 _pipsScrollViewer.MaxWidth = extent;
@@ -649,10 +696,30 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            double viewport = CalculateViewportExtent(PipBoxSize, PipBoxSize, NumberOfPages, MaxVisiblePips);
-            double maxOffset = Math.Max(0.0, (NumberOfPages * PipBoxSize) - viewport);
-            double pipStart = SelectedPageIndex * PipBoxSize;
-            double pipEnd = pipStart + PipBoxSize;
+            // Prefer the realized geometry: the pip's arranged box (a consumer may restyle
+            // PipsPagerPipStyle away from the 20px default) and the viewport the viewer actually
+            // got (a parent can arrange the pager narrower than MaxVisiblePips boxes). The
+            // theoretical values are the fallback for the passes that run before first arrange.
+            double pipExtent = GetPipBoxExtent();
+            double viewport = Orientation is Orientation.Horizontal
+                ? _pipsScrollViewer.ViewportWidth
+                : _pipsScrollViewer.ViewportHeight;
+            if (viewport <= 0.0)
+            {
+                viewport = CalculateViewportExtent(pipExtent, pipExtent, NumberOfPages, MaxVisiblePips);
+            }
+
+            double contentExtent = Orientation is Orientation.Horizontal
+                ? _pipsScrollViewer.ExtentWidth
+                : _pipsScrollViewer.ExtentHeight;
+            if (contentExtent <= 0.0)
+            {
+                contentExtent = NumberOfPages * pipExtent;
+            }
+
+            double maxOffset = Math.Max(0.0, contentExtent - viewport);
+            double pipStart = SelectedPageIndex * pipExtent;
+            double pipEnd = pipStart + pipExtent;
 
             double offset = Clamp(_targetScrollOffset, 0.0, maxOffset);
             if (pipStart < offset)
@@ -706,6 +773,26 @@ namespace Fluence.Wpf.Controls
             BeginAnimation(ScrollOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
         }
 
+        /// <summary>
+        /// Returns the realized length of one pip box along the orientation axis, falling back to
+        /// the template's theoretical <see cref="PipBoxSize"/> until the first pip is arranged.
+        /// </summary>
+        private double GetPipBoxExtent()
+        {
+            if (_pipsHost?.Children.Count > 0 && _pipsHost.Children[0] is UIElement pip)
+            {
+                double extent = Orientation is Orientation.Horizontal
+                    ? pip.RenderSize.Width
+                    : pip.RenderSize.Height;
+                if (extent > 0.0)
+                {
+                    return extent;
+                }
+            }
+
+            return PipBoxSize;
+        }
+
         private void ApplyScrollOffset(double offset)
         {
             if (_pipsScrollViewer is null)
@@ -713,6 +800,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            _lastAppliedScrollOffset = offset;
             if (Orientation is Orientation.Horizontal)
             {
                 _pipsScrollViewer.ScrollToHorizontalOffset(offset);
@@ -734,6 +822,7 @@ namespace Fluence.Wpf.Controls
             BeginAnimation(ScrollOffsetProperty, animation: null);
             SetCurrentValue(ScrollOffsetProperty, 0.0);
             _targetScrollOffset = 0.0;
+            _lastAppliedScrollOffset = 0.0;
         }
 
         private static double Clamp(double value, double min, double max)

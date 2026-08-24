@@ -434,6 +434,50 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task PipsPager_ExternalViewportScroll_SnapsBackToThePagerTargetAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(async () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
+
+                try
+                {
+                    window.Content = pager;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.ScrollViewer viewer = Assert.IsAssignableFrom<System.Windows.Controls.ScrollViewer>(FindVisualChildByName<System.Windows.Controls.ScrollViewer>(pager, "PART_PipsScrollViewer"));
+
+                    pager.SelectedPageIndex = 9;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(viewer.HorizontalOffset - 140.0) < 0.5).ConfigureAwait(true),
+                        "The viewport must reach the end of the run before the external scroll.");
+
+                    // Simulate input the hidden scrollbars cannot fully block (a bubbled Home key,
+                    // wheel over a vertical pager): scroll the viewer directly, away from the
+                    // pager's believed offset. The pager must snap the viewport back to its own
+                    // target instead of letting the real and believed offsets desync, which used to
+                    // leave the checked pip permanently outside the viewport.
+                    viewer.ScrollToHorizontalOffset(0.0);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(viewer.HorizontalOffset - 140.0) < 0.5).ConfigureAwait(true),
+                        "An external viewport scroll must be snapped back to the pager-owned offset.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task PipsPager_VerticalOrientation_ClampsAndScrollsTheViewportOnTheVerticalAxisAsync()
         {
             return WpfTestSta.RunOnStaAsync(async () =>
