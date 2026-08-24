@@ -48,6 +48,12 @@ namespace Fluence.Wpf.Demo
     {
         internal const string GalleryWindowTitle = "Fluence.Wpf \u2014 Control Gallery";
 
+        // Fluent "page refresh" transition metrics: incoming content slides up 150 px while
+        // fading in over 300 ms on the decelerating spline (Fluent motion-in-practice guidance
+        // for top-level navigation page transitions).
+        private const double PageRefreshMilliseconds = 300.0;
+        private const double PageRefreshOffsetPixels = 150.0;
+
         // Maps each NavigationViewItem to its DemoNavigationItem metadata (title, route, keywords).
         private readonly Dictionary<NavigationViewItem, DemoNavigationItem> _navigationItemByContainer =
             [];
@@ -527,29 +533,96 @@ namespace Fluence.Wpf.Demo
             AnimatePageIn(page);
         }
 
+        /// <summary>
+        /// Plays the Fluent "page refresh" transition on the incoming page: the content slides
+        /// up <see cref="PageRefreshOffsetPixels"/> while fading 0 to 1 over
+        /// <see cref="PageRefreshMilliseconds"/> on the 0.8,0,0,1 decelerating spline (the
+        /// Typography.xaml ControlFastOutSlowInKeySpline motion token, mirrored by value).
+        /// Top-level navigation switches use page refresh per the Fluent page-transition
+        /// guidance (slide up + fade in, 300 ms, decelerate). The start pose is seeded as a
+        /// local value before the clocks start: <c>BeginAnimation</c> only takes effect on the
+        /// next animation tick, so an unseeded start lets the frame composited right after the
+        /// content swap render the page at its rest pose (opaque, unshifted) and the following
+        /// frame snap it to the transition start - a visible flash on every navigation. The
+        /// clocks hold their end value (<see cref="FillBehavior.HoldEnd"/>) and the Completed
+        /// handlers stamp the rest pose and release the clocks in one dispatcher callback, so
+        /// the seeded local value can never show through at either end of the transition.
+        /// </summary>
+        /// <param name="page">The page instance that just became the navigation content.</param>
         private static void AnimatePageIn(object page)
         {
-            if (page is not UIElement element)
+            if (page is not FrameworkElement element)
             {
                 return;
             }
 
+            if (element.RenderTransform is not TranslateTransform translate)
+            {
+                translate = new TranslateTransform();
+                element.RenderTransform = translate;
+            }
+
+            // Motion disabled (OS "Show animations" off, or software rendering where every
+            // animated frame is a CPU composite): land at rest immediately, mirroring the
+            // library-internal MotionHelper gate the demo assembly cannot reference. The rest
+            // pose is stamped explicitly because an interrupted earlier transition can leave
+            // its seeded start value behind as the local value.
+            if (!SystemParameters.ClientAreaAnimation || (RenderCapability.Tier >> 16) <= 0)
+            {
+                translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
+                element.BeginAnimation(OpacityProperty, animation: null);
+                translate.Y = 0.0;
+                element.Opacity = 1.0;
+                return;
+            }
+
+            // Seed the start pose so the pre-tick frame already shows it (see summary).
+            translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
             element.BeginAnimation(OpacityProperty, animation: null);
+            translate.Y = PageRefreshOffsetPixels;
             element.Opacity = 0.0;
 
-            CubicEase easing = new() { EasingMode = EasingMode.EaseOut };
-
-            // ControlFastAnimationDuration (167 ms) fade masking the page swap.
-            DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(167)))
+            DoubleAnimationUsingKeyFrames translateAnimation = CreatePageRefreshAnimation(PageRefreshOffsetPixels, 0.0);
+            translateAnimation.Completed += delegate
             {
-                EasingFunction = easing,
+                translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
+                translate.Y = 0.0;
             };
+
+            DoubleAnimationUsingKeyFrames opacityAnimation = CreatePageRefreshAnimation(0.0, 1.0);
             opacityAnimation.Completed += delegate
             {
                 element.BeginAnimation(OpacityProperty, animation: null);
                 element.Opacity = 1.0;
             };
+
+            translate.BeginAnimation(TranslateTransform.YProperty, translateAnimation);
             element.BeginAnimation(OpacityProperty, opacityAnimation);
+        }
+
+        /// <summary>
+        /// Builds one track of the page refresh: a discrete start at time zero settling at the
+        /// rest value over the page-refresh duration on the decelerating Fluent key spline
+        /// (see <see cref="AnimatePageIn"/> for the mirrored motion tokens). The clock holds
+        /// its end value; the caller's Completed handler stamps the rest pose and releases it.
+        /// </summary>
+        /// <param name="from">The discrete start value.</param>
+        /// <param name="to">The rest value reached when the transition settles.</param>
+        /// <returns>The keyframe animation for the track.</returns>
+        private static DoubleAnimationUsingKeyFrames CreatePageRefreshAnimation(double from, double to)
+        {
+            return new DoubleAnimationUsingKeyFrames
+            {
+                FillBehavior = FillBehavior.HoldEnd,
+                KeyFrames =
+                {
+                    new DiscreteDoubleKeyFrame(from, KeyTime.FromTimeSpan(TimeSpan.Zero)),
+                    new SplineDoubleKeyFrame(
+                        to,
+                        KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(PageRefreshMilliseconds)),
+                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                },
+            };
         }
 
         /// <summary>
