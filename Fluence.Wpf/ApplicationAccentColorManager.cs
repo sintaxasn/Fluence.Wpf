@@ -190,11 +190,6 @@ namespace Fluence.Wpf
             _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
         }
 
-        internal static void RefreshAccent()
-        {
-            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
-        }
-
         internal static void ResetForTesting()
         {
             FluenceThemeEngine.ResetForTesting();

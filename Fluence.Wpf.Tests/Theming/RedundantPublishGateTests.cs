@@ -29,6 +29,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -236,6 +238,45 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
+        /// The SystemThemeWatcher path: an OS settings broadcast under a pinned (non-Auto) theme
+        /// re-enters through <see cref="ApplicationThemeManager.Apply"/> with an unchanged request.
+        /// When a fingerprint input moved anyway (the OS accent palette, the Settings "Transparency
+        /// effects" toggle), the resulting publish must raise Changed even though the requested
+        /// theme and backdrop did not move, because <c>FluenceWindow</c> re-applies its backdrop
+        /// only from Changed. The moved input is simulated by re-pointing the accent intent without
+        /// an apply, so exactly one publish-relevant input changes between two identical requests.
+        /// </summary>
+        [Fact]
+        public Task UnchangedRequest_PublishOnlyChange_StillRaisesChangedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Collection<ResourceDictionary> dicts = SeedPinnedLightTheme();
+                ResourceDictionary before = dicts[0];
+
+                int changedCount = 0;
+                void OnChanged(object? sender, ThemeChangedEventArgs e) { changedCount++; }
+
+                FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustom(OtherAccent));
+                ApplicationThemeManager.Changed += OnChanged;
+                try
+                {
+                    ApplicationThemeManager.Apply(
+                        ApplicationThemeManager.CurrentTheme,
+                        ApplicationThemeManager.CurrentBackdrop,
+                        updateAccent: false);
+
+                    Assert.Equal(1, changedCount);
+                    Assert.NotSame(before, dicts[0]);
+                }
+                finally
+                {
+                    ApplicationThemeManager.Changed -= OnChanged;
+                }
+            });
+        }
+
+        /// <summary>
         /// ResetForTesting must clear the stored fingerprint so the next Apply re-seeds the three
         /// slots from scratch instead of believing the previous dictionary is still current.
         /// </summary>
@@ -391,6 +432,65 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.False(transparencyOn.Matches(transparencyOff));
                 Assert.False(transparencyOff.Matches(transparencyOn));
             });
+        }
+
+        /// <summary>
+        /// Guards the fingerprint's SystemColors snapshot against drift: every live
+        /// <see cref="SystemColors"/> member that <c>SpecialBrushes.cs</c> reads must also be
+        /// captured by <c>PublishFingerprint.cs</c>, or a high-contrast variant switch that moves
+        /// only the missing member would be swallowed by the redundant-publish gate. The two lists
+        /// are compile-time property accesses with no runtime registry to diff, so this scans the
+        /// two source files and compares the referenced member sets.
+        /// </summary>
+        [Fact]
+        public async Task Fingerprint_CapturesEverySystemColorSpecialBrushesReadsAsync()
+        {
+            string root = ThemeParityTests.FindRepoRoot();
+            string specialBrushes = await File.ReadAllTextAsync(
+                Path.Join(root, "Fluence.Wpf", "Theming", "SpecialBrushes.cs"),
+                TestContext.Current.CancellationToken).ConfigureAwait(true);
+            string fingerprint = await File.ReadAllTextAsync(
+                Path.Join(root, "Fluence.Wpf", "Theming", "PublishFingerprint.cs"),
+                TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+            HashSet<string> reads = ExtractSystemColorMembers(specialBrushes);
+            HashSet<string> captured = ExtractSystemColorMembers(fingerprint);
+
+            Assert.True(
+                reads.Count >= 8,
+                "Expected SpecialBrushes to read several SystemColors members; the source scan found " + reads.Count.ToString(CultureInfo.InvariantCulture) + ".");
+            reads.ExceptWith(captured);
+            Assert.True(
+                reads.Count is 0,
+                "SystemColors members read by SpecialBrushes but missing from PublishFingerprint.CaptureSystemColors: " + string.Join(", ", reads));
+        }
+
+        /// <summary>
+        /// Collects every <c>SystemColors.XxxColor</c> member referenced in the given C# source.
+        /// </summary>
+        /// <param name="source">The C# source text to scan.</param>
+        private static HashSet<string> ExtractSystemColorMembers(string source)
+        {
+            HashSet<string> members = new(StringComparer.Ordinal);
+            const string prefix = "SystemColors.";
+            int index = source.IndexOf(prefix, StringComparison.Ordinal);
+            while (index >= 0)
+            {
+                int start = index + prefix.Length;
+                int end = start;
+                while (end < source.Length && (char.IsLetterOrDigit(source[end]) || source[end] == '_'))
+                {
+                    end++;
+                }
+
+                string member = source[start..end];
+                if (member.EndsWith("Color", StringComparison.Ordinal))
+                {
+                    _ = members.Add(member);
+                }
+                index = source.IndexOf(prefix, end, StringComparison.Ordinal);
+            }
+            return members;
         }
 
         /// <summary>
