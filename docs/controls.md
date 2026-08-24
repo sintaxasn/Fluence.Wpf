@@ -45,7 +45,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Window              | `FluenceWindow`, `TitleBar`                                                                                                         |
 | Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `RepeatButton`, `ToggleButton`                  |
 | Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`, `DatePicker`, `TimePicker`, `ColorPicker`            |
-| Text                | `TextBox`, `PasswordBox`, `AutoSuggestBox`, `TextBlock` + `TextBlockExtensions`                                                    |
+| Text                | `TextBox`, `PasswordBox` (native, styled via `PasswordBoxExtensions`), `AutoSuggestBox`, `TextBlock` + `TextBlockExtensions` |
 | Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem` (stock container, restyled by the Fluence theme)                              |
 | Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
 | Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
@@ -59,6 +59,22 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Icons               | `FontIcon`                                                                                                                         |
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
+
+### Relationship to the WPF types
+
+Most Fluence controls derive from the WPF control of the same name, so a `fluence:Button` is a
+`System.Windows.Controls.Button` and works anywhere one is expected. The four entries below do not follow that rule.
+
+| Fluence type | Base class | Consequence |
+| --- | --- | --- |
+| `PasswordBox` | none, the WPF type is used directly | `System.Windows.Controls.PasswordBox` is `sealed`. The library styles it implicitly and adds the Fluent extras through the `PasswordBoxExtensions` attached properties. Write `<PasswordBox />`, not `<fluence:PasswordBox />`. |
+| `TextBlock` | `ContentControl` | Carries `Text`, `TextWrapping`, and `TextTrimming` of its own. It has no `Inlines` collection and is not a `System.Windows.Controls.TextBlock`. |
+| `Image` | `Control` | Wraps a `System.Windows.Controls.Image` in a template so the bitmap can be clipped to `CornerRadius`. It is not a `System.Windows.Controls.Image`. |
+| `DatePicker` | `Control` | Follows the WinUI three-column picker rather than the WPF calendar drop-down, and registers its own `SelectedDate`. Bindings written against `System.Windows.Controls.DatePicker.SelectedDate` do not transfer. |
+
+`TextBlock` and `Image` cannot derive from their WPF namesakes and still carry a Fluent template,
+because both WPF types are `FrameworkElement`s with no `Template` property. Code that types a
+variable or a template part as the WPF class needs the WPF class, not the Fluence one.
 
 ## Control API
 
@@ -125,7 +141,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.Slider.html">Slider</a>
   <a href="../../api/Fluence.Wpf.Controls.NumberBox.html">NumberBox</a>
   <a href="../../api/Fluence.Wpf.Controls.TextBox.html">TextBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.PasswordBox.html">PasswordBox</a>
+  <a href="../../api/Fluence.Wpf.Controls.PasswordBoxExtensions.html">PasswordBoxExtensions</a>
   <a href="../../api/Fluence.Wpf.Controls.AutoSuggestBox.html">AutoSuggestBox</a>
   <a href="../../api/Fluence.Wpf.SpinButtonPlacementMode.html">SpinButtonPlacementMode</a>
   <a href="../../api/Fluence.Wpf.NumberBoxValueChangedEventArgs.html">NumberBoxValueChangedEventArgs</a>
@@ -143,7 +159,7 @@ Key API:
 
 <div class="fluence-api-list">
   <a href="../../api/Fluence.Wpf.Controls.TextBox.html">TextBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.PasswordBox.html">PasswordBox</a>
+  <a href="../../api/Fluence.Wpf.Controls.PasswordBoxExtensions.html">PasswordBoxExtensions</a>
   <a href="../../api/Fluence.Wpf.Controls.ComboBox.html">ComboBox</a>
   <a href="../../api/Fluence.Wpf.Controls.Button.html">Button</a>
   <a href="../../api/Fluence.Wpf.Controls.DatePicker.html">DatePicker</a>
@@ -351,7 +367,6 @@ Key API:
   <a href="../../api/Fluence.Wpf.Automation.ToggleSwitchAutomationPeer.html">ToggleSwitchAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.InfoBarAutomationPeer.html">InfoBarAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.RatingControlAutomationPeer.html">RatingControlAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.PasswordBoxAutomationPeer.html">PasswordBoxAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.PersonPictureAutomationPeer.html">PersonPictureAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.ImageAutomationPeer.html">ImageAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.HyperlinkButtonAutomationPeer.html">HyperlinkButtonAutomationPeer</a>
@@ -392,7 +407,7 @@ flipping the OS setting mid-session takes effect at each animation's next natura
 | `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
 | `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue |
 | `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
-| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | none |
+| `PasswordBox` (native control, WPF peer) | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | none |
 | `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
 | `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
 | `NavigationViewItem` | ListItem | `Content` | SelectionItem |

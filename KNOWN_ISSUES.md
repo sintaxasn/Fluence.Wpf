@@ -25,6 +25,19 @@ maintainers.
   accent-blurred window, in which case that method should be driven by the
   effective backdrop instead of the requested one.
 
+- **Peeking at a password materializes it as a managed string** - the Fluent
+  `PasswordBox` chrome reads `PasswordBox.Password` in two places: to paint the
+  peek overlay while the reveal button is held or toggled, and to score the
+  strength meter after each change. Both allocate an immutable managed string
+  that cannot be zeroed on demand, so a revealed or scored password is
+  recoverable from a process dump until the garbage collector reclaims it. The
+  native `SecurePassword` store remains authoritative and is never replaced; the
+  overlay is emptied the moment the peek ends. An application handling
+  high-value secrets can avoid the exposure by setting
+  `PasswordBoxExtensions.RevealButtonEnabled` and
+  `PasswordBoxExtensions.ShowPasswordStrength` to `False`, which is the default
+  for the strength meter.
+
 - **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
   tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
   modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**
