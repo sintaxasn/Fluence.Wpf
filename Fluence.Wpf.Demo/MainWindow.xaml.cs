@@ -33,7 +33,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -233,6 +232,11 @@ namespace Fluence.Wpf.Demo
             if (NavSearchBox is not null && !string.IsNullOrWhiteSpace(NavSearchBox.Text))
             {
                 NavSearchBox.Text = string.Empty;
+                NavSearchBox.ItemsSource = null;
+
+                // The programmatic clear above raises TextChanged with ProgrammaticChange, which
+                // the handler ignores, so restore the pane filter explicitly.
+                ApplyNavSearchFilter();
             }
 
             if (string.Equals(tag.Trim(), "settings", StringComparison.OrdinalIgnoreCase))
@@ -360,31 +364,75 @@ namespace Fluence.Wpf.Demo
             };
         }
 
-        private void NavSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void NavSearchBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
         {
-            ApplyNavSearchFilter();
-        }
-
-        private void NavSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key is not Key.Enter)
+            // Only user typing refilters and rebuilds suggestions; suggestion previews while
+            // cycling with the arrow keys and programmatic clears must not reopen the popup.
+            if (e.Reason is not AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 return;
             }
 
-            string query = (NavSearchBox?.Text) ?? string.Empty;
-            query = query.Trim();
+            ApplyNavSearchFilter();
+            UpdateNavSearchSuggestions();
+        }
+
+        private void NavSearchBox_QuerySubmitted(object sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+        {
+            if (e.ChosenSuggestion is DemoNavigationItem chosen)
+            {
+                NavigateTo(chosen.Route);
+                return;
+            }
+
+            string query = (e.QueryText ?? string.Empty).Trim();
             if (query.Length is 0)
             {
                 return;
             }
 
-            NavigationViewItem? match = FindFirstMatchingItem(query);
-            if (match is not null)
+            NavigateToItem(FindFirstMatchingItem(query));
+        }
+
+        private void UpdateNavSearchSuggestions()
+        {
+            if (DemoNav is null || NavSearchBox is null)
             {
-                NavigateToItem(match);
-                e.Handled = true;
+                return;
             }
+
+            string query = (NavSearchBox.Text ?? string.Empty).Trim();
+            if (query.Length is 0)
+            {
+                NavSearchBox.ItemsSource = null;
+                return;
+            }
+
+            List<DemoNavigationItem> matches = [];
+            foreach (object obj in DemoNav.Items)
+            {
+                if (obj is not NavigationViewItem item)
+                {
+                    continue;
+                }
+
+                if (_navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata) &&
+                    ItemMatches(item, metadata, query))
+                {
+                    matches.Add(metadata);
+                }
+            }
+
+            // Settings lives in FooterMenuItems, not DemoNav.Items; include it so the footer
+            // page is reachable from the suggestion list too (WinUI Gallery does the same).
+            if (SettingsNavigationItem is NavigationViewItem settingsItem &&
+                _navigationItemByContainer.TryGetValue(settingsItem, out DemoNavigationItem? settingsMetadata) &&
+                ItemMatches(settingsItem, settingsMetadata, query))
+            {
+                matches.Add(settingsMetadata);
+            }
+
+            NavSearchBox.ItemsSource = matches.Count is 0 ? null : matches;
         }
 
         private NavigationViewItem? FindFirstMatchingItem(string query)

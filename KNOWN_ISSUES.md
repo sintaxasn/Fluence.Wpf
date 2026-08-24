@@ -73,6 +73,15 @@ maintainers.
   describes, but it does **not** scale the pips down as they approach the
   viewport edges, and the navigation buttons do **not** use WinUI's pressed
   `0.875` scale.
+- **`AutoSuggestBox` raises `TextChanged` per keystroke** - WinUI defers the
+  `TextChanged` event through a 150 ms `DispatcherTimer`
+  (`AutoSuggestBox_Partial.cpp`, `s_textChangedEventTimerDuration`), coalescing a
+  fast typing burst into one event. Fluence raises `TextChanged` synchronously on
+  every edit. For in-memory filtering (the demo, most consumers) the difference
+  is invisible; a consumer wiring `TextChanged` to an async or remote lookup gets
+  per-keystroke churn WinUI would coalesce and should debounce in the handler.
+  Adding the timer would change the event timing every existing `AutoSuggestBox`
+  test observes, so it is deferred until a consumer needs it.
 - **`NavigationView` Top-overflow fitting deviations** - the overflow pass
   (`NavigationView.UpdateTopOverflow`) no longer forces a layout pass, caches each
   item's measured width on the item, and applies a 5px recovery grace before an
