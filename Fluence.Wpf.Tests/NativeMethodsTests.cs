@@ -26,9 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Native;
+using System;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Native;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -44,7 +45,7 @@ namespace Fluence.Wpf.Tests
     /// are deterministic and OS-independent; they do not call any P/Invoke whose result
     /// depends on the host environment, so neither live margin reader
     /// (<see cref="NativeMethods.GetMaximizedFrameMargin(double, double)"/> and
-    /// <see cref="NativeMethods.GetMaximizedFrameMargin(System.IntPtr)"/>) is covered here; both funnel
+    /// <see cref="NativeMethods.GetMaximizedFrameMargin(IntPtr)"/>) is covered here; both funnel
     /// their metrics through the pure conversion that is.
     /// </summary>
     public sealed class NativeMethodsTests
