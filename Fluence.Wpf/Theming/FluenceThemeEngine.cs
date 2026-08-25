@@ -46,6 +46,14 @@ namespace Fluence.Wpf.Theming
     internal static class FluenceThemeEngine
     {
         private const string PackBase = "pack://application:,,,/Fluence.Wpf;component/";
+
+        /// <summary>
+        /// Key stamped into every dictionary published at slot [0], so a previously published one
+        /// can be recognised and removed when the slots are seeded again. Typography and Generic are
+        /// identified by their pack URI; a computed dictionary is built in code and has no
+        /// <see cref="ResourceDictionary.Source"/>, so it needs a marker of its own.
+        /// </summary>
+        internal const string ComputedDictionaryMarker = "FluenceComputedDictionary";
         private static AccentIntent _intent = AccentIntent.System;
         private static bool _initialized;
 
@@ -177,6 +185,7 @@ namespace Fluence.Wpf.Theming
             ResourceDictionary computed = BrushFactory.Build(colors);
             SpecialBrushes.Add(computed, colors, theme);
             computed["AcrylicNoiseBrush"] = AcrylicNoiseHelper.GetNoiseBrush(); // preserve existing token
+            computed[ComputedDictionaryMarker] = true;
             return computed;
         }
 
@@ -251,6 +260,17 @@ namespace Fluence.Wpf.Theming
         {
             for (int i = dicts.Count - 1; i >= 0; i--)
             {
+                // A computed dictionary is built in code and has no Source, so it cannot be
+                // recognised by URI the way Typography and Generic can. It carries a marker key
+                // instead. Leaving a previously published one behind is not cosmetic: WPF resolves
+                // merged dictionaries last-wins, so a stale computed dictionary sitting past the
+                // freshly inserted slot [0] shadows every token the new one publishes.
+                if (dicts[i].Contains(ComputedDictionaryMarker))
+                {
+                    dicts.RemoveAt(i);
+                    continue;
+                }
+
                 string s = dicts[i].Source?.OriginalString.ToLowerInvariant() ?? string.Empty;
                 if (s.Contains("fluence.wpf;component", StringComparison.Ordinal) && s.Contains("themes/", StringComparison.Ordinal))
                 {

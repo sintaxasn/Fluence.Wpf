@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- The theme engine no longer leaves a previously published computed dictionary merged into `Application.Resources`. `RemoveFluenceDictionaries` recognised Typography and Generic by their pack URI, but the computed dictionary at slot [0] is built in code and has no `Source`, so seeding the slots again inserted a fresh computed dictionary at [0] and left the previous one further down the list. WPF resolves merged dictionaries last-wins, so the stale one answered lookups the fresh one owned: once a High Contrast dictionary had been published, later Light applies resolved opaque High Contrast tokens, which is what turned the translucent `ComboBox` dropdown surface opaque on a CI runner. Every published computed dictionary now carries a marker key that the removal pass recognises, and `DictionaryStabilityTests` pins the re-seed path.
+
 ## [0.8.14-Preview] - 2026-08-24
 
 ### Added
