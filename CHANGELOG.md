@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.14-Preview] - 2026-08-24
+
 ### Added
 
 - `Fluence.Wpf.Controls.PasswordBoxExtensions` - the Fluent password field is now the native `System.Windows.Controls.PasswordBox` under a Fluence template. `System.Windows.Controls.PasswordBox` is sealed, so a derived Fluent control cannot be written, but a sealed type can still be styled. The style in `Themes/Controls/PasswordBox.xaml` is therefore implicit over the native type, and every `<PasswordBox />` in an application that merges the Fluence theme picks up the Fluent look with no opt-in. The extras are attached properties: `PlaceholderText`, `CornerRadius`, `RevealButtonEnabled`, `ShowCapsLockIndicator`, `ShowPasswordStrength`, `PasswordStrength`, plus the read-only `IsPasswordRevealed` and `HasPassword`. Applications keep `SecurePassword`, the `PasswordChanged` routed event, `Clear`, `Paste`, the native clipboard, IME, and context-menu policy, and the native `System.Windows.Automation.Peers.PasswordBoxAutomationPeer`. This is the first implicit style the library ships for a framework type; the other native-type styles (`ScrollBar`, `ScrollViewer`, `RepeatButton`, `Thumb`) stay keyed.
