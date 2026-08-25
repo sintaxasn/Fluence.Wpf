@@ -401,9 +401,27 @@ namespace Fluence.Wpf.Tests
 
             return "brush=" + background.Color.ToString(CultureInfo.InvariantCulture)
                 + " token=" + tokenText
-                + " requestedTheme=" + Enum.GetName(typeof(ApplicationTheme), ApplicationThemeManager.CurrentTheme)
+                + " requestedTheme=" + ThemeName(ApplicationThemeManager.CurrentTheme)
                 + " highContrastSetting=" + SystemParameters.HighContrast.ToString(CultureInfo.InvariantCulture)
                 + " mergedDictionaries=[" + string.Join(", ", sources) + "]";
+        }
+
+        /// <summary>
+        /// Names a theme without <c>Enum.GetName</c>, whose generic overload the analyzers demand on
+        /// net10 and which does not exist on net472.
+        /// </summary>
+        /// <param name="theme">The theme to name.</param>
+        /// <returns>The theme name.</returns>
+        private static string ThemeName(ApplicationTheme theme)
+        {
+            return theme switch
+            {
+                ApplicationTheme.Light => "Light",
+                ApplicationTheme.Dark => "Dark",
+                ApplicationTheme.HighContrast => "HighContrast",
+                ApplicationTheme.Auto => "Auto",
+                _ => "Unknown",
+            };
         }
 
         private static void ResetApplication(Application application)
