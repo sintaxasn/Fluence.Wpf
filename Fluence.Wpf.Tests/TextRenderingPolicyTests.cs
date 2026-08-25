@@ -116,15 +116,15 @@ namespace Fluence.Wpf.Tests
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.AutoSuggestBox(), "SuggestionsSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.DatePicker(), "FlyoutSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.TimePicker(), "FlyoutSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.DropDownButton(), "FlyoutSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.SplitButton(), "FlyoutSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.ToggleSplitButton(), "FlyoutSurface");
-                AssertHostedSurfaceEnablesClearType(new Fluence.Wpf.Controls.FlyoutPresenter(), "PresenterSurface");
+                AssertHostedSurfaceEnablesClearType(new AutoSuggestBox(), "SuggestionsSurface");
+                AssertHostedSurfaceEnablesClearType(new Controls.DatePicker(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new TimePicker(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new DropDownButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new SplitButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new ToggleSplitButton(), "FlyoutSurface");
+                AssertHostedSurfaceEnablesClearType(new FlyoutPresenter(), "PresenterSurface");
                 AssertHostedSurfaceEnablesClearType(
-                    new Fluence.Wpf.Controls.MenuItem { Header = "Open" },
+                    new Controls.MenuItem { Header = "Open" },
                     "SubMenuBorder");
             });
         }
@@ -139,8 +139,8 @@ namespace Fluence.Wpf.Tests
 
                 // A ContextMenu only resolves its implicit style once it is hosted, so this is the
                 // one surface that has to be opened rather than inspected straight off the template.
-                Fluence.Wpf.Controls.ContextMenu contextMenu = new();
-                _ = contextMenu.Items.Add(new Fluence.Wpf.Controls.MenuItem { Header = "Open" });
+                Controls.ContextMenu contextMenu = new();
+                _ = contextMenu.Items.Add(new Controls.MenuItem { Header = "Open" });
 
                 Window window = new()
                 {
@@ -179,7 +179,7 @@ namespace Fluence.Wpf.Tests
                 ResetApplication(application);
 
                 Window window = new() { Width = 400, Height = 300 };
-                Fluence.Wpf.Controls.ComboBox comboBox = new();
+                Controls.ComboBox comboBox = new();
 
                 try
                 {
