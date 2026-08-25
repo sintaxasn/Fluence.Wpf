@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -190,7 +191,10 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Border surface = FindTemplatedSurface(comboBox, "PART_DropdownBorder");
 
                     Assert.Equal(ClearTypeHint.Auto, RenderOptions.GetClearTypeHint(surface));
-                    Assert.NotEqual(byte.MaxValue, Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
+                    SolidColorBrush background = Assert.IsType<SolidColorBrush>(surface.Background);
+                    Assert.True(
+                        background.Color.A is not byte.MaxValue,
+                        "The dropdown surface must stay translucent. " + DescribeThemeState(application, background));
                 }
                 finally
                 {
@@ -376,6 +380,30 @@ namespace Fluence.Wpf.Tests
                     control.GetType().Name + " did not resolve a default template.");
 
             return Assert.IsType<System.Windows.Controls.Border>(template.FindName(surfaceName, control));
+        }
+
+        /// <summary>
+        /// Describes the published theme state behind a brush assertion. A theme-token failure is
+        /// almost always "the wrong dictionary is installed" rather than "the token is wrong", and
+        /// on a CI runner there is no debugger to ask, so the answer has to travel in the message.
+        /// </summary>
+        /// <param name="application">The test application.</param>
+        /// <param name="background">The brush the assertion read.</param>
+        /// <returns>A single-line description of the resolved theme and the installed dictionaries.</returns>
+        private static string DescribeThemeState(Application application, SolidColorBrush background)
+        {
+            object? token = application.TryFindResource("AcrylicBackgroundFillColorDefault");
+            string tokenText = token is Color color
+                ? color.ToString(CultureInfo.InvariantCulture)
+                : "missing";
+            IEnumerable<string> sources = application.Resources.MergedDictionaries
+                .Select(static dictionary => dictionary.Source?.ToString() ?? "computed");
+
+            return "brush=" + background.Color.ToString(CultureInfo.InvariantCulture)
+                + " token=" + tokenText
+                + " requestedTheme=" + Enum.GetName(typeof(ApplicationTheme), ApplicationThemeManager.CurrentTheme)
+                + " highContrastSetting=" + SystemParameters.HighContrast.ToString(CultureInfo.InvariantCulture)
+                + " mergedDictionaries=[" + string.Join(", ", sources) + "]";
         }
 
         private static void ResetApplication(Application application)
