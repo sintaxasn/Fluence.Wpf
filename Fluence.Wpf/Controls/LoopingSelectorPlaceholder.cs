@@ -26,35 +26,44 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows.Automation.Peers;
-using Fluence.Wpf.Controls;
-
-namespace Fluence.Wpf.Automation
+namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// UI Automation peer for <see cref="PasswordBox"/>, reporting the control as a
-    /// password edit field so assistive technologies suppress reading the value aloud.
+    /// The filler item a <see cref="LoopingSelectorList"/> uses to pad a short, non-looping
+    /// column (the AM/PM designator column, for instance) so its real values can still be
+    /// centred under the selection band.
     /// </summary>
-    /// <remarks>Initializes a new instance.</remarks>
-    /// <param name="owner">The <see cref="PasswordBox"/> that owns this peer.</param>
-    public class PasswordBoxAutomationPeer(PasswordBox owner) : FrameworkElementAutomationPeer(owner)
+    /// <remarks>
+    /// A selector viewport is nine rows tall with the selected row in the middle, so a column
+    /// needs four rows of slack above its first value and below its last one. The padding rows
+    /// carry this singleton; <see cref="LoopingSelectorList.PrepareContainerForItemOverride"/>
+    /// recognises it and makes those containers hidden and disabled, so they occupy their row
+    /// height without being visible, hit-testable, or selectable.
+    /// </remarks>
+    internal sealed class LoopingSelectorPlaceholder
     {
-        /// <inheritdoc />
-        protected override string GetClassNameCore()
+        /// <summary>
+        /// Prevents a default instance of the <see cref="LoopingSelectorPlaceholder"/> class
+        /// from being created outside the type; identity is what marks a padding row, so there
+        /// is exactly one instance.
+        /// </summary>
+        private LoopingSelectorPlaceholder()
         {
-            return "PasswordBox";
         }
 
-        /// <inheritdoc />
-        protected override AutomationControlType GetAutomationControlTypeCore()
-        {
-            return AutomationControlType.Edit;
-        }
+        /// <summary>
+        /// Gets the single placeholder instance used for every padding row.
+        /// </summary>
+        internal static LoopingSelectorPlaceholder Instance { get; } = new();
 
-        /// <inheritdoc />
-        protected override bool IsPasswordCore()
+        /// <summary>
+        /// Returns an empty string so a padding row renders nothing even if a custom item
+        /// template binds it before the container is hidden.
+        /// </summary>
+        /// <returns>An empty string.</returns>
+        public override string ToString()
         {
-            return true;
+            return string.Empty;
         }
     }
 }
