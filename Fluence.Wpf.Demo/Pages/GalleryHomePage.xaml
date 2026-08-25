@@ -71,42 +71,10 @@
             </StackPanel>
 
             <!--  Action cards: use the standard Card.Header / Card.Icon contract (same pattern as GalleryDataPage's Card.Variant samples).  -->
-            <UniformGrid Margin="0,8,0,16" Columns="4">
-
-                <Border x:Name="ThemeWatcherSettingsCard" Style="{StaticResource SettingsRowCardStyle}" CornerRadius="8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="48" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <fluence:FontIcon
-                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                            HorizontalAlignment="Left"
-                            Grid.Row="0"
-                            IconFontSize="32"
-                            Glyph="&#xE8EF;"
-                            Style="{StaticResource SettingsRowIconStyle}" />
-                        <StackPanel Grid.Row="1" VerticalAlignment="Stretch">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}"
-                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                       Text="Theming"
-                                       Margin="0,4,0,4" />
-                            <TextBlock
-                                TextWrapping="Wrap"
-                                x:Name="SystemThemeLabel"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names." />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
+            <UniformGrid Margin="0,8,0,16" Columns="2">
                 <fluence:Card
                     Margin="0,0,10,10"
-                    Height="200"
                     Padding="20"
-                    CornerRadius="8"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="settings"
@@ -115,8 +83,7 @@
                         <fluence:FontIcon
                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE790;"
-                            IconFontSize="32"
-                            />
+                            IconFontSize="24" />
                     </fluence:Card.Icon>
                     <fluence:Card.Header>
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Theming" />
@@ -131,7 +98,6 @@
                 <fluence:Card
                     Margin="10,0,0,10"
                     Padding="20"
-                    CornerRadius="8"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="settings"
@@ -164,7 +130,6 @@
                 <fluence:Card
                     Margin="0,0,6,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="buttons"
@@ -188,7 +153,6 @@
                 <fluence:Card
                     Margin="6,0,6,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="selection"
@@ -212,7 +176,6 @@
                 <fluence:Card
                     Margin="6,0,0,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="inputs"
@@ -236,7 +199,6 @@
                 <fluence:Card
                     Margin="0,0,6,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="status"
@@ -260,7 +222,6 @@
                 <fluence:Card
                     Margin="6,0,6,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="data"
@@ -284,7 +245,6 @@
                 <fluence:Card
                     Margin="6,0,0,12"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="navigation"
@@ -308,7 +268,6 @@
                 <fluence:Card
                     Margin="0,0,6,0"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="tabs"
@@ -332,7 +291,6 @@
                 <fluence:Card
                     Margin="6,0,6,0"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="buttons"
@@ -356,7 +314,6 @@
                 <fluence:Card
                     Margin="6,0,0,0"
                     Padding="16"
-                    CornerRadius="4"
                     Click="Card_Click"
                     IsClickable="True"
                     Tag="data"
