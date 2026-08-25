@@ -171,7 +171,7 @@ After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resourc
 | `[1]` | `Themes/Typography/Typography.xaml` | Loaded once; never replaced                      |
 | `[2]` | `Themes/Generic.xaml`         | Loaded once; never replaced                            |
 
-Slot `[0]` is the `ResourceDictionary` built by `FluenceThemeEngine.BuildComputedDictionary` each Apply. It holds every canonical Color token and its frozen `SolidColorBrush` twin, plus special brushes (elevation gradients, HC overrides, brush-only exceptions). Replacing it causes all `DynamicResource` bindings in control templates to re-resolve without any promotion step.
+Slot `[0]` is the `ResourceDictionary` built by `FluenceThemeEngine.BuildComputedDictionary` each Apply. It carries a marker key so that seeding the slots again can remove it: Typography and Generic are matched by pack URI, but a computed dictionary is built in code and has no `Source`. Leaving one behind is not cosmetic, because WPF resolves merged dictionaries last-wins and a stale computed dictionary past slot `[0]` shadows every token the fresh one publishes. It holds every canonical Color token and its frozen `SolidColorBrush` twin, plus special brushes (elevation gradients, HC overrides, brush-only exceptions). Replacing it causes all `DynamicResource` bindings in control templates to re-resolve without any promotion step.
 
 The slot layout is enforced by `DictionaryStabilityTests` - any change to count or ordering must be accompanied by a conscious update to both sides. The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read by `BaseColorTables` at pipeline step 3; `Brushes.xaml` and `Accent.xaml` no longer exist.
 

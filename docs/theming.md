@@ -12,7 +12,7 @@
 
 Slot 0 holds every canonical Color token and its frozen `SolidColorBrush` twin. It is built entirely in C# by `FluenceThemeEngine` each time `Apply` is called; replacing it causes all `DynamicResource` bindings to re-resolve with no promotion step. `Brushes.xaml` and `Accent.xaml` no longer exist; brushes are produced by `BrushFactory` (auto Color-to-Brush twins) and `SpecialBrushes` (gradient elevation borders, High Contrast SystemColors overrides, and brush-only exceptions). The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read by C# at build time; they contain no brushes.
 
-Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this).
+Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this). Seeding the slots again, which happens when an application clears `Application.Resources` and applies a theme afresh, removes the dictionaries Fluence published before: `Typography.xaml` and `Generic.xaml` by their pack URI, and the computed dictionary by a marker key it carries, since a dictionary built in code has no `Source` to match on. This matters because WPF resolves merged dictionaries last-wins: a computed dictionary left behind past slot 0 would answer lookups that the freshly published one owns.
 
 `Typography.xaml` defines the Fluent type ramp as named `TextBlock` styles: `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, `TitleLargeTextBlockStyle`, and so on. `TextBlockExtensions.Typography` is the compatibility API; it resolves those styles rather than duplicating font metrics in code.
 
