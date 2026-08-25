@@ -285,7 +285,7 @@ namespace Fluence.Wpf.Tests
 
                     // WPF fires Click after MouseLeftButtonUp completes; the Click handler must not toggle
                     // the state back on for a gesture that was a press-and-release.
-                    revealButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent, revealButton));
+                    revealButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, revealButton));
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box),

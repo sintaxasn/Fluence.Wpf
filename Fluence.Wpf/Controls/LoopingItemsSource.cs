@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Controls
         {
             for (int index = 0; index < _source.Count; index++)
             {
-                if (object.Equals(_source[index], value))
+                if (Equals(_source[index], value))
                 {
                     return index;
                 }
