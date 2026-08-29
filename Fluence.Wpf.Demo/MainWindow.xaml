@@ -13,7 +13,6 @@
     ExtendsContentIntoTitleBar="True"
     RenderOptions.BitmapScalingMode="HighQuality"
     SystemBackdropType="Mica"
-    TitleBarHeight="42"
     UseLayoutRounding="True">
 
     <fluence:FluenceWindow.TitleBar>
