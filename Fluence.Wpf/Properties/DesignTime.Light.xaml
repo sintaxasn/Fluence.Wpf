@@ -19,7 +19,7 @@
     <Color x:Key="AccentTextFillColorTertiary">#FF005BA1</Color>
     <Color x:Key="AcrylicBackgroundFillColorBase">#FFEEEEEE</Color>
     <Color x:Key="AcrylicBackgroundFillColorDefault">#F0F9F9F9</Color>
-    <Color x:Key="ApplicationBackgroundColor">#FFFAFAFA</Color>
+    <Color x:Key="ApplicationBackgroundColor">#FFFFFFFF</Color>
     <Color x:Key="CardBackgroundFillColorDefault">#B3FFFFFF</Color>
     <Color x:Key="CardBackgroundFillColorSecondary">#80F6F6F6</Color>
     <Color x:Key="CardBackgroundFillColorTertiary">#FFFFFFFF</Color>
