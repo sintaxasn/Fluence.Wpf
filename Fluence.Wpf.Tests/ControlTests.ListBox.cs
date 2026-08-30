@@ -64,7 +64,12 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(16.0, indicator.Height, 0.01);
                 Assert.Equal(new CornerRadius(1.5), indicator.CornerRadius);
                 Assert.Equal(VerticalAlignment.Center, indicator.VerticalAlignment);
-                _ = Assert.IsAssignableFrom<TranslateTransform>(indicator.RenderTransform);
+                Assert.Equal(HorizontalAlignment.Left, indicator.HorizontalAlignment);
+
+                // WinUI insets the pill 2 px from the left edge and takes it out of hit testing so it
+                // cannot claim a press aimed at the item (TableView.xaml PART_SelectionIndicator).
+                Assert.Equal(new Thickness(2, 0, 0, 0), indicator.Margin);
+                Assert.False(indicator.IsHitTestVisible);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("AccentFillColorDefaultBrush"));
                 SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indicator.Background);
@@ -74,7 +79,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task ListBox_SelectionIndicator_SlidesInAtFullSizeWhenSelectedAsync()
+        public Task ListBox_SelectionIndicator_FadesInAtFullSizeWhenSelectedAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
@@ -96,10 +101,8 @@ namespace Fluence.Wpf.Tests
                 bool shown = await WaitUntilAsync(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99).ConfigureAwait(true);
                 Assert.True(shown, "SelectionIndicator must animate to full opacity when the item is selected.");
 
-                TranslateTransform translate = Assert.IsType<TranslateTransform>(indicator.RenderTransform);
-                bool settled = await WaitUntilAsync(w.Dispatcher, 1000, () => System.Math.Abs(translate.X) < 0.01).ConfigureAwait(true);
-                Assert.True(settled, "SelectionIndicator must slide to its resting position when selected.");
-
+                // WinUI fades the pill in and never moves it, so the reveal must not add a transform.
+                Assert.Null(indicator.RenderTransform as TranslateTransform);
                 Assert.Equal(16.0, indicator.ActualHeight, 0.5);
                 w.Close();
             });
