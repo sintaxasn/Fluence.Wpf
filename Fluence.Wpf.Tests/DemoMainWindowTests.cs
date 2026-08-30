@@ -574,7 +574,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Assert.Equal(42.0, window.TitleBarHeight, 0.01);
+                    // FluenceWindow.DefaultTitleBarHeight, the WinUI 3 canonical expanded title bar.
+                    Assert.Equal(48.0, window.TitleBarHeight, 0.01);
 
                     NavigationViewItem firstItem = Assert.IsType<NavigationViewItem>(nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null);
                     double? itemY = GetVisualY(firstItem, window);

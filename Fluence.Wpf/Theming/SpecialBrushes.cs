@@ -74,6 +74,10 @@ namespace Fluence.Wpf.Theming
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
             dict["NavigationViewSelectionIndicatorBrush"] = Solid(colors["SystemAccentColor"]);
+            // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
+            // dictionary defines with the same tint, opacity, and fallback as
+            // AcrylicBackgroundFillColorDefaultBrush in every theme, so the two resolve identically.
+            // AddHighContrastBrushes overrides this with the live system window color.
             dict["ScrollBarTrackFillBrush"] = Solid(colors["AcrylicBackgroundFillColorDefault"]);
 
             // SystemColor aliases used by the WinUI Gallery color guidance page. These read live
@@ -422,6 +426,12 @@ namespace Fluence.Wpf.Theming
             // Acrylic background fill
             dict["AcrylicBackgroundFillColorDefaultBrush"] = Solid(window);
             dict["AcrylicBackgroundFillColorBaseBrush"] = Solid(window);
+
+            // Scroll bar track. WinUI resolves ScrollBarTrackFill to AcrylicInAppFillColorDefaultBrush,
+            // which the high contrast dictionary redefines as a solid SystemColorWindowColor brush.
+            // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the HC table, so
+            // the seed assigned in Add would ignore the white on black variants.
+            dict["ScrollBarTrackFillBrush"] = Solid(window);
 
             // System fill (SystemFillColorAttention skipped by Build in HC; brush -> Highlight)
             dict["SystemFillColorAttentionBrush"] = Solid(highlight);

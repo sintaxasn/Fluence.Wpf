@@ -75,6 +75,7 @@
                                         x:Name="ContentScrollViewer"
                                         Grid.Row="1"
                                         HorizontalScrollBarVisibility="Disabled"
+                                        Style="{DynamicResource ScrollViewerStyle}"
                                         VerticalScrollBarVisibility="Auto">
                                         <ContentPresenter
                                             x:Name="BodyPresenter"

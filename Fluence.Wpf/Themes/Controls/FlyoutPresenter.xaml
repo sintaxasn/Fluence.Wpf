@@ -41,7 +41,10 @@
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="PresenterTranslate" />
                         </Border.RenderTransform>
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer
+                            HorizontalScrollBarVisibility="Auto"
+                            Style="{DynamicResource ScrollViewerStyle}"
+                            VerticalScrollBarVisibility="Auto">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
