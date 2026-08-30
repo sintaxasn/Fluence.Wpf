@@ -63,7 +63,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
-                    Border surface = Assert.IsAssignableFrom<Border>(FindVisualChild<Border>(presenter));
+
+                    // By name, not "the first Border in the tree": the elevation caster is painted
+                    // ahead of the surface and would otherwise be the one under assertion.
+                    Border surface = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(presenter, "PresenterSurface"));
 
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
