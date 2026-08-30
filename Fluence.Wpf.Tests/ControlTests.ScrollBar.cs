@@ -130,6 +130,46 @@ namespace Fluence.Wpf.Tests
                 targetProperty));
         }
 
+        /// <summary>
+        /// The <see cref="Visibility"/> counterpart of
+        /// <see cref="AssertScrollBarVisualStateDoubleKeyFrame"/>: asserts that the named state
+        /// drives the named part's Visibility to <paramref name="expectedValue"/>.
+        /// </summary>
+        /// <param name="scrollBar">The templated scroll bar to inspect.</param>
+        /// <param name="stateName">The visual state that should carry the keyframe.</param>
+        /// <param name="targetName">The template part the keyframe targets.</param>
+        /// <param name="expectedValue">The visibility the state lands on.</param>
+        private static void AssertScrollBarVisualStateVisibilityKeyFrame(
+            ScrollBar scrollBar,
+            string stateName,
+            string targetName,
+            Visibility expectedValue)
+        {
+            Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"));
+
+            IList groups = VisualStateManager.GetVisualStateGroups(root);
+            Storyboard storyboard = Assert.IsAssignableFrom<Storyboard>(groups.Cast<VisualStateGroup>().SelectMany(static group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal))?.Storyboard);
+
+            foreach (Timeline timeline in storyboard.Children)
+            {
+                if (timeline is not ObjectAnimationUsingKeyFrames animation ||
+                    !string.Equals(Storyboard.GetTargetName(animation), targetName, StringComparison.Ordinal) ||
+                    !string.Equals(Storyboard.GetTargetProperty(animation).Path, "Visibility", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Assert.Equal(expectedValue, animation.KeyFrames[0].Value);
+                return;
+            }
+
+            Assert.Fail(string.Format(
+                CultureInfo.InvariantCulture,
+                "State {0} must animate {1}.Visibility.",
+                stateName,
+                targetName));
+        }
+
         // ---------------------------------------------------------------------------
         // ScrollViewer template structure
         // ---------------------------------------------------------------------------
@@ -441,22 +481,22 @@ namespace Fluence.Wpf.Tests
 
                     Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
 
-                    // Prime a different state first. Visual state groups come from the shared control
-                    // template, so the current state carries over from whichever bar last used it.
-                    // Asking for a state the group already believes it is in short circuits and never
-                    // applies the storyboard to this instance, leaving the authored values in place.
-                    _ = VisualStateManager.GoToState(sb, "MouseIndicator", useTransitions: false);
-                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
-
                     bool stateApplied = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
-
                     Assert.True(stateApplied, "GoToState('NoIndicator') must return true - ScrollingIndicatorStates must be present.");
-                    Assert.Equal(0.0, mainRoot.Opacity, 0.01);
-                    Assert.Equal(Visibility.Collapsed, mainRoot.Visibility);
 
-                    // The trigger keyed on IndicatorMode is what stops a faded rail from swallowing
-                    // clicks meant for the content beneath it.
+                    // Asserted against the storyboard definition, not the live property. A
+                    // ControlTemplate's VisualStateGroup objects are shared by every ScrollBar built
+                    // from that template, and the group's clock bookkeeping goes with them, so while
+                    // other bars are alive GoToState can report success without the storyboard
+                    // reaching this instance and the authored values survive. Every stable visual
+                    // state test in this file reads the definition for that reason.
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "MainRoot", "Opacity", 0.0);
+                    AssertScrollBarVisualStateVisibilityKeyFrame(sb, "NoIndicator", "MainRoot", Visibility.Collapsed);
+
+                    // The IsHitTestVisible half is a plain template trigger keyed on IndicatorMode,
+                    // per instance rather than VSM, so the live value is reliable here. It is what
+                    // stops a faded rail from swallowing clicks meant for the content beneath it.
                     Controls.ScrollBarExtensions.SetIndicatorMode(sb, ScrollingIndicatorMode.None);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                     Assert.False(mainRoot.IsHitTestVisible);
@@ -491,19 +531,19 @@ namespace Fluence.Wpf.Tests
 
                     Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
 
-                    // Prime a different state first, for the shared VisualStateGroup reason above.
-                    _ = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
-                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
-
                     bool stateApplied = VisualStateManager.GoToState(sb, "TouchIndicator", useTransitions: false);
                     Controls.ScrollBarExtensions.SetIndicatorMode(sb, ScrollingIndicatorMode.TouchIndicator);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.True(stateApplied, "GoToState('TouchIndicator') must return true.");
 
-                    // Visible like the WinUI VerticalPanningRoot, but with no drag target.
-                    Assert.Equal(Visibility.Visible, mainRoot.Visibility);
-                    Assert.Equal(1.0, mainRoot.Opacity, 0.01);
+                    // Definition-based for the same shared VisualStateGroup reason as the NoIndicator
+                    // test: the rail stays visible, like the WinUI VerticalPanningRoot.
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "TouchIndicator", "MainRoot", "Opacity", 1.0);
+                    AssertScrollBarVisualStateVisibilityKeyFrame(sb, "TouchIndicator", "MainRoot", Visibility.Visible);
+
+                    // The trigger half is per instance, so this one reads the live value: the panning
+                    // bar offers no drag target.
                     Assert.False(mainRoot.IsHitTestVisible);
                 }
                 finally
