@@ -425,6 +425,13 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
+
+                // This test drives the visual states directly, so the auto hide driver has to be off
+                // or it competes for them: a bar with no host ScrollViewer is deliberately pinned to
+                // MouseIndicator on Loaded, and it also reveals itself if the pointer happens to be
+                // over the test window. Either one races the explicit GoToState below.
+                Controls.ScrollBarExtensions.SetIsIndicatorEnabled(sb, value: false);
+
                 Window window = new() { Width = 60, Height = 300, Content = sb };
                 try
                 {
@@ -433,6 +440,13 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
+
+                    // Prime a different state first. Visual state groups come from the shared control
+                    // template, so the current state carries over from whichever bar last used it.
+                    // Asking for a state the group already believes it is in short circuits and never
+                    // applies the storyboard to this instance, leaving the authored values in place.
+                    _ = VisualStateManager.GoToState(sb, "MouseIndicator", useTransitions: false);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
@@ -463,6 +477,11 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
+
+                // Driver off for the same reason as the NoIndicator test: it would otherwise pin this
+                // host-less bar to MouseIndicator and overwrite the state under assertion.
+                Controls.ScrollBarExtensions.SetIsIndicatorEnabled(sb, value: false);
+
                 Window window = new() { Width = 60, Height = 300, Content = sb };
                 try
                 {
@@ -471,6 +490,10 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
+
+                    // Prime a different state first, for the shared VisualStateGroup reason above.
+                    _ = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "TouchIndicator", useTransitions: false);
                     Controls.ScrollBarExtensions.SetIndicatorMode(sb, ScrollingIndicatorMode.TouchIndicator);
@@ -522,9 +545,15 @@ namespace Fluence.Wpf.Tests
 
                     ScrollBar vertBar = Assert.IsAssignableFrom<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_VerticalScrollBar"));
 
-                    // The style attaches the driver, which hides the bar once it finds its host.
+                    // The style attaches the driver, which hides the bar once it finds its host. The
+                    // resting state is only None while the pointer is elsewhere; a test runner whose
+                    // cursor happens to sit over the window is a legitimate MouseIndicator, so that
+                    // half of the contract is asserted only when the pointer is away.
                     Assert.True(Controls.ScrollBarExtensions.GetIsIndicatorEnabled(vertBar));
-                    Assert.Equal(ScrollingIndicatorMode.None, Controls.ScrollBarExtensions.GetIndicatorMode(vertBar));
+                    if (!sv.IsMouseOver)
+                    {
+                        Assert.Equal(ScrollingIndicatorMode.None, Controls.ScrollBarExtensions.GetIndicatorMode(vertBar));
+                    }
 
                     sv.ScrollToVerticalOffset(120);
                     sv.UpdateLayout();
