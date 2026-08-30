@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.19-Preview] - 2026-08-30
+
 ### Fixed
 
 - `Card` no longer paints its background twice. The template stacked `CardBackgroundFillColorDefaultBrush` on an outer border and again on a nested `VariantBackground` border, and the card fill tokens are translucent (`#B3FFFFFF` Light, `#0DFFFFFF` Dark), so the brush composited with itself: 70% white rendered as 91% and 5.1% white as 9.9%, making every card except `Outlined` more opaque than the token specifies, most visibly over Mica. One element now carries the fill, the stroke and the radius. The three nested wrapper borders (`ShadowHost`, `CardRoot`, `VariantBackground`) and the unreachable `ClickableStates` visual state group (attached to a non-root element, and nothing ever called `GoToState`) are removed with them.
