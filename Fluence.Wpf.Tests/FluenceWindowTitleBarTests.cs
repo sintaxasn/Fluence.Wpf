@@ -240,9 +240,10 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task BorderThickness_DefaultIsOneAsync()
+        public Task BorderThickness_DefaultIsTwoAsync()
         {
-            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(1), w.BorderThickness));
+            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 2.
+            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(2), w.BorderThickness));
         }
 
         #endregion 5. HasShadow and WindowBorder defaults
@@ -331,9 +332,10 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task DefaultBorderThickness_IsOneAsync()
+        public Task DefaultBorderThickness_IsTwoAsync()
         {
-            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(1), w.BorderThickness));
+            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 2.
+            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(2), w.BorderThickness));
         }
 
         [Fact]
