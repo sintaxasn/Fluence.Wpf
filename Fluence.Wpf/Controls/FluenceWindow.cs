@@ -1660,7 +1660,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Returns <see langword="true"/> when the element under <paramref name="windowPoint"/> (or any of its
         /// visual ancestors) has <see cref="WindowChrome.IsHitTestVisibleInChromeProperty"/> set to
-        /// <see langword="true"/>.  Used by <see cref="HitTestTitleBar"/> to let clicks on interactive controls
+        /// <see langword="true"/>. Used by <see cref="HitTestTitleBar"/> to let clicks on interactive controls
         /// inside the title bar (e.g. a search TextBox or ToggleSwitch) fall through to WPF instead
         /// of being swallowed as caption-area drag gestures.
         /// </summary>
