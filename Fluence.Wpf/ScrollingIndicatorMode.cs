@@ -36,7 +36,7 @@ namespace Fluence.Wpf
     /// <remarks>
     /// Mirrors the WinUI 3 <c language="csharp">ScrollingIndicatorMode</c> enumeration that the WinUI ScrollViewer
     /// template pushes into its two scroll bars. A Fluence scroll bar reads the value from
-    /// <see cref="Fluence.Wpf.Controls.ScrollBarExtensions.IndicatorModeProperty"/> and moves its
+    /// <see cref="Controls.ScrollBarExtensions.IndicatorModeProperty"/> and moves its
     /// <c language="xaml">ScrollingIndicatorStates</c> visual state group to the matching state.
     /// </remarks>
     public enum ScrollingIndicatorMode

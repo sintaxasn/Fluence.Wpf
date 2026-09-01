@@ -26,8 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Helpers;
-using Fluence.Wpf.Native;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -39,6 +37,8 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
+using Fluence.Wpf.Helpers;
+using Fluence.Wpf.Native;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;

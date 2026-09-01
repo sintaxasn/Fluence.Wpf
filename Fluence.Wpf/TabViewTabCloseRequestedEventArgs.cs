@@ -26,8 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
 using System.Windows;
+using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf
 {
