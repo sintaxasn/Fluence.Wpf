@@ -4,6 +4,8 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Necessary package for Linux-based Dependabot -->
+    <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
     <!-- Analyzers referenced from Directory.Build.props -->
     <PackageVersion Include="Meziantou.Analyzer" Version="3.0.191" />
     <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" />
