@@ -531,7 +531,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void WrapToggleButton_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            ToggleButtonStateText.Text = WrapToggleButton.IsChecked is true
+            ToggleButtonStateText.Text = WrapToggleButton.IsChecked.GetValueOrDefault()
                 ? "Wrap text: On"
                 : "Wrap text: Off";
         }

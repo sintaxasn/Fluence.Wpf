@@ -474,9 +474,9 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            SelectionModeListView.SelectionMode = (MultipleModeRadio?.IsChecked) is true
+            SelectionModeListView.SelectionMode = (MultipleModeRadio?.IsChecked ?? false)
                 ? SelectionMode.Multiple
-                : (ExtendedModeRadio?.IsChecked) is true ? SelectionMode.Extended : SelectionMode.Single;
+                : (ExtendedModeRadio?.IsChecked ?? false) ? SelectionMode.Extended : SelectionMode.Single;
 
             SelectionModeListView.UnselectAll();
             UpdateSelectionLabel();

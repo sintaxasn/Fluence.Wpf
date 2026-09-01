@@ -312,7 +312,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            bool isChecked = SelectAllCheckBox.IsChecked is true;
+            bool isChecked = SelectAllCheckBox.IsChecked.GetValueOrDefault();
             _updatingSelectAll = true;
             OptionOneCheckBox.IsChecked = isChecked;
             OptionTwoCheckBox.IsChecked = isChecked;
@@ -328,9 +328,9 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             int selectedCount = 0;
-            selectedCount += OptionOneCheckBox.IsChecked is true ? 1 : 0;
-            selectedCount += OptionTwoCheckBox.IsChecked is true ? 1 : 0;
-            selectedCount += OptionThreeCheckBox.IsChecked is true ? 1 : 0;
+            selectedCount += OptionOneCheckBox.IsChecked.GetValueOrDefault() ? 1 : 0;
+            selectedCount += OptionTwoCheckBox.IsChecked.GetValueOrDefault() ? 1 : 0;
+            selectedCount += OptionThreeCheckBox.IsChecked.GetValueOrDefault() ? 1 : 0;
 
             _updatingSelectAll = true;
             SelectAllCheckBox.IsChecked = selectedCount switch

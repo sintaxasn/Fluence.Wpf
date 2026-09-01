@@ -76,6 +76,7 @@ MA0153.report_types_with_data_classification_attributes = true
 
 # Disable Meziantou.Analyzer rules we don't want to deal with.
 dotnet_diagnostic.MA0009.severity = none
+dotnet_diagnostic.MA0038.severity = none
 dotnet_diagnostic.MA0051.severity = none
 dotnet_diagnostic.MA0104.severity = none
 dotnet_diagnostic.MA0107.severity = none
@@ -847,3 +848,20 @@ dotnet_diagnostic.rcs9010.severity = error
 
 # Specify ExportCodeFixProviderAttribute.Name
 dotnet_diagnostic.rcs9011.severity = error
+
+# WPF XAML code-behind files -- suppress rules that fire as false positives because the
+# XAML compiler generates a paired partial class that Roslyn analyzers cannot observe at
+# analysis time.  The generated partial is what supplies the x:Name instance fields; without
+# it the analyzers incorrectly report 'partial' as gratuitous and instance methods as
+# candidates for static.
+[**.xaml.cs]
+# Sonar S2333 / Meziantou MA0204: "partial is gratuitous in this context."
+# The WPF XAML compiler generates the second partial class declaration; neither Sonar nor
+# Meziantou can see the generated file, so both rules fire as false positives.
+dotnet_diagnostic.S2333.severity = none
+dotnet_diagnostic.MA0204.severity = none
+# Roslyn CA1822: "Member can be marked as static."
+# Same root cause: the XAML-generated instance fields (x:Name controls) are invisible to
+# the Roslyn analysis when the generated partial has not been emitted yet, causing CA1822
+# to fire for methods that access those fields.
+dotnet_diagnostic.CA1822.severity = none

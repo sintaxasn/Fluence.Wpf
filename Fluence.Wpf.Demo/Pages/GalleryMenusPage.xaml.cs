@@ -392,7 +392,7 @@ namespace Fluence.Wpf.Demo.Pages
             SetTextFromTag(ContextMenuResultLabel, "Last action", sender);
         }
 
-        private void FlyoutButton_Click(object sender, RoutedEventArgs e)
+        private static void FlyoutButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement element)
             {

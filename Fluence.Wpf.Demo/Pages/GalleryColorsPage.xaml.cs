@@ -596,12 +596,12 @@ namespace Fluence.Wpf.Demo.Pages
             return textBlock;
         }
 
-        private void CopyCodeSampleButton_Click(object sender, RoutedEventArgs e)
+        private static void CopyCodeSampleButton_Click(object sender, RoutedEventArgs e)
         {
             DemoClipboard.SetText(SampleMarkup);
         }
 
-        private void CopyThemeDictionarySampleButton_Click(object sender, RoutedEventArgs e)
+        private static void CopyThemeDictionarySampleButton_Click(object sender, RoutedEventArgs e)
         {
             DemoClipboard.SetText(ThemeDictionaryXamlSource);
         }

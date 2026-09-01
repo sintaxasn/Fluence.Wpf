@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private void GitHubLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        private static void GitHubLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             _ = Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;

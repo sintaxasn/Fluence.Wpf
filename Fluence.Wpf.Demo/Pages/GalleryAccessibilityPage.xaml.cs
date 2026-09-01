@@ -642,7 +642,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            RtlDemoCard.FlowDirection = RtlToggle.IsChecked is true
+            RtlDemoCard.FlowDirection = RtlToggle.IsChecked.GetValueOrDefault()
                 ? FlowDirection.RightToLeft
                 : FlowDirection.LeftToRight;
         }

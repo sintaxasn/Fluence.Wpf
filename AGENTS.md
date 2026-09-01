@@ -72,7 +72,13 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 
 - SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1659`, `S3358`, `S3869`
 - Roslynator: `RCS1111`, `RCS1181`, `RCS1238`
-- Meziantou: `MA0009`, `MA0051`, `MA0104`, `MA0107`, `MA0110`, `MA0177`, `MA0181`
+- Meziantou: `MA0009`, `MA0038`, `MA0051`, `MA0104`, `MA0107`, `MA0110`, `MA0177`, `MA0181`
+
+The `[**.xaml.cs]` section in `.editorconfig` suppresses three additional rules that are false positives for WPF XAML code-behind. The WPF XAML compiler generates a paired partial class that supplies the `x:Name` instance fields, but the analyzers run before (or without visibility into) that generated file, so they incorrectly report `partial` as unnecessary and instance methods as candidates for `static`. Do not re-enable without first confirming that the underlying analyzer regression has been resolved upstream:
+
+- `S2333` - Sonar: "partial is gratuitous" -- WPF XAML code-behind false positive
+- `MA0204` - Meziantou: "Remove unnecessary partial modifier" -- same root cause
+- `CA1822` - Roslyn: "Member can be marked as static" -- XAML-generated instance fields invisible to the analyzer
 
 The former `IDE0056` / `IDE0057` (index/range operators) and `CA1307` / `CA1310` / `CA1847` / `CA1866` (string comparison overloads) suppressions are gone. `System.Index` / `System.Range` and `string.Contains(string, StringComparison)` now compile on `net472` through the polyfill allowlist above, and the `StartsWith` / `EndsWith` / `IndexOf` string+`StringComparison` overloads are in-box on `net472`. The char overloads `CA1847` / `CA1866` suggest (`Contains(char)`, `StartsWith(char)`, `EndsWith(char)`) are still absent on `net472`, and array range slicing needs `RuntimeHelpers.GetSubArray`; a hit from those rules requires adding the matching allowlist entry before the suggested fix compiles.
 

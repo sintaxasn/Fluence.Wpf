@@ -257,7 +257,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            if (ThemeWatcherToggle.IsChecked is true)
+            if (ThemeWatcherToggle.IsChecked.GetValueOrDefault())
             {
                 SystemThemeWatcher.Watch(host);
                 SystemThemeLabel.Text = "Watching: Yes";
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private void AccentSwatch_Click(object sender, RoutedEventArgs e)
+        private static void AccentSwatch_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not FrameworkElement swatch || !TryGetAccentSwatchColor(swatch.Tag?.ToString(), out Color accentColor))
             {
@@ -279,7 +279,7 @@ namespace Fluence.Wpf.Demo.Pages
             ApplicationAccentColorManager.ApplyCustomAccent(accentColor);
         }
 
-        private void SystemAccentButton_Click(object sender, RoutedEventArgs e)
+        private static void SystemAccentButton_Click(object sender, RoutedEventArgs e)
         {
             ApplicationAccentColorManager.ApplySystemAccent();
         }
@@ -303,11 +303,11 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            bool showTitle = ShowWindowTitleToggle.IsChecked is true;
+            bool showTitle = ShowWindowTitleToggle.IsChecked.GetValueOrDefault();
             string title = showTitle ? MainWindow.GalleryWindowTitle : string.Empty;
             _owner.SetUserShowTitle(showTitle, title);
 
-            bool showIcon = ShowWindowIconToggle.IsChecked is true;
+            bool showIcon = ShowWindowIconToggle.IsChecked.GetValueOrDefault();
             // Use FluenceWindow's rasterized brand icon (the same BitmapSource it applies by default),
             // not the raw vector DrawingImage resource: Window.Icon drives the Win32 HICON, which does
             // not reliably render a DrawingImage, so a re-toggle would otherwise blank the taskbar icon.
@@ -315,12 +315,12 @@ namespace Fluence.Wpf.Demo.Pages
             _owner.SetUserShowIcon(showIcon, icon);
         }
 
-        private void CopyRepositoryButton_Click(object sender, RoutedEventArgs e)
+        private static void CopyRepositoryButton_Click(object sender, RoutedEventArgs e)
         {
             DemoClipboard.SetText(RepositoryUri.AbsoluteUri);
         }
 
-        private void OpenRepositoryButton_Click(object sender, RoutedEventArgs e)
+        private static void OpenRepositoryButton_Click(object sender, RoutedEventArgs e)
         {
             ProcessStartInfo startInfo = new(RepositoryUri.AbsoluteUri)
             {

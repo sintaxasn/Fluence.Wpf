@@ -382,7 +382,7 @@ namespace Fluence.Wpf.Demo.Pages
             SourceTabControl?.Items.Clear();
 
             UpdateSourceVisibility();
-            if ((SourceExpander?.IsExpanded) is true)
+            if (SourceExpander?.IsExpanded ?? false)
             {
                 LoadSourceTabs();
             }

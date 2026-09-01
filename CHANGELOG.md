@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- CI build restored after `Meziantou.Analyzer` 3.0.200 introduced new false-positive diagnostics for WPF XAML code-behind. `MA0038` (deprecated in favour of `CA1822`) is now suppressed globally; `S2333`, `MA0204`, and `CA1822` are suppressed for `*.xaml.cs` files where the XAML compiler generates the paired partial class that these analyzers cannot observe. `S1125` ("unnecessary Boolean literal") violations are fixed in code by replacing `x is true` with `x.GetValueOrDefault()` or `x ?? false` for `bool?` operands. Eight event handlers that genuinely access no instance data are marked `static`.
+
 ## [0.8.19-Preview] - 2026-08-30
 
 ### Fixed
