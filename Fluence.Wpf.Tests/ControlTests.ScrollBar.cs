@@ -104,10 +104,10 @@ namespace Fluence.Wpf.Tests
             string targetProperty,
             double expectedValue)
         {
-            Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"));
+            Grid root = Assert.IsType<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"), exactMatch: false);
 
             IList groups = VisualStateManager.GetVisualStateGroups(root);
-            Storyboard storyboard = Assert.IsAssignableFrom<Storyboard>(groups.Cast<VisualStateGroup>().SelectMany(static group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal))?.Storyboard);
+            Storyboard storyboard = Assert.IsType<Storyboard>(groups.Cast<VisualStateGroup>().SelectMany(static group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal))?.Storyboard, exactMatch: false);
 
             foreach (Timeline timeline in storyboard.Children)
             {
@@ -145,10 +145,10 @@ namespace Fluence.Wpf.Tests
             string targetName,
             Visibility expectedValue)
         {
-            Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"));
+            Grid root = Assert.IsType<Grid>(FindVisualChildByName<Grid>(scrollBar, "Root"), exactMatch: false);
 
             IList groups = VisualStateManager.GetVisualStateGroups(root);
-            Storyboard storyboard = Assert.IsAssignableFrom<Storyboard>(groups.Cast<VisualStateGroup>().SelectMany(static group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal))?.Storyboard);
+            Storyboard storyboard = Assert.IsType<Storyboard>(groups.Cast<VisualStateGroup>().SelectMany(static group => group.States.Cast<VisualState>()).FirstOrDefault(candidate => string.Equals(candidate.Name, stateName, StringComparison.Ordinal))?.Storyboard, exactMatch: false);
 
             foreach (Timeline timeline in storyboard.Children)
             {
@@ -204,9 +204,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     sv.UpdateLayout();
 
-                    ScrollBar vertBar = Assert.IsAssignableFrom<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_VerticalScrollBar"));
-                    ScrollBar horizBar = Assert.IsAssignableFrom<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_HorizontalScrollBar"));
-                    Border separator = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(sv, "ScrollBarSeparator"));
+                    ScrollBar vertBar = Assert.IsType<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_VerticalScrollBar"), exactMatch: false);
+                    ScrollBar horizBar = Assert.IsType<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_HorizontalScrollBar"), exactMatch: false);
+                    Border separator = Assert.IsType<Border>(FindVisualChildByName<Border>(sv, "ScrollBarSeparator"), exactMatch: false);
 
                     // The bars sit in their own cells of the two by two grid and therefore stop short
                     // of each other; the separator owns the corner they would otherwise cross in.
@@ -219,8 +219,8 @@ namespace Fluence.Wpf.Tests
 
                     // The content presenter spans the whole grid, so the bars overlay rather than
                     // squeeze the content, matching the WinUI DefaultScrollViewerStyle.
-                    ScrollContentPresenter presenter = Assert.IsAssignableFrom<ScrollContentPresenter>(
-                        FindVisualChildByName<ScrollContentPresenter>(sv, "PART_ScrollContentPresenter"));
+                    ScrollContentPresenter presenter = Assert.IsType<ScrollContentPresenter>(
+                        FindVisualChildByName<ScrollContentPresenter>(sv, "PART_ScrollContentPresenter"), exactMatch: false);
                     Assert.Equal(2, Grid.GetRowSpan(presenter));
                     Assert.Equal(2, Grid.GetColumnSpan(presenter));
                 }
@@ -391,7 +391,7 @@ namespace Fluence.Wpf.Tests
                     _ = sb.ApplyTemplate();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "Root"));
+                    Grid root = Assert.IsType<Grid>(FindVisualChildByName<Grid>(sb, "Root"), exactMatch: false);
 
                     // WinUI keeps the hit target at ScrollBarSize whether the bar is at rest or
                     // expanded; only the painted thumb changes size.
@@ -435,7 +435,7 @@ namespace Fluence.Wpf.Tests
                     sb.UpdateLayout();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    Thumb thumb = Assert.IsAssignableFrom<Thumb>(FindVisualChildByName<Thumb>(sb, "VerticalThumb"));
+                    Thumb thumb = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(sb, "VerticalThumb"), exactMatch: false);
                     Assert.Equal(ExpectedThumbMinLength, thumb.MinHeight, 0.01);
                     Assert.True(
                         thumb.ActualHeight >= ExpectedThumbMinLength - 0.5,
@@ -479,7 +479,7 @@ namespace Fluence.Wpf.Tests
                     _ = sb.ApplyTemplate();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
+                    Grid mainRoot = Assert.IsType<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"), exactMatch: false);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "NoIndicator", useTransitions: false);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
@@ -529,7 +529,7 @@ namespace Fluence.Wpf.Tests
                     _ = sb.ApplyTemplate();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    Grid mainRoot = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"));
+                    Grid mainRoot = Assert.IsType<Grid>(FindVisualChildByName<Grid>(sb, "MainRoot"), exactMatch: false);
 
                     bool stateApplied = VisualStateManager.GoToState(sb, "TouchIndicator", useTransitions: false);
                     Controls.ScrollBarExtensions.SetIndicatorMode(sb, ScrollingIndicatorMode.TouchIndicator);
@@ -583,7 +583,7 @@ namespace Fluence.Wpf.Tests
                     sv.UpdateLayout();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    ScrollBar vertBar = Assert.IsAssignableFrom<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_VerticalScrollBar"));
+                    ScrollBar vertBar = Assert.IsType<ScrollBar>(FindVisualChildByName<ScrollBar>(sv, "PART_VerticalScrollBar"), exactMatch: false);
 
                     // The style attaches the driver, which hides the bar once it finds its host. The
                     // resting state is only None while the pointer is elsewhere; a test runner whose
@@ -629,8 +629,8 @@ namespace Fluence.Wpf.Tests
                     _ = sb.ApplyTemplate();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
-                    Grid root = Assert.IsAssignableFrom<Grid>(FindVisualChildByName<Grid>(sb, "Root"));
-                    Border thumbVisual = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(sb, "ThumbVisual"));
+                    Grid root = Assert.IsType<Grid>(FindVisualChildByName<Grid>(sb, "Root"), exactMatch: false);
+                    Border thumbVisual = Assert.IsType<Border>(FindVisualChildByName<Border>(sb, "ThumbVisual"), exactMatch: false);
 
                     sb.IsEnabled = false;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
@@ -696,7 +696,7 @@ namespace Fluence.Wpf.Tests
                     // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the high
                     // contrast table, so the track has to come from the live system window color or the
                     // white on black variants render an invisible rail.
-                    SolidColorBrush track = Assert.IsAssignableFrom<SolidColorBrush>(app.TryFindResource("ScrollBarTrackFillBrush"));
+                    SolidColorBrush track = Assert.IsType<SolidColorBrush>(app.TryFindResource("ScrollBarTrackFillBrush"), exactMatch: false);
                     Assert.Equal(SystemColors.WindowColor, track.Color);
                 }
                 finally
@@ -718,7 +718,7 @@ namespace Fluence.Wpf.Tests
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Style expected = Assert.IsAssignableFrom<Style>(app.TryFindResource("ScrollViewerStyle"));
+                Style expected = Assert.IsType<Style>(app.TryFindResource("ScrollViewerStyle"), exactMatch: false);
 
                 Controls.FlyoutPresenter presenter = new()
                 {

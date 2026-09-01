@@ -56,9 +56,9 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Controls.ListBoxItem item = Assert.IsAssignableFrom<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb));
+                Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
 
-                System.Windows.Controls.Border indicator = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"));
+                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
 
                 Assert.Equal(3.0, indicator.Width, 0.01);
                 Assert.Equal(16.0, indicator.Height, 0.01);
@@ -93,8 +93,8 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Controls.ListBoxItem item = Assert.IsAssignableFrom<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb));
-                System.Windows.Controls.Border indicator = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"));
+                Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
+                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
                 Assert.Equal(0.0, indicator.Opacity, 0.01);
 
                 lb.SelectedIndex = 0;

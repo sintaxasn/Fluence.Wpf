@@ -89,14 +89,14 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(336.0, tip.MaxWidth, 0.01);
                     Assert.Equal(new Thickness(16, 15, 16, 17), tip.Padding);
 
-                    Border surface = Assert.IsAssignableFrom<Border>(FindVisualChildByName<Border>(tip, "TipSurface"));
+                    Border surface = Assert.IsType<Border>(FindVisualChildByName<Border>(tip, "TipSurface"), exactMatch: false);
                     CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
 
-                    ButtonBase action = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton"));
-                    ButtonBase close = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton"));
-                    ButtonBase alternateClose = Assert.IsAssignableFrom<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_AlternateCloseButton"));
+                    ButtonBase action = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton"), exactMatch: false);
+                    ButtonBase close = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton"), exactMatch: false);
+                    ButtonBase alternateClose = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_AlternateCloseButton"), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, action.Visibility);
                     Assert.Equal(Visibility.Collapsed, close.Visibility);
                     Assert.Equal(Visibility.Visible, alternateClose.Visibility);
@@ -223,7 +223,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup.");
 
-                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
+                    Popup popup = Assert.IsType<Popup>(tip.HostPopup, exactMatch: false);
                     Assert.True(popup.AllowsTransparency, "TeachingTip popups must allow transparency for the rounded surface.");
                     Assert.Equal(PopupAnimation.None, popup.PopupAnimation);
                     Assert.Same(tip, popup.Child);
@@ -340,7 +340,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup before light dismiss is verified.");
 
-                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
+                    Popup popup = Assert.IsType<Popup>(tip.HostPopup, exactMatch: false);
                     Assert.False(popup.StaysOpen,
                         "IsLightDismissEnabled=true must map to a light-dismiss popup (StaysOpen=false).");
 
@@ -389,7 +389,7 @@ namespace Fluence.Wpf.Tests
                     tip.CloseButtonClick += (_, _) => closeClickRaised = true;
                     tip.Closed += (_, _) => closedRaised = true;
 
-                    ButtonBase closeButton = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip));
+                    ButtonBase closeButton = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip), exactMatch: false);
                     closeButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 
                     Assert.True(closeClickRaised, "Clicking the close button must raise CloseButtonClick.");
@@ -442,7 +442,7 @@ namespace Fluence.Wpf.Tests
                     bool actionClickRaised = false;
                     tip.ActionButtonClick += (_, _) => actionClickRaised = true;
 
-                    ButtonBase actionButton = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_ActionButton", tip));
+                    ButtonBase actionButton = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_ActionButton", tip), exactMatch: false);
                     Assert.Equal(Visibility.Visible, actionButton.Visibility);
                     actionButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 
@@ -484,7 +484,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "An untargeted tip must still open its host popup.");
 
-                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
+                    Popup popup = Assert.IsType<Popup>(tip.HostPopup, exactMatch: false);
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
                     CustomPopupPlacementCallback callback = Assert.IsType<CustomPopupPlacementCallback>(popup.CustomPopupPlacementCallback);
                     CustomPopupPlacement[] placements = callback(new Size(100, 40), new Size(600, 400), default);
@@ -540,7 +540,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
                         "IsOpen=true must open the host popup before placement mapping is verified.");
 
-                    Popup popup = Assert.IsAssignableFrom<Popup>(tip.HostPopup);
+                    Popup popup = Assert.IsType<Popup>(tip.HostPopup, exactMatch: false);
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
 
                     // The popup side mapping that feeds the shared edge-centering callback.
@@ -614,9 +614,9 @@ namespace Fluence.Wpf.Tests
                             () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase).ConfigureAwait(true),
                         "The tip must open and apply its template before the affordance matrix is verified.");
 
-                    ButtonBase footerClose = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip));
-                    ButtonBase alternateClose = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_AlternateCloseButton", tip));
-                    FrameworkElement footerArea = Assert.IsAssignableFrom<FrameworkElement>(tip.Template.FindName("FooterArea", tip));
+                    ButtonBase footerClose = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip), exactMatch: false);
+                    ButtonBase alternateClose = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_AlternateCloseButton", tip), exactMatch: false);
+                    FrameworkElement footerArea = Assert.IsType<FrameworkElement>(tip.Template.FindName("FooterArea", tip), exactMatch: false);
 
                     // Null content, no light dismiss: alternate top-right X only.
                     Assert.Equal(Visibility.Collapsed, footerClose.Visibility);
@@ -682,7 +682,7 @@ namespace Fluence.Wpf.Tests
                     tip.CloseButtonClick += (_, _) => closeClickRaised = true;
                     tip.Closed += (_, _) => closedRaised = true;
 
-                    ButtonBase alternateClose = Assert.IsAssignableFrom<ButtonBase>(tip.Template.FindName("PART_AlternateCloseButton", tip));
+                    ButtonBase alternateClose = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_AlternateCloseButton", tip), exactMatch: false);
                     Assert.Equal(Visibility.Visible, alternateClose.Visibility);
                     alternateClose.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 

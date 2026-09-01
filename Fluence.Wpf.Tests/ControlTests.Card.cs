@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Tests
 
                 // A Fluent card surface is flat: background, 1 px stroke, radius. Elevation belongs
                 // to transient surfaces, so no variant, Default included, carries an effect.
-                System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"));
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
                 Assert.Null(outerBorder.Effect);
                 w.Close();
             });
@@ -106,7 +106,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"));
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
                 Assert.Null(outerBorder.Effect);
                 w.Close();
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"));
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
                 Assert.Null(outerBorder.Effect);
                 w.Close();
@@ -146,7 +146,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"));
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
                 Assert.Null(outerBorder.Effect);
                 w.Close();
@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsAssignableFrom<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"));
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
                 // One element owns fill, stroke and radius, so there is no second border to drift.
                 SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));

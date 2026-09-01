@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     DependencyObject container = tabs.ItemContainerGenerator.ContainerFromIndex(0);
-                    _ = Assert.IsAssignableFrom<TabViewItem>(container);
+                    _ = Assert.IsType<TabViewItem>(container, exactMatch: false);
                 }
                 finally
                 {
@@ -161,9 +161,9 @@ namespace Fluence.Wpf.Tests
                 TabView tabs = new();
                 TabViewItem candidate = new();
 
-                MethodInfo method = Assert.IsAssignableFrom<MethodInfo>(typeof(TabView).GetMethod(
+                MethodInfo method = Assert.IsType<MethodInfo>(typeof(TabView).GetMethod(
                     "IsItemItsOwnContainerOverride",
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public), exactMatch: false);
                 bool? result = (bool?)method.Invoke(tabs, [candidate]);
                 Assert.True(result, "A TabViewItem should be recognized as its own container.");
 
@@ -191,12 +191,12 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ButtonBase addButton = Assert.IsAssignableFrom<ButtonBase>(tabs.Template.FindName("PART_AddTabButton", tabs));
+                    ButtonBase addButton = Assert.IsType<ButtonBase>(tabs.Template.FindName("PART_AddTabButton", tabs), exactMatch: false);
 
                     int raised = 0;
                     tabs.AddTabButtonClick += (s, e) => raised++;
                     ButtonAutomationPeer peer = new(addButton as System.Windows.Controls.Button);
-                    IInvokeProvider invoke = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
+                    IInvokeProvider invoke = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
                     invoke.Invoke();
 
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -237,7 +237,7 @@ namespace Fluence.Wpf.Tests
                     // Force template application on the first tab so its PART_CloseButton is realized.
                     _ = first.ApplyTemplate();
 
-                    ButtonBase closeButton = Assert.IsAssignableFrom<ButtonBase>(first.Template.FindName("PART_CloseButton", first));
+                    ButtonBase closeButton = Assert.IsType<ButtonBase>(first.Template.FindName("PART_CloseButton", first), exactMatch: false);
 
                     TabViewTabCloseRequestedEventArgs? viewArgs = null;
                     int itemRaised = 0;
@@ -245,7 +245,7 @@ namespace Fluence.Wpf.Tests
                     tabs.TabCloseRequested += (s, e) => viewArgs = e as TabViewTabCloseRequestedEventArgs;
 
                     ButtonAutomationPeer peer = new(closeButton as System.Windows.Controls.Button);
-                    IInvokeProvider invoke = Assert.IsAssignableFrom<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke));
+                    IInvokeProvider invoke = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
                     invoke.Invoke();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -284,7 +284,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     _ = locked.ApplyTemplate();
 
-                    FrameworkElement closeButton = Assert.IsAssignableFrom<FrameworkElement>(locked.Template.FindName("PART_CloseButton", locked));
+                    FrameworkElement closeButton = Assert.IsType<FrameworkElement>(locked.Template.FindName("PART_CloseButton", locked), exactMatch: false);
                     Assert.False(closeButton.IsVisible,
                         "IsClosable=false should hide the close button regardless of overlay mode.");
                 }
@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    FrameworkElement addButton = Assert.IsAssignableFrom<FrameworkElement>(tabs.Template.FindName("PART_AddTabButton", tabs));
+                    FrameworkElement addButton = Assert.IsType<FrameworkElement>(tabs.Template.FindName("PART_AddTabButton", tabs), exactMatch: false);
                     Assert.False(addButton.IsVisible,
                         "IsAddTabButtonVisible=false should collapse the add button.");
                 }
