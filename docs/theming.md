@@ -127,6 +127,8 @@ Which backdrops work depends on OS support, and unsupported combinations fall ba
 | `Tabbed` | Tabbed (`DWMSBT_TABBEDWINDOW`) | Mica | None | None |
 | `None` | None | None | None | None |
 
+With a backdrop active the window's own `Background` is transparent and every translucent layer above it (the `NavigationView` content canvas, `Card` fills) is blended by DWM, not by WPF. On a desktop whose display path runs at 10 bits per colour channel that blend carries only two bits of alpha: the layer's premultiplied colour keeps its 50% weight while its alpha rounds up to 67%, so less backdrop is admitted underneath and the result lands short (209 instead of 249 for `#80FFFFFF` over Light Mica), reading darker than the token specifies. See `KNOWN_ISSUES.md` for the measurement. Under `None` the window paints `ApplicationBackgroundBrush` (`SolidBackgroundFillColorBase`, the WinUI `ApplicationPageBackgroundThemeBrush` value) and WPF blends the layers itself at full precision.
+
 On Windows 10 build 17063 and later, `Acrylic` is applied through the undocumented `SetWindowCompositionAttribute` accent policy (`ACCENT_ENABLE_ACRYLICBLURBEHIND`) rather than through DWM, tinted with the `AcrylicBackgroundFillColorDefault` theme token including its alpha. That path is disabled, and the window falls back to an opaque `None`, in two cases: when the Windows "Transparency effects" setting is off, and under the high contrast theme. While the window is being moved or resized it drops to the cheaper Aero blur (`ACCENT_ENABLE_BLURBEHIND`) and restores the acrylic on release, because per-frame acrylic recomposition makes a Windows 10 drag visibly lag the cursor.
 
 ## System theme watcher
