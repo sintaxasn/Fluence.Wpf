@@ -521,5 +521,68 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // ---------------------------------------------------------------------------
+        // 8. Defect: disagreeing Light "window base" values. Under BackdropType.None the
+        // realised window Background must agree with the published ApplicationBackgroundBrush
+        // in every theme (High Contrast pins the live SystemColors.WindowColor override), and
+        // the Light token must equal the WinUI ApplicationPageBackgroundThemeBrush source.
+        // ---------------------------------------------------------------------------
+
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public Task FluenceWindow_BackdropNone_BackgroundMatchesApplicationBackgroundBrushAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(theme, app);
+
+                Color expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("ApplicationBackgroundBrush"), exactMatch: false).Color;
+
+                FluenceWindow w = new()
+                {
+                    Width = 200,
+                    Height = 150,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.None,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Color actual = Assert.IsType<SolidColorBrush>(w.Background, exactMatch: false).Color;
+                    Assert.Equal(expected, actual);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ApplicationBackgroundColor_Light_EqualsCanonicalSolidBackgroundFillColorBaseAsync()
+        {
+            // Pins the WinUI relationship this library mirrors: ApplicationBackgroundColor is the
+            // WPF analogue of ApplicationPageBackgroundThemeBrush, which WinUI resolves to
+            // SolidBackgroundFillColorBase. A drift here silently reintroduces a second
+            // disagreeing "window base" value alongside the one FluenceWindow reads.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                Color applicationBackground = Assert.IsType<Color>(app.Resources["ApplicationBackgroundColor"]);
+                Color solidBackgroundBase = Assert.IsType<Color>(app.Resources["SolidBackgroundFillColorBase"]);
+                Assert.Equal(solidBackgroundBase, applicationBackground);
+            });
+        }
     }
 }
