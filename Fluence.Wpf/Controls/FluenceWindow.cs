@@ -981,7 +981,6 @@ namespace Fluence.Wpf.Controls
         {
             WindowCapabilities capabilities = WindowCapabilities.Current;
             FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState,
                 IsActive,
                 ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled,
                 capabilities,

@@ -165,10 +165,11 @@ namespace Fluence.Wpf.Controls
         ///   <item>
         ///     <term>WPF-template border</term>
         ///     <description>
-        ///       Active window with accent borders enabled gets a 2 dp border keyed to
+        ///       Active window with accent borders enabled gets a border keyed to
         ///       <c language="xaml">SystemAccentColorBrush</c>. Inactive windows revert to
-        ///       <c language="xaml">CardStrokeColorDefaultSolidBrush</c>. Maximized windows get a 0-thick border
-        ///       in every state.
+        ///       <c language="xaml">CardStrokeColorDefaultSolidBrush</c>. The maximized 0-thick border is not
+        ///       decided here: it is a template trigger on <c language="csharp">WindowState</c> in
+        ///       <c language="xaml">Themes/Controls/FluenceWindow.xaml</c>, so this plan only ever selects the brush key.
         ///     </description>
         ///   </item>
         ///   <item>
@@ -183,7 +184,6 @@ namespace Fluence.Wpf.Controls
         ///   </item>
         /// </list>
         /// </remarks>
-        /// <param name="windowState">The current <see cref="WindowState"/>.</param>
         /// <param name="isActive">
         ///   <see langword="true"/> when <see cref="FluenceWindow"/> is the foreground window.
         /// </param>
@@ -195,16 +195,11 @@ namespace Fluence.Wpf.Controls
         /// <param name="accentColor">The current system accent color.</param>
         /// <returns>A <see cref="FramePlan"/> describing the border to apply.</returns>
         internal static FramePlan BuildFramePlan(
-            WindowState windowState,
             bool isActive,
             bool isAccentBorderEnabled,
             WindowCapabilities capabilities,
             Color accentColor)
         {
-            Thickness templateBorderThickness = windowState is WindowState.Maximized
-                ? new Thickness(0)
-                : new Thickness(2);
-
             string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
                 ? "CardStrokeColorDefaultSolidBrush"
                 : "SystemAccentColorBrush";
@@ -215,7 +210,7 @@ namespace Fluence.Wpf.Controls
                 dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
             }
 
-            return new FramePlan(templateBorderThickness, templateBorderBrushResourceKey, dwmBorderColor);
+            return new FramePlan(templateBorderBrushResourceKey, dwmBorderColor);
         }
 
         /// <summary>
@@ -403,7 +398,6 @@ namespace Fluence.Wpf.Controls
 
                 return new BackdropPlan(
                     BackdropType.None,
-                    useTransparentBackground: false,
                     fallbackBackgroundColor,
                     PInvoke.DWMWA_COLOR_DEFAULT,
                     clearedSystemBackdrop,
@@ -420,7 +414,6 @@ namespace Fluence.Wpf.Controls
             {
                 return new BackdropPlan(
                     BackdropType.Mica,
-                    useTransparentBackground: true,
                     Colors.Transparent,
                     PInvoke.DWMWA_COLOR_NONE,
                     systemBackdropType: null,
@@ -440,7 +433,6 @@ namespace Fluence.Wpf.Controls
             {
                 return new BackdropPlan(
                     BackdropType.Acrylic,
-                    useTransparentBackground: true,
                     Colors.Transparent,
                     PInvoke.DWMWA_COLOR_NONE,
                     systemBackdropType: null,
@@ -453,7 +445,6 @@ namespace Fluence.Wpf.Controls
             // All other active backdrops on 22H2+: canonical DWMWA_SYSTEMBACKDROP_TYPE path.
             return new BackdropPlan(
                 effectiveBackdrop,
-                useTransparentBackground: true,
                 Colors.Transparent,
                 PInvoke.DWMWA_COLOR_NONE,
                 MapSystemBackdropType(effectiveBackdrop),

@@ -375,19 +375,6 @@ namespace Fluence.Wpf.Native
         }
 
         /// <summary>
-        /// Extends the DWM frame across the entire client area (the "sheet of glass" margins of
-        /// <c language="csharp">-1</c> on every edge), letting the backdrop composite behind the whole window.
-        /// </summary>
-        /// <param name="hwnd">The target window handle.</param>
-        /// <returns><see langword="true"/> on success.</returns>
-        public static bool ExtendFrameIntoClientArea(IntPtr hwnd)
-        {
-            MARGINS margins = new() { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
-            int result = PInvoke.DwmExtendFrameIntoClientArea((HWND)hwnd, in margins);
-            return result is 0;
-        }
-
-        /// <summary>
         /// Packs a <see cref="System.Windows.Media.Color"/> into the <c language="text">0x00BBGGRR</c> COLORREF
         /// layout that DWM color attributes such as DWMWA_BORDER_COLOR
         /// expect; the alpha channel is ignored. Despite the historical "ABGR" naming, the byte

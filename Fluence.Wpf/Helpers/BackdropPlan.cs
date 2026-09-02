@@ -38,7 +38,6 @@ namespace Fluence.Wpf.Helpers
     /// handle without re-querying the OS.
     /// </summary>
     /// <param name="effectiveBackdrop">The backdrop type that will actually be applied after capability downgrade.</param>
-    /// <param name="useTransparentBackground">Indicates whether the window's client background must be transparent.</param>
     /// <param name="backgroundColor">The color that should be set on both <c language="csharp">Window.Background</c> and <c language="csharp">HwndSource.CompositionTarget.BackgroundColor</c>.</param>
     /// <param name="captionColor">The value to write to <c language="csharp">DWMWA_CAPTION_COLOR</c>.</param>
     /// <param name="systemBackdropType">The <c language="csharp">DWMSBT_*</c> value to write via <c language="csharp">DWMWA_SYSTEMBACKDROP_TYPE</c>, or <see langword="null"/> when the OS does not expose that attribute.</param>
@@ -48,7 +47,6 @@ namespace Fluence.Wpf.Helpers
     /// <param name="legacyAcrylicTintColor">The tint color to hand to the legacy acrylic accent policy.</param>
     internal sealed class BackdropPlan(
         BackdropType effectiveBackdrop,
-        bool useTransparentBackground,
         Color backgroundColor,
         uint captionColor,
         DWM_SYSTEMBACKDROP_TYPE? systemBackdropType,
@@ -65,14 +63,6 @@ namespace Fluence.Wpf.Helpers
         /// every other transparent backdrop there resolves to <see cref="BackdropType.None"/>.
         /// </summary>
         internal BackdropType EffectiveBackdrop { get; } = effectiveBackdrop;
-
-        /// <summary>
-        /// Gets a value indicating whether the window's client background must be transparent.
-        /// <see langword="true"/> for any active DWM system backdrop (Mica, Acrylic, Tabbed);
-        /// <see langword="false"/> for <see cref="BackdropType.None"/>, which paints a solid
-        /// fallback color to avoid revealing the default-black redirection surface.
-        /// </summary>
-        internal bool UseTransparentBackground { get; } = useTransparentBackground;
 
         /// <summary>
         /// Gets the <see cref="Color"/> that should be set on both
