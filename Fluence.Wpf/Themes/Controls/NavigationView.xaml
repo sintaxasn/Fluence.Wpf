@@ -319,11 +319,18 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
+                <!--
+                    Pane background: this inline two-column layout is the WinUI 3 PaneNotOverlaying
+                    state, where NavigationView.xaml sets RootSplitView.PaneBackground to
+                    NavigationViewExpandedPaneBackground = SolidBackgroundFillColorTransparent.
+                    The acrylic NavigationViewDefaultPaneBackground only applies to an overlaying
+                    pane, which Fluence does not have. A zero-alpha brush, unlike the null the
+                    old unresolved key left behind, keeps the pane hit-test visible.
+                -->
                 <Border
                     x:Name="PaneBorder"
                     Grid.Column="0"
-                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}">
+                    Background="{DynamicResource SolidBackgroundFillColorTransparentBrush}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -491,7 +498,7 @@
                             <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
-                            BorderBrush="{DynamicResource NavigationViewContentSeparatorBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1,1,0,0"
                             CornerRadius="8,0,0,0"
                             IsHitTestVisible="False" />
@@ -561,7 +568,7 @@
     <ControlTemplate x:Key="NavigationViewLeftCompactPaneTemplate" TargetType="{x:Type controls:NavigationView}">
         <Border>
             <!--
-                Two-column inline layout: pane resizes between 48 and 280 and pushes content.
+                Two-column inline layout: pane resizes between 48 and 320 and pushes content.
                 This mirrors WinUI 3 NavigationView / .NET 10 WPF NavigationView compact-left
                 behavior while transition code temporarily expands content during Top mode changes.
             -->
@@ -571,11 +578,18 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
+                <!--
+                    Pane background: this inline two-column layout is the WinUI 3 PaneNotOverlaying
+                    state, where NavigationView.xaml sets RootSplitView.PaneBackground to
+                    NavigationViewExpandedPaneBackground = SolidBackgroundFillColorTransparent.
+                    The acrylic NavigationViewDefaultPaneBackground only applies to an overlaying
+                    pane, which Fluence does not have. A zero-alpha brush, unlike the null the
+                    old unresolved key left behind, keeps the pane hit-test visible.
+                -->
                 <Border
                     x:Name="CompactPane"
                     Grid.Column="0"
-                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}">
+                    Background="{DynamicResource SolidBackgroundFillColorTransparentBrush}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -743,7 +757,7 @@
                             <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
-                            BorderBrush="{DynamicResource NavigationViewContentSeparatorBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1,1,0,0"
                             CornerRadius="8,0,0,0"
                             IsHitTestVisible="False" />
@@ -824,13 +838,17 @@
                     <RowDefinition Height="48" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
+                <!--
+                    Pane background: WinUI 3 NavigationView.xaml paints TopNavArea with
+                    NavigationViewTopPaneBackground unconditionally, and that token is
+                    SolidBackgroundFillColorTransparent in Light and Dark.
+                -->
                 <Border
                     x:Name="PaneHeaderBorder"
                     Grid.Row="0"
                     Padding="4,0,8,0"
-                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}"
-                    BorderBrush="{DynamicResource NavigationViewContentSeparatorBrush}"
+                    Background="{DynamicResource SolidBackgroundFillColorTransparentBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                     BorderThickness="0,0,0,1">
                     <Grid>
                         <Grid.ColumnDefinitions>

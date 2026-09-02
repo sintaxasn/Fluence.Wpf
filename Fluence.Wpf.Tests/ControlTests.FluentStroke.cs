@@ -439,7 +439,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius);
                     Assert.Equal(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness);
 
-                    Brush expectedStroke = Assert.IsType<Brush>(nav.FindResource("NavigationViewContentSeparatorBrush"), exactMatch: false);
+                    Brush expectedStroke = Assert.IsType<Brush>(nav.FindResource("CardStrokeColorDefaultBrush"), exactMatch: false);
                     Assert.Same(expectedStroke, strokeBorder.BorderBrush);
                 }
                 finally
@@ -496,7 +496,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius);
                     Assert.Equal(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness);
 
-                    Brush expectedStroke = Assert.IsType<Brush>(nav.FindResource("NavigationViewContentSeparatorBrush"), exactMatch: false);
+                    Brush expectedStroke = Assert.IsType<Brush>(nav.FindResource("CardStrokeColorDefaultBrush"), exactMatch: false);
                     Assert.Same(expectedStroke, strokeBorder.BorderBrush);
                 }
                 finally
