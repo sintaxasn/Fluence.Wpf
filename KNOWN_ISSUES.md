@@ -47,6 +47,26 @@ maintainers.
   `IsBackEnabled` + `BackRequested` are exposed, but the library does **not**
   track page history. The demo does not use the back button; consumers are
   expected to own their own back stack and route `BackRequested`.
+- **Translucent layers over a DWM backdrop lose alpha precision on a 10 bpc
+  display** - symptom: under `BackdropType.Mica` in Light the `NavigationView`
+  content canvas (`LayerFillColorDefault`, `#80FFFFFF`) reads darker than the
+  pane and title bar, which straight alpha compositing cannot produce. Measured
+  on a desktop whose active display path reports `bitsPerColorChannel = 10`
+  (`DisplayConfigGetDeviceInfo`, SDR, HDR off): a plain WPF window with
+  `WindowChrome` and `DWMSBT_MAINWINDOW` composites its client alpha over the
+  backdrop with the alpha rounded to two bits, {0, 1/3, 2/3, 1}, so
+  `#80FFFFFF` (alpha 0.502 rounds to 2/3) lands at 128 + Mica/3 = 209 instead
+  of the 249 the token specifies, `#24000000` is invisible, and `#60FFFFFF`
+  saturates to white. Colour channels keep full precision. The same figures
+  come out of iNKORE.UI.WPF.Modern on the same desktop, and the quantisation is
+  absent under `BackdropType.None`, where WPF blends the layer itself. The
+  likely mechanism is a `R10G10B10A2` composition surface when the output is
+  10 bits per channel; this is inferred from the measurement, not documented
+  by Microsoft, and is not yet verified against an 8 bpc display. The library
+  keeps the canonical WinUI tokens. A consumer who needs the WinUI look on a
+  10 bpc desktop today can substitute an opaque `#F9F9F9` / `#272727` content
+  background while the effective backdrop is Mica or Tabbed, which is the
+  pre-blended value WinUI's own arithmetic produces.
 - **`RenderTargetBitmap` vs DWM backdrop** - DWM Mica / Acrylic is composed by
   the window manager and is **not** visible to `RenderTargetBitmap`. The
   screenshot harness hosts the gallery inside a plain `Window` with a solid
