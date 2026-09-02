@@ -224,8 +224,7 @@ namespace Fluence.Wpf.Tests
                 legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
-            Assert.False(plan.UseTransparentBackground,
-                "None must paint a solid background - transparency would reveal the glass frame.");
+            Assert.NotEqual(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(fallback, plan.BackgroundColor);
             Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.CaptionColor);
             Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
@@ -263,8 +262,6 @@ namespace Fluence.Wpf.Tests
                 legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
-            Assert.True(plan.UseTransparentBackground,
-                "Mica requires a transparent window client so DWM can composite the backdrop.");
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.CaptionColor);
             Assert.False(plan.SystemBackdropType is not null,
@@ -285,7 +282,7 @@ namespace Fluence.Wpf.Tests
                 legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
-            Assert.True(plan.UseTransparentBackground);
+            Assert.Equal(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW, plan.SystemBackdropType);
             Assert.False(plan.UseLegacyMicaEffect,
                 "22H2 must use the canonical DWMWA_SYSTEMBACKDROP_TYPE path, not the legacy Mica attribute.");
@@ -432,8 +429,6 @@ namespace Fluence.Wpf.Tests
             Assert.True(plan.UseLegacyAcrylic,
                 "Windows 10 17063+ with transparency on must take the legacy accent-policy path.");
             Assert.Equal(AcrylicTint, plan.LegacyAcrylicTintColor);
-            Assert.True(plan.UseTransparentBackground,
-                "The accent policy composites behind the client area, so the client must be transparent.");
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.CaptionColor);
             Assert.False(plan.SystemBackdropType is not null,
@@ -474,7 +469,7 @@ namespace Fluence.Wpf.Tests
             Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic,
                 "The OS transparency-effects toggle being off must suppress the accent policy entirely.");
-            Assert.False(plan.UseTransparentBackground);
+            Assert.NotEqual(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(fallback, plan.BackgroundColor);
             Assert.Equal(Colors.Transparent, plan.LegacyAcrylicTintColor);
         }
@@ -743,13 +738,11 @@ namespace Fluence.Wpf.Tests
         public void BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey()
         {
             FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
                 capabilities: Caps(borderColor: true),
                 accentColor: Color.FromRgb(0x00, 0x78, 0xD4));
 
-            Assert.Equal(new Thickness(2), plan.TemplateBorderThickness);
             Assert.Equal("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
             Assert.NotEqual(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
@@ -758,7 +751,6 @@ namespace Fluence.Wpf.Tests
         public void BuildFramePlan_Normal_Inactive_UsesCardStrokeKey()
         {
             FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
                 isActive: false,
                 isAccentBorderEnabled: true,
                 capabilities: Caps(borderColor: true),
@@ -768,23 +760,9 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BuildFramePlan_Maximized_TemplateBorderIsZero()
-        {
-            FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Maximized,
-                isActive: true,
-                isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Colors.Red);
-
-            Assert.Equal(new Thickness(0), plan.TemplateBorderThickness);
-        }
-
-        [Fact]
         public void BuildFramePlan_NoBorderColorCapability_KeepsDwmDefault()
         {
             FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
                 capabilities: Caps(),

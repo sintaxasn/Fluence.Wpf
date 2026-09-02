@@ -7,7 +7,6 @@ ABM_GETTASKBARPOS
 ABS_AUTOHIDE
 DWM_SYSTEMBACKDROP_TYPE
 DWM_WINDOW_CORNER_PREFERENCE
-DwmExtendFrameIntoClientArea
 DwmGetWindowAttribute
 DwmIsCompositionEnabled
 DwmSetWindowAttribute

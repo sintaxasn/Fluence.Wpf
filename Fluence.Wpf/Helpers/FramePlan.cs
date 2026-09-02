@@ -26,32 +26,21 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
-
 namespace Fluence.Wpf.Helpers
 {
     /// <summary>
     /// Carries the resolved window-border frame instructions computed by
     /// <see cref="Controls.WindowPolicy.BuildFramePlan"/>. The plan separates the
-    /// WPF-template border (driven by <see cref="TemplateBorderThickness"/> and
-    /// <see cref="TemplateBorderBrushResourceKey"/>) from the DWM border color
-    /// (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM side.
+    /// WPF-template border (driven by <see cref="TemplateBorderBrushResourceKey"/>) from the DWM
+    /// border color (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM
+    /// side.
     /// </summary>
-    /// <param name="templateBorderThickness">The thickness of the WPF-template border element.</param>
     /// <param name="templateBorderBrushResourceKey">The <c language="xaml">DynamicResource</c> key for the border brush.</param>
     /// <param name="dwmBorderColor">The COLORREF (BGR, 24-bit) value for the DWM border color.</param>
     internal sealed class FramePlan(
-        Thickness templateBorderThickness,
         string templateBorderBrushResourceKey,
         uint dwmBorderColor)
     {
-        /// <summary>
-        /// Gets the thickness of the WPF-template border element. <c language="csharp">Thickness(2)</c> when the
-        /// window is active and in normal state; <c language="csharp">Thickness(0)</c> when maximized (a border at
-        /// the monitor edge would clip against the taskbar or other monitors).
-        /// </summary>
-        internal Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
-
         /// <summary>
         /// Gets the <c language="xaml">DynamicResource</c> key for the border brush to apply to the template
         /// border element. <c language="xaml">"SystemAccentColorBrush"</c> when the window is active and accent
