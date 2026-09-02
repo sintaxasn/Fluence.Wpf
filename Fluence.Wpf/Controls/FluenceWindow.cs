@@ -1016,14 +1016,30 @@ namespace Fluence.Wpf.Controls
         /// Resolves the opaque background color used when no DWM backdrop is active, picked from the
         /// resolved theme.
         /// </summary>
-        private static Color GetFallbackBackgroundColor()
+        /// <remarks>
+        /// Reads the published <c language="csharp">ApplicationBackgroundBrush</c> instead of duplicating its
+        /// per-theme literals here, so the engine's color table is the single source of truth (it also
+        /// carries the WinUI <c language="csharp">ApplicationPageBackgroundThemeBrush</c> parity, resolved from
+        /// <c language="csharp">SolidBackgroundFillColorBase</c>, and the live High Contrast override from
+        /// <see cref="SystemColors.WindowColor"/> via the theme engine's HC rebuild). The lookup starts at
+        /// this window so a window-scoped <c language="csharp">ApplicationBackgroundBrush</c> override is honoured,
+        /// exactly as <see cref="GetLegacyAcrylicTintColor"/> does for its tint. The literal fallback below only
+        /// covers the case where no theme has been applied yet or the resource is missing, matching the same
+        /// token values so a pre-Apply window still looks right.
+        /// </remarks>
+        private Color GetFallbackBackgroundColor()
         {
+            if (TryFindResource("ApplicationBackgroundBrush") is SolidColorBrush brush)
+            {
+                return brush.Color;
+            }
+
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             return resolvedTheme is ApplicationTheme.Dark
                 ? Color.FromRgb(0x20, 0x20, 0x20)
                 : resolvedTheme is ApplicationTheme.HighContrast
                 ? SystemColors.WindowColor
-                : Color.FromRgb(0xFA, 0xFA, 0xFA);
+                : Color.FromRgb(0xF3, 0xF3, 0xF3);
         }
 
         #endregion Window shell (chrome, backdrop, corners, frame)

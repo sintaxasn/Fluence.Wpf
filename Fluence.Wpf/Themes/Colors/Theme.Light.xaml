@@ -4,7 +4,9 @@
     <!--  Brushes and accent ramp are built in C# by the FluenceThemeEngine pipeline.  -->
 
     <!--  Application Background  -->
-    <Color x:Key="ApplicationBackgroundColor">#FFFFFFFF</Color>
+    <!--  Matches WinUI ApplicationPageBackgroundThemeBrush, which resolves to
+         SolidBackgroundFillColorBase; see FluenceWindow.GetFallbackBackgroundColor.  -->
+    <Color x:Key="ApplicationBackgroundColor">#FFF3F3F3</Color>
 
     <!--  Keyboard Focus  -->
     <Color x:Key="KeyboardFocusBorderColor">#BE000000</Color>
