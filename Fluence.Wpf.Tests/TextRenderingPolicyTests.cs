@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -168,38 +167,20 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task ComboBoxDropdownSurface_KeepsDefaultClearTypeHintAsync()
+        public Task ComboBoxDropdownSurface_EnablesClearTypeAsync()
         {
-            // PART_DropdownBorder paints AcrylicBackgroundFillColorDefaultBrush (alpha F0) under a
-            // noise overlay, so it is translucent and must stay at the WPF default. Forcing ClearType
-            // over a translucent layered surface degrades text rather than sharpening it.
+            // PART_DropdownBorder now paints SolidBackgroundFillColorTertiaryBrush (opaque), the
+            // same token every other Fluence popup backplate uses, so it takes the same
+            // RenderOptions.ClearTypeHint="Enabled" treatment as ContextMenu / AutoSuggestBox /
+            // DatePicker / TimePicker / FlyoutPresenter. The NoiseOverlay sibling is declared before
+            // the ScrollViewer in the template Grid, so it paints behind the item text rather than
+            // over it, and does not reintroduce the translucency problem ClearType cannot handle.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
-                Window window = new() { Width = 400, Height = 300 };
-                Controls.ComboBox comboBox = new();
-
-                try
-                {
-                    window.Content = comboBox;
-                    window.Show();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    System.Windows.Controls.Border surface = FindTemplatedSurface(comboBox, "PART_DropdownBorder");
-
-                    Assert.Equal(ClearTypeHint.Auto, RenderOptions.GetClearTypeHint(surface));
-                    SolidColorBrush background = Assert.IsType<SolidColorBrush>(surface.Background);
-                    Assert.True(
-                        background.Color.A is not byte.MaxValue,
-                        "The dropdown surface must stay translucent. " + DescribeThemeState(application, background));
-                }
-                finally
-                {
-                    window.Close();
-                }
+                AssertHostedSurfaceEnablesClearType(new Controls.ComboBox(), "PART_DropdownBorder");
             });
         }
 
@@ -380,48 +361,6 @@ namespace Fluence.Wpf.Tests
                     control.GetType().Name + " did not resolve a default template.");
 
             return Assert.IsType<System.Windows.Controls.Border>(template.FindName(surfaceName, control));
-        }
-
-        /// <summary>
-        /// Describes the published theme state behind a brush assertion. A theme-token failure is
-        /// almost always "the wrong dictionary is installed" rather than "the token is wrong", and
-        /// on a CI runner there is no debugger to ask, so the answer has to travel in the message.
-        /// </summary>
-        /// <param name="application">The test application.</param>
-        /// <param name="background">The brush the assertion read.</param>
-        /// <returns>A single-line description of the resolved theme and the installed dictionaries.</returns>
-        private static string DescribeThemeState(Application application, SolidColorBrush background)
-        {
-            object? token = application.TryFindResource("AcrylicBackgroundFillColorDefault");
-            string tokenText = token is Color color
-                ? color.ToString(CultureInfo.InvariantCulture)
-                : "missing";
-            IEnumerable<string> sources = application.Resources.MergedDictionaries
-                .Select(static dictionary => dictionary.Source?.ToString() ?? "computed");
-
-            return "brush=" + background.Color.ToString(CultureInfo.InvariantCulture)
-                + " token=" + tokenText
-                + " requestedTheme=" + ThemeName(ApplicationThemeManager.CurrentTheme)
-                + " highContrastSetting=" + SystemParameters.HighContrast.ToString(CultureInfo.InvariantCulture)
-                + " mergedDictionaries=[" + string.Join(", ", sources) + "]";
-        }
-
-        /// <summary>
-        /// Names a theme without <c language="csharp">Enum.GetName</c>, whose generic overload the analyzers demand on
-        /// net10 and which does not exist on net472.
-        /// </summary>
-        /// <param name="theme">The theme to name.</param>
-        /// <returns>The theme name.</returns>
-        private static string ThemeName(ApplicationTheme theme)
-        {
-            return theme switch
-            {
-                ApplicationTheme.Light => "Light",
-                ApplicationTheme.Dark => "Dark",
-                ApplicationTheme.HighContrast => "HighContrast",
-                ApplicationTheme.Auto => "Auto",
-                _ => "Unknown",
-            };
         }
 
         private static void ResetApplication(Application application)
