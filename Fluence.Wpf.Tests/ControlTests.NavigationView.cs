@@ -2569,7 +2569,7 @@ topMode: false,
                     winLeft.UpdateLayout();
 
                     System.Windows.Controls.Border paneBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder"), exactMatch: false);
-                    AssertBrushIsTransparentOrNull(paneBorder.Background,
+                    AssertBrushIsTransparent(paneBorder.Background,
                         "PaneBorder.Background must be Transparent so DWM backdrop shows through.");
                 }
                 finally
@@ -2594,7 +2594,7 @@ topMode: false,
                     winCompact.UpdateLayout();
 
                     System.Windows.Controls.Border compactPane = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane"), exactMatch: false);
-                    AssertBrushIsTransparentOrNull(compactPane.Background,
+                    AssertBrushIsTransparent(compactPane.Background,
                         "CompactPane.Background must be Transparent so DWM backdrop shows through.");
                 }
                 finally
@@ -2619,7 +2619,7 @@ topMode: false,
                     winTop.UpdateLayout();
 
                     System.Windows.Controls.Border paneHeader = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder"), exactMatch: false);
-                    AssertBrushIsTransparentOrNull(paneHeader.Background,
+                    AssertBrushIsTransparent(paneHeader.Background,
                         "PaneHeaderBorder.Background must be Transparent so DWM backdrop shows through.");
                 }
                 finally
@@ -2634,16 +2634,18 @@ topMode: false,
         }
 
         /// <summary>
-        /// Asserts that <paramref name="brush"/> is null, Brushes.Transparent, or a
-        /// SolidColorBrush whose alpha channel is zero - i.e. effectively transparent.
+        /// Asserts that <paramref name="brush"/> is Brushes.Transparent or a SolidColorBrush
+        /// whose alpha channel is zero - i.e. effectively transparent. A null brush fails: an
+        /// unresolved <c language="xaml">DynamicResource</c> also renders as no background, so treating null as
+        /// a pass would hide a broken binding behind the same visual result as a correct one.
         /// </summary>
         /// <param name="brush">The brush to check for transparency.</param>
-        /// <param name="message">The message to display if the assertion fails.</param>
-        private static void AssertBrushIsTransparentOrNull(Brush brush, string message)
+        /// <param name="message">The message to display if the assertion fails, naming the element under test.</param>
+        private static void AssertBrushIsTransparent(Brush brush, string message)
         {
             if (brush is null)
             {
-                return; // null == no background == transparent
+                Assert.Fail(message + " Actual: null (unresolved DynamicResource, not a deliberate transparent brush).");
             }
 
             if (brush == Brushes.Transparent)
