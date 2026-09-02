@@ -218,14 +218,15 @@
                             PlacementTarget="{Binding ElementName=MainBorder}"
                             PopupAnimation="None">
                             <!--
-                                No RenderOptions.ClearTypeHint="Enabled" here, unlike the opaque
-                                popup backplates in ContextMenu / AutoSuggestBox / DatePicker /
-                                TimePicker / DropDownButton / SplitButton / ToggleSplitButton /
-                                FlyoutPresenter. AcrylicBackgroundFillColorDefaultBrush is alpha F0,
-                                and the AcrylicNoiseBrush overlay sits on top of it, so this surface
-                                is translucent. ClearType cannot blend subpixel coverage against a
-                                translucent layered-window surface and degrades instead of helping,
-                                which is the same reasoning that keeps the FluenceWindow root at Auto.
+                                PART_DropdownBorder paints SolidBackgroundFillColorTertiaryBrush
+                                (opaque), the token FlyoutPresenter / ContextMenu / AutoSuggestBox /
+                                DatePicker / TimePicker / ToolTip / CommandBarFlyout / TeachingTip
+                                use for their popup backplates and the WinUI acrylic FallbackColor
+                                in Light, so it takes the same RenderOptions.ClearTypeHint="Enabled"
+                                treatment as those opaque plates below. The AcrylicNoiseBrush overlay is declared before the
+                                ScrollViewer in the Grid, so it paints behind the item text rather
+                                than over it and does not reintroduce a translucent layer between the
+                                glyphs and the eye.
                             -->
                             <!--
                                 The reveal fades this root, not the dropdown surface alone, so the
@@ -261,10 +262,11 @@
                                 MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
                                 MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                 Margin="0,4,0,0"
-                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
                                 CornerRadius="{TemplateBinding DropdownCornerRadius}"
+                                RenderOptions.ClearTypeHint="Enabled"
                                 RenderTransformOrigin="0.5,0">
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="DropdownTranslate" />
