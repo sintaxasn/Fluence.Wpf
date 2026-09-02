@@ -836,5 +836,191 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion GetGlassFrameThickness - dual-path
+
+        #region ResolveContentLayerPreBlend - 10 bpc alpha-quantisation gate
+
+        // KNOWN_ISSUES.md: "Translucent layers over a DWM backdrop lose alpha precision on a
+        // 10 bpc display". NavigationViewContentBackground (translucent content-layer token, the
+        // key the NavigationViewContentBackgroundBrush key actually derives from) and
+        // SolidBackgroundFillColorBase (opaque window base) for Light and Dark, matching the
+        // canonical theme tables. LightCanonical / DarkCanonical are the WinUI
+        // LayerOnMicaBaseAltFillColorTertiary token values.
+        private static readonly Color LightLayerFill = Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF);
+        private static readonly Color LightSolidBase = Color.FromArgb(0xFF, 0xF3, 0xF3, 0xF3);
+        private static readonly Color LightCanonical = Color.FromArgb(0xFF, 0xF9, 0xF9, 0xF9);
+        private static readonly Color DarkLayerFill = Color.FromArgb(0x4C, 0x3A, 0x3A, 0x3A);
+        private static readonly Color DarkSolidBase = Color.FromArgb(0xFF, 0x20, 0x20, 0x20);
+        private static readonly Color DarkCanonical = Color.FromArgb(0xFF, 0x2C, 0x2C, 0x2C);
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc8_ReturnsNull()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(8, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_BpcUnknown_ReturnsNull()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(0, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_BackdropNone_ReturnsNull()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.None,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_HighContrast_ReturnsNull()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.HighContrast,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_AdvancedColorEnabled_ReturnsNull()
+        {
+            // Measured: the same 10 bpc path with advanced color enabled (the GPU driver's 10-bit
+            // pixel format toggle) composites client alpha at full precision, so no pre-blend
+            // substitute is needed.
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: true),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Light_CanonicalPresent_ReturnsCanonical()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Equal(LightCanonical, result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Light_CanonicalNull_ReturnsComputedFallback()
+        {
+            // The Light fallback composite reproduces the canonical value exactly:
+            // round(0.501961 * 0xFF + 0.498039 * 0xF3) = round(249.02) = 249 = 0xF9 per channel.
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                canonicalPreBlend: null,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Equal(LightCanonical, result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Tabbed_Light_CanonicalPresent_ReturnsCanonical()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Tabbed,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                LightCanonical,
+                LightLayerFill,
+                LightSolidBase);
+
+            Assert.Equal(LightCanonical, result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalPresent_ReturnsCanonical()
+        {
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Dark,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                DarkCanonical,
+                DarkLayerFill,
+                DarkSolidBase);
+
+            Assert.Equal(DarkCanonical, result);
+        }
+
+        [Fact]
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalNull_ReturnsComputedFallback()
+        {
+            // round(0.298039 * 0x3A + 0.701961 * 0x20) = round(39.749) = 40 = 0x28, per channel
+            // (R=G=B for both Dark tokens), MidpointRounding.AwayFromZero. This deliberately does
+            // not equal DarkCanonical (#FF2C2C2C): the fallback is a reasonable approximation, not a
+            // reproduction, of the canonical WinUI value, which is why the canonical key is
+            // authoritative whenever it resolves.
+            Color? result = WindowPolicy.ResolveContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Dark,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                canonicalPreBlend: null,
+                DarkLayerFill,
+                DarkSolidBase);
+
+            Assert.Equal(Color.FromArgb(0xFF, 0x28, 0x28, 0x28), result);
+        }
+
+        [Fact]
+        public void ShouldApplyContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_ReturnsTrue()
+        {
+            Assert.True(WindowPolicy.ShouldApplyContentLayerPreBlend(
+                BackdropType.Mica,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false)));
+        }
+
+        [Fact]
+        public void ShouldApplyContentLayerPreBlend_Acrylic_ReturnsFalse()
+        {
+            // Acrylic is excluded pending its own 0x4 measurement; see PreBlendEligibleBackdrops.
+            Assert.False(WindowPolicy.ShouldApplyContentLayerPreBlend(
+                BackdropType.Acrylic,
+                ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false)));
+        }
+
+        #endregion ResolveContentLayerPreBlend - 10 bpc alpha-quantisation gate
     }
 }

@@ -27,8 +27,10 @@
  */
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
@@ -254,6 +256,54 @@ namespace Fluence.Wpf.Tests
         public void ColorToAbgr_TransparentBlack_IsZero()
         {
             Assert.Equal(0u, NativeMethods.ColorToAbgr(Color.FromArgb(0, 0, 0, 0)));
+        }
+
+        [Fact]
+        public void GetDisplayColorDepth_ZeroHandle_ReturnsUnknown()
+        {
+            DisplayColorDepth depth = NativeMethods.GetDisplayColorDepth(IntPtr.Zero);
+
+            Assert.Equal(0, depth.BitsPerColorChannel);
+            Assert.False(depth.AdvancedColorEnabled);
+        }
+
+        [Fact]
+        public Task GetDisplayColorDepth_RealShownWindow_ReturnsZeroOrAtLeastEightBitsAsync()
+        {
+            // CI may run headless, where MonitorFromWindow or the DisplayConfig* calls can
+            // legitimately fail; the method degrades to the unknown default (0 bits, advanced color
+            // disabled) rather than throwing. A live desktop always reports at least 8 bpc.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new()
+                {
+                    Width = 100,
+                    Height = 100,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    IntPtr handle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
+                    DisplayColorDepth depth = NativeMethods.GetDisplayColorDepth(handle);
+
+                    Assert.True(depth.BitsPerColorChannel is 0 or >= 8);
+                    if (depth.BitsPerColorChannel is 0)
+                    {
+                        Assert.False(depth.AdvancedColorEnabled);
+                    }
+                }
+                finally
+                {
+                    window.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
         }
 
         private static MINMAXINFO SeedMinMaxInfo()

@@ -562,6 +562,263 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // ---------------------------------------------------------------------------
+        // 9. Content-layer pre-blend (KNOWN_ISSUES.md: "Translucent layers over a DWM backdrop
+        // lose alpha precision on a 10 bpc display"). DisplayDepthProbe.Override stands in for a
+        // live 10 bpc, advanced-color-off display path, which cannot be forced on the machine
+        // actually running the test. SystemBackdropType = Mica is asserted against the real,
+        // capability-resolved effective backdrop, so every test below skips (rather than fails)
+        // on a host whose WindowCapabilities cannot resolve Mica at all.
+        // ---------------------------------------------------------------------------
+
+        private static bool HostCanResolveMica()
+        {
+            WindowCapabilities capabilities = WindowCapabilities.Current;
+            return capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect;
+        }
+
+        [Fact]
+        public Task ContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_SetsWindowResourceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                if (!HostCanResolveMica())
+                {
+                    Assert.Skip("host cannot resolve Mica");
+                }
+
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(10, advancedColorEnabled: false);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    SolidColorBrush brush = Assert.IsType<SolidColorBrush>(w.Resources["NavigationViewContentBackgroundBrush"], exactMatch: false);
+                    Assert.Equal(Color.FromArgb(0xFF, 0xF9, 0xF9, 0xF9), brush.Color);
+                }
+                finally
+                {
+                    DisplayDepthProbe.Override = null;
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentLayerPreBlend_Bpc8_Mica_LeavesWindowResourceAbsentAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                if (!HostCanResolveMica())
+                {
+                    Assert.Skip("host cannot resolve Mica");
+                }
+
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.False(w.Resources.Contains("NavigationViewContentBackgroundBrush"));
+                }
+                finally
+                {
+                    DisplayDepthProbe.Override = null;
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentLayerPreBlend_OverrideDroppedTo8ThenReapplied_RemovesWindowResourceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                if (!HostCanResolveMica())
+                {
+                    Assert.Skip("host cannot resolve Mica");
+                }
+
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(10, advancedColorEnabled: false);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.True(w.Resources.Contains("NavigationViewContentBackgroundBrush"));
+
+                    // Simulate the display path dropping to 8 bpc and the window re-applying its
+                    // backdrop (the same path WM_DISPLAYCHANGE and OnDpiChanged drive): toggle away
+                    // from Mica and back so the SystemBackdropType change callback re-runs
+                    // ApplyBackdrop.
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
+                    w.SystemBackdropType = BackdropType.None;
+                    w.SystemBackdropType = BackdropType.Mica;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.False(w.Resources.Contains("NavigationViewContentBackgroundBrush"));
+                }
+                finally
+                {
+                    DisplayDepthProbe.Override = null;
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentLayerPreBlend_ConsumerOwnedResource_NeverOverwrittenOrRemovedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                if (!HostCanResolveMica())
+                {
+                    Assert.Skip("host cannot resolve Mica");
+                }
+
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                SolidColorBrush consumerBrush = new(Colors.HotPink);
+                consumerBrush.Freeze();
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                // The consumer sets its own override before the window is ever shown, so
+                // ApplyBackdrop's first run must find the key already present and never claim
+                // ownership of it.
+                w.Resources["NavigationViewContentBackgroundBrush"] = consumerBrush;
+                try
+                {
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(10, advancedColorEnabled: false);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.Same(consumerBrush, w.Resources["NavigationViewContentBackgroundBrush"]);
+
+                    // Even a swing to 8 bpc, which would otherwise remove Fluence's own substitute,
+                    // must leave a consumer-owned value alone.
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
+                    w.SystemBackdropType = BackdropType.None;
+                    w.SystemBackdropType = BackdropType.Mica;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.Same(consumerBrush, w.Resources["NavigationViewContentBackgroundBrush"]);
+                }
+                finally
+                {
+                    DisplayDepthProbe.Override = null;
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentLayerPreBlend_BoundBorder_ResolvesPreBlendThenCanonicalTokenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                if (!HostCanResolveMica())
+                {
+                    Assert.Skip("host cannot resolve Mica");
+                }
+
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                Color slotZeroToken = Assert.IsType<Color>(app.Resources["NavigationViewContentBackground"]);
+
+                System.Windows.Controls.Border border = new();
+                border.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "NavigationViewContentBackgroundBrush");
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                    Content = border,
+                };
+                try
+                {
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(10, advancedColorEnabled: false);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Color resolved = Assert.IsType<SolidColorBrush>(border.Background, exactMatch: false).Color;
+                    Assert.Equal(Color.FromArgb(0xFF, 0xF9, 0xF9, 0xF9), resolved);
+
+                    DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
+                    w.SystemBackdropType = BackdropType.None;
+                    w.SystemBackdropType = BackdropType.Mica;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Color afterRemoval = Assert.IsType<SolidColorBrush>(border.Background, exactMatch: false).Color;
+                    Assert.Equal(slotZeroToken, afterRemoval);
+                }
+                finally
+                {
+                    DisplayDepthProbe.Override = null;
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
         [Fact]
         public Task ApplicationBackgroundColor_Light_EqualsCanonicalSolidBackgroundFillColorBaseAsync()
         {

@@ -62,11 +62,22 @@ maintainers.
   absent under `BackdropType.None`, where WPF blends the layer itself. The
   likely mechanism is a `R10G10B10A2` composition surface when the output is
   10 bits per channel; this is inferred from the measurement, not documented
-  by Microsoft, and is not yet verified against an 8 bpc display. The library
-  keeps the canonical WinUI tokens. A consumer who needs the WinUI look on a
-  10 bpc desktop today can substitute an opaque `#F9F9F9` / `#272727` content
-  background while the effective backdrop is Mica or Tabbed, which is the
-  pre-blended value WinUI's own arithmetic produces.
+  by Microsoft, and is not yet verified against an 8 bpc display. Only
+  `BackdropType.Mica` was measured quantising under
+  `DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO` flags `0x4` (10 bpc, advanced color
+  off); enabling the GPU driver's 10-bit pixel format (AMD Adrenalin, Gaming,
+  Graphics) reported advanced color enabled (flags `0x7`), and under that
+  state Mica, Acrylic, and Tabbed all read full precision. `Tabbed` is
+  included in the fix below by DWM material-family inference, not
+  measurement: it shares the same `DWMSBT_MAINWINDOW` / `DWMSBT_TABBEDWINDOW`
+  family as Mica but was measured only under `0x7`. `Acrylic` is excluded:
+  it too was measured only under `0x7`, where it read full precision, and was
+  never measured under the quantising `0x4` flags, so there is no basis yet
+  to include or exclude it. The library now applies an opaque pre-blend
+  automatically when the window's display reports more than 8 bits per
+  channel with advanced color off and the effective backdrop is Mica or
+  Tabbed; an 8 bpc display, or a 10 bpc display with advanced color enabled,
+  keeps the canonical translucent token.
 - **`RenderTargetBitmap` vs DWM backdrop** - DWM Mica / Acrylic is composed by
   the window manager and is **not** visible to `RenderTargetBitmap`. The
   screenshot harness hosts the gallery inside a plain `Window` with a solid
