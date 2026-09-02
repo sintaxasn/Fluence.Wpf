@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -495,7 +496,7 @@ namespace Fluence.Wpf.Tests
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
                             () => tip.Template?.FindName("TopBeak", tip) is Path).ConfigureAwait(true),
                         "The tip template must apply inside the popup.");
-                    foreach (string beakName in new[] { "TopBeak", "BottomBeak", "LeftBeak", "RightBeak" })
+                    foreach (string beakName in (IReadOnlyList<string>)["TopBeak", "BottomBeak", "LeftBeak", "RightBeak"])
                     {
                         Path beak = Assert.IsType<Path>(tip.Template.FindName(beakName, tip));
                         Assert.Equal(Visibility.Collapsed, beak.Visibility);

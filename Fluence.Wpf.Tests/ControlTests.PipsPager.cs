@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -364,7 +365,7 @@ namespace Fluence.Wpf.Tests
                     // stay exactly where it is while the selection walks across it. The wait outlasts
                     // the 167ms scroll animation, so a viewport that did move would be caught settled
                     // at its new offset rather than mid-flight.
-                    foreach (int pageIndex in new[] { 1, 2 })
+                    foreach (int pageIndex in (IReadOnlyList<int>)[1, 2])
                     {
                         pager.SelectedPageIndex = pageIndex;
                         WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -372,7 +373,7 @@ namespace Fluence.Wpf.Tests
                         Assert.Equal(0.0, viewer.HorizontalOffset, 0.5);
                     }
 
-                    Assert.True(GetPipAt(Assert.IsAssignableFrom<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost")), 2)?.IsChecked,
+                    Assert.True(GetPipAt(Assert.IsType<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(pager, "PART_PipsHost"), exactMatch: false), 2)?.IsChecked,
                         "The third pip must be the checked one after selecting page 3.");
                 }
                 finally

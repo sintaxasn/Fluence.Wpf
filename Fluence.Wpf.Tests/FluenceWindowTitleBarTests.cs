@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -1382,7 +1383,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
-                    foreach (string? fieldName in new[] { "_minimizeButton", "_maximizeButton", "_closeButton" })
+                    foreach (string? fieldName in (IReadOnlyList<string>)["_minimizeButton", "_maximizeButton", "_closeButton"])
                     {
                         System.Windows.Controls.Button btn = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(window, fieldName), exactMatch: false);
                         Assert.True(btn.IsVisible, fieldName + " must be visible.");
