@@ -1539,6 +1539,12 @@ namespace Fluence.Wpf.Tests
                     Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
                     TranslateTransform translate =
                         Assert.IsType<TranslateTransform>(border.RenderTransform);
+                    Panel dropdownRoot = Assert.IsType<Panel>(combo.Template.FindName("PART_DropdownRoot", combo), exactMatch: false);
+
+                    // The fade runs on the dropdown root, not on the surface border alone, so
+                    // the opaque elevation caster behind the surface fades with it instead of
+                    // painting a blank plate at full strength on the first frame of the open.
+                    Assert.Equal(0.0, dropdownRoot.Opacity, 0.001);
 
                     // The code-driven reveal (moved out of the template MultiTriggers) must
                     // settle at the rest position with its Stop-fill clocks released.
@@ -1546,8 +1552,8 @@ namespace Fluence.Wpf.Tests
                     {
                         combo.IsDropDownOpen = true;
                         Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
-                                () => Math.Abs(translate.Y) < 0.001 && border.Opacity >= 1.0 &&
-                                    !translate.HasAnimatedProperties && !border.HasAnimatedProperties).ConfigureAwait(true),
+                                () => Math.Abs(translate.Y) < 0.001 && dropdownRoot.Opacity >= 1.0 &&
+                                    !translate.HasAnimatedProperties && !dropdownRoot.HasAnimatedProperties).ConfigureAwait(true),
                             string.Format(
                                 System.Globalization.CultureInfo.InvariantCulture,
                                 "Open {0}: the dropdown reveal must settle at Y=0, full opacity, and release its clocks.",
@@ -1555,6 +1561,14 @@ namespace Fluence.Wpf.Tests
 
                         combo.IsDropDownOpen = false;
                         WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                        // Closing re-hides the root so the next open cannot composite a frame at
+                        // rest before the reveal seeds its start pose.
+                        Assert.True(dropdownRoot.Opacity < 0.001,
+                            string.Format(
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                "Open {0}: closing the dropdown must return the root to hidden.",
+                                open));
                     }
                 }
                 finally

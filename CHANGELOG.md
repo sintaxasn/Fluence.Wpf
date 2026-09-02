@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- The `ComboBox` dropdown no longer flashes a blank dark plate before it resolves. The open reveal faded only the dropdown surface, so the opaque `ShadowCaster` behind it painted at full strength on the first composited frame while the surface was still transparent. The fade now runs on the dropdown root, which carries the caster and the surface together, and the root is stamped hidden by the template and re-hidden when the dropdown closes, so a popup frame composited before the reveal seeds its start pose is invisible rather than showing the plate. WPF does not order the `IsDropDownOpen` invalidation against the `Popup.IsOpen` template binding, so that frame is possible on any open.
+
 ## [0.8.19-Preview] - 2026-08-30
 
 ### Fixed

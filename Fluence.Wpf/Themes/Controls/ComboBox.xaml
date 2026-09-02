@@ -227,7 +227,18 @@
                                 translucent layered-window surface and degrades instead of helping,
                                 which is the same reasoning that keeps the FluenceWindow root at Auto.
                             -->
-                            <Grid>
+                            <!--
+                                The reveal fades this root, not the dropdown surface alone, so the
+                                opaque ShadowCaster behind the surface fades with it. Fading only the
+                                surface left the caster painting a blank dark plate at full strength
+                                on the first frame of every open, which read as a black flash before
+                                the dropdown resolved. The root starts hidden: a popup HWND can be
+                                created and shown before ComboBox.OnDropDownOpened runs (WPF does not
+                                order the IsDropDownOpen invalidation against the Popup.IsOpen
+                                template binding), so an unhidden root can composite one frame at
+                                rest before the reveal seeds its start pose.
+                            -->
+                            <Grid x:Name="PART_DropdownRoot" Opacity="0">
                                 <!--
                                     Elevation is cast by an empty sibling behind the dropdown. The
                                     caster is opaque (SolidBackgroundFillColorTertiary) rather than
