@@ -847,3 +847,13 @@ dotnet_diagnostic.rcs9010.severity = error
 
 # Specify ExportCodeFixProviderAttribute.Name
 dotnet_diagnostic.rcs9011.severity = error
+
+
+# Specific formatting skips for XAML files.
+[*.xaml.cs]
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.S1125.severity = none
+dotnet_diagnostic.S1192.severity = none
+dotnet_diagnostic.S2333.severity = none
+dotnet_diagnostic.MA0038.severity = none
+dotnet_diagnostic.MA0204.severity = none

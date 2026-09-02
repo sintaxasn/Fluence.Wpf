@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -129,7 +130,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Width = 420,
                     Height = 200,
-                    ItemsSource = new[] { "Alpha", "Beta" },
+                    ItemsSource = (IReadOnlyList<string>)["Alpha", "Beta"],
                 };
 
                 try

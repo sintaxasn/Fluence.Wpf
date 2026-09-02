@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Tests
 
                     ColumnDefinition paneColumn = Assert.IsType<ColumnDefinition>(nav.Template.FindName("PaneColumn", nav));
 
-                    foreach (double width in new[] { 96.0, 160.0, 240.0, 320.0 })
+                    foreach (double width in (IReadOnlyList<double>)[96.0, 160.0, 240.0, 320.0])
                     {
                         paneColumn!.BeginAnimation(ColumnDefinition.WidthProperty, animation: null);
                         paneColumn.Width = new GridLength(width);
