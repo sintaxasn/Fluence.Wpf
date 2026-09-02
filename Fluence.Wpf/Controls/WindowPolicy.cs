@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -475,6 +476,133 @@ namespace Fluence.Wpf.Controls
                 CornerPreference.Default or CornerPreference.Round => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
                 _ => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
             };
+        }
+
+        /// <summary>
+        /// The effective backdrops for which <see cref="ShouldApplyContentLayerPreBlend"/> applies
+        /// the opaque pre-blend. Only <see cref="BackdropType.Mica"/> was measured quantising client
+        /// alpha under <c language="csharp">DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO</c> flags <c language="text">0x4</c> (10 bpc,
+        /// advanced color off); see the KNOWN_ISSUES.md entry "Translucent layers over a DWM
+        /// backdrop lose alpha precision on a 10 bpc display". <see cref="BackdropType.Tabbed"/> is
+        /// included by inference, not measurement: it is the same DWM material family
+        /// (<c language="csharp">DWMSBT_MAINWINDOW</c> and <c language="csharp">DWMSBT_TABBEDWINDOW</c>) as Mica, but it was
+        /// measured only under flags <c language="text">0x7</c> (advanced color on), where it read full precision
+        /// like everything else. <see cref="BackdropType.Acrylic"/> is excluded: it too was measured
+        /// only under <c language="text">0x7</c> and read full precision there, and was never measured under
+        /// <c language="text">0x4</c>, so there is no basis yet to include or exclude it on the quantising flag.
+        /// Kept as a single array so an Acrylic measurement under <c language="text">0x4</c> can extend (or leave
+        /// unchanged) the set with a one-line change.
+        /// </summary>
+        private static readonly BackdropType[] PreBlendEligibleBackdrops = [BackdropType.Mica, BackdropType.Tabbed];
+
+        /// <summary>
+        /// Returns whether <see cref="ResolveContentLayerPreBlend"/> should substitute an opaque
+        /// content-layer color for the given effective backdrop, theme, and display color depth.
+        /// </summary>
+        /// <remarks>
+        /// Measured fact (KNOWN_ISSUES.md, "Translucent layers over a DWM backdrop lose alpha
+        /// precision on a 10 bpc display"): on a display path reporting
+        /// <c language="csharp">bitsPerColorChannel = 10</c> with advanced color <em>disabled</em>, DWM composites a
+        /// window's client alpha over a system backdrop with 2-bit alpha, so a translucent
+        /// content-layer token reads darker than it specifies. The same 10 bpc path with advanced
+        /// color <em>enabled</em> (measured by toggling the GPU driver's 10-bit pixel format
+        /// setting) was measured to composite at full precision, so the pre-blend must not apply
+        /// there. This method is pure: it takes the already-resolved backdrop, theme, and display
+        /// state and returns a value, so it can be unit tested without a window handle, a live
+        /// display, or DWM.
+        /// </remarks>
+        /// <param name="effectiveBackdrop">The backdrop that will actually be applied after capability downgrade (see <see cref="ResolveEffectiveBackdrop"/>).</param>
+        /// <param name="resolvedTheme">The resolved application theme.</param>
+        /// <param name="colorDepth">The display color depth for the monitor hosting the window.</param>
+        /// <returns>
+        ///   <see langword="false"/> when <paramref name="colorDepth"/> reports 8 bpc or fewer
+        ///   (including unknown), advanced color is enabled, the theme is
+        ///   <see cref="ApplicationTheme.HighContrast"/>, or <paramref name="effectiveBackdrop"/> is
+        ///   not one of <see cref="PreBlendEligibleBackdrops"/>; otherwise <see langword="true"/>.
+        /// </returns>
+        internal static bool ShouldApplyContentLayerPreBlend(
+            BackdropType effectiveBackdrop,
+            ApplicationTheme resolvedTheme,
+            DisplayColorDepth colorDepth)
+        {
+            return colorDepth.BitsPerColorChannel > 8
+                && !colorDepth.AdvancedColorEnabled
+                && resolvedTheme is not ApplicationTheme.HighContrast
+                && Array.IndexOf(PreBlendEligibleBackdrops, effectiveBackdrop) >= 0;
+        }
+
+        /// <summary>
+        /// Resolves the opaque, pre-blended replacement for a translucent content-layer token when
+        /// the active display path cannot composite its alpha at full precision.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Per AGENTS.md 4.2, WinUI 3 CommonStyles is the authority for visual tokens, and WinUI
+        /// already ships the pre-blended value this substitution needs:
+        /// <c language="text">LayerOnMicaBaseAltFillColorTertiary</c> (<c language="text">#FFF9F9F9</c> Light,
+        /// <c language="text">#FF2C2C2C</c> Dark). When <paramref name="canonicalPreBlend"/> is supplied (the caller
+        /// resolved that key), it is returned as-is. The straight-alpha composite of
+        /// <paramref name="layerFill"/> over <paramref name="solidBase"/> is only a fallback for a
+        /// consumer whose theme dictionary does not define that key, computed per channel with the
+        /// alpha forced to <c language="csharp">0xFF</c>
+        /// (<c language="csharp">round(layerFill.A/255 * layerFill.channel + (1 - layerFill.A/255) * solidBase.channel)</c>,
+        /// <see cref="MidpointRounding.AwayFromZero"/>); for the canonical Light tokens
+        /// (<c language="text">#80FFFFFF</c> over <c language="text">#FFF3F3F3</c>) it reproduces the same
+        /// <c language="text">#FFF9F9F9</c> the canonical key already carries.
+        /// </para>
+        /// <para>
+        /// The caller applies the result as the bottom-most layer of the affected control (see
+        /// <see cref="FluenceWindow.ApplyBackdrop"/>): a pre-blended opaque plate restores
+        /// the brightness the token specifies, and everything WPF composites on top of it is then
+        /// blended by WPF itself at full precision, unaffected by the DWM quantisation.
+        /// </para>
+        /// </remarks>
+        /// <param name="effectiveBackdrop">The backdrop that will actually be applied after capability downgrade (see <see cref="ResolveEffectiveBackdrop"/>).</param>
+        /// <param name="resolvedTheme">The resolved application theme.</param>
+        /// <param name="colorDepth">The display color depth for the monitor hosting the window.</param>
+        /// <param name="canonicalPreBlend">The resolved <c language="text">LayerOnMicaBaseAltFillColorTertiary</c> token, or <see langword="null"/> when the theme dictionary does not define it.</param>
+        /// <param name="layerFill">The translucent content-layer token color (for example <c language="xaml">NavigationViewContentBackground</c>), used only for the fallback composite.</param>
+        /// <param name="solidBase">The opaque window-base token color the layer is composited over (for example <c language="xaml">SolidBackgroundFillColorBase</c>), used only for the fallback composite.</param>
+        /// <returns>
+        ///   The opaque pre-blended color to substitute, or <see langword="null"/> when
+        ///   <see cref="ShouldApplyContentLayerPreBlend"/> reports no substitution is needed.
+        /// </returns>
+        internal static Color? ResolveContentLayerPreBlend(
+            BackdropType effectiveBackdrop,
+            ApplicationTheme resolvedTheme,
+            DisplayColorDepth colorDepth,
+            Color? canonicalPreBlend,
+            Color layerFill,
+            Color solidBase)
+        {
+            if (!ShouldApplyContentLayerPreBlend(effectiveBackdrop, resolvedTheme, colorDepth))
+            {
+                return null;
+            }
+            if (canonicalPreBlend is Color canonical)
+            {
+                return canonical;
+            }
+
+            double alpha = layerFill.A / 255.0;
+            byte r = ComposeChannel(alpha, layerFill.R, solidBase.R);
+            byte g = ComposeChannel(alpha, layerFill.G, solidBase.G);
+            byte b = ComposeChannel(alpha, layerFill.B, solidBase.B);
+            return Color.FromArgb(0xFF, r, g, b);
+        }
+
+        /// <summary>
+        /// Straight-alpha composites one 8-bit color channel of <see cref="ResolveContentLayerPreBlend"/>,
+        /// rounding away from zero.
+        /// </summary>
+        /// <param name="alpha">The foreground alpha in the <c language="csharp">[0, 1]</c> range.</param>
+        /// <param name="foreground">The foreground channel value.</param>
+        /// <param name="background">The background channel value.</param>
+        /// <returns>The composited channel value.</returns>
+        private static byte ComposeChannel(double alpha, byte foreground, byte background)
+        {
+            double composited = (alpha * foreground) + ((1.0 - alpha) * background);
+            return (byte)Math.Round(composited, MidpointRounding.AwayFromZero);
         }
 
         /// <summary>

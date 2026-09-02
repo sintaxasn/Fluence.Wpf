@@ -93,6 +93,19 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private const double DefaultTitleBarHeight = 48d;
 
+        /// <summary>
+        /// Window-scoped resource key for the opaque pre-blend resolved by
+        /// <see cref="WindowPolicy.ResolveContentLayerPreBlend"/>. Set on <see cref="FrameworkElement.Resources"/>
+        /// (this window, not the application) so it shadows the translucent
+        /// <c language="xaml">NavigationViewContentBackground</c>-derived brush for every
+        /// <c language="csharp">DynamicResource</c> consumer inside this window only; removed (not set to
+        /// <see langword="null"/>) when the substitution does not apply, so lookups fall through to
+        /// the canonical slot-[0] value. Ownership of this key is tracked by
+        /// <see cref="_contentLayerPreBlendApplied"/>: a consumer who sets this key themselves (for
+        /// example before the window is shown) is never overwritten or cleared.
+        /// </summary>
+        private const string ContentLayerPreBlendResourceKey = "NavigationViewContentBackgroundBrush";
+
         #endregion Constants
 
         #region Value converters
@@ -615,6 +628,12 @@ namespace Fluence.Wpf.Controls
             // MarginMaximized is derived from device-pixel system metrics divided by the window
             // scale factor, so moving to a monitor with a different scale invalidates it.
             UpdateShellMetrics();
+
+            // A DPI change also fires when the window is dragged to a different monitor, which can
+            // carry a different display color depth. ApplyBackdrop re-reads it and refreshes
+            // ResolveContentLayerPreBlend along with the rest of the backdrop; the call is cheap and
+            // idempotent when nothing actually changed.
+            ApplyBackdrop();
         }
 
         /// <inheritdoc />
@@ -859,6 +878,8 @@ namespace Fluence.Wpf.Controls
                 transparencyEffectsEnabled,
                 GetLegacyAcrylicTintColor());
 
+            ApplyContentLayerPreBlend(plan.EffectiveBackdrop);
+
             SolidColorBrush backgroundBrush = new(plan.BackgroundColor);
             backgroundBrush.Freeze();
             Background = backgroundBrush;
@@ -873,7 +894,11 @@ namespace Fluence.Wpf.Controls
             // None) lets the DWM backdrop show through from the first composed frame, which is why
             // the reference Fluent window libraries need no first-paint cloak. Mirrors the WPF-UI
             // WindowBackdrop.RemoveBackground flow.
-            if (_hwndSource?.CompositionTarget is not null)
+            // WM_DISPLAYCHANGE can reach this method after the HwndSource has started tearing down
+            // (a display change during window close is possible), so guard on IsDisposed rather than
+            // just a null check: writing to CompositionTarget on a disposed source throws, and this
+            // path must never throw out of a WndProc hook.
+            if (_hwndSource is { IsDisposed: false, CompositionTarget: not null })
             {
                 _hwndSource.CompositionTarget.BackgroundColor = plan.BackgroundColor;
             }
@@ -902,6 +927,93 @@ namespace Fluence.Wpf.Controls
                 _ = NativeMethods.SetMicaEffect(_handle, plan.UseLegacyMicaEffect);
             }
             ApplyLegacyAcrylic(plan);
+        }
+
+        /// <summary>
+        /// Sets or clears the window-scoped <see cref="ContentLayerPreBlendResourceKey"/> brush for
+        /// the effective backdrop just resolved by <see cref="ApplyBackdrop"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Reads the live display color depth (via <see cref="DisplayDepthProbe"/>, so tests can
+        /// force it), the canonical <c language="text">LayerOnMicaBaseAltFillColorTertiary</c> WinUI token
+        /// (authoritative per AGENTS.md 4.2), and the two tokens the fallback composite needs when
+        /// that key is not defined, then delegates the decision to the pure
+        /// <see cref="WindowPolicy.ResolveContentLayerPreBlend"/>. The result is applied as the
+        /// bottom-most layer of the affected control: a pre-blended opaque plate restores the
+        /// brightness the translucent token specifies, and everything WPF composites on top of it is
+        /// then blended by WPF itself at full precision, so it is unaffected by the DWM alpha
+        /// quantisation this substitutes for. See the KNOWN_ISSUES.md entry "Translucent layers over
+        /// a DWM backdrop lose alpha precision on a 10 bpc display".
+        /// </para>
+        /// <para>
+        /// Called on every <see cref="ApplyBackdrop"/> (theme and backdrop changes already re-run
+        /// it), and separately from the events that can move a window to a different display path: a
+        /// display settings change (<c language="csharp">WM_DISPLAYCHANGE</c> in <see cref="WndProc"/>), a DPI
+        /// change (<see cref="OnDpiChanged"/>), and a monitor move at equal DPI, which raises neither
+        /// of those (<c language="csharp">WM_WINDOWPOSCHANGED</c> in <see cref="WndProc"/>, gated on the cached
+        /// <see cref="_lastMonitor"/> so it costs one <c language="csharp">MonitorFromWindow</c> call per message
+        /// when nothing changed). All are cheap and idempotent.
+        /// </para>
+        /// </remarks>
+        /// <param name="effectiveBackdrop">The effective backdrop just resolved by <see cref="ApplyBackdrop"/>.</param>
+        private void ApplyContentLayerPreBlend(BackdropType effectiveBackdrop)
+        {
+            DisplayColorDepth colorDepth = _handle == IntPtr.Zero
+                ? default
+                : DisplayDepthProbe.GetColorDepth(_handle);
+
+            if (_handle != IntPtr.Zero)
+            {
+                // Keep the WM_WINDOWPOSCHANGED cache in sync with every apply, not just the ones it
+                // triggers itself, so a monitor move detected via WM_DISPLAYCHANGE or OnDpiChanged
+                // does not also look like an unhandled move to the next WM_WINDOWPOSCHANGED.
+                _lastMonitor = PInvoke.MonitorFromWindow((HWND)_handle, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+            }
+
+            Color? canonicalPreBlend = TryFindResource("LayerOnMicaBaseAltFillColorTertiary") is Color canonical
+                ? canonical
+                : null;
+            Color? layerFill = TryFindResource("NavigationViewContentBackground") is Color layer ? layer : null;
+            Color? solidBase = TryFindResource("SolidBackgroundFillColorBase") is Color solid ? solid : null;
+
+            Color? preBlend = canonicalPreBlend is not null || (layerFill is not null && solidBase is not null)
+                ? WindowPolicy.ResolveContentLayerPreBlend(
+                    effectiveBackdrop,
+                    ApplicationThemeManager.GetResolvedTheme(),
+                    colorDepth,
+                    canonicalPreBlend,
+                    layerFill ?? default,
+                    solidBase ?? default)
+                : null;
+
+            SetContentLayerPreBlend(preBlend);
+        }
+
+        /// <summary>
+        /// Applies the ownership rule for <see cref="ContentLayerPreBlendResourceKey"/>: this window
+        /// only ever sets or removes a value it previously set itself, tracked by
+        /// <see cref="_contentLayerPreBlendApplied"/>, so a consumer's own window-scoped override is
+        /// never overwritten or cleared.
+        /// </summary>
+        /// <param name="preBlend">The resolved pre-blend, or <see langword="null"/> when no substitution applies.</param>
+        private void SetContentLayerPreBlend(Color? preBlend)
+        {
+            if (preBlend is Color preBlendColor)
+            {
+                if (_contentLayerPreBlendApplied || !Resources.Contains(ContentLayerPreBlendResourceKey))
+                {
+                    SolidColorBrush preBlendBrush = new(preBlendColor);
+                    preBlendBrush.Freeze();
+                    Resources[ContentLayerPreBlendResourceKey] = preBlendBrush;
+                    _contentLayerPreBlendApplied = true;
+                }
+            }
+            else if (_contentLayerPreBlendApplied)
+            {
+                Resources.Remove(ContentLayerPreBlendResourceKey);
+                _contentLayerPreBlendApplied = false;
+            }
         }
 
         /// <summary>
@@ -1346,6 +1458,28 @@ namespace Fluence.Wpf.Controls
             {
                 _inSizeMove = false;
                 RestoreLegacyAcrylicAfterDrag();
+            }
+            else if (msg == PInvoke.WM_DISPLAYCHANGE)
+            {
+                // The display path (resolution, color depth, or monitor count) just changed. A
+                // re-run of ApplyBackdrop is cheap and idempotent, and it is the only place that
+                // re-reads the display color depth feeding ResolveContentLayerPreBlend, so a
+                // display-settings change without a monitor move (unlike OnDpiChanged) still
+                // refreshes the pre-blend.
+                ApplyBackdrop();
+            }
+            else if (msg == PInvoke.WM_WINDOWPOSCHANGED)
+            {
+                // A move between two monitors at the same DPI raises neither WM_DPICHANGED nor
+                // WM_DISPLAYCHANGE, so this is the only signal left for that case. One
+                // MonitorFromWindow call per message keeps the cost flat regardless of how often the
+                // window moves; ApplyBackdrop (which itself refreshes _lastMonitor) only re-runs when
+                // the monitor actually changed.
+                HMONITOR monitor = PInvoke.MonitorFromWindow((HWND)hwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+                if (monitor != _lastMonitor)
+                {
+                    ApplyBackdrop();
+                }
             }
             return IntPtr.Zero;
         }
@@ -1843,6 +1977,24 @@ namespace Fluence.Wpf.Controls
         /// <see cref="OnClosed(EventArgs)"/>.
         /// </summary>
         private HwndSource? _hwndSource;
+
+        /// <summary>
+        /// <see langword="true"/> when this window last set <see cref="ContentLayerPreBlendResourceKey"/>
+        /// on its own <see cref="FrameworkElement.Resources"/> in <see cref="ApplyContentLayerPreBlend"/>.
+        /// Ownership, not mere presence: a consumer who sets that key themselves (for example before
+        /// the window is first shown) leaves this <see langword="false"/>, so
+        /// <see cref="ApplyContentLayerPreBlend"/> never overwrites or removes a value it did not
+        /// itself set.
+        /// </summary>
+        private bool _contentLayerPreBlendApplied;
+
+        /// <summary>
+        /// The monitor <see cref="_handle"/> was on as of the last <see cref="ApplyBackdrop"/>, used
+        /// by <c>WM_WINDOWPOSCHANGED</c> to detect a move to a different monitor at the same DPI
+        /// (which raises no <c>WM_DPICHANGED</c>) without re-reading the display color depth on
+        /// every window-position message.
+        /// </summary>
+        private HMONITOR _lastMonitor;
 
         /// <summary>
         /// <see langword="true"/> while the Windows 10 legacy acrylic accent policy is applied to
