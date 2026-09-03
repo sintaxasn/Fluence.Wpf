@@ -16,13 +16,12 @@
     <!--  ContextMenu container  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type controls:ContextMenu}">
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="HasDropShadow" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ContextMenu}">
@@ -111,7 +110,7 @@
                                     <Border
                                         x:Name="SubMenuShadowCaster"
                                         MinWidth="180"
-                                        Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                        Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                         CornerRadius="{DynamicResource OverlayCornerRadius}"
                                         Effect="{DynamicResource FlyoutShadowEffect}"
                                         RenderTransform="{Binding RenderTransform, ElementName=SubMenuBorder}"
@@ -120,7 +119,7 @@
                                         x:Name="SubMenuBorder"
                                         MinWidth="180"
                                         Padding="2"
-                                        Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                        Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                         BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                         BorderThickness="1"
                                         CornerRadius="{DynamicResource OverlayCornerRadius}"
@@ -144,7 +143,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="Segoe Fluent Icons"
                                 FontSize="14"
-                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                Foreground="{TemplateBinding Foreground}"
                                 Text="&#xE73E;"
                                 Visibility="Collapsed" />
 
@@ -212,7 +211,7 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SubMenuTranslate" Storyboard.TargetProperty="X">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -244,6 +243,20 @@
                         <Trigger Property="Role" Value="TopLevelHeader">
                             <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
                         </Trigger>
+                        <!--
+                            Top-level menu bar item: keep the pressed-style plate while its dropdown
+                            stays open, even after the mouse leaves into the popup and IsHighlighted
+                            drops. Authority: WinUI 3 MenuBarItem's "Selected" visual state
+                            (MenuBarItem.xaml:47-52) backed by MenuBarItemBackgroundSelected =
+                            SubtleFillColorTertiaryBrush (MenuBar_themeresources.xaml:10).
+                        -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Role" Value="TopLevelHeader" />
+                                <Condition Property="IsSubmenuOpen" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                        </MultiTrigger>
                         <!--  Show checkmark when checked and no custom icon  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -266,10 +279,18 @@
     <!--  ═══════════════════════════════════════════════════════════  -->
     <!--  Separator  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
-    <Style TargetType="{x:Type Separator}">
+    <!--
+        Full-bleed: cancels the MenuItem's own -2,1 left/right margin (line 81 above; the plate
+        adds another 2px Padding, line 46) so the separator line spans edge to edge instead of
+        sitting inset like a menu item. Keyed to MenuItem.SeparatorStyleKey - the resource key WPF
+        looks up for a Separator added directly to a Menu/ContextMenu's Items - rather than an
+        implicit TargetType="Separator" style, so a Separator used outside a menu (a ToolBar, say)
+        is unaffected.
+    -->
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
         <Setter Property="Background" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
         <Setter Property="Height" Value="1" />
-        <Setter Property="Margin" Value="4,2" />
+        <Setter Property="Margin" Value="-2,1,-2,1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Separator}">

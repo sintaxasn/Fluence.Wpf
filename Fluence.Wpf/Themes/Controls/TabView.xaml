@@ -25,14 +25,20 @@
                     <Grid x:Name="Root" ClipToBounds="False">
                         <Border
                             x:Name="HoverBackground"
-                            Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                            Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
                             CornerRadius="8,8,0,0"
                             Opacity="0" />
+                        <!--
+                            WinUI's own selected-tab stroke (TabViewSelectedItemBorderBrush,
+                            TabView_themeresources.xaml:72-80) is a LinearGradientBrush fading in
+                            over CardStrokeColorDefault; CardStrokeColorDefaultBrush (flat) is the
+                            WPF translation, matching the opaque plate's single-color border need.
+                        -->
                         <Border
                             x:Name="SelectedBackground"
                             Margin="0,0,0,-1"
                             Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                            BorderBrush="{DynamicResource CardStrokeColorDefaultSolidBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1,1,1,0"
                             CornerRadius="8,8,0,0"
                             Opacity="0" />
@@ -82,7 +88,7 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Focusable="False"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 ToolTip="Close tab">
                                 <Button.Template>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -100,10 +106,13 @@
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -147,7 +156,7 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
                                             <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -160,7 +169,7 @@
                                         <!--  Indicator exit: ControlPressAnimationDuration (100 ms), fade delayed by ControlFasterAnimationDuration (83 ms)  -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.1"
                                                 Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -251,6 +260,24 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
+                            <!--
+                                Bottom seam: WinUI splits this into LeftBottomBorderLine /
+                                RightBottomBorderLine (TabView.xaml:36-37 upstream), two Grid-column
+                                segments that leave a gap under the selected tab without covering it,
+                                with a corner-fillet visual-state swap for the single-tab case. Fluence
+                                lays tabs out in a scrollable StackPanel rather than fixed Grid columns,
+                                so the selected tab's own position cannot be expressed as a column span;
+                                this draws one continuous strip behind the whole row instead and skips
+                                the fillet states. It still reads as a gap in practice because the
+                                selected tab's opaque SelectedBackground plate (Panel.ZIndex 1, -1px
+                                bottom margin) paints over this line wherever it sits.
+                            -->
+                            <Border
+                                Grid.ColumnSpan="4"
+                                Height="1"
+                                VerticalAlignment="Bottom"
+                                Background="{DynamicResource CardStrokeColorDefaultBrush}" />
+
                             <!--  WI-3 B16: scroll-back button (WinUI TabView canonical)  -->
                             <RepeatButton
                                 x:Name="PART_ScrollBackButton"
@@ -275,11 +302,12 @@
                                             Background="{TemplateBinding Background}"
                                             CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <TextBlock
+                                                x:Name="ScrollBackGlyph"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                 FontSize="12"
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="&#xE76B;" />
                                         </Border>
                                         <ControlTemplate.Triggers>
@@ -288,6 +316,9 @@
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="ScrollBackRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="ScrollBackGlyph" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -340,11 +371,12 @@
                                             Background="{TemplateBinding Background}"
                                             CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <TextBlock
+                                                x:Name="ScrollForwardGlyph"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                 FontSize="12"
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="&#xE76C;" />
                                         </Border>
                                         <ControlTemplate.Triggers>
@@ -353,6 +385,9 @@
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="ScrollForwardRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="ScrollForwardGlyph" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -370,7 +405,7 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Focusable="False"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 ToolTip="Add new tab"
                                 Visibility="{Binding IsAddTabButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TabViewBooleanToVisibilityConverter}}">
                                 <Button.Template>
@@ -392,6 +427,9 @@
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter TargetName="AddButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>

@@ -28,13 +28,6 @@
                             BorderThickness="1"
                             CornerRadius="{DynamicResource ControlCornerRadius}"
                             Opacity="0" />
-                        <Border
-                            x:Name="FocusRing"
-                            Margin="2"
-                            BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                            Opacity="0" />
                         <ContentPresenter
                             x:Name="ContentSite"
                             Margin="{TemplateBinding Padding}"
@@ -82,7 +75,7 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
                                             <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -95,7 +88,7 @@
                                         <!--  Indicator exit: ControlPressAnimationDuration (100 ms), fade delayed by ControlFasterAnimationDuration (83 ms)  -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.1"
                                                 Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -111,7 +104,6 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="Root" Property="Opacity" Value="0.55" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

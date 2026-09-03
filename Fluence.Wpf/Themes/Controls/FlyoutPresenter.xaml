@@ -7,16 +7,19 @@
         Fluent Design FlyoutPresenter style.
         Authority: WinUI 3 Flyout_themeresources.xaml (FlyoutContentThemePadding 16,15,16,17;
         FlyoutThemeMinWidth 96 / MaxWidth 456 / MinHeight 40 / MaxHeight 758).
-        Surface treatment reuses the canonical in-tree flyout tokens from ContextMenu.xaml /
-        ToolTip.xaml: SolidBackgroundFillColorTertiaryBrush + SurfaceStrokeColorFlyoutBrush +
-        OverlayCornerRadius.
+        Surface treatment: WinUI's FlyoutPresenterBackground is AcrylicInAppFillColorDefaultBrush
+        (FlyoutPresenter_themeresources.xaml:5), a translucent AcrylicBrush. A WPF Popup surface is
+        not DWM-composited the way the host window is, so the plate paints the brush's resolved
+        FallbackColor equivalent instead: AcrylicBackgroundFillColorDefaultBrush, opaque, matching
+        the WinUI acrylic FallbackColor. Border and radius stay SurfaceStrokeColorFlyoutBrush +
+        OverlayCornerRadius, shared with ContextMenu.xaml / ToolTip.xaml.
         Elevation is cast by an empty ShadowCaster sibling painted behind the surface, carrying
         FlyoutShadowEffect. WPF drops ClearType for every text run under an Effect, which is why the
         effect is not on the surface itself, and no layout gutter is needed because PopupRoot already
         sizes a popup window about 15 px larger per side than its child.
     -->
     <Style TargetType="{x:Type controls:FlyoutPresenter}">
-        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -66,7 +69,7 @@
                     </Grid>
                     <!--
                         The open reveal (slide 8px in from the placement side with a fade 0 to 1,
-                        167ms on the 0.8,0,0,1 spline) lives in FlyoutPresenter.OnLoaded and is
+                        167ms on the 0,0,0,1 spline) lives in FlyoutPresenter.OnLoaded and is
                         placement-aware: FlyoutBase.ShowAt stamps the resolved side onto the
                         presenter's RevealPlacement before the popup opens. PresenterSurface and
                         PresenterTranslate are the named parts the reveal animates. v2 limitation:

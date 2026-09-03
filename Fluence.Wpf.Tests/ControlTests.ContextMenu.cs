@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -69,7 +70,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task ContextMenu_DefaultStyle_HasDropShadowSetterTrueAsync()
+        public Task ContextMenu_DefaultStyle_HasNoHasDropShadowSetterAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -78,12 +79,30 @@ namespace Fluence.Wpf.Tests
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(ContextMenu)));
 
-                // HasDropShadow only activates when the Popup opens; verify the
-                // Setter is present and declared True rather than applying the style
-                // without a live popup (which returns the default value).
-                bool found = style.Setters.OfType<Setter>().Any(static s => s.Property == System.Windows.Controls.ContextMenu.HasDropShadowProperty && true.Equals(s.Value));
-                Assert.True(found, "ContextMenu style must contain <Setter Property='HasDropShadow' Value='True'/>.");
+                // HasDropShadow does nothing once a control has a custom Template (verified in
+                // the dotnet/wpf sources: it is only consumed by the default ContextMenu style's
+                // own trigger, which this template replaces). Elevation instead comes from the
+                // real ShadowCaster + FlyoutShadowEffect sibling in the template, asserted by
+                // ContextMenuXaml_UsesShadowCasterForElevation below, so the inert setter must
+                // not be present.
+                bool found = style.Setters.OfType<Setter>().Any(static s => s.Property == System.Windows.Controls.ContextMenu.HasDropShadowProperty);
+                Assert.False(found, "ContextMenu style must not set the inert HasDropShadow property; use a ShadowCaster + FlyoutShadowEffect sibling instead.");
             });
+        }
+
+        [Fact]
+        public async Task ContextMenuXaml_UsesShadowCasterForElevationAsync()
+        {
+            string xaml = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Themes", "Controls", "ContextMenu.xaml").ConfigureAwait(true);
+
+            Assert.True(
+                xaml.Contains("x:Name=\"ShadowCaster\"", StringComparison.Ordinal) &&
+                xaml.Contains("x:Name=\"SubMenuShadowCaster\"", StringComparison.Ordinal),
+                "ContextMenu's root surface and its submenu popup must each carry a named " +
+                "ShadowCaster sibling, since HasDropShadow does not apply the elevation itself.");
+            Assert.True(
+                xaml.Contains("Effect=\"{DynamicResource FlyoutShadowEffect}\"", StringComparison.Ordinal),
+                "The ShadowCaster siblings must carry FlyoutShadowEffect.");
         }
 
         // ---------------------------------------------------------------------------

@@ -49,7 +49,7 @@
                                 Margin="2,0,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                Background="{DynamicResource NavigationViewSelectionIndicatorBrush}"
                                 CornerRadius="1.5"
                                 IsHitTestVisible="False"
                                 Opacity="0" />
@@ -145,7 +145,8 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.5" />
+                            <!--  WinUI parity: ListViewItemDisabledThemeOpacity is 0.3, matching ListView.  -->
+                            <Setter Property="Opacity" Value="0.3" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
