@@ -31,6 +31,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
@@ -834,6 +835,107 @@ namespace Fluence.Wpf.Tests
                 Color applicationBackground = Assert.IsType<Color>(app.Resources["ApplicationBackgroundColor"]);
                 Color solidBackgroundBase = Assert.IsType<Color>(app.Resources["SolidBackgroundFillColorBase"]);
                 Assert.Equal(solidBackgroundBase, applicationBackground);
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // 10. DWM owns the outer border on Windows 11 (CHANGELOG.md 0.8.17-Preview
+        // pale-line defect): a realised window carries the capability-correct template
+        // border thickness and never the Card brush key, and ApplyFrame's SetCurrentValue
+        // calls must not clobber a consumer's own style-level BorderBrush setter with a
+        // promoted local value.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task ApplyFrame_RealisedWindow_TemplateBorderMatchesCapability_AndBrushIsNeverCardStrokeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    // Exercises the Windows 10 1 dp path on a host (for example CI on Server 2022)
+                    // that does not support DWMWA_BORDER_COLOR, and the Windows 11 0 dp path
+                    // everywhere else, instead of skipping one branch outright.
+                    Thickness expectedThickness = WindowCapabilities.Current.SupportsBorderColor
+                        ? new Thickness(0)
+                        : new Thickness(1);
+                    Assert.Equal(expectedThickness, w.BorderThickness);
+
+                    object? accentBrush = app.TryFindResource("SystemAccentColorBrush");
+                    object? surfaceBrush = app.TryFindResource("SurfaceStrokeColorDefaultBrush");
+                    Assert.True(ReferenceEquals(w.BorderBrush, accentBrush) || ReferenceEquals(w.BorderBrush, surfaceBrush),
+                        "FluenceWindow.BorderBrush must resolve to the accent brush (active) or the surface stroke brush (inactive) by identity.");
+
+                    object? cardStrokeBrush = app.TryFindResource("CardStrokeColorDefaultSolidBrush");
+                    Assert.False(ReferenceEquals(w.BorderBrush, cardStrokeBrush),
+                        "FluenceWindow.BorderBrush must never resolve to CardStrokeColorDefaultSolidBrush; that key is reserved for Card surfaces.");
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ApplyFrame_ConsumerStyleSetterOnBorderBrush_BaseValueSourceStaysStyleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                // BasedOn the implicit style so the template and every other setter survive; only
+                // BorderBrush is overridden, the way a consumer app would retheme one property.
+                Style baseStyle = Assert.IsType<Style>(app.TryFindResource(typeof(FluenceWindow)), exactMatch: false);
+                Style consumerStyle = new(typeof(FluenceWindow), baseStyle);
+                consumerStyle.Setters.Add(new Setter(Control.BorderBrushProperty, Brushes.HotPink));
+
+                FluenceWindow w = new()
+                {
+                    Style = consumerStyle,
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    // ApplyFrame ran (ApplyWindowShell calls it from OnSourceInitialized) and wrote
+                    // through SetCurrentValue. A plain assignment would have promoted BorderBrush to
+                    // a Local value, permanently shadowing the consumer's style setter for the
+                    // lifetime of the window; SetCurrentValue instead leaves the Style setter as the
+                    // reported base value source and only marks the effective value current.
+                    ValueSource source = DependencyPropertyHelper.GetValueSource(w, Control.BorderBrushProperty);
+                    Assert.Equal(BaseValueSource.Style, source.BaseValueSource);
+                    Assert.True(source.IsCurrent);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
             });
         }
     }

@@ -479,7 +479,7 @@ See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
 
 `FluenceWindow` gives you title-bar styling, caption buttons, backdrop support, and a title-bar content slot. `MinWidth` is caller-controlled and unset by default; the default title bar height is 48 px (the WinUI 3 canonical expanded title-bar height). When `ExtendsContentIntoTitleBar="True"`, app content renders behind the title bar. A `NavigationView` left pane reserves title-bar height before its first item when no explicit header is provided.
 
-`CaptionButtonChrome` and `WindowPolicy` are internal types behind `FluenceWindow` caption-button and DWM policy decisions. Tests cover them, but they are not consumer controls.
+`CaptionButtonChrome` and `WindowPolicy` are internal types behind `FluenceWindow` caption-button and DWM policy decisions. Tests cover them, but they are not consumer controls. On a realised window, `BorderBrush` and `BorderThickness` are shell-managed: `WindowPolicy.BuildFramePlan` resolves the brush to the accent brush (active with accent borders enabled) or `SurfaceStrokeColorDefaultBrush` (otherwise) and the thickness to 0 dp on Windows 11 or 1 dp on Windows 10, and a consumer-set value on either property is overridden only while the window is shown, though its declarative base value is kept underneath.
 
 `TitleBar` is the shell title-bar control the gallery uses. It provides back and pane-toggle buttons (`BackRequested`, `PaneToggleRequested`, and matching command properties), icon/title/subtitle presentation, and left/right/content slots. Interactive template buttons set `WindowChrome.IsHitTestVisibleInChrome`; app content such as search boxes should do the same.
 
