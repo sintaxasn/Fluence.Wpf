@@ -222,7 +222,7 @@
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
-                        <!--  WI-3 B12: WinUI canonical knob easing - ControlFastOutSlowIn (0.8,0,0,1), ControlFasterAnimationDuration 83ms  -->
+                        <!--  WI-3 B12: WinUI canonical knob easing - ControlFastOutSlowIn (0,0,0,1), ControlFasterAnimationDuration 83ms  -->
                         <!--  Hover (any state): grow thumb 12->14  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
@@ -230,13 +230,13 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.083"
                                                 Value="1.1667" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.083"
                                                 Value="1.1667" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -248,13 +248,13 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.083"
                                                 Value="1.0" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.083"
                                                 Value="1.0" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -356,19 +356,18 @@
                             <Setter TargetName="TrackOff" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
 
-                        <!--  On + Disabled  -->
+                        <!--  On + Disabled. WinUI parity: the Fluence-only opaque TrackBase compositing plate must drop out while disabled, same as the disabled fill's own token already accounts for the dimmed look; the knob needs no extra opacity multiply on top of its disabled fill token.  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsEnabled" Value="False" />
                                 <Condition Property="IsChecked" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="TrackOn" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="TrackBase" Property="Opacity" Value="0" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

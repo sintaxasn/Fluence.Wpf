@@ -93,13 +93,13 @@
                         <Storyboard x:Key="PressedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
                                 <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
+                                    KeySpline="0,0,0,1"
                                     KeyTime="0:0:0.1"
                                     Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
                                 <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
+                                    KeySpline="0,0,0,1"
                                     KeyTime="0:0:0.1"
                                     Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
@@ -107,13 +107,13 @@
                         <Storyboard x:Key="ReleasedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
                                 <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
+                                    KeySpline="0,0,0,1"
                                     KeyTime="0:0:0.1"
                                     Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
                                 <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
+                                    KeySpline="0,0,0,1"
                                     KeyTime="0:0:0.1"
                                     Value="1" />
                             </DoubleAnimationUsingKeyFrames>
@@ -206,6 +206,7 @@
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
+                        <!--  WinUI parity: AccentFillColorDisabled (22% black in Light) composites over the live surface; the Fluence-only opaque AccentFillBackdrop plate must not sit under it while disabled.  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsEnabled" Value="False" />
@@ -213,6 +214,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter TargetName="AccentFillBackdrop" Property="Opacity" Value="0" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>

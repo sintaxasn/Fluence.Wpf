@@ -324,5 +324,70 @@ namespace Fluence.Wpf.Tests
                 window.Close();
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // WinUI parity (RatingControl_themeresources.xaml:9-10): disabled dims only the
+        // set stars, and a hover preview above the current value uses the tertiary
+        // alt-fill tone while the already-set stars keep the accent brush.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task RatingControl_Disabled_OnlySetStarsDimAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                RatingControl rc = new() { Value = 2, IsEnabled = false };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.StackPanel panel = Assert.IsType<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"), exactMatch: false);
+
+                SolidColorBrush disabledBrush = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorDisabledBrush"));
+                SolidColorBrush secondaryBrush = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorSecondaryBrush"));
+
+                // Stars 1-2 are set: dimmed. Stars 3-5 are unset: unchanged secondary text color.
+                System.Windows.Controls.TextBlock setStar = (System.Windows.Controls.TextBlock)panel.Children[0];
+                System.Windows.Controls.TextBlock unsetStar = (System.Windows.Controls.TextBlock)panel.Children[2];
+                Assert.Equal(disabledBrush.Color, ((SolidColorBrush)setStar.Foreground).Color);
+                Assert.Equal(secondaryBrush.Color, ((SolidColorBrush)unsetStar.Foreground).Color);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task RatingControl_HoverAboveCurrentValue_PreviewsWithTertiaryAltFillAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                RatingControl rc = new() { Value = 1 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.StackPanel panel = Assert.IsType<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel"), exactMatch: false);
+                System.Windows.Controls.TextBlock setStar = (System.Windows.Controls.TextBlock)panel.Children[0];
+                System.Windows.Controls.TextBlock previewStar = (System.Windows.Controls.TextBlock)panel.Children[2];
+
+                // Hover star index 3 (0-based index 2) to preview raising the rating from 1 to 3.
+                previewStar.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, 0) { RoutedEvent = Mouse.MouseEnterEvent });
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(app.TryFindResource("AccentFillColorDefaultBrush"));
+                SolidColorBrush previewBrush = Assert.IsType<SolidColorBrush>(app.TryFindResource("ControlAltFillColorTertiaryBrush"));
+
+                // The already-set star (index 1, at/below the committed Value) keeps the accent
+                // brush; the hover-preview star beyond the committed value gets the tertiary tone.
+                Assert.Equal(accentBrush.Color, ((SolidColorBrush)setStar.Foreground).Color);
+                Assert.Equal(previewBrush.Color, ((SolidColorBrush)previewStar.Foreground).Color);
+                w.Close();
+            });
+        }
     }
 }

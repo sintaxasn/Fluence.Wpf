@@ -361,9 +361,11 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Colors.DarkOrchid, GetIconForegroundColor(custom));
 
-                    TextBlock defaultIcon = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(standard, "DefaultIcon"), exactMatch: false);
-                    SolidColorBrush defaultIconBrush = Assert.IsType<SolidColorBrush>(defaultIcon.Foreground);
-                    Assert.Equal(GetResourceColor("SystemFillColorCriticalBrush"), defaultIconBrush.Color);
+                    // The two-layer severity glyph replaced the old single DefaultIcon: IconBackground
+                    // carries the severity brush (SystemFillColorCriticalBrush for Error).
+                    TextBlock iconBackground = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(standard, "IconBackground"), exactMatch: false);
+                    SolidColorBrush iconBackgroundBrush = Assert.IsType<SolidColorBrush>(iconBackground.Foreground);
+                    Assert.Equal(GetResourceColor("SystemFillColorCriticalBrush"), iconBackgroundBrush.Color);
                 }
                 finally
                 {

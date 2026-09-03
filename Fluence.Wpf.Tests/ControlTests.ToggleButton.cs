@@ -260,7 +260,9 @@ namespace Fluence.Wpf.Tests
                 {
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
 
-                    Assert.Equal(GetResolvedBrushColor(application, "AccentFillColorDisabledBrush"), GetSolidColor(restFill.Background));
+                    Border outerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "OuterBorder"), exactMatch: false);
+                    Assert.Equal(GetResolvedBrushColor(application, "AccentFillColorDisabledBrush"), GetSolidColor(outerBorder.Background));
+                    Assert.Equal(Colors.Transparent, GetSolidColor(restFill.Background));
                     Assert.Equal(GetResolvedBrushColor(application, "TextOnAccentFillColorDisabledBrush"), GetSolidColor(toggleButton.Foreground));
                 });
         }

@@ -9,7 +9,8 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
+        <!--  WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is TextOnAccentFillColorPrimaryBrush, matching the accent-derived default Background, not TextFillColorInverseBrush.  -->
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="MaxHeight" Value="24" />
         <Setter Property="MinHeight" Value="24" />

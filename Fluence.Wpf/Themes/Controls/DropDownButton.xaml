@@ -95,14 +95,14 @@
                                     x:Name="ShadowCaster"
                                     MinWidth="{Binding ActualWidth, ElementName=OuterBorder}"
                                     Margin="0,4,0,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
+                                    Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                     CornerRadius="{TemplateBinding DropdownCornerRadius}"
                                     Effect="{DynamicResource FlyoutShadowEffect}" />
                             <Border
                                 x:Name="FlyoutSurface"
                                 MinWidth="{Binding ActualWidth, ElementName=OuterBorder}"
                                 Margin="0,4,0,0"
-                                Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
+                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
                                 CornerRadius="{TemplateBinding DropdownCornerRadius}"
@@ -158,6 +158,7 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="Chevron" Property="Opacity" Value="0.4" />
                         </Trigger>
+                        <!--  WinUI parity: AccentFillColorDisabled composites over the live surface; the Fluence-only opaque AccentFillBackdrop plate must not sit under it while disabled.  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsEnabled" Value="False" />
@@ -165,6 +166,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter TargetName="AccentFillBackdrop" Property="Opacity" Value="0" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="Chevron" Property="Opacity" Value="0.4" />
                         </MultiTrigger>

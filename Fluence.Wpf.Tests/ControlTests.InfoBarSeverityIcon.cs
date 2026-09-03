@@ -40,10 +40,12 @@ namespace Fluence.Wpf.Tests
         [Fact]
         public void InfoBar_GetSeverityGlyph_MatchesTemplateGlyphs()
         {
-            Assert.Equal("\uE946", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
-            Assert.Equal("\uE73E", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
-            Assert.Equal("\uE7BA", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
-            Assert.Equal("\uEA39", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
+            // WinUI parity: InfoBar*IconGlyph codes (InfoBar_themeresources.xaml) for the glyph
+            // drawn on top of the IconBackground circle, not the old standalone-icon codes.
+            Assert.Equal("\uF13F", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
+            Assert.Equal("\uF13E", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
+            Assert.Equal("\uF13C", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
+            Assert.Equal("\uF13D", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
         }
 
         [Fact]

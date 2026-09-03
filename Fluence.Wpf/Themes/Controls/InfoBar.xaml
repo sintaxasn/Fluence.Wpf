@@ -88,168 +88,110 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         ClipToBounds="False"
                         CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid>
+                        <!--  Content area. WinUI has no separate indicator-bar column (InfoBar.xaml upstream); the severity read comes entirely from the icon and background.  -->
+                        <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!--  Severity indicator bar  -->
-                            <Border
-                                x:Name="IndicatorBar"
+                            <!--  Icon area  -->
+                            <Grid
+                                x:Name="IconArea"
                                 Grid.Column="0"
-                                Background="{DynamicResource SystemFillColorAttentionBrush}" />
-
-                            <!--  Content area  -->
-                            <Grid Grid.Column="1" Margin="{TemplateBinding Padding}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <!--  Icon area  -->
-                                <Grid
-                                    x:Name="IconArea"
-                                    Grid.Column="0"
-                                    Margin="0,0,10,0"
-                                    VerticalAlignment="Center">
-                                    <!--  Default severity icon (shown when Icon DP is null)  -->
-                                    <TextBlock
-                                        x:Name="DefaultIcon"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Foreground="{DynamicResource SystemFillColorAttentionBrush}"
-                                        Text="&#xE946;"
-                                        Visibility="Collapsed" />
-                                    <!--  Custom icon override (shown when Icon DP is set)  -->
-                                    <ContentPresenter
-                                        x:Name="CustomIconPresenter"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Icon}"
-                                        TextElement.Foreground="{TemplateBinding Foreground}">
-                                        <ContentPresenter.Resources>
-                                            <!--  Custom icon follows the InfoBar title text (SplitButton precedent); the default severity icon above stays semantic. A consumer's local Foreground still wins.  -->
-                                            <Style TargetType="{x:Type controls:FontIcon}">
-                                                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBar}}}" />
-                                            </Style>
-                                        </ContentPresenter.Resources>
-                                    </ContentPresenter>
-                                </Grid>
-
-                                <!--  Title and message  -->
-                                <StackPanel
-                                    Grid.Column="1"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center">
-                                    <TextBlock
-                                        x:Name="TitleTextBlock"
-                                        FontFamily="{TemplateBinding FontFamily}"
-                                        FontSize="{TemplateBinding FontSize}"
-                                        FontWeight="SemiBold"
-                                        Foreground="{TemplateBinding Foreground}"
-                                        Text="{TemplateBinding Title}"
-                                        TextTrimming="CharacterEllipsis"
-                                        TextWrapping="Wrap" />
-                                    <TextBlock
-                                        x:Name="MessageTextBlock"
-                                        Margin="0,2,0,0"
-                                        FontFamily="{TemplateBinding FontFamily}"
-                                        FontSize="{TemplateBinding FontSize}"
-                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                        Text="{TemplateBinding Message}"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-
-                                <!--  Action button slot  -->
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center">
+                                <!--
+                                    WinUI parity: two-layer severity glyph (InfoBar.xaml:108-109 upstream).
+                                    IconBackground paints the filled-circle glyph (F136) in the severity
+                                    brush; StandardIcon draws the specific per-severity glyph on top in the
+                                    fixed TextFillColorInverseBrush so it reads against the colored circle
+                                    in both themes.
+                                -->
+                                <TextBlock
+                                    x:Name="IconBackground"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Foreground="{DynamicResource SystemFillColorAttentionBrush}"
+                                    Text="&#xF136;"
+                                    Visibility="Collapsed" />
+                                <TextBlock
+                                    x:Name="StandardIcon"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    Foreground="{DynamicResource TextFillColorInverseBrush}"
+                                    Text="&#xF13F;"
+                                    Visibility="Collapsed" />
+                                <!--  Custom icon override (shown when Icon DP is set)  -->
                                 <ContentPresenter
-                                    x:Name="ActionPresenter"
-                                    Grid.Column="2"
-                                    Margin="0,0,8,0"
+                                    x:Name="CustomIconPresenter"
+                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Content="{TemplateBinding ActionButton}" />
-
-                                <!--  Close button  -->
-                                <Button
-                                    x:Name="PART_CloseButton"
-                                    Grid.Column="3"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.Name="Close"
-                                    Style="{StaticResource InfoBarCloseButtonStyle}"
-                                    ToolTip="Close">
-                                    <controls:FontIcon
-                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                                        Glyph="&#xE711;"
-                                        IconFontSize="12"
-                                        IsHitTestVisible="False" />
-                                </Button>
+                                    Content="{TemplateBinding Icon}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}">
+                                    <ContentPresenter.Resources>
+                                        <!--  Custom icon follows the InfoBar title text (SplitButton precedent); the default severity icon above stays semantic. A consumer's local Foreground still wins.  -->
+                                        <Style TargetType="{x:Type controls:FontIcon}">
+                                            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBar}}}" />
+                                        </Style>
+                                    </ContentPresenter.Resources>
+                                </ContentPresenter>
                             </Grid>
+
+                            <!--  Title and message  -->
+                            <StackPanel
+                                Grid.Column="1"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    x:Name="TitleTextBlock"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    FontWeight="SemiBold"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Text="{TemplateBinding Title}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap" />
+                                <!--  WinUI parity: InfoBarMessageForeground (InfoBar_themeresources.xaml:18) is TextFillColorPrimaryBrush, following the control's own Foreground like the title, not a hardcoded secondary tone.  -->
+                                <TextBlock
+                                    x:Name="MessageTextBlock"
+                                    Margin="0,2,0,0"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Text="{TemplateBinding Message}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!--  Action button slot  -->
+                            <ContentPresenter
+                                x:Name="ActionPresenter"
+                                Grid.Column="2"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding ActionButton}" />
+
+                            <!--  Close button  -->
+                            <Button
+                                x:Name="PART_CloseButton"
+                                Grid.Column="3"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Close"
+                                Style="{StaticResource InfoBarCloseButtonStyle}"
+                                ToolTip="Close">
+                                <controls:FontIcon
+                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                    Glyph="&#xE711;"
+                                    IconFontSize="12"
+                                    IsHitTestVisible="False" />
+                            </Button>
                         </Grid>
-                        <!--  WI-3 B14: SeverityLevels VSM group - WPF opacity-pulse approximation of WinUI instant VisualState.Setters  -->
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="SeverityLevels">
-                                <VisualState x:Name="Informational">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0"
-                                                Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.1"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Success">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0"
-                                                Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.1"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Warning">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0"
-                                                Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.1"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Error">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorBar" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0"
-                                                Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.1"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
                     </Border>
                     <ControlTemplate.Triggers>
                         <!--  IsOpen: visible state + open/close animation  -->
@@ -266,7 +208,7 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
                                             <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -279,7 +221,7 @@
                                         <!--  ControlFastAnimationDuration (167 ms) close fade  -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -302,9 +244,10 @@
                             <Setter TargetName="IconArea" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
-                        <!--  Custom icon override: when Icon is null show default, otherwise show custom  -->
+                        <!--  Custom icon override: when Icon is null show the two-layer severity glyph, otherwise show the custom icon  -->
                         <Trigger Property="Icon" Value="{x:Null}">
-                            <Setter TargetName="DefaultIcon" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="IconBackground" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="StandardIcon" Property="Visibility" Value="Visible" />
                             <Setter TargetName="CustomIconPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
@@ -335,33 +278,29 @@
                         <!--  Severity: Informational (default)  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Informational}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
-                            <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorAttentionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE946;" />
+                            <Setter TargetName="IconBackground" Property="Foreground" Value="{DynamicResource SystemFillColorAttentionBrush}" />
+                            <Setter TargetName="StandardIcon" Property="Text" Value="&#xF13F;" />
                         </Trigger>
 
                         <!--  Severity: Success  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Success}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
-                            <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE73E;" />
+                            <Setter TargetName="IconBackground" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                            <Setter TargetName="StandardIcon" Property="Text" Value="&#xF13E;" />
                         </Trigger>
 
                         <!--  Severity: Warning  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Warning}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
-                            <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE7BA;" />
+                            <Setter TargetName="IconBackground" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                            <Setter TargetName="StandardIcon" Property="Text" Value="&#xF13C;" />
                         </Trigger>
 
                         <!--  Severity: Error  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Error}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
-                            <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xEA39;" />
+                            <Setter TargetName="IconBackground" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                            <Setter TargetName="StandardIcon" Property="Text" Value="&#xF13D;" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>

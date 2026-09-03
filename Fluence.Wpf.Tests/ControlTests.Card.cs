@@ -180,5 +180,84 @@ namespace Fluence.Wpf.Tests
                 w.Close();
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // WinUI parity: ItemContainer_themeresources.xaml:6-7 - clickable hover/press
+        // reveal uses the Subtle fill family, not a 50% white ControlFill overlay.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task Card_ClickHoverAndPressLayers_UseSubtleFillFamilyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Card card = new() { Variant = CardVariant.Default, IsClickable = true, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border hoverLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickHoverLayer"), exactMatch: false);
+                System.Windows.Controls.Border pressLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickPressLayer"), exactMatch: false);
+
+                object? expectedHover = app.TryFindResource("SubtleFillColorSecondaryBrush");
+                object? expectedPress = app.TryFindResource("SubtleFillColorTertiaryBrush");
+                Assert.Equal(expectedHover, hoverLayer.Background);
+                Assert.Equal(expectedPress, pressLayer.Background);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Card_OutlinedVariant_DisabledKeepsTransparentBackgroundAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Card card = new() { Variant = CardVariant.Outlined, IsEnabled = false, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+
+                // Only Default and Filled dim their background when disabled; Outlined must keep
+                // its transparent background instead of picking up ControlFillColorDisabledBrush.
+                SolidColorBrush background = Assert.IsType<SolidColorBrush>(outerBorder.Background);
+                Assert.Equal(Colors.Transparent, background.Color);
+
+                SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));
+                SolidColorBrush actualStroke = Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush);
+                Assert.Equal(expectedStroke.Color, actualStroke.Color);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Card_DefaultVariant_DisabledDimsBackgroundAndBorderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Card card = new() { Variant = CardVariant.Default, IsEnabled = false, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+
+                object? expectedBackground = app.TryFindResource("ControlFillColorDisabledBrush");
+                object? expectedStroke = app.TryFindResource("CardStrokeColorDefaultBrush");
+                Assert.Equal(expectedBackground, outerBorder.Background);
+                Assert.Equal(expectedStroke, outerBorder.BorderBrush);
+                w.Close();
+            });
+        }
     }
 }
