@@ -1,5 +1,7 @@
 ﻿Fluence.Wpf uses WinUI 3 naming and state behavior for theme resources, implemented as plain WPF. If you already work with WinUI keys, most token names and control roles will look familiar.
 
+See [docs/winui-parity.md](winui-parity.md) for a token-by-token and template-by-template comparison against WinUI 3 CommonStyles, including where and why Fluence deliberately diverges.
+
 ## Merge order (application resources)
 
 `Application.Current.Resources.MergedDictionaries` uses a **stable 3-slot layout** after the first `ApplicationThemeManager.Apply`:
@@ -39,7 +41,7 @@ Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example 
 
 Transient surfaces cast a shadow; persistent ones do not. `FlyoutShadowEffect` is the single elevation token: a frozen `DropShadowEffect` (blur radius 18, direction 270, shadow depth 4, 22% black) built by `SpecialBrushes`. It is theme independent, so it does not change with theme or accent.
 
-Twelve templates use it: `FlyoutPresenter`, `ContextMenu` (root menu and submenu), `ComboBox`, `DatePicker`, `TimePicker`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `AutoSuggestBox`, `CommandBarFlyout`, `TeachingTip`, and `ContentDialog`. `ToolTip` elevates through the Win32 popup shadow (`HasDropShadow`) instead. Persistent surfaces such as `Card` stay flat: background, a 1 px stroke, and a corner radius.
+Thirteen templates use it: `FlyoutPresenter`, `ContextMenu` (root menu and submenu), `ComboBox`, `DatePicker`, `TimePicker`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `AutoSuggestBox`, `CommandBarFlyout`, `TeachingTip`, `ContentDialog`, and `ToolTip`. `ToolTip` now casts the same effect as the rest instead of relying on the Win32 popup shadow (`HasDropShadow`): that property only triggers the native drop shadow when the popup's own theme template applies `SystemDropShadowChrome`, which the Fluent `ToolTip` template does not, so the earlier claim that `ToolTip` elevated through `HasDropShadow` was never accurate. Persistent surfaces such as `Card` stay flat: background, a 1 px stroke, and a corner radius.
 
 WPF disables ClearType for every text run beneath an `Effect`, so no template puts the effect on the surface that hosts the text. Each one paints an empty sibling `Border` named `ShadowCaster` behind the surface, matched in size and corner radius, and carries the effect there:
 
