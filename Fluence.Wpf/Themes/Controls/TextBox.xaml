@@ -18,7 +18,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Padding" Value="10,5,6,6" />
-        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorSelectedTextBackgroundBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TextBox}">
@@ -81,7 +81,7 @@
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                             FontFamily="{TemplateBinding FontFamily}"
                                             FontSize="{TemplateBinding FontSize}"
-                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             IsHitTestVisible="False"
                                             Text="{TemplateBinding PlaceholderText}"
                                             Visibility="Collapsed" />
@@ -311,6 +311,7 @@
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="PlaceholderTextBlock" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
