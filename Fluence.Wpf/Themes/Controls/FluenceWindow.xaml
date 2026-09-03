@@ -131,12 +131,20 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FluenceWindow}">
+                    <!--
+                        No CornerRadius here. DWM rounds the window (DWMWA_WINDOW_CORNER_PREFERENCE)
+                        and masks the client area with it, exactly as it does for a WinUI window, which
+                        paints no rounded root of its own. With the default rounding the corner pixels
+                        measure identical with or without a template radius (DWM scales its radius with
+                        DPI), so a template radius only ever differs from DWM where DWM draws square
+                        corners, on Windows 10 and under CornerPreference.DoNotRound, and there it would
+                        paint a rounded outline on a square window.
+                    -->
                     <Border
                         x:Name="WindowBorder"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{DynamicResource OverlayCornerRadius}">
+                        BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid Margin="{TemplateBinding MarginMaximized}">
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="TitleBarRow" Height="Auto" />
@@ -288,10 +296,9 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!--  Maximized: remove corner radius and border  -->
+                        <!--  Maximized: the Windows 10 template border goes away; DWM already draws none.  -->
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0" />
-                            <Setter TargetName="WindowBorder" Property="CornerRadius" Value="0" />
                         </Trigger>
 
                         <!--  Show icon when set and ShowIcon is true  -->
