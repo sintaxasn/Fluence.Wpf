@@ -209,6 +209,170 @@ namespace Fluence.Wpf.Tests
 
         #endregion ResolveEffectiveBackdrop - capability matrix
 
+        #region ResolveEffectiveBackdrop / BuildBackdropPlan - HighContrast suppresses every material
+
+        // Microsoft Learn "Materials in Windows apps": "High contrast mode: all materials are
+        // suppressed; the system applies high-contrast theme colors instead." The Mica design page:
+        // "In High Contrast mode, users continue to see the familiar background color of their
+        // choosing in place of Mica." WinUI's SystemBackdropConfiguration.IsHighContrast is
+        // documented as true when "the system or application high-contrast theme" is applied, which
+        // covers the in-app HighContrast theme this library resolves, not just the OS-wide setting.
+        // These rows pin that every requested backdrop downgrades to None once resolvedTheme is
+        // HighContrast, on every OS capability tier, not only the Windows 10 legacy acrylic path.
+
+        [Fact]
+        public void ResolveEffectiveBackdrop_Mica_Win22H2_HighContrast_ReturnsNone()
+        {
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                BackdropType.Mica,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                isTransparencyEnabled: true,
+                ApplicationTheme.HighContrast);
+
+            Assert.Equal(BackdropType.None, effective);
+        }
+
+        [Fact]
+        public void ResolveEffectiveBackdrop_Acrylic_Win22H2_HighContrast_ReturnsNone()
+        {
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                BackdropType.Acrylic,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                isTransparencyEnabled: true,
+                ApplicationTheme.HighContrast);
+
+            Assert.Equal(BackdropType.None, effective);
+        }
+
+        [Fact]
+        public void ResolveEffectiveBackdrop_Tabbed_Win22H2_HighContrast_ReturnsNone()
+        {
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                BackdropType.Tabbed,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                isTransparencyEnabled: true,
+                ApplicationTheme.HighContrast);
+
+            Assert.Equal(BackdropType.None, effective);
+        }
+
+        [Fact]
+        public void ResolveEffectiveBackdrop_Auto_Win22H2_HighContrast_ReturnsNone()
+        {
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                BackdropType.Auto,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                isTransparencyEnabled: true,
+                ApplicationTheme.HighContrast);
+
+            Assert.Equal(BackdropType.None, effective);
+        }
+
+        [Fact]
+        public void ResolveEffectiveBackdrop_Mica_Win21H2_HighContrast_ReturnsNone()
+        {
+            // 21H2 (SupportsMicaEffect only, no DWMWA_SYSTEMBACKDROP_TYPE): HighContrast must still
+            // suppress Mica rather than falling through to the legacy DWMWA_MICA_EFFECT path.
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                BackdropType.Mica,
+                Caps(legacyMica: true, roundedCorners: true),
+                isTransparencyEnabled: true,
+                ApplicationTheme.HighContrast);
+
+            Assert.Equal(BackdropType.None, effective);
+        }
+
+        [Fact]
+        public void BuildBackdropPlan_Mica_Win22H2_HighContrast_SuppressesToNone_OpaqueFallback()
+        {
+            Color fallback = SystemColors.WindowColor;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
+                BackdropType.Mica,
+                ApplicationTheme.HighContrast,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                fallback,
+                isTransparencyEnabled: true,
+                legacyAcrylicTintColor: Colors.Transparent);
+
+            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
+            Assert.Equal(fallback, plan.BackgroundColor);
+            Assert.False(plan.UseLegacyMicaEffect);
+        }
+
+        [Fact]
+        public void BuildBackdropPlan_Acrylic_Win22H2_HighContrast_SuppressesToNone_OpaqueFallback()
+        {
+            Color fallback = SystemColors.WindowColor;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
+                BackdropType.Acrylic,
+                ApplicationTheme.HighContrast,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                fallback,
+                isTransparencyEnabled: true,
+                legacyAcrylicTintColor: Colors.Transparent);
+
+            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
+            Assert.Equal(fallback, plan.BackgroundColor);
+        }
+
+        [Fact]
+        public void BuildBackdropPlan_Tabbed_Win22H2_HighContrast_SuppressesToNone_OpaqueFallback()
+        {
+            Color fallback = SystemColors.WindowColor;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
+                BackdropType.Tabbed,
+                ApplicationTheme.HighContrast,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                fallback,
+                isTransparencyEnabled: true,
+                legacyAcrylicTintColor: Colors.Transparent);
+
+            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
+            Assert.Equal(fallback, plan.BackgroundColor);
+        }
+
+        [Fact]
+        public void BuildBackdropPlan_Auto_Win22H2_HighContrast_SuppressesToNone_OpaqueFallback()
+        {
+            Color fallback = SystemColors.WindowColor;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
+                BackdropType.Auto,
+                ApplicationTheme.HighContrast,
+                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
+                fallback,
+                isTransparencyEnabled: true,
+                legacyAcrylicTintColor: Colors.Transparent);
+
+            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
+            Assert.Equal(fallback, plan.BackgroundColor);
+        }
+
+        [Fact]
+        public void BuildBackdropPlan_Mica_Win21H2_HighContrast_SuppressesToNone_NoLegacyMicaEffect()
+        {
+            Color fallback = SystemColors.WindowColor;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
+                BackdropType.Mica,
+                ApplicationTheme.HighContrast,
+                Caps(legacyMica: true, roundedCorners: true),
+                fallback,
+                isTransparencyEnabled: true,
+                legacyAcrylicTintColor: Colors.Transparent);
+
+            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.False(plan.UseLegacyMicaEffect,
+                "HighContrast must suppress Mica outright, not fall through to the legacy DWMWA_MICA_EFFECT path.");
+            Assert.False(plan.SystemBackdropType is not null,
+                "21H2 does not expose DWMWA_SYSTEMBACKDROP_TYPE - the plan must not attempt to set it.");
+            Assert.Equal(fallback, plan.BackgroundColor);
+        }
+
+        #endregion ResolveEffectiveBackdrop / BuildBackdropPlan - HighContrast suppresses every material
+
         #region BuildBackdropPlan - None
 
         [Fact]
