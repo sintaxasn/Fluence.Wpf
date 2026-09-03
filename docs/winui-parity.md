@@ -1,0 +1,141 @@
+﻿# WinUI 3 parity
+
+This page records where Fluence.Wpf's templates and tokens agree with WinUI 3 CommonStyles and where they knowingly diverge. It exists so a consumer who knows WinUI can predict Fluence's behavior without re-deriving it from the source, and so a maintainer has one place to check before "fixing" a difference that is actually deliberate.
+
+Every entry states what Fluence does, what WinUI does (with a citation), why the difference exists, and where it was verified. A citation of the form `Control\File_themeresources.xaml:12-34` was read at those line numbers under `F:\Consolidation\WInUI\controls\dev` while writing this page; a citation with no line number means the resource exists in that file but its exact line was not pinned down, or the claim concerns behavior rather than a single token.
+
+## 1. Method
+
+Colour tokens were compared mechanically: every shared key in `Fluence.Wpf/Themes/Colors/Theme.Light.xaml` and `Theme.Dark.xaml` against `CommonStyles/Common_themeresources_any.xaml`, 81 keys per theme, byte-identical in both directions. That audit found zero colour value differences, so this page does not repeat colour value comparisons; it covers role choices (which token a template reaches for), opacity and geometry, Fluence-only layers, and behaviour that a token diff cannot show.
+
+Templates were then reviewed control by control against the same CommonStyles tree, using the three authorities from `AGENTS.md` section 4 in order: in-tree precedent, the per-domain authority table (WinUI 3 CommonStyles for visuals, .NET 10 WPF Themes for WPF-native chrome), and published Microsoft Learn guidance as a tie-breaker. The Mica composition and 10 bpc alpha-quantisation notes in `KNOWN_ISSUES.md` are the measurement basis for the Materials section below; they are not re-derived here.
+
+A large fraction of the audit's colour, opacity, and role deviations from this pass are being corrected directly in the affected templates as part of the current branch and are not documented as deviations on this page. What remains here is: (1) how backdrops and elevation genuinely differ because WPF has no acrylic and no platform shadow system, (2) motion and structural choices Fluence added that WinUI does not have, (3) geometry and metrics that were not part of the colour/role fix pass, and (4) gaps that are defects rather than choices, which are also filed in `KNOWN_ISSUES.md`.
+
+## 2. Materials
+
+WPF cannot render Acrylic; there is no `DesktopAcrylicBackdrop` or in-process blur-behind compositor available to a `Border` the way there is to a WinUI `Popup`. Every WPF surface that WinUI would give an acrylic background instead paints the WinUI **fallback** colour as an opaque plate: `AcrylicBackgroundFillColorDefault` (`#FFF9F9F9` Light, `#FF2C2C2C` Dark), the same colour WinUI itself substitutes when acrylic is disabled by policy (battery saver, remote desktop, high contrast, or the "Transparency effects" setting). This applies uniformly across flyouts, menus, and pickers.
+
+`ComboBox` is the one exception that adds texture back: its dropdown plate layers `AcrylicNoiseBrush` at 0.04 opacity over the opaque fill, approximating the noise texture WinUI's real acrylic material carries. This is a Fluence-only addition with no WinUI equivalent to cite, since WinUI gets that texture from the material itself.
+
+The WinUI menu family (`MenuFlyout`, `ContextMenu`) is defined as a transparent presenter plate sitting over a `DesktopAcrylicBackdrop` system backdrop applied to the flyout's own popup window; the plate itself carries no opaque background token in `CommonStyles/MenuFlyout_themeresources.xaml`. Fluence uses the same opaque `AcrylicBackgroundFillColorDefault` plate approach here as everywhere else, because a WPF `Popup` has no system backdrop to sit over.
+
+Mica and the 10 bits-per-channel alpha pre-blend are DWM composition concerns, not template concerns, and are documented in full in `KNOWN_ISSUES.md` ("Translucent layers over a DWM backdrop lose alpha precision on a 10 bpc display"). In short: `NavigationView`'s content-layer brush is pre-blended to WinUI's own `LayerOnMicaBaseAltFillColorTertiary` token when the active display quantises alpha to two bits and the effective backdrop is Mica or Tabbed.
+
+High contrast suppresses every backdrop on every Windows version: `WindowPolicy.ResolveEffectiveBackdrop` forces `None` before any OS capability check runs, matching the Microsoft Learn guidance that materials are suppressed under high contrast.
+
+## 3. Elevation
+
+WPF has no `ThemeShadow` and no platform drop-shadow compositor comparable to WinUI's; every transient surface in Fluence casts a WPF `DropShadowEffect` frozen as the single `FlyoutShadowEffect` token (blur radius 18, direction 270, depth 4, 22% black), painted on an empty sibling `ShadowCaster` border so ClearType is not disabled on the text-bearing surface (see `docs/theming.md`, "Elevation").
+
+`ToolTip` now casts `FlyoutShadowEffect` like every other transient surface. `docs/theming.md` previously claimed `ToolTip` elevated through the Win32 popup shadow (`HasDropShadow`) instead; that claim was never accurate for a WPF `ToolTip`, because `HasDropShadow` triggers the Win32 drop shadow only when the popup's own theme template applies `SystemDropShadowChrome`, which the Fluent `ToolTip` template does not do. `ToolTip` is corrected to use the same `ShadowCaster` pattern as the other eleven elevated templates.
+
+`ContentDialog` keeps its shadow even though WinUI's own `ContentDialog` casts none: `ContentDialog_themeresources.xaml` (`CommonStyles`) declares no shadow-related resource for the dialog surface, confirmed by inspection. The CHANGELOG 0.8.19-Preview entry records the rationale: earlier releases withheld the shadow from twelve transient templates, including `ContentDialog`, on the stated but incorrect belief that a WPF effect on a rounded `Border` produces squared corners; once that was disproven, `ContentDialog` was elevated along with the other eleven, and it has not been reverted. This is a deliberate Fluence choice, not an oversight: a modal dialog reads as more clearly separated from the dimmed window behind it with a shadow than without one.
+
+WinUI's tooltip fade-out (the exit animation WinUI plays when a tooltip closes) is not implemented; Fluence's `ToolTip` closes immediately.
+
+## 4. Fluence-only layers and motion
+
+- **`AccentFillBackdrop`** - an opaque white or near-black sub-layer painted behind every translucent accent fill: the `ToggleSwitch` track, the accent `Button`, `ToggleButton`, `SplitButton` and `ToggleSplitButton` fills, and the `CheckBox` and `RadioButton` indicators. It is switched off while the control is disabled, because the disabled accent fill is meant to composite over the live surface. The rationale is recorded in `Fluence.Wpf/Themes/Colors/Theme.Light.xaml:172-181`: compositing the `AccentFillColor*` track brushes directly against a visible Mica or Acrylic card surface drifted the resulting accent hue 2-3 RGB units per channel from the Windows accent palette, so the opaque backdrop pins the composited colour regardless of what is behind the card. It is turned off when the switch is disabled, since the disabled track uses a flat neutral fill that does not need pinning.
+- **Press scale**: `Button`, `ToggleButton`, and `RepeatButton` scale to 0.98 on press; `HyperlinkButton` does not scale. WinUI's `CommonStyles` button family (`Button_themeresources.xaml`, `ToggleButton_themeresources.xaml`, `RepeatButton_themeresources.xaml`) has no press-time render transform in any of their visual states - the WinUI pressed state is a colour change only. The scale is a Fluence motion choice with no WinUI source to match; `RepeatButton` holds the scaled-down transform for the whole duration of its auto-repeat, not just the initial press, since the button stays logically pressed until release.
+- **`CheckBox` and `RadioButton`** press scale their check glyph and dot to 0.9. WinUI instead grows the RadioButton dot on press (see the geometry table) and CheckBox's glyph size is constant across states (`CheckBox_themeresources.xaml`); Fluence's uniform 0.9 press scale on both controls has no WinUI equivalent.
+- **`Slider`** now shows hover and press feedback on the inner dot (the `SliderInnerThumb`/thumb-fill ellipse), matching WinUI's `SliderInnerThumb` scale states (`Slider\Slider_themeresources.xaml:199-252`: 0.86 at rest, 1.167 on hover, 0.71 pressed); the outer capsule stays fixed.
+- **`TextBox` and `PasswordBox`**: the validation line, validation icon, character counter, and leading/trailing icon slots are Fluence additions; none exist in `CommonStyles/TextBox_themeresources.xaml` or `PasswordBox_themeresources.xaml`. `PasswordBox` additionally carries a Caps Lock indicator, a strength meter (four segments rendered at 0.25 opacity when unfilled), and a peek overlay, none of which have a WinUI `PasswordBox` counterpart in this checkout.
+- **`ProgressBar` and `ProgressRing`**: the `ShowPaused` / `ShowError` states and `ProgressRing`'s disabled fade are Fluence additions. `ProgressRing`'s WinUI counterpart has neither a paused/error contract nor a disabled visual state in `CommonStyles`.
+- **`InfoBar`** open and close fade transitions are Fluence motion with no cited WinUI resource; `InfoBar_themeresources.xaml` defines the static visuals only.
+- **`Card` variants** (verified in `Fluence.Wpf/Themes/Controls/Card.xaml`): `Outlined` keys its stroke to `ControlStrokeColorDefaultBrush` rather than `CardStrokeColorDefaultBrush` (line 164); `Subtle` uses `SubtleFillColorSecondaryBrush` as its **rest** background (line 180) even though that token is WinUI's hover fill role elsewhere in the library; `Filled` uses `ControlAltFillColorQuarternaryBrush` per the template's own comment (lines 168-176), not a translucent card fill. None of these are WinUI tokens, because WinUI has no `Card` control to compare against; they are Fluence's own role choices for a control it invented.
+- **`NavigationView` Top mode**: the outer stroke around the content region and its bottom rounding are Fluence additions to the Top pane display mode; WinUI's `NavigationView` Top layout has no equivalent bordered content region in `NavigationView_themeresources.xaml`.
+- **`TabView`** draws a selected-tab accent underline; this is a Fluence addition layered on top of the WinUI selected-tab visuals.
+- **`ListView`** group headers render a coloured band; this is a Fluence addition, not present in `ListViewItem_themeresources.xaml`.
+- **`Image`** control adds a theme-aware 1px stroke and a corner-radius clip around the wrapped bitmap; WinUI has no equivalent `Image` control to compare (it is a bare `Microsoft.UI.Xaml.Controls.Image`).
+
+## 5. Focus and text input structure
+
+Fluence draws keyboard focus on text inputs as a 2px overlay `Border` painted on top of the control, rather than swapping the control's own border brush the way WinUI does. WinUI's `TextBox`/`PasswordBox` focused state sets the element's border to `TextControlElevationBorderFocusedBrush` with a `BorderThickness` of `1,1,1,2` (asymmetric, thicker on the bottom edge only), per `CommonStyles/TextBox_themeresources.xaml` and `TextControlsCommon_themeresources.xaml`. Fluence keeps the brush available for consumers who want to reproduce the WinUI look themselves, but its own template does not use it; the overlay approach was chosen because it does not require reflowing the control's layout when focus changes thickness.
+
+`TextBox` and `PasswordBox` have no `Header` or `Description` template parts; a consumer wanting a label or helper text above/below the field must add their own `TextBlock`. `NumberBox`'s header does not dim when the control is disabled, unlike WinUI's `NumberBox` header, which follows the control's disabled state.
+
+`NumberBox`'s `Compact` spin-button mode is a hover-reveal inline panel in Fluence; WinUI's `Compact` mode instead opens an acrylic popup containing 36px increment/decrement buttons (`CommonStyles/TextControlsCommon_themeresources.xaml` / `NumberBox` template). This is filed as a known gap below.
+
+Disabled text in Fluence resolves to `TextFillColorDisabled`, where WinUI's text controls specifically use `TemporaryTextFillColorDisabled` for disabled input text - the two colours are one RGB unit apart per channel in `Common_themeresources_any.xaml`, so the visual difference is negligible, but the role name differs.
+
+## 6. Geometry and metrics
+
+Values below were read directly from the corresponding template or theme-resource file at the cited line, both for Fluence and for WinUI, unless marked "see file" (resource confirmed present in the file but not pinned to a specific line, or the WinUI checkout does not define the resource at all, in which case that is noted).
+
+| Control | Fluence value | WinUI value | WinUI citation |
+| --- | --- | --- | --- |
+| `Button` | `MinWidth` 110, `MinHeight` 32 | no `MinWidth`/`MinHeight` setter | `CommonStyles\Button_themeresources.xaml` (verified absent) |
+| `CheckBox` indicator | 18 (`CheckBox.xaml:29`) | `CheckBoxSize` 20 | `CommonStyles\CheckBox_themeresources.xaml:270` |
+| `CheckBox` focus margin | -3 | `CheckBoxFocusVisualMargin` -7,-3,-7,-3 | `CommonStyles\CheckBox_themeresources.xaml:275` |
+| `RadioButton` dot | 8 rest, 6 pressed | `RadioButtonCheckGlyphSize` 12 rest, 14 hover, 10 pressed | `CommonStyles\RadioButton_themeresources.xaml:179-180,255-259,292-296` |
+| `ToggleSwitch` | gap 8, `MinWidth` none | `ToggleSwitchThemeMinWidth` 154 | `CommonStyles\ToggleSwitch_themeresources.xaml:188` (gap/spacing token: see file) |
+| `InfoBar` close button | 28px, glyph 12, `MinHeight` none | `InfoBarCloseButtonSize` 38, `InfoBarCloseButtonGlyphSize` 16, `InfoBarMinHeight` 48 | `InfoBar\InfoBar_themeresources.xaml:66-68` |
+| `InfoBadge` | 24 tall, dot 8, font 14 | `InfoBadgeMaxHeight` 16, `InfoBadgeMinHeight`/`MinWidth` (dot) 4, `InfoBadgeValueFontSize` 11 | `InfoBadge\InfoBadge_themeresources.xaml:7-10` |
+| `ProgressBar` | `MinHeight` 3.2 | `ProgressBarMinHeight` 3 | `ProgressBar\ProgressBar_themeresources.xaml:29` |
+| `RatingControl` | spacing 4, no `PlaceholderValue` | `RatingControlItemSpacing` 8 | `RatingControl\RatingControl_themeresources.xaml:40` |
+| `Expander` | header padding 16,11 | `ExpanderHeaderPadding` 16,0,0,0 | `Expander\Expander_themeresources.xaml:80` |
+| `ContextMenu` | `MinWidth` 180, item margin 2,1, accelerator text 12 | `FlyoutThemeMinWidth` (not defined in this CommonStyles checkout; a core XAML platform default), `MenuFlyoutItemThemePadding` 11,8,11,9, accelerator inherits `ControlContentThemeFontSize` (14) | `CommonStyles\MenuFlyout_themeresources.xaml:260,304` (item margin: see file) |
+| `ComboBox` | item padding 12,8; plate padding 4 | `ComboBoxItemThemePadding` 11,5,11,7; `ComboBoxDropdownBorderPadding` 0 | `ComboBox\ComboBox_themeresources.xaml:335,107` |
+| `ContentDialog` | `MaxHeight` none | `ContentDialogMaxHeight` 756 | `CommonStyles\ContentDialog_themeresources.xaml:15` |
+| `TeachingTip` | padding 16,15,16,17; close 24px, glyph 12; no `MinHeight`/`MaxHeight` | `TeachingTipContentMargin` 12; `TeachingTipAlternateCloseButtonSize` 40, glyph 16 | `TeachingTip\TeachingTip_themeresources.xaml:95-97` |
+| `NavigationView` pane toggle | 48x40 | `PaneToggleButtonWidth` 40, `PaneToggleButtonHeight` 36 | `NavigationView\NavigationView_themeresources.xaml:205-206` |
+| `NavigationView` item border | 2 | `NavigationViewItemBorderThickness` 1 | `NavigationView\NavigationView_themeresources.xaml:226` |
+| `NavigationView` header font | 12 | `NavigationViewItemHeaderTextStyle` `FontSize` 14 | `NavigationView\NavigationView_themeresources.xaml:1082` |
+| `NavigationView` separator margin | 12,4,0,4 | `NavigationViewItemSeparatorMargin` 0,3,0,4 | `NavigationView\NavigationView_themeresources.xaml:247` |
+| `NavigationView` indicator x offset | 9 | not independently verified in this pass | see file (`NavigationView.cpp`) |
+| `NavigationView` Top indicator | flush | `SelectionIndicatorGrid` margin 16,0,16,4 (4px bottom lift) | `NavigationView\NavigationView_themeresources.xaml:904` |
+| `TabView` | inter-tab separator absent, corner fillets absent | drawn by the strip template | `TabView\TabView.xaml` (see file) |
+| `PipsPager` | pip pitch 20, hover 5, nav buttons collapse | `PipsPagerButtonWidth` 20 (nav button); pip pitch and hover size not pinned to a themed resource | `PipsPager\PipsPager_themeresources.xaml:92` (pip metrics: see file) |
+| `PersonPicture` | badge bottom-right, initials ratio 0.35 | badge position and initials ratio are computed in `PersonPicture.cpp`, not a themed resource | see file |
+| `TitleBar` icon | 20 | `TitleBarIconMaxWidth`/`MaxHeight` 16 | `TitleBar\TitleBar_themeresources.xaml:88-89` |
+| `MenuBar` | height about 34; flyout gutters on bar items | `MenuBarHeight` 40 | `MenuBar\MenuBar_themeresources.xaml:44` |
+| `Slider` thumb | 20 | `SliderHorizontalThumbWidth`/`Height` 18 | `CommonStyles\Slider_themeresources.xaml:169-170` |
+| `Slider` inner dot | 12, inside the 20 px thumb | 12, inside the 18 px thumb | `CommonStyles\Slider_themeresources.xaml:199-252` (dot diameter: see file) |
+| `ScrollBar` collapsed thumb hit target | 2 | `ScrollBarVerticalThumbMinWidth`/`ScrollBarHorizontalThumbMinHeight` 8 | `CommonStyles\ScrollBar_themeresources.xaml:182,184` |
+| `ScrollBar` touch panning indicator | 30 min length, inset 3, radius 3 | `HorizontalPanningThumb`/`VerticalPanningThumb`: `MinWidth`/`MinHeight` 32, margin (inset) 2, no `CornerRadius` | `CommonStyles\ScrollBar_themeresources.xaml:692,714` |
+| `ColorPicker` spectrum | fixed 256 | `ColorPickerVerticalOrientationMinWidth`/`MinHeight` 312, `MaxWidth`/`MaxHeight` 392 (the orientation container, not a fixed spectrum size) | `ColorPicker\ColorPicker_themeresources.xaml:35-38` |
+| `ColorPicker` hue/alpha bar strokes | drawn | not drawn | `ColorPicker\ColorPicker_themeresources.xaml` (see file) |
+| Hard-coded `CornerRadius` DP defaults | `HyperlinkButton`, `ToggleButton`, `RepeatButton`, `TextBox`, `PasswordBox` default to a literal corner radius rather than following a `ControlCornerRadius` override | n/a - Fluence-specific gap | n/a |
+| `DatePicker`/`TimePicker` | column height 360 | `DateTimeFlyoutBorderPadding` presenter `MaxHeight` 398 | `CommonStyles\DatePicker_themeresources.xaml:263` |
+
+Two entries above could not be pinned to a specific WinUI source line despite the resource or behaviour being real: the `NavigationView` selection-indicator x offset (a C++ layout constant, not a themed XAML resource, in `NavigationView.cpp`) and `PersonPicture`'s badge position and initials sizing ratio (computed in `PersonPicture.cpp`). `FlyoutThemeMinWidth` is referenced by three files in `CommonStyles` (`MenuFlyout_themeresources.xaml:283`, `MenuFlyout_themeresources_perf2026.xaml:283`, `FlyoutPresenter_themeresources.xaml:30`) but its value is defined outside this checkout, in the core XAML framework rather than in a community-authored `CommonStyles` file.
+
+## 7. High contrast
+
+`SubtleFillColorSecondary` and `SubtleFillColorTertiary` both resolve to `SystemColors.Control` under Fluence's high contrast table, so hover, pressed, and selected states on any control that layers those two tokens (menu items, list rows, `NavigationView` items) are visually indistinguishable from each other and from the resting surface. WinUI keeps these states distinct in high contrast: its `NavigationView` high contrast table maps pointer-over to `SystemControlHighlightListLowRevealBackgroundBrush` and pressed to `SystemControlHighlightListMediumRevealBackgroundBrush`, two different System accent-derived brushes rather than one flat control-face colour (`NavigationView\NavigationView_themeresources.xaml:142-143`).
+
+The `FluenceWindow` separator between `SurfaceStrokeColorDefault` and high contrast draws `ControlDark`, where WinUI's window-surface stroke role in high contrast resolves to `WindowText`. Fluence's content seam (the border between the `NavigationView` pane and its content region) is drawn in high contrast where WinUI draws none there.
+
+`NavigationViewSelectionIndicatorBrush`, shared by `NavigationView`, `ListView`, `ListBox`, and `TreeView`, binds the live `SystemColors.Highlight` colour in high contrast rather than `HighlightText`. `HighlightText` is designed to sit on top of a `Highlight`-coloured fill, but Fluence's high contrast selected row background stays `SystemColors.Control`, so a `HighlightText` indicator would be invisible against it; `Highlight` reads correctly against `Control`.
+
+The static high contrast colour values in `Theme.HighContrast.xaml` are fallbacks only; live values come from `SystemColors` through `SpecialBrushes.AddHighContrastBrushes`, rebuilt on every `WM_SETTINGCHANGE`-triggered re-`Apply` (see `docs/theming.md`, "High contrast").
+
+**Disabled treatment.** A flat `Opacity` multiply on a layout element does not route through the high contrast table the way a `*Disabled` colour token does, so the controls still expressing disabled that way are worth tracking. `ListView`'s `ListViewItem` fades to 0.3 (`ListView.xaml:139`), matching WinUI's own `ListViewItemDisabledThemeOpacity` (`ListViewItem_themeresources.xaml:6`), so this one is deliberate parity rather than a survivor. `ComboBox` fades its selection indicator and its chevron glyph to 0.4 each (`ComboBox.xaml:77,355`). `DropDownButton` fades its chevron to 0.4 across two trigger states (`DropDownButton.xaml:159,171`). `NavigationView`'s back button fades to 0.4 (`NavigationView.xaml:308`). `FluenceWindow` fades its caption content to 0.5 in both places its inactive-disabled trigger fires (`FluenceWindow.xaml:49,100`). `ProgressRing` fades its `LayoutRoot` to 0.4 (`ProgressRing.xaml:86`). WinUI expresses disabled through per-role `*Disabled` tokens for all of these except `ListView`, whose own theme resource is the same flat opacity multiply Fluence already matches. `ListBox` disables the whole control's root `Border` to 0.5 rather than fading `ListBoxItem` at all (`ListBox.xaml:148`); its `ListBoxItem` style carries no disabled opacity trigger of its own. These survivors are recorded here pending a sweep to `*Disabled` tokens.
+
+## 8. Missing states
+
+- **Pressed states on `ListViewItem`, `ListBoxItem`, `TreeViewItem`, `TabViewItem`** - the underlying WPF item containers have no `IsPressed` concept the way `ButtonBase` does, so none of these draw a pressed visual. WinUI's equivalents do.
+- **`TitleBar` deactivated family** - WinUI's `TitleBar` dims eight distinct regions when the window is inactive (`BackButtonDeactivated`, `PaneToggleButtonDeactivated`, `LeftHeaderDeactivated`, `IconDeactivated`, `TitleTextDeactivated`, `SubtitleTextDeactivated`, `ContentDeactivated`, `RightHeaderDeactivated`), most to `TitleBarDeactivatedOpacity` 0.5 and the back/pane-toggle/title/subtitle text to `TextFillColorTertiaryBrush` (`TitleBar\TitleBar.xaml:25-133`, opacity value at `TitleBar\TitleBar_themeresources.xaml:86`). `FluenceWindow` dims only its own title text; the icon, subtitle, and title-bar content slots do not dim on deactivation.
+- **`ColorPicker` spectrum thumb** has no hover-opacity change and no touch-enlargement state.
+- **`ProgressBar`** does not vary its high contrast outline thickness.
+- **`BreadcrumbBar`** does not mirror its chevron direction under right-to-left flow.
+- **`PersonPicture`** does not implement `BadgeWithImageSource` (an image-based badge, as opposed to a glyph or numeric badge).
+- **`ContentDialog` `FullDialogSizing`** stretch mode is already tracked in `KNOWN_ISSUES.md` and is not repeated here.
+
+## 9. Fluence-only tokens
+
+These keys exist in Fluence's colour tables with no WinUI counterpart, or exist for a WPF-specific reason:
+
+- **`AccentFillBackdrop`** - see section 4.
+- **`AcrylicBackgroundFillColorBase`, `AcrylicBackgroundFillColorDefault`** - WinUI's acrylic *fallback* colours, kept as named Fluence tokens because they are used directly as opaque plate fills rather than as a fallback for a material that never renders (see Materials).
+- **`ApplicationBackgroundColor`** - equals `SolidBackgroundFillColorBase`; a WPF-idiomatic name for the brush a top-level `Window.Background` binds to, since WPF has no `ApplicationPageBackgroundThemeBrush` naming convention of its own.
+- **`ControlStrokeColorTertiary`** - present for the demo's colour-swatch gallery; no template consumes it.
+- **`KeyboardFocusBorderColor`** - backs the 2px focus overlay described in section 5.
+- **`NavigationViewContentBackground`** - intentionally duplicates `LayerFillColorDefault` so a consumer can override the content-layer colour on a specific window without touching the shared `LayerFillColorDefault` token everything else reads.
+- **`SystemFillColorAttention`, `SystemFillColorInformational`** - additional semantic fill roles beyond WinUI's four (`Success`, `Caution`, `Critical`, `Neutral`).
+- **`WindowCloseFillColor`, `WindowCloseForeground`** (and their pointer-over/pressed variants) - legacy tokens from an earlier caption-button implementation; unused by current templates.
+- **`TeachingTipTopHighlight`** - the 1px highlight line along a `TeachingTip`'s top edge; new in this pass.
+- **`PopupCornerRadius`** - a WPF-specific radius token for popup-hosted surfaces, since WPF's `Popup` has no `CornerRadius` concept of its own to inherit from.
+
+Two WinUI tokens Fluence computes at publish time instead of storing as static colour entries: `AccentTextFillColorDisabled` and `TextOnAccentFillColorSelectedText`. Both are derived from the resolved accent ramp in `FluenceThemeEngine`/`ColorMap` rather than declared per-theme, because their correct value depends on the live accent, not just the theme.

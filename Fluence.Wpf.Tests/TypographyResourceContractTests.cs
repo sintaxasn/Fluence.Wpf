@@ -28,6 +28,7 @@
 
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using Fluence.Wpf.Controls;
 using Xunit;
 
@@ -35,6 +36,40 @@ namespace Fluence.Wpf.Tests
 {
     public class TypographyResourceContractTests
     {
+        /// <summary>
+        /// ControlFastOutSlowInKeySpline must match the WinUI 3 canonical decelerate curve
+        /// (Common_themeresources_any.xaml: P1=(0,0), P2=(0,1)). A prior value of 0.8,0,0,1
+        /// disagreed with the comment above it, which already claimed the canonical curve.
+        /// </summary>
+        [Fact]
+        public Task ControlFastOutSlowInKeySpline_MatchesWinUiCanonicalCurveAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                application.Resources.Clear();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+
+                try
+                {
+                    KeySpline spline = Assert.IsType<KeySpline>(application.TryFindResource("ControlFastOutSlowInKeySpline"));
+                    Assert.Equal(0.0, spline.ControlPoint1.X, 0.0001);
+                    Assert.Equal(0.0, spline.ControlPoint1.Y, 0.0001);
+                    Assert.Equal(0.0, spline.ControlPoint2.X, 0.0001);
+                    Assert.Equal(1.0, spline.ControlPoint2.Y, 0.0001);
+                }
+                finally
+                {
+                    application.Resources.MergedDictionaries.Clear();
+                    application.Resources.Clear();
+                    ApplicationThemeManager.ResetForTesting();
+                    ApplicationAccentColorManager.ResetForTesting();
+                }
+            });
+        }
+
         [Fact]
         public Task TextBlockExtensions_Typography_UsesNamedTextBlockStyleResourceAsync()
         {

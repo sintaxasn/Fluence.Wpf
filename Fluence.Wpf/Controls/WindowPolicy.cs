@@ -403,9 +403,11 @@ namespace Fluence.Wpf.Controls
         ///   already honours the setting itself.
         /// </param>
         /// <param name="legacyAcrylicTintColor">
-        ///   The tint color to record for the legacy acrylic accent policy, normally the
-        ///   <c language="xaml">AcrylicBackgroundFillColorDefault</c> theme token. Ignored on every path except the
-        ///   Windows 10 legacy acrylic one.
+        ///   The tint color to record for the legacy acrylic accent policy: the
+        ///   <c language="xaml">AcrylicBackgroundFillColorDefault</c> theme token's RGB with its alpha
+        ///   replaced by a forced <c language="csharp">0xF0</c> (see
+        ///   <see cref="FluenceWindow.GetLegacyAcrylicTintColor"/>), because the token itself is opaque.
+        ///   Ignored on every path except the Windows 10 legacy acrylic one.
         /// </param>
         /// <returns>A <see cref="BackdropPlan"/> describing all DWM writes to perform.</returns>
         internal static BackdropPlan BuildBackdropPlan(
