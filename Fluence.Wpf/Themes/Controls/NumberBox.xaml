@@ -4,14 +4,21 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
+    <!--
+        Matches the WinUI 3 NumberBoxSpinButtonStyle (NumberBox.xaml, BasedOn DefaultRepeatButtonStyle):
+        rest/hover/pressed fills are the plain control-fill ramp, the rest/hover border is
+        ControlElevationBorderBrush at NumberBoxSpinButtonBorderThickness (NumberBox_themeresources.xaml
+        Thickness="0,1,1,1"), and pressed/disabled flatten to ControlStrokeColorDefaultBrush.
+    -->
     <Style x:Key="NumberBoxSpinButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0,1,1,1" />
         <!--  Fire Click immediately on MouseDown so a quick press-release registers  -->
         <!--  (default Release mode waits for the internal timer's first tick).  -->
         <Setter Property="ClickMode" Value="Press" />
         <Setter Property="Focusable" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Height" Value="30" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
@@ -20,18 +27,24 @@
                     <Border
                         x:Name="SpinBorder"
                         Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
+                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.4" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -111,7 +124,7 @@
                                         FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
                                         Foreground="{TemplateBinding Foreground}"
-                                        SelectionBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                                        SelectionBrush="{DynamicResource AccentFillColorSelectedTextBackgroundBrush}"
                                         Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <!--  WI-3 A7: WinUI canonical right inset = 2px; was 0,1,0,1.  -->
@@ -130,7 +143,7 @@
                                                 Width="8"
                                                 Height="5"
                                                 Data="M 0,4 L 4,0 L 8,4"
-                                                Stroke="{DynamicResource TextFillColorSecondaryBrush}"
+                                                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -145,7 +158,7 @@
                                                 Width="8"
                                                 Height="5"
                                                 Data="M 0,0 L 4,4 L 8,0"
-                                                Stroke="{DynamicResource TextFillColorSecondaryBrush}"
+                                                Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -172,13 +185,18 @@
                         </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
-                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <!--
+                                BorderBrush intentionally stays TextControlElevationBorderBrush on focus
+                                (matching TextBox.xaml and PasswordBox.xaml): the bottom accent FocusLine
+                                already signals focus, and swapping to the flat ControlStrokeColorDefaultBrush
+                                here replaced that gradient underline instead of layering on top of it.
+                            -->
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusLine" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
@@ -190,7 +208,7 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusLine" Storyboard.TargetProperty="Opacity">
                                             <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
+                                                KeySpline="0,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="0" />
                                         </DoubleAnimationUsingKeyFrames>

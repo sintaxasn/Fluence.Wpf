@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
 
         [Fact]
-        public Task TextBox_PlaceholderTextBlock_UsesTertiaryBrushAsync()
+        public Task TextBox_PlaceholderTextBlock_UsesSecondaryBrushAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -63,7 +63,34 @@ namespace Fluence.Wpf.Tests
 
                 TextBlock placeholder = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock"), exactMatch: false);
 
-                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorTertiaryBrush"));
+                // TextControlPlaceholderForeground/PointerOver/Focused all resolve to
+                // TextFillColorSecondaryBrush (WinUI CommonStyles TextBox_themeresources.xaml).
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorSecondaryBrush"));
+
+                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(placeholder.Foreground);
+                Assert.Equal(
+                    expected.Color,
+                    actual.Color);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TextBox_PlaceholderTextBlock_Disabled_UsesDisabledBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.TextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true, IsEnabled = false };
+                Window w = new() { Content = tb, Width = 300, Height = 60 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                TextBlock placeholder = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock"), exactMatch: false);
+
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorDisabledBrush"));
 
                 SolidColorBrush actual = Assert.IsType<SolidColorBrush>(placeholder.Foreground);
                 Assert.Equal(
@@ -76,7 +103,7 @@ namespace Fluence.Wpf.Tests
 
 
         [Fact]
-        public Task TextBox_PlaceholderTextBlock_ThemeCycle_StillTertiaryBrushAsync()
+        public Task TextBox_PlaceholderTextBlock_ThemeCycle_StillSecondaryBrushAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -93,7 +120,7 @@ namespace Fluence.Wpf.Tests
 
                 TextBlock placeholder = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock"), exactMatch: false);
 
-                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorTertiaryBrush"));
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorSecondaryBrush"));
 
                 SolidColorBrush actual = Assert.IsType<SolidColorBrush>(placeholder.Foreground);
                 Assert.Equal(

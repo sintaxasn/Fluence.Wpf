@@ -165,7 +165,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task PasswordBox_PlaceholderTextBlock_UsesTertiaryBrushAsync()
+        public Task PasswordBox_PlaceholderTextBlock_UsesSecondaryBrushAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -180,7 +180,37 @@ namespace Fluence.Wpf.Tests
                     _ = ShowPasswordBox(window, box);
 
                     TextBlock placeholder = Assert.IsType<TextBlock>(box.Template.FindName("PlaceholderTextBlock", box));
-                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application.TryFindResource("TextFillColorTertiaryBrush"));
+                    // TextControlPlaceholderForeground/PointerOver/Focused all resolve to
+                    // TextFillColorSecondaryBrush (WinUI CommonStyles TextBox_themeresources.xaml).
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application.TryFindResource("TextFillColorSecondaryBrush"));
+                    SolidColorBrush actual = Assert.IsType<SolidColorBrush>(placeholder.Foreground);
+
+                    Assert.Equal(expected.Color, actual.Color);
+                }
+                finally
+                {
+                    ClosePasswordBoxTest(window, application, genericDictionary);
+                }
+            });
+        }
+
+        [Fact]
+        public Task PasswordBox_PlaceholderTextBlock_Disabled_UsesDisabledBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    PasswordBox box = new() { Width = 200, IsEnabled = false };
+                    Controls.PasswordBoxExtensions.SetPlaceholderText(box, "Password");
+                    _ = ShowPasswordBox(window, box);
+
+                    TextBlock placeholder = Assert.IsType<TextBlock>(box.Template.FindName("PlaceholderTextBlock", box));
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application.TryFindResource("TextFillColorDisabledBrush"));
                     SolidColorBrush actual = Assert.IsType<SolidColorBrush>(placeholder.Foreground);
 
                     Assert.Equal(expected.Color, actual.Color);

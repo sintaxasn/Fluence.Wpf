@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task Slider_DefaultState_ThumbScaleIsOneAsync()
+        public Task Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -77,14 +77,16 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // Thumb's template root Grid has a ScaleTransform named ThumbScale.
+                // Only the inner dot carries the ScaleTransform named ThumbScale (WinUI 3 scales the
+                // inner dot, not the fixed outer capsule); its rest value is 0.86, not 1.0
+                // (Slider_themeresources.xaml: "0.86 is relative scale from 14px to 12px").
                 Thumb thumb = Assert.IsType<Thumb>(FindVisualChild<Thumb>(slider), exactMatch: false);
 
-                System.Windows.Controls.Grid grid = Assert.IsType<System.Windows.Controls.Grid>(FindVisualChild<System.Windows.Controls.Grid>(thumb), exactMatch: false);
+                Ellipse innerDot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(thumb, "ThumbInnerDot"), exactMatch: false);
 
-                ScaleTransform scale = Assert.IsType<ScaleTransform>(grid.RenderTransform);
-                Assert.Equal(1.0, scale.ScaleX, 0.001);
-                Assert.Equal(1.0, scale.ScaleY, 0.001);
+                ScaleTransform scale = Assert.IsType<ScaleTransform>(innerDot.RenderTransform);
+                Assert.Equal(0.86, scale.ScaleX, 0.001);
+                Assert.Equal(0.86, scale.ScaleY, 0.001);
                 w.Close();
             });
         }
