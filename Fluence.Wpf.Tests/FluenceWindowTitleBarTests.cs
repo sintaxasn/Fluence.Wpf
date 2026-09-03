@@ -241,10 +241,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task BorderThickness_DefaultIsTwoAsync()
+        public Task BorderThickness_DefaultIsOneAsync()
         {
-            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 2.
-            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(2), w.BorderThickness));
+            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 1 (the
+            // Windows 10 value, and the value shown before ApplyFrame's first pass, which never runs
+            // here because the window is never shown).
+            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(1), w.BorderThickness));
         }
 
         #endregion 5. HasShadow and WindowBorder defaults
@@ -333,10 +335,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task DefaultBorderThickness_IsTwoAsync()
+        public Task DefaultBorderThickness_IsOneAsync()
         {
-            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 2.
-            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(2), w.BorderThickness));
+            // The implicit FluenceWindow style in Themes/Controls/FluenceWindow.xaml sets 1 (the
+            // Windows 10 value, and the value shown before ApplyFrame's first pass, which never runs
+            // here because the window is never shown).
+            return RunWithWindowAsync(static w => Assert.Equal(new Thickness(1), w.BorderThickness));
         }
 
         [Fact]
@@ -422,7 +426,7 @@ namespace Fluence.Wpf.Tests
                     "TextFillColorDisabledBrush",
                     "SubtleFillColorSecondaryBrush",
                     "SubtleFillColorTertiaryBrush",
-                    "CardStrokeColorDefaultSolidBrush",
+                    "SurfaceStrokeColorDefaultBrush",
                 ];
 
                 foreach (string key in themeBrushKeys)

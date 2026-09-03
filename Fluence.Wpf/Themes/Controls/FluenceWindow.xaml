@@ -106,7 +106,14 @@
     <Style TargetType="{x:Type controls:FluenceWindow}">
         <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}" />
-        <Setter Property="BorderThickness" Value="2" />
+        <!--
+            1 dp is the Windows 10 value (DWM there draws no colorable border, so the template
+            border is the only edge the window shows) and also the value a window displays before
+            ApplyFrame runs its first pass. On Windows 11, ApplyFrame narrows this to 0 because DWM
+            owns and colors the outer 1 px border there; a template-drawn border stacked on top of
+            it produced a pale line at the seam between the two.
+        -->
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />

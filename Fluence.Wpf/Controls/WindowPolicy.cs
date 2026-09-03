@@ -168,9 +168,13 @@ namespace Fluence.Wpf.Controls
         ///     <description>
         ///       Active window with accent borders enabled gets a border keyed to
         ///       <c language="xaml">SystemAccentColorBrush</c>. Inactive windows revert to
-        ///       <c language="xaml">CardStrokeColorDefaultSolidBrush</c>. The maximized 0-thick border is not
-        ///       decided here: it is a template trigger on <c language="csharp">WindowState</c> in
-        ///       <c language="xaml">Themes/Controls/FluenceWindow.xaml</c>, so this plan only ever selects the brush key.
+        ///       <c language="xaml">SurfaceStrokeColorDefaultBrush</c>. The thickness follows
+        ///       <paramref name="capabilities"/> rather than activation: zero when
+        ///       <see cref="WindowCapabilities.SupportsBorderColor"/> is <see langword="true"/> (Windows 11 owns the
+        ///       outer border via DWM), one device-independent pixel otherwise (Windows 10, where the template
+        ///       border is the only edge the window shows). The maximized 0-thick border is not decided here: it is
+        ///       a template trigger on <c language="csharp">WindowState</c> in
+        ///       <c language="xaml">Themes/Controls/FluenceWindow.xaml</c>, so this plan never sees window state.
         ///     </description>
         ///   </item>
         ///   <item>
@@ -202,8 +206,12 @@ namespace Fluence.Wpf.Controls
             Color accentColor)
         {
             string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
-                ? "CardStrokeColorDefaultSolidBrush"
+                ? "SurfaceStrokeColorDefaultBrush"
                 : "SystemAccentColorBrush";
+
+            Thickness templateBorderThickness = capabilities.SupportsBorderColor
+                ? new Thickness(0)
+                : new Thickness(1);
 
             uint dwmBorderColor = PInvoke.DWMWA_COLOR_DEFAULT;
             if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
@@ -211,7 +219,7 @@ namespace Fluence.Wpf.Controls
                 dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
             }
 
-            return new FramePlan(templateBorderBrushResourceKey, dwmBorderColor);
+            return new FramePlan(templateBorderBrushResourceKey, templateBorderThickness, dwmBorderColor);
         }
 
         /// <summary>

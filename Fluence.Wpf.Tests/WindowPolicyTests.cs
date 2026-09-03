@@ -748,7 +748,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public void BuildFramePlan_Normal_Inactive_UsesCardStrokeKey()
+        public void BuildFramePlan_Normal_Inactive_UsesSurfaceStrokeKey()
         {
             FramePlan plan = WindowPolicy.BuildFramePlan(
                 isActive: false,
@@ -756,7 +756,7 @@ namespace Fluence.Wpf.Tests
                 capabilities: Caps(borderColor: true),
                 accentColor: Colors.Red);
 
-            Assert.Equal("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
+            Assert.Equal("SurfaceStrokeColorDefaultBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
         }
 
         [Fact]
@@ -772,6 +772,74 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion BuildFramePlan - accent border selection
+
+        #region BuildFramePlan - template border thickness and inactive brush key
+
+        [Fact]
+        public void BuildFramePlan_BorderColorSupported_Active_TemplateThicknessIsZero()
+        {
+            // roundedCorners and borderColor both true reads as a real Windows 11 snapshot; the two
+            // capabilities are never true independently on any shipping OS build.
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: true,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(roundedCorners: true, borderColor: true),
+                accentColor: Colors.Red);
+
+            Assert.Equal(new Thickness(0), plan.TemplateBorderThickness);
+        }
+
+        [Fact]
+        public void BuildFramePlan_BorderColorSupported_Inactive_TemplateThicknessIsZero()
+        {
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: false,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(roundedCorners: true, borderColor: true),
+                accentColor: Colors.Red);
+
+            Assert.Equal(new Thickness(0), plan.TemplateBorderThickness);
+        }
+
+        [Fact]
+        public void BuildFramePlan_BorderColorUnsupported_Active_TemplateThicknessIsOne()
+        {
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: true,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(),
+                accentColor: Colors.Red);
+
+            Assert.Equal(new Thickness(1), plan.TemplateBorderThickness);
+        }
+
+        [Fact]
+        public void BuildFramePlan_BorderColorUnsupported_Inactive_TemplateThicknessIsOne()
+        {
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: false,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(),
+                accentColor: Colors.Red);
+
+            Assert.Equal(new Thickness(1), plan.TemplateBorderThickness);
+        }
+
+        [Fact]
+        public void BuildFramePlan_BorderColorUnsupported_Inactive_UsesSurfaceStrokeKey()
+        {
+            // The Windows 10 path (no DWMWA_BORDER_COLOR) must still resolve the same canonical
+            // inactive brush key as the Windows 11 path; only the thickness differs by capability.
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: false,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(),
+                accentColor: Colors.Red);
+
+            Assert.Equal("SurfaceStrokeColorDefaultBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
+        }
+
+        #endregion BuildFramePlan - template border thickness and inactive brush key
 
         #region WindowCapabilities.Current - sanity
 
