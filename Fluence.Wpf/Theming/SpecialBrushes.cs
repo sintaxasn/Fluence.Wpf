@@ -73,7 +73,11 @@ namespace Fluence.Wpf.Theming
 
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
-            dict["NavigationViewSelectionIndicatorBrush"] = Solid(colors["SystemAccentColor"]);
+            // Shared selection-pill accent for NavigationView, ListView, ListBox, and TreeView.
+            // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
+            // uses the same accent fill for its Default/Light/Dark dictionaries); HighContrast is
+            // overridden below with the live SystemColors.HighlightTextColor.
+            dict["NavigationViewSelectionIndicatorBrush"] = Solid(colors["AccentFillColorDefault"]);
             // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
             // dictionary defines with the same tint, opacity, and fallback as
             // AcrylicBackgroundFillColorDefaultBrush in every theme, so the two resolve identically.
@@ -90,7 +94,7 @@ namespace Fluence.Wpf.Theming
                 return;
             }
 
-            AddElevationBorderBrushes(dict, colors);
+            AddElevationBorderBrushes(dict, colors, dark);
         }
 
         /// <summary>
@@ -152,18 +156,32 @@ namespace Fluence.Wpf.Theming
         }
 
         /// <summary>
-        /// Builds the inset single-stroke collection focus visual, the WinUI 3
-        /// <c language="xaml">DefaultCollectionFocusVisualStyle</c>.
+        /// Builds the two-stroke collection focus visual (outer + inset inner ring), the WinUI 3
+        /// <c language="xaml">DefaultCollectionFocusVisualStyle</c>. The inner ring is
+        /// ListViewItemFocusVisualSecondaryBrush (ListViewItem_themeresources.xaml:31), which
+        /// resolves to FocusStrokeColorInnerBrush; NavigationViewItemFocusVisual
+        /// (NavigationView.xaml) already pairs the same two rings for its own items.
         /// </summary>
         private static Style BuildCollectionFocusVisualStyle()
         {
-            FrameworkElementFactory rect = new(typeof(Rectangle));
-            rect.SetValue(Rectangle.RadiusXProperty, 4.0);
-            rect.SetValue(Rectangle.RadiusYProperty, 4.0);
-            rect.SetValue(Shape.StrokeProperty, new DynamicResourceExtension("FocusStrokeColorOuterBrush"));
-            rect.SetValue(Shape.StrokeThicknessProperty, 2.0);
+            FrameworkElementFactory outer = new(typeof(Rectangle));
+            outer.SetValue(Rectangle.RadiusXProperty, 4.0);
+            outer.SetValue(Rectangle.RadiusYProperty, 4.0);
+            outer.SetValue(Shape.StrokeProperty, new DynamicResourceExtension("FocusStrokeColorOuterBrush"));
+            outer.SetValue(Shape.StrokeThicknessProperty, 2.0);
 
-            ControlTemplate template = new() { VisualTree = rect };
+            FrameworkElementFactory inner = new(typeof(Rectangle));
+            inner.SetValue(FrameworkElement.MarginProperty, new Thickness(2));
+            inner.SetValue(Rectangle.RadiusXProperty, 3.0);
+            inner.SetValue(Rectangle.RadiusYProperty, 3.0);
+            inner.SetValue(Shape.StrokeProperty, new DynamicResourceExtension("FocusStrokeColorInnerBrush"));
+            inner.SetValue(Shape.StrokeThicknessProperty, 1.0);
+
+            FrameworkElementFactory grid = new(typeof(Grid));
+            grid.AppendChild(outer);
+            grid.AppendChild(inner);
+
+            ControlTemplate template = new() { VisualTree = grid };
             template.Seal();
 
             Style style = new();
@@ -179,13 +197,18 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         /// <param name="dict">The resource dictionary to populate.</param>
         /// <param name="colors">The computed color map for the resolved theme.</param>
-        private static void AddElevationBorderBrushes(ResourceDictionary dict, IReadOnlyDictionary<string, Color> colors)
+        /// <param name="dark">True when the resolved theme is Dark.</param>
+        private static void AddElevationBorderBrushes(ResourceDictionary dict, IReadOnlyDictionary<string, Color> colors, bool dark)
         {
-            // ControlElevationBorderBrush: absolute 0,0 -> 0,3 gradient (flipped vertically)
-            // from ControlStrokeColorSecondary -> Default.
+            // ControlElevationBorderBrush: absolute 0,0 -> 0,3 gradient from
+            // ControlStrokeColorSecondary -> Default. WinUI 3 flips this gradient vertically only
+            // in the Light theme dictionary (Common_themeresources_any.xaml Light block has a
+            // ScaleY="-1" RelativeTransform on this key); the Default/Dark theme dictionary defines
+            // the same key with no transform, so Dark must stay unflipped.
             const string ControlStrokeColorDefault = "ControlStrokeColorDefault";
-            dict["ControlElevationBorderBrush"] = AbsoluteFlippedGradient(
-                colors["ControlStrokeColorSecondary"], colors[ControlStrokeColorDefault]);
+            dict["ControlElevationBorderBrush"] = dark
+                ? AbsoluteGradient(colors["ControlStrokeColorSecondary"], colors[ControlStrokeColorDefault])
+                : AbsoluteFlippedGradient(colors["ControlStrokeColorSecondary"], colors[ControlStrokeColorDefault]);
 
             // TextControlElevationBorderBrush: the WinUI 3 text-control rest border is a
             // distinct absolute 0,0 -> 0,2 gradient whose 0.5 stop is the strong stroke,
@@ -201,7 +224,9 @@ namespace Fluence.Wpf.Theming
             dict["TextControlElevationBorderFocusedBrush"] = TextControlFocusedGradient(
                 colors["SystemAccentColorPrimary"], colors[ControlStrokeColorDefault]);
 
-            // AccentControlElevationBorderBrush: same geometry, on-accent stroke stops.
+            // AccentControlElevationBorderBrush: same geometry, on-accent stroke stops. WinUI 3
+            // flips this one in both the Light and the Default/Dark theme dictionaries, so it
+            // always uses the flipped gradient regardless of theme.
             dict["AccentControlElevationBorderBrush"] = AbsoluteFlippedGradient(
                 colors["ControlStrokeColorOnAccentSecondary"], colors["ControlStrokeColorOnAccentDefault"]);
 
@@ -236,6 +261,27 @@ namespace Fluence.Wpf.Theming
                 StartPoint = new Point(0, 0),
                 EndPoint = new Point(0, 3),
                 RelativeTransform = flip,
+            };
+            b.GradientStops.Add(new GradientStop(stop33, 0.33));
+            b.GradientStops.Add(new GradientStop(stop100, 1.0));
+            b.Freeze();
+            return b;
+        }
+
+        /// <summary>
+        /// Builds the unflipped counterpart of <see cref="AbsoluteFlippedGradient"/>: absolute
+        /// mapping, 0,0 -> 0,3, no <see cref="ScaleTransform"/>, with stops at 0.33
+        /// (<paramref name="stop33"/>) and 1.0 (<paramref name="stop100"/>).
+        /// </summary>
+        /// <param name="stop33">The color for the 0.33 stop.</param>
+        /// <param name="stop100">The color for the 1.0 stop.</param>
+        private static LinearGradientBrush AbsoluteGradient(Color stop33, Color stop100)
+        {
+            LinearGradientBrush b = new()
+            {
+                MappingMode = BrushMappingMode.Absolute,
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(0, 3),
             };
             b.GradientStops.Add(new GradientStop(stop33, 0.33));
             b.GradientStops.Add(new GradientStop(stop100, 1.0));
@@ -321,7 +367,6 @@ namespace Fluence.Wpf.Theming
             dict["TextFillColorSecondaryBrush"] = Solid(windowText);
             dict["TextFillColorTertiaryBrush"] = Solid(grayText);
             dict["TextFillColorDisabledBrush"] = Solid(grayText);
-            dict["TextPlaceholderColorBrush"] = Solid(grayText);
             dict["TextFillColorInverseBrush"] = Solid(highlightText);
 
             // Control fill
@@ -462,8 +507,12 @@ namespace Fluence.Wpf.Theming
             dict["WindowCloseForegroundHoverBrush"] = Solid(highlightText);
             dict["WindowCloseForegroundPressedBrush"] = Solid(highlightText);
 
-            // NavigationView selection indicator binds to live Highlight in HC, which drifts from
-            // the computed SystemAccentColor. The content background binds to Window.
+            // NavigationView (and ListView/ListBox/TreeView) selection indicator binds to the
+            // live Highlight color in HC (WinUI TreeView_themeresources.xaml:115's
+            // SystemColorHighlightColorBrush precedent), which drifts from the computed
+            // AccentFillColorDefault. Fluence's HC selected row background stays SystemColors.Control,
+            // so HighlightText (designed to sit on a Highlight-colored fill) would be invisible here.
+            // The content background binds to Window.
             dict["NavigationViewSelectionIndicatorBrush"] = Solid(highlight);
             dict["NavigationViewContentBackgroundBrush"] = Solid(window);
 

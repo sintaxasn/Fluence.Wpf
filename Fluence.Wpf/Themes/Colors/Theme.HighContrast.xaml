@@ -18,7 +18,6 @@
     <Color x:Key="TextFillColorSecondary">#FFFFFFFF</Color>
     <Color x:Key="TextFillColorTertiary">#FF3FF23F</Color>
     <Color x:Key="TextFillColorDisabled">#FF3FF23F</Color>
-    <Color x:Key="TextPlaceholderColor">#FF3FF23F</Color>
     <Color x:Key="TextFillColorInverse">#FF000000</Color>
 
     <!--  Control Fill Colors  -->
@@ -165,5 +164,11 @@
 
     <!--  NavigationView content area (transparent - HC Window color via brush in C# SpecialBrushes)  -->
     <Color x:Key="NavigationViewContentBackground">#FF000000</Color>
+
+    <!--
+        TeachingTipTopHighlight: transparent in High Contrast (WinUI 3
+        TeachingTip_themeresources.xaml, HighContrast dictionary, uses Transparent).
+    -->
+    <Color x:Key="TeachingTipTopHighlight">#00000000</Color>
 
 </ResourceDictionary>

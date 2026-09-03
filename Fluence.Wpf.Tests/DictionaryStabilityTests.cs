@@ -28,9 +28,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Controls;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
@@ -94,8 +96,49 @@ namespace Fluence.Wpf.Tests
 
                 Assert.Equal(3, app.Resources.MergedDictionaries.Count);
 
+                // AcrylicBackgroundFillColorDefault is opaque in every theme (it is the WinUI
+                // AcrylicBrush FallbackColor, used as a solid plate), so alpha can no longer
+                // distinguish "still resolving HC's stale value" from "resolving Light's value".
+                // Compare against Light's own RGB instead, which HC's black token cannot satisfy.
                 Color acrylic = Assert.IsType<Color>(app.TryFindResource("AcrylicBackgroundFillColorDefault"));
-                Assert.NotEqual(byte.MaxValue, acrylic.A);
+                Assert.Equal(Color.FromRgb(0xF9, 0xF9, 0xF9), acrylic);
+            });
+        }
+
+        /// <summary>
+        /// FluenceWindow.GetLegacyAcrylicTintColor forces a fixed 0xF0 alpha onto the now-opaque
+        /// AcrylicBackgroundFillColorDefault token's RGB for the Windows 10 legacy acrylic accent
+        /// policy, since the token itself no longer carries a translucent alpha (it is the WinUI
+        /// AcrylicBrush FallbackColor, used opaque everywhere else as a plate color).
+        /// </summary>
+        /// <param name="theme">The theme to apply before reading the tint.</param>
+        /// <param name="r">The expected red channel of the token's opaque RGB.</param>
+        /// <param name="g">The expected green channel of the token's opaque RGB.</param>
+        /// <param name="b">The expected blue channel of the token's opaque RGB.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light, (byte)0xF9, (byte)0xF9, (byte)0xF9)]
+        [InlineData(ApplicationTheme.Dark, (byte)0x2C, (byte)0x2C, (byte)0x2C)]
+        public Task LegacyAcrylicTintColor_ForcesFixedAlphaOntoOpaqueTokenAsync(ApplicationTheme theme, byte r, byte g, byte b)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+
+                FluenceWindow window = new();
+                try
+                {
+                    MethodInfo method = Assert.IsType<MethodInfo>(
+                        typeof(FluenceWindow).GetMethod("GetLegacyAcrylicTintColor", BindingFlags.Instance | BindingFlags.NonPublic),
+                        exactMatch: false);
+                    Color tint = Assert.IsType<Color>(method.Invoke(window, parameters: null));
+
+                    Assert.Equal(Color.FromArgb(0xF0, r, g, b), tint);
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
 

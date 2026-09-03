@@ -18,7 +18,7 @@
     <Color x:Key="AccentTextFillColorSecondary">#FF8DCDFF</Color>
     <Color x:Key="AccentTextFillColorTertiary">#FF4FB3FF</Color>
     <Color x:Key="AcrylicBackgroundFillColorBase">#FF1C1C1C</Color>
-    <Color x:Key="AcrylicBackgroundFillColorDefault">#F02C2C2C</Color>
+    <Color x:Key="AcrylicBackgroundFillColorDefault">#FF2C2C2C</Color>
     <Color x:Key="ApplicationBackgroundColor">#FF202020</Color>
     <Color x:Key="CardBackgroundFillColorDefault">#0DFFFFFF</Color>
     <Color x:Key="CardBackgroundFillColorSecondary">#08FFFFFF</Color>
@@ -107,6 +107,7 @@
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF2E2E2E</Color>
     <Color x:Key="SystemFillColorSuccess">#FF6CCB5F</Color>
     <Color x:Key="SystemFillColorSuccessBackground">#FF393D1B</Color>
+    <Color x:Key="TeachingTipTopHighlight">#0DFFFFFF</Color>
     <Color x:Key="TextFillColorDisabled">#5DFFFFFF</Color>
     <Color x:Key="TextFillColorInverse">#E4000000</Color>
     <Color x:Key="TextFillColorPrimary">#FFFFFFFF</Color>
@@ -116,7 +117,6 @@
     <Color x:Key="TextOnAccentFillColorPrimary">#FF000000</Color>
     <Color x:Key="TextOnAccentFillColorSecondary">#80000000</Color>
     <Color x:Key="TextOnAccentFillColorSelectedText">#FFFFFFFF</Color>
-    <Color x:Key="TextPlaceholderColor">#87FFFFFF</Color>
     <Color x:Key="TitleBarActiveColor">#FF2B2B2B</Color>
     <Color x:Key="TitleBarInactiveColor">#FF2B2B2B</Color>
     <Color x:Key="WindowBorderColor">#FF2B2B2B</Color>
@@ -140,7 +140,7 @@
     <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#FF8DCDFF" />
     <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#FF4FB3FF" />
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorBaseBrush" Color="#FF1C1C1C" />
-    <SolidColorBrush x:Key="AcrylicBackgroundFillColorDefaultBrush" Color="#F02C2C2C" />
+    <SolidColorBrush x:Key="AcrylicBackgroundFillColorDefaultBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#FF202020" />
     <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#0DFFFFFF" />
     <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#08FFFFFF" />
@@ -189,8 +189,8 @@
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTertiaryBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTransparentBrush" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="#4C3A3A3A" />
-    <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="#FF0078D4" />
-    <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#F02C2C2C" />
+    <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="#FF4FB3FF" />
+    <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="SmokeFillColorDefaultBrush" Color="#4D000000" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseAltBrush" Color="#FF0A0A0A" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#FF202020" />
@@ -231,6 +231,7 @@
     <SolidColorBrush x:Key="SystemFillColorSolidNeutralBrush" Color="#FF9D9D9D" />
     <SolidColorBrush x:Key="SystemFillColorSuccessBackgroundBrush" Color="#FF393D1B" />
     <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="#FF6CCB5F" />
+    <SolidColorBrush x:Key="TeachingTipTopHighlightBrush" Color="#0DFFFFFF" />
     <SolidColorBrush x:Key="TextFillColorDisabledBrush" Color="#5DFFFFFF" />
     <SolidColorBrush x:Key="TextFillColorInverseBrush" Color="#E4000000" />
     <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#FFFFFFFF" />
@@ -240,7 +241,6 @@
     <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#80000000" />
     <SolidColorBrush x:Key="TextOnAccentFillColorSelectedTextBrush" Color="#FFFFFFFF" />
-    <SolidColorBrush x:Key="TextPlaceholderColorBrush" Color="#87FFFFFF" />
     <SolidColorBrush x:Key="TitleBarActiveColorBrush" Color="#FF2B2B2B" />
     <SolidColorBrush x:Key="TitleBarInactiveColorBrush" Color="#FF2B2B2B" />
     <SolidColorBrush x:Key="WindowBorderColorBrush" Color="#FF2B2B2B" />
@@ -265,9 +265,6 @@
         <GradientStop Color="#18FFFFFF" Offset="0.7" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ControlElevationBorderBrush" MappingMode="Absolute" StartPoint="0,0" EndPoint="0,3">
-        <LinearGradientBrush.RelativeTransform>
-            <ScaleTransform CenterX="0" CenterY="0.5" ScaleX="1" ScaleY="-1" />
-        </LinearGradientBrush.RelativeTransform>
         <GradientStop Color="#18FFFFFF" Offset="0.33" />
         <GradientStop Color="#12FFFFFF" Offset="1" />
     </LinearGradientBrush>

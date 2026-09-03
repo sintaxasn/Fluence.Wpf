@@ -1062,6 +1062,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// The alpha forced onto <c language="xaml">AcrylicBackgroundFillColorDefault</c>'s RGB for the Windows 10
+        /// legacy acrylic accent policy tint. WPF has no acrylic renderer, so the token itself now
+        /// carries the WinUI <c language="csharp">AcrylicBrush</c> <c language="csharp">FallbackColor</c> (opaque), the
+        /// color every acrylic surface in the library paints as a solid plate. The legacy accent
+        /// policy is the one consumer that still needs a translucent tint, so it forces this fixed
+        /// alpha back onto the token's RGB rather than reading the token's own alpha.
+        /// </summary>
+        private const byte LegacyAcrylicTintAlpha = 0xF0;
+
+        /// <summary>
         /// Resolves the tint color handed to the Windows 10 legacy acrylic accent policy from the
         /// live theme resources, so a theme change re-tints the window through the ordinary
         /// <see cref="ApplyBackdrop"/> re-run with no separate subscription.
@@ -1069,19 +1079,21 @@ namespace Fluence.Wpf.Controls
         /// <remarks>
         /// Unlike the DWM system backdrops, the legacy accent policy supplies no tint of its own:
         /// without one the window shows raw blurred desktop. The
-        /// <c language="xaml">AcrylicBackgroundFillColorDefault</c> token carries the WinUI tint including its
-        /// alpha, and that alpha is used as-is. Some reference implementations scale the token's
-        /// alpha by a further constant (iNKORE uses 0.8) to compensate for the legacy blur being
-        /// weaker than DWM acrylic; Fluence does not, so a Windows 10 window matches the token that
-        /// every other acrylic surface in the library is drawn from. The theme fallback background
-        /// is used when the token is missing, which keeps the window opaque and legible rather than
-        /// letting a transparent-black default erase the tint entirely.
+        /// <c language="xaml">AcrylicBackgroundFillColorDefault</c> token is opaque (the WinUI
+        /// <c language="csharp">AcrylicBrush</c> <c language="csharp">FallbackColor</c>, used as-is by every other
+        /// acrylic plate in the library), so this method forces <see cref="LegacyAcrylicTintAlpha"/>
+        /// onto the token's RGB instead of using the token's own alpha, splitting the opaque plate
+        /// color from the translucent legacy tint. Some reference implementations scale the alpha by
+        /// a further constant (iNKORE uses 0.8) to compensate for the legacy blur being weaker than
+        /// DWM acrylic; Fluence does not. The theme fallback background is used opaque when the token
+        /// is missing, which keeps the window legible rather than letting a transparent-black default
+        /// erase the tint entirely.
         /// </remarks>
         /// <returns>The tint color for the accent policy.</returns>
         private Color GetLegacyAcrylicTintColor()
         {
             return TryFindResource("AcrylicBackgroundFillColorDefault") is Color tintColor
-                ? tintColor
+                ? Color.FromArgb(LegacyAcrylicTintAlpha, tintColor.R, tintColor.G, tintColor.B)
                 : GetFallbackBackgroundColor();
         }
 

@@ -77,7 +77,6 @@ namespace Fluence.Wpf.Demo.Pages
                     new("Secondary text", "Body text and supporting details.", "TextFillColorSecondaryBrush"),
                     new("Tertiary text", "Low emphasis metadata.", "TextFillColorTertiaryBrush"),
                     new("Disabled text", "Unavailable commands and values.", "TextFillColorDisabledBrush"),
-                    new("Placeholder text", "Input placeholder content.", "TextPlaceholderColorBrush"),
                     new("Inverse text", "Text placed on inverse surfaces.", "TextFillColorInverseBrush"),
                     new("Accent text primary", "Links and accent-forward text.", "AccentTextFillColorPrimaryBrush"),
                     new("Accent text secondary", "Pressed or secondary accent text.", "AccentTextFillColorSecondaryBrush"),
@@ -317,7 +316,6 @@ namespace Fluence.Wpf.Demo.Pages
         {
             ColorToken[] additionalTokens =
             [
-                new("Placeholder text", "Input placeholder content.", "TextPlaceholderColorBrush"),
                 new("Inverse text", "Text placed on inverse surfaces.", "TextFillColorInverseBrush"),
             ];
 

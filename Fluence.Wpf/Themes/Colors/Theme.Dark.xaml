@@ -14,7 +14,6 @@
     <Color x:Key="TextFillColorSecondary">#C5FFFFFF</Color>
     <Color x:Key="TextFillColorTertiary">#87FFFFFF</Color>
     <Color x:Key="TextFillColorDisabled">#5DFFFFFF</Color>
-    <Color x:Key="TextPlaceholderColor">#87FFFFFF</Color>
     <Color x:Key="TextFillColorInverse">#E4000000</Color>
 
     <!--  Control Fill Colors  -->
@@ -113,7 +112,12 @@
     <Color x:Key="SolidBackgroundFillColorBaseAlt">#FF0A0A0A</Color>
 
     <!--  Acrylic Background Fill Colors  -->
-    <Color x:Key="AcrylicBackgroundFillColorDefault">#F02C2C2C</Color>
+    <!--  AcrylicBackgroundFillColorDefault is the WinUI 3 AcrylicBrush FallbackColor for
+         AcrylicBackgroundFillColorDefaultBrush (AcrylicBrush_themeresources.xaml Default block),
+         used opaque as the plate color because WPF has no acrylic renderer. FluenceWindow's
+         GetLegacyAcrylicTintColor forces its own fixed 0xF0 alpha onto this token's RGB for the
+         Windows 10 legacy blur tint, which the opaque token itself does not carry.  -->
+    <Color x:Key="AcrylicBackgroundFillColorDefault">#FF2C2C2C</Color>
     <Color x:Key="AcrylicBackgroundFillColorBase">#FF1C1C1C</Color>
 
     <!--  System Fill Colors  -->
@@ -168,5 +172,11 @@
         Windows accent palette hover shade (e.g. #4CC2FF x 0.9 over #202020 = #48B2E9).
     -->
     <Color x:Key="AccentFillBackdrop">#FF202020</Color>
+
+    <!--
+        TeachingTipTopHighlight: the 1px highlight line along a TeachingTip's top edge.
+        Authority: WinUI 3 TeachingTip_themeresources.xaml, Default (Dark) dictionary.
+    -->
+    <Color x:Key="TeachingTipTopHighlight">#0DFFFFFF</Color>
 
 </ResourceDictionary>

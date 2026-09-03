@@ -16,7 +16,6 @@
     <Color x:Key="TextFillColorSecondary">#9E000000</Color>
     <Color x:Key="TextFillColorTertiary">#72000000</Color>
     <Color x:Key="TextFillColorDisabled">#5C000000</Color>
-    <Color x:Key="TextPlaceholderColor">#9E000000</Color>
     <Color x:Key="TextFillColorInverse">#FFFFFFFF</Color>
 
     <!--  Control Fill Colors  -->
@@ -115,7 +114,12 @@
     <Color x:Key="SolidBackgroundFillColorBaseAlt">#FFDADADA</Color>
 
     <!--  Acrylic Background Fill Colors  -->
-    <Color x:Key="AcrylicBackgroundFillColorDefault">#F0F9F9F9</Color>
+    <!--  AcrylicBackgroundFillColorDefault is the WinUI 3 AcrylicBrush FallbackColor for
+         AcrylicBackgroundFillColorDefaultBrush (AcrylicBrush_themeresources.xaml Light block),
+         used opaque as the plate color because WPF has no acrylic renderer. FluenceWindow's
+         GetLegacyAcrylicTintColor forces its own fixed 0xF0 alpha onto this token's RGB for the
+         Windows 10 legacy blur tint, which the opaque token itself does not carry.  -->
+    <Color x:Key="AcrylicBackgroundFillColorDefault">#FFF9F9F9</Color>
     <Color x:Key="AcrylicBackgroundFillColorBase">#FFEEEEEE</Color>
 
     <!--  System Fill Colors  -->
@@ -175,5 +179,11 @@
         Windows accent palette regardless of how translucent the surrounding card is.
     -->
     <Color x:Key="AccentFillBackdrop">#FFFFFFFF</Color>
+
+    <!--
+        TeachingTipTopHighlight: the 1px highlight line along a TeachingTip's top edge.
+        Authority: WinUI 3 TeachingTip_themeresources.xaml, Light dictionary.
+    -->
+    <Color x:Key="TeachingTipTopHighlight">#99FFFFFF</Color>
 
 </ResourceDictionary>

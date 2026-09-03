@@ -6,13 +6,17 @@ AccentFillColorDisabled|#FF3FF23F|#00000000
 AccentFillColorDisabledBrush|#00000000|#FF6D6D6D
 AccentFillColorSecondary|#E6005BA1|#00000000
 AccentFillColorSecondaryBrush|#00000000|#E6005BA1
+AccentFillColorSelectedTextBackground|#FF0078D4|#00000000
 AccentFillColorSelectedTextBackgroundBrush|#00000000|#FF0078D4
 AccentFillColorTertiary|#CC005BA1|#00000000
 AccentFillColorTertiaryBrush|#00000000|#CC005BA1
 AccentTextFillColorDisabled|#5C000000|#00000000
 AccentTextFillColorDisabledBrush|#00000000|#5C000000
+AccentTextFillColorPrimary|#FF003E6E|#00000000
 AccentTextFillColorPrimaryBrush|#00000000|#FF003E6E
+AccentTextFillColorSecondary|#FF00213B|#00000000
 AccentTextFillColorSecondaryBrush|#00000000|#FF00213B
+AccentTextFillColorTertiary|#FF005BA1|#00000000
 AccentTextFillColorTertiaryBrush|#00000000|#FF005BA1
 AcrylicBackgroundFillColorBase|#FF000000|#00000000
 AcrylicBackgroundFillColorBaseBrush|#00000000|#FFFFFFFF
@@ -191,6 +195,8 @@ SystemFillColorSuccess|#FFFFFFFF|#00000000
 SystemFillColorSuccessBackground|#FF000000|#00000000
 SystemFillColorSuccessBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorSuccessBrush|#00000000|#FF000000
+TeachingTipTopHighlight|#00000000|#00000000
+TeachingTipTopHighlightBrush|#00000000|#00000000
 TextControlElevationBorderBrush|#00000000|#FFA0A0A0
 TextFillColorDisabled|#FF3FF23F|#00000000
 TextFillColorDisabledBrush|#00000000|#FF6D6D6D
@@ -210,8 +216,6 @@ TextOnAccentFillColorSecondary|#B3FFFFFF|#00000000
 TextOnAccentFillColorSecondaryBrush|#00000000|#B3FFFFFF
 TextOnAccentFillColorSelectedText|#FF000000|#00000000
 TextOnAccentFillColorSelectedTextBrush|#00000000|#FFFFFFFF
-TextPlaceholderColor|#FF3FF23F|#00000000
-TextPlaceholderColorBrush|#00000000|#FF6D6D6D
 TitleBarActiveColor|#FFFFFFFF|#00000000
 TitleBarActiveColorBrush|#00000000|#FFFFFFFF
 TitleBarInactiveColor|#FFFFFFFF|#00000000

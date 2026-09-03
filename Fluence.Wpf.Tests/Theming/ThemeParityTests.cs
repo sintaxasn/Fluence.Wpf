@@ -237,6 +237,49 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
+        /// Verifies the WinUI 3 asymmetry between ControlElevationBorderBrush and
+        /// AccentControlElevationBorderBrush: WinUI's Light theme dictionary flips
+        /// ControlElevationBorderBrush vertically (a ScaleY="-1" RelativeTransform), but its
+        /// Default/Dark theme dictionary defines the same key with no transform
+        /// (Common_themeresources_any.xaml Light block vs Default block). AccentControlElevationBorderBrush
+        /// is flipped in both theme dictionaries, so it must keep the transform regardless of theme.
+        /// </summary>
+        /// <param name="theme">The theme to verify.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        public Task ControlElevationBorderBrush_FlipsOnlyInLightThemeAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                app.Resources.MergedDictionaries.Clear();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                ResourceDictionary res = app.Resources;
+                LinearGradientBrush control = Assert.IsType<LinearGradientBrush>(res["ControlElevationBorderBrush"]);
+                if (theme is ApplicationTheme.Light)
+                {
+                    ScaleTransform flip = Assert.IsType<ScaleTransform>(control.RelativeTransform);
+                    Assert.Equal(-1.0, flip.ScaleY, 0.001);
+                }
+                else
+                {
+                    Assert.True(control.RelativeTransform is null || control.RelativeTransform == Transform.Identity,
+                        "Dark ControlElevationBorderBrush must not flip (WinUI Default/Dark defines it with no transform).");
+                }
+
+                // AccentControlElevationBorderBrush flips in every non-HC theme.
+                LinearGradientBrush accent = Assert.IsType<LinearGradientBrush>(res["AccentControlElevationBorderBrush"]);
+                ScaleTransform accentFlip = Assert.IsType<ScaleTransform>(accent.RelativeTransform);
+                Assert.Equal(-1.0, accentFlip.ScaleY, 0.001);
+            });
+        }
+
+        /// <summary>
         /// Verifies that AccentResolver.Resolve produces structurally sound palettes for both
         /// System and Custom intents, and that the Custom path uses the generator ramp.
         /// </summary>
