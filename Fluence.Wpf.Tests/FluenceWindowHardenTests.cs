@@ -938,5 +938,69 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // 11. Defect: HighContrast must suppress every DWM backdrop, not only the Windows 10
+        // legacy acrylic path (Microsoft Learn "Materials in Windows apps": "High contrast mode:
+        // all materials are suppressed"). A window that requests Mica realises an opaque
+        // Background painted from the published ApplicationBackgroundBrush (the HC override of
+        // SystemColors.WindowColor) while HighContrast is the resolved theme, and returns to a
+        // transparent Background once the theme moves back to Light on a host whose
+        // WindowCapabilities can resolve a system backdrop at all.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task HighContrast_SuppressesRequestedMicaBackdrop_ThenLightRestoresTransparentAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.HighContrast, app);
+
+                Color expectedHighContrastBackground =
+                    Assert.IsType<SolidColorBrush>(app.TryFindResource("ApplicationBackgroundBrush"), exactMatch: false).Color;
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Color highContrastBackground = Assert.IsType<SolidColorBrush>(w.Background, exactMatch: false).Color;
+                    Assert.NotEqual(Colors.Transparent, highContrastBackground);
+                    Assert.Equal(expectedHighContrastBackground, highContrastBackground);
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Color afterLightBackground = Assert.IsType<SolidColorBrush>(w.Background, exactMatch: false).Color;
+                    if (HostCanResolveMica())
+                    {
+                        Assert.Equal(Colors.Transparent, afterLightBackground);
+                    }
+                    else
+                    {
+                        // A host with no Mica-capable DWM attribute at all keeps the opaque fallback
+                        // regardless of theme; the branch still exercises the same re-Apply path.
+                        Assert.NotEqual(Colors.Transparent, expectedHighContrastBackground);
+                        Assert.NotEqual(Colors.Transparent, afterLightBackground);
+                    }
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
     }
 }

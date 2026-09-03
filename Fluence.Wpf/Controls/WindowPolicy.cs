@@ -230,6 +230,21 @@ namespace Fluence.Wpf.Controls
         /// Downgrade rules:
         /// <list type="bullet">
         ///   <item>
+        ///     <term>HighContrast</term>
+        ///     <description>
+        ///       Suppresses every material outright and resolves straight to
+        ///       <see cref="BackdropType.None"/>, before any OS-capability branching runs. Per
+        ///       Microsoft Learn "Materials in Windows apps": "High contrast mode: all materials are
+        ///       suppressed; the system applies high-contrast theme colors instead," and the Mica
+        ///       design page: "In High Contrast mode, users continue to see the familiar background
+        ///       color of their choosing in place of Mica." WinUI's
+        ///       <c language="csharp">SystemBackdropConfiguration.IsHighContrast</c> is documented as
+        ///       true when "the system or application high-contrast theme" is applied, which covers
+        ///       this library's in-app <see cref="ApplicationTheme.HighContrast"/> the same way it
+        ///       covers the OS-wide setting.
+        ///     </description>
+        ///   </item>
+        ///   <item>
         ///     <term>Auto / Mica</term>
         ///     <description>
         ///       Resolves to <see cref="BackdropType.Mica"/> when either
@@ -263,8 +278,10 @@ namespace Fluence.Wpf.Controls
         ///   that does not read the setting must not get a blur the user has turned off.
         /// </param>
         /// <param name="resolvedTheme">
-        ///   The resolved application theme. Only <see cref="ApplicationTheme.HighContrast"/>
-        ///   changes the outcome, by suppressing the Windows 10 legacy acrylic path.
+        ///   The resolved application theme. <see cref="ApplicationTheme.HighContrast"/> suppresses
+        ///   every DWM material outright and short-circuits to <see cref="BackdropType.None"/> before
+        ///   any capability branching runs; every other value only affects the Windows 10 legacy
+        ///   acrylic branch indirectly, by virtue of never triggering that short-circuit.
         /// </param>
         /// <returns>The effective <see cref="BackdropType"/> to apply.</returns>
         internal static BackdropType ResolveEffectiveBackdrop(
@@ -273,18 +290,28 @@ namespace Fluence.Wpf.Controls
             bool isTransparencyEnabled = false,
             ApplicationTheme resolvedTheme = ApplicationTheme.Light)
         {
-            return requestedBackdrop switch
-            {
-                BackdropType.Auto or BackdropType.Mica =>
-                    capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
-                        ? BackdropType.Mica
-                        : BackdropType.None,
+            // Microsoft Learn "Materials in Windows apps": "High contrast mode: all materials are
+            // suppressed; the system applies high-contrast theme colors instead." The Mica design
+            // page: "In High Contrast mode, users continue to see the familiar background color of
+            // their choosing in place of Mica." WinUI's SystemBackdropConfiguration.IsHighContrast is
+            // documented as true when "the system or application high-contrast theme" is applied,
+            // which covers this library's in-app HighContrast theme, not only an OS-wide setting. So
+            // this check runs first, ahead of any OS-capability downgrade, and covers Mica, Acrylic,
+            // and Tabbed on every Windows version, not only the Windows 10 legacy acrylic path.
+            return resolvedTheme is ApplicationTheme.HighContrast
+                ? BackdropType.None
+                : requestedBackdrop switch
+                {
+                    BackdropType.Auto or BackdropType.Mica =>
+                        capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
+                            ? BackdropType.Mica
+                            : BackdropType.None,
 
-                BackdropType.Acrylic or BackdropType.Tabbed =>
-                    ResolveTransparentBackdrop(requestedBackdrop, capabilities, isTransparencyEnabled, resolvedTheme),
+                    BackdropType.Acrylic or BackdropType.Tabbed =>
+                        ResolveTransparentBackdrop(requestedBackdrop, capabilities, isTransparencyEnabled),
 
-                BackdropType.None or _ => requestedBackdrop,
-            };
+                    BackdropType.None or _ => requestedBackdrop,
+                };
         }
 
         /// <summary>
@@ -304,23 +331,22 @@ namespace Fluence.Wpf.Controls
         ///   <item>
         ///     Windows 10 has neither attribute but does have the legacy accent policy, which
         ///     expresses acrylic and nothing else. Acrylic therefore survives when the build
-        ///     supports it, the user has transparency effects on, and the theme is not high
-        ///     contrast; high contrast is excluded because a blurred desktop behind text defeats
-        ///     the contrast guarantee the theme exists to make. Tabbed has no legacy equivalent
-        ///     and downgrades to None.
+        ///     supports it and the user has transparency effects on. Tabbed has no legacy equivalent
+        ///     and downgrades to None. The caller (<see cref="ResolveEffectiveBackdrop"/>) already
+        ///     returns <see cref="BackdropType.None"/> before reaching this method whenever the
+        ///     resolved theme is <see cref="ApplicationTheme.HighContrast"/>, so this method never
+        ///     needs to consult the theme itself.
         ///   </item>
         /// </list>
         /// </remarks>
         /// <param name="requestedBackdrop">Either <see cref="BackdropType.Acrylic"/> or <see cref="BackdropType.Tabbed"/>.</param>
         /// <param name="capabilities">The OS capability snapshot.</param>
         /// <param name="isTransparencyEnabled">Whether the OS transparency-effects toggle is on.</param>
-        /// <param name="resolvedTheme">The resolved application theme.</param>
         /// <returns>The effective <see cref="BackdropType"/> to apply.</returns>
         private static BackdropType ResolveTransparentBackdrop(
             BackdropType requestedBackdrop,
             WindowCapabilities capabilities,
-            bool isTransparencyEnabled,
-            ApplicationTheme resolvedTheme)
+            bool isTransparencyEnabled)
         {
             return capabilities.SupportsSystemBackdropType
                 ? requestedBackdrop
@@ -329,7 +355,6 @@ namespace Fluence.Wpf.Controls
                 : requestedBackdrop is BackdropType.Acrylic
                     && capabilities.SupportsLegacyAcrylic
                     && isTransparencyEnabled
-                    && resolvedTheme is not ApplicationTheme.HighContrast
                 ? BackdropType.Acrylic
                 : BackdropType.None;
         }
