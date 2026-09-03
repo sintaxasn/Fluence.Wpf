@@ -1,4 +1,6 @@
-﻿The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
+﻿See [docs/winui-parity.md](winui-parity.md) for a control-by-control comparison against WinUI 3 CommonStyles, including geometry, elevation, and behavior gaps.
+
+The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
 - Icons (WinUI Gallery-style Iconography catalog: search, virtualized tile grid, copyable glyph details)
