@@ -65,28 +65,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task InfoBar_SeverityLevelsVSM_AllStatesAccessibleAsync()
+        public Task InfoBar_TwoLayerIcon_GlyphAndBackgroundPerSeverityAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                InfoBar bar = new() { IsOpen = true, Title = "Test" };
+                // WinUI parity (InfoBar.xaml:108-109 upstream): no SeverityLevels VSM opacity
+                // pulse and no 3px indicator bar. The severity read is the two-layer glyph -
+                // IconBackground's severity-brush Foreground under StandardIcon's fixed
+                // TextFillColorInverseBrush glyph, which changes text per severity.
+                InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Warning, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // All 4 WI-3 B14 SeverityLevels states must be reachable via GoToState
-                bool ok1 = VisualStateManager.GoToState(bar, "Informational", useTransitions: false);
-                bool ok2 = VisualStateManager.GoToState(bar, "Success", useTransitions: false);
-                bool ok3 = VisualStateManager.GoToState(bar, "Warning", useTransitions: false);
-                bool ok4 = VisualStateManager.GoToState(bar, "Error", useTransitions: false);
+                System.Windows.Controls.TextBlock iconBackground = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "IconBackground"), exactMatch: false);
+                System.Windows.Controls.TextBlock standardIcon = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "StandardIcon"), exactMatch: false);
 
-                Assert.True(ok1, "GoToState('Informational') must succeed - SeverityLevels VSM group must exist.");
-                Assert.True(ok2, "GoToState('Success') must succeed.");
-                Assert.True(ok3, "GoToState('Warning') must succeed.");
-                Assert.True(ok4, "GoToState('Error') must succeed.");
+                SolidColorBrush expectedIconBackground = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorCautionBrush"));
+                SolidColorBrush expectedIconForeground = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorInverseBrush"));
+                Assert.Equal(expectedIconBackground.Color, ((SolidColorBrush)iconBackground.Foreground).Color);
+                Assert.Equal(expectedIconForeground.Color, ((SolidColorBrush)standardIcon.Foreground).Color);
+                Assert.Equal("", standardIcon.Text, StringComparer.Ordinal);
                 w.Close();
             });
         }
@@ -140,7 +142,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task InfoBar_DefaultSeverity_IndicatorBarHasBackgroundAsync()
+        public Task InfoBar_DefaultSeverity_IconBackgroundHasForegroundAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -152,7 +154,11 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.NotNull(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar")?.Background);
+                System.Windows.Controls.TextBlock iconBackground =
+                    Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "IconBackground"), exactMatch: false);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorAttentionBrush"));
+                SolidColorBrush iconBackgroundForeground = Assert.IsType<SolidColorBrush>(iconBackground.Foreground);
+                Assert.Equal(expected.Color, iconBackgroundForeground.Color);
                 w.Close();
             });
         }
@@ -170,27 +176,27 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar"), exactMatch: false);
-                System.Windows.Controls.TextBlock defaultIcon = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "DefaultIcon"), exactMatch: false);
-                SolidColorBrush initial = Assert.IsType<SolidColorBrush>(indicator.Background);
+                System.Windows.Controls.TextBlock iconBackground = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "IconBackground"), exactMatch: false);
+                SolidColorBrush initial = Assert.IsType<SolidColorBrush>(iconBackground.Foreground);
                 Color initialColor = initial.Color;
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
+                // IconBackground carries the severity brush, which is accent-derived for
+                // Informational. StandardIcon's TextFillColorInverseBrush is fixed and does not
+                // track the accent color.
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorAttentionBrush"));
-                SolidColorBrush indicatorBrush = Assert.IsType<SolidColorBrush>(indicator.Background);
-                SolidColorBrush iconBrush = Assert.IsType<SolidColorBrush>(defaultIcon.Foreground);
-                Assert.Equal(expected.Color, indicatorBrush.Color);
-                Assert.Equal(expected.Color, iconBrush.Color);
-                Assert.NotEqual(initialColor, indicatorBrush.Color);
+                SolidColorBrush iconBackgroundBrush = Assert.IsType<SolidColorBrush>(iconBackground.Foreground);
+                Assert.Equal(expected.Color, iconBackgroundBrush.Color);
+                Assert.NotEqual(initialColor, iconBackgroundBrush.Color);
 
                 w.Close();
             });
         }
 
         [Fact]
-        public Task InfoBar_SeverityChange_IndicatorBarBackgroundUpdatesAsync()
+        public Task InfoBar_SeverityChange_IconBackgroundForegroundUpdatesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -202,15 +208,16 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar"), exactMatch: false);
-                Brush brushBefore = indicator.Background;
+                System.Windows.Controls.TextBlock iconBackground = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "IconBackground"), exactMatch: false);
+                Color colorBefore = Assert.IsType<SolidColorBrush>(iconBackground.Foreground).Color;
 
-                // Change severity - trigger + GoToState must both fire
                 bar.Severity = InfoBarSeverity.Error;
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // Background must still be non-null after the change
-                Assert.NotNull(indicator.Background);
+                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorCriticalBrush"));
+                Color colorAfter = Assert.IsType<SolidColorBrush>(iconBackground.Foreground).Color;
+                Assert.Equal(expected.Color, colorAfter);
+                Assert.NotEqual(colorBefore, colorAfter);
                 w.Close();
             });
         }

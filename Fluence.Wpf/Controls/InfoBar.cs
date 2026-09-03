@@ -39,10 +39,6 @@ namespace Fluence.Wpf.Controls
     /// An inline notification bar for displaying status messages with severity levels.
     /// </summary>
     [TemplatePart(Name = PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Informational")]
-    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Success")]
-    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Warning")]
-    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Error")]
     public class InfoBar : ContentControl
     {
         // Template part names.
@@ -110,7 +106,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Severity),
                 typeof(InfoBarSeverity),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(InfoBarSeverity.Informational, OnSeverityChanged));
+                new FrameworkPropertyMetadata(InfoBarSeverity.Informational, OnAnnouncingPropertyChanged));
 
         /// <summary>
         /// Gets or sets the severity level that determines the visual style of the info bar.
@@ -123,8 +119,10 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Returns the Segoe Fluent Icons glyph that represents <paramref name="severity"/>. This is the
-        /// single programmatic source for the severity glyphs; it mirrors the <c language="xaml">Severity</c> triggers in
-        /// Themes/Controls/InfoBar.xaml (WPF property triggers cannot call this method, so keep both in sync).
+        /// single programmatic source for the severity glyphs; it mirrors the <c language="xaml">StandardIcon</c>
+        /// severity triggers in Themes/Controls/InfoBar.xaml (WPF property triggers cannot call this method, so
+        /// keep both in sync). These are the WinUI InfoBar*IconGlyph codes (InfoBar_themeresources.xaml), the
+        /// glyph drawn on top of the IconBackground circle, not a standalone icon.
         /// </summary>
         /// <param name="severity">The severity to map.</param>
         /// <returns>A single-character glyph string in the Segoe Fluent Icons font.</returns>
@@ -133,10 +131,10 @@ namespace Fluence.Wpf.Controls
         {
             return severity switch
             {
-                InfoBarSeverity.Informational => "",
-                InfoBarSeverity.Success => "",
-                InfoBarSeverity.Warning => "",
-                InfoBarSeverity.Error => "",
+                InfoBarSeverity.Informational => "",
+                InfoBarSeverity.Success => "",
+                InfoBarSeverity.Warning => "",
+                InfoBarSeverity.Error => "",
                 _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, message: null),
             };
         }
@@ -263,7 +261,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CornerRadius),
                 typeof(CornerRadius),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(new CornerRadius(8)));
+                new FrameworkPropertyMetadata(new CornerRadius(4)));
 
         /// <summary>
         /// Gets or sets the corner radius of the info bar.
@@ -298,17 +296,6 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
             _closeButton?.Click += OnCloseButtonClick;
-            UpdateSeverityState(useTransitions: false);
-        }
-
-        private static void OnSeverityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            InfoBar bar = (InfoBar)d;
-            bar.UpdateSeverityState(useTransitions: true);
-            if (bar.IsOpen)
-            {
-                bar.AnnounceLiveRegion();
-            }
         }
 
         private static void OnIsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -345,22 +332,6 @@ namespace Fluence.Wpf.Controls
             // rejects a redundant null guard); no NullReferenceException is possible.
             AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
             peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
-        }
-
-        /// <summary>
-        /// Transitions the control to the visual state matching the current <see cref="Severity"/>.
-        /// Called without transitions on initial template application; with transitions on runtime changes.
-        /// </summary>
-        /// <param name="useTransitions">Indicates whether to use visual transitions.</param>
-        private void UpdateSeverityState(bool useTransitions)
-        {
-            _ = VisualStateManager.GoToState(this, Severity switch
-            {
-                InfoBarSeverity.Success => "Success",
-                InfoBarSeverity.Warning => "Warning",
-                InfoBarSeverity.Error => "Error",
-                InfoBarSeverity.Informational or _ => "Informational",
-            }, useTransitions);
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)

@@ -557,5 +557,85 @@ namespace Fluence.Wpf.Tests
                 w.Close();
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // WinUI parity (ProgressBar_themeresources.xaml): track follows Background,
+        // its own corner radius is 0.5 (distinct from the 1.5 indicator radius), a root
+        // border carries BorderBrush/BorderThickness for a future high-contrast outline,
+        // and the second indeterminate bar is not dimmed relative to the first.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.ProgressBar progressBar = new() { Width = 240, Height = 24, Value = 50 };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border track = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track"), exactMatch: false);
+
+                object? expectedTrackBrush = app.TryFindResource("ControlStrongStrokeColorDefaultBrush");
+                Assert.Equal(expectedTrackBrush, progressBar.Background);
+                Assert.Equal(expectedTrackBrush, track.Background);
+                Assert.Equal(new CornerRadius(0.5), track.CornerRadius);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ProgressBar_RootBorder_CarriesBorderBrushAndZeroThicknessAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.ProgressBar progressBar = new() { Width = 240, Height = 24, Value = 50 };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border rootBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "RootBorder"), exactMatch: false);
+
+                object? expectedBorderBrush = app.TryFindResource("ControlStrokeColorDefaultBrush");
+                Assert.Equal(expectedBorderBrush, progressBar.BorderBrush);
+                Assert.Equal(expectedBorderBrush, rootBorder.BorderBrush);
+                Assert.Equal(new Thickness(0), rootBorder.BorderThickness);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ProgressBar_SecondIndeterminateBar_IsNotDimmedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.ProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    ProgressMode = ProgressBarMode.Indeterminate,
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Border bar1 = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar"), exactMatch: false);
+                System.Windows.Controls.Border bar2 = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar2"), exactMatch: false);
+
+                Assert.Equal(bar1.Opacity, bar2.Opacity, 0.001);
+                Assert.Equal(1.0, bar2.Opacity, 0.001);
+                w.Close();
+            });
+        }
     }
 }

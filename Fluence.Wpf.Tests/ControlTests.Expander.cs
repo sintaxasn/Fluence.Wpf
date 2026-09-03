@@ -108,20 +108,23 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task Expander_HeaderBorder_CornerRadius4Async()
+        public Task Expander_HeaderBorder_CornerRadiusTopOnlyAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                Controls.Expander expander = new() { Header = "Test" };
+                Controls.Expander expander = new() { Header = "Test", CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
+                // WinUI parity: the header owns the two top corners while the content tier
+                // (PART_ContentBorder) owns the two bottom corners, derived live from the
+                // control's own CornerRadius rather than a shared uniform hardcoded radius.
                 Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
-                Assert.Equal(new CornerRadius(4), headerBorder.CornerRadius);
+                Assert.Equal(new CornerRadius(8, 8, 0, 0), headerBorder.CornerRadius);
                 w.Close();
             });
         }
@@ -326,6 +329,130 @@ namespace Fluence.Wpf.Tests
                 {
                     w.Close();
                 }
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // WinUI content-tier parity: PART_ContentBorder carries its own CardBackground
+        // fill and CardStroke border instead of relying on a single outer card border.
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task Expander_ContentBorder_CardSecondaryFillAndSeamBorderThicknessAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Expander expander = new()
+                {
+                    Header = "Test",
+                    Content = "Body",
+                    BorderThickness = new Thickness(2),
+                    CornerRadius = new CornerRadius(8),
+                };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
+
+                object? expectedBackground = w.TryFindResource("CardBackgroundFillColorSecondaryBrush");
+                Assert.Equal(expectedBackground, contentBorder.Background);
+
+                // Down (default) direction: the top edge is skipped so the seam against the
+                // header reads as one line rather than a doubled border, both derived live from
+                // the control's own BorderThickness and CornerRadius rather than a hardcoded literal.
+                Assert.Equal(new Thickness(2, 0, 2, 2), contentBorder.BorderThickness);
+                Assert.Equal(new CornerRadius(0, 0, 8, 8), contentBorder.CornerRadius);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Expander_ExpandUp_ContentBorderMirrorsSeamAndCornersAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Expander expander = new()
+                {
+                    Header = "Test",
+                    Content = "Body",
+                    ExpandDirection = ExpandDirection.Up,
+                    BorderThickness = new Thickness(2),
+                    CornerRadius = new CornerRadius(8),
+                };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
+                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+
+                // Up direction mirrors both tiers: content now sits above the header and owns
+                // the top corners plus the bottom-skipped border edge; the header mirrors to
+                // the bottom corners. Both derived live from the control's own BorderThickness
+                // and CornerRadius rather than a hardcoded literal.
+                Assert.Equal(new Thickness(2, 2, 2, 0), contentBorder.BorderThickness);
+                Assert.Equal(new CornerRadius(8, 8, 0, 0), contentBorder.CornerRadius);
+                Assert.Equal(new CornerRadius(0, 0, 8, 8), headerBorder.CornerRadius);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Expander_Disabled_HeaderKeepsCardFillAndStrokeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Expander expander = new() { Header = "Test", Content = "Body", IsEnabled = false };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // WinUI parity: ExpanderHeaderDisabledBorderBrush resolves to the same
+                // CardStrokeColorDefaultBrush as every other state, and there is no disabled
+                // header background token at all, so the header must not swap to a
+                // ControlFill-disabled look the way a plain button would.
+                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                object? expectedBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
+                object? expectedBorderBrush = w.TryFindResource("CardStrokeColorDefaultBrush");
+                Assert.Equal(expectedBackground, headerBorder.Background);
+                Assert.Equal(expectedBorderBrush, headerBorder.BorderBrush);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Expander_ChevronPlate_HoverAndPressedTintOnlyThePlateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Expander expander = new() { Header = "Test", Content = "Body" };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // WinUI parity: the header row itself never tints; only the 32x32 chevron
+                // plate does, and it rests at SubtleFillColorTransparentBrush.
+                Border chevronPlate = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "ChevronPlate"), exactMatch: false);
+                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+
+                object? expectedRestPlate = w.TryFindResource("SubtleFillColorTransparentBrush");
+                object? expectedHeaderBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
+                Assert.Equal(expectedRestPlate, chevronPlate.Background);
+                Assert.Equal(expectedHeaderBackground, headerBorder.Background);
+                w.Close();
             });
         }
     }
