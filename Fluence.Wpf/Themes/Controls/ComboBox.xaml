@@ -57,7 +57,7 @@
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="SelectionIndicator" Property="Opacity" Value="1" />
                         </Trigger>
                         <MultiTrigger>
@@ -218,12 +218,14 @@
                             PlacementTarget="{Binding ElementName=MainBorder}"
                             PopupAnimation="None">
                             <!--
-                                PART_DropdownBorder paints SolidBackgroundFillColorTertiaryBrush
-                                (opaque), the token FlyoutPresenter / ContextMenu / AutoSuggestBox /
-                                DatePicker / TimePicker / ToolTip / CommandBarFlyout / TeachingTip
-                                use for their popup backplates and the WinUI acrylic FallbackColor
-                                in Light, so it takes the same RenderOptions.ClearTypeHint="Enabled"
-                                treatment as those opaque plates below. The AcrylicNoiseBrush overlay is declared before the
+                                PART_DropdownBorder paints AcrylicBackgroundFillColorDefaultBrush
+                                (opaque), the same acrylic-fallback token FlyoutPresenter /
+                                ContextMenu / AutoSuggestBox / DatePicker / TimePicker /
+                                CommandBarFlyout / SplitButton / ToggleSplitButton / DropDownButton
+                                use for their popup backplates, matching the WinUI acrylic
+                                FallbackColor, so it takes the same
+                                RenderOptions.ClearTypeHint="Enabled" treatment as those opaque
+                                plates. The AcrylicNoiseBrush overlay is declared before the
                                 ScrollViewer in the Grid, so it paints behind the item text rather
                                 than over it and does not reintroduce a translucent layer between the
                                 glyphs and the eye.
@@ -241,10 +243,9 @@
                             -->
                             <Grid x:Name="PART_DropdownRoot" Opacity="0">
                                 <!--
-                                    Elevation is cast by an empty sibling behind the dropdown. The
-                                    caster is opaque (SolidBackgroundFillColorTertiary) rather than
-                                    the acrylic fill, because a translucent caster casts a washed out
-                                    shadow. No layout gutter is needed: PopupRoot already sizes a
+                                    Elevation is cast by an empty sibling behind the dropdown, painted
+                                    with the same opaque AcrylicBackgroundFillColorDefaultBrush as the
+                                    plate below it. No layout gutter is needed: PopupRoot already sizes a
                                     popup window about 15 px larger per side than its child.
                                 -->
                                 <Border
@@ -252,7 +253,7 @@
                                     MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
                                     MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                     Margin="0,4,0,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                    Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                     CornerRadius="{TemplateBinding DropdownCornerRadius}"
                                     Effect="{DynamicResource FlyoutShadowEffect}"
                                     RenderTransform="{Binding RenderTransform, ElementName=PART_DropdownBorder}"
@@ -262,7 +263,7 @@
                                 MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
                                 MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                 Margin="0,4,0,0"
-                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
                                 CornerRadius="{TemplateBinding DropdownCornerRadius}"

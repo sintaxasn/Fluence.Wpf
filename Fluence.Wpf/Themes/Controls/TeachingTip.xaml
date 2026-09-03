@@ -9,9 +9,12 @@
         Authority: WinUI 3 TeachingTip_themeresources.xaml (TeachingTipMinWidth 320 /
         TeachingTipMaxWidth 336; SemiBold 14px title over a wrapped secondary subtitle;
         a 20x10 tail on the edge facing the target, matching the WinUI TailPolygon points).
-        Surface treatment reuses the canonical in-tree flyout tokens from FlyoutPresenter.xaml:
-        SolidBackgroundFillColorTertiaryBrush + SurfaceStrokeColorFlyoutBrush +
-        OverlayCornerRadius + the WinUI FlyoutContentThemePadding (16,15,16,17).
+        Surface treatment: SolidBackgroundFillColorTertiaryBrush is the WinUI TeachingTip's own
+        TeachingTipBackgroundBrush (TeachingTip_themeresources.xaml:8), not the shared flyout
+        acrylic fallback used by FlyoutPresenter.xaml. Border is SurfaceStrokeColorDefaultBrush
+        (TeachingTipBorderBrush, :5), and a 1px TeachingTipTopHighlightBrush line sits just inside
+        the top edge (:6, :98) plus OverlayCornerRadius + the WinUI FlyoutContentThemePadding
+        (16,15,16,17).
         The beak is an open Path (no closing segment), so only its two slanted edges are
         stroked; a 1px negative margin overlaps the surface border and the fill hides the seam.
         The control resolves ActualPlacement when it opens: a tip popped below its target
@@ -70,7 +73,7 @@
 
     <Style TargetType="{x:Type controls:TeachingTip}">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -138,7 +141,7 @@
                                     x:Name="SubtitleText"
                                     Grid.Row="1"
                                     Margin="0,4,0,0"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="{TemplateBinding Subtitle}"
                                     TextWrapping="Wrap" />
                                 <ContentPresenter
@@ -160,7 +163,6 @@
                                         x:Name="PART_ActionButton"
                                         MinWidth="0"
                                         Margin="0,0,8,0"
-                                        Appearance="Accent"
                                         Content="{TemplateBinding ActionButtonContent}" />
                                     <controls:Button
                                         x:Name="PART_CloseButton"
@@ -169,6 +171,21 @@
                                 </StackPanel>
                             </Grid>
                         </Border>
+                        <!--
+                            Plain 1px top highlight line, no corner radius. Authority: WinUI
+                            TeachingTipTopHighlightBrush (#0DFFFFFF, TeachingTip_themeresources.xaml:6),
+                            TeachingTipTopHighlightHeight (1, :98) and
+                            TeachingTipTopHighlightOffsetForBorder (0,1,0,0, :100).
+                        -->
+                        <Border
+                            x:Name="TopHighlight"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Height="1"
+                            Margin="0,1,0,0"
+                            VerticalAlignment="Top"
+                            Background="{DynamicResource TeachingTipTopHighlightBrush}"
+                            IsHitTestVisible="False" />
                         <Path
                             x:Name="TopBeak"
                             Grid.Row="0"
@@ -233,7 +250,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <!--
-                            The open reveal (fade 83ms, 8px slide over 167ms on the 0.8,0,0,1
+                            The open reveal (fade 83ms, 8px slide over 167ms on the 0,0,0,1
                             spline; ControlFasterAnimationDuration / ControlFastAnimationDuration
                             / ControlFastOutSlowInKeySpline) lives in TeachingTip.OnLoaded,
                             following the FlyoutPresenter code-reveal precedent: a Loaded

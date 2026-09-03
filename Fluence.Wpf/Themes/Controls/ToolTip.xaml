@@ -5,11 +5,16 @@
 
     <!--
         Fluent Design ToolTip style.
-        Authority: WinUI 3 ToolTip_themeresources.xaml (brush keys, font size, padding).
-        Note: DropShadowEffect is intentionally omitted on the inner Border - WPF bitmap
-        effects on a Border with CornerRadius produce squared-off artifacts at the rounded
-        corners in a Popup (see DropDownButton.xaml). System drop shadow (HasDropShadow=True)
-        is used instead, which is applied at the Popup window level without artifacts.
+        Authority: WinUI 3 ToolTip_themeresources.xaml (brush keys, font size, padding,
+        ControlCornerRadius :52).
+        Elevation is cast by an empty ShadowCaster sibling painted behind the surface, exactly
+        as FlyoutPresenter.xaml does, carrying FlyoutShadowEffect. WPF's HasDropShadow does
+        nothing once a control has a custom Template (verified in the dotnet/wpf sources: the
+        System.Windows.Controls.ToolTip default style is the only consumer of HasDropShadow,
+        via a trigger this template replaces), so it is not set here. The effect sits on the
+        caster rather than on ToolTipSurface itself because a WPF bitmap effect on a Border
+        with CornerRadius produces squared-off artifacts at the rounded corners in a Popup
+        (see DropDownButton.xaml).
     -->
     <!--
         Suppress the system tooltip popup fade: WPF's ToolTip binds its internal host
@@ -28,39 +33,57 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="HasDropShadow" Value="True" />
         <Setter Property="MaxWidth" Value="320" />
         <Setter Property="Padding" Value="9,6,9,8" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ToolTip}">
-                    <Border
-                        x:Name="ToolTipSurface"
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        UseLayoutRounding="True">
-                        <ContentPresenter
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            TextElement.FontFamily="{TemplateBinding FontFamily}"
-                            TextElement.FontSize="{TemplateBinding FontSize}"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
-                    </Border>
+                    <Grid>
+                        <!--
+                            Elevation caster: an empty sibling behind the surface, because WPF
+                            drops ClearType for text under an Effect and the surface opts into it.
+                            No layout gutter is needed, PopupRoot already reserves about 15 px per
+                            side for popup shadows.
+                        -->
+                        <Border
+                            x:Name="ShadowCaster"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            Effect="{DynamicResource FlyoutShadowEffect}"
+                            UseLayoutRounding="True" />
+                        <Border
+                            x:Name="ToolTipSurface"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            RenderOptions.ClearTypeHint="Enabled"
+                            UseLayoutRounding="True">
+                            <ContentPresenter
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <!--
                             Open fade, WinUI ToolTip_themeresources.xaml FadeInThemeAnimation
                             precedent: opacity 0 to 1 over 83ms (ControlFasterAnimationDuration)
-                            on the 0.8,0,0,1 spline (ControlFastOutSlowInKeySpline);
+                            on the 0,0,0,1 spline (ControlFastOutSlowInKeySpline);
                             Typography.xaml motion tokens, mirrored literally because storyboard
                             attributes cannot reference them. Opacity-only by design: tooltips
                             are a high-frequency surface (no translate/scale), and an
                             opacity-only entrance stays reduced-motion friendly without a code
                             gate. SourceName anchors the trigger to the template child so it
-                            only hooks once the template has instantiated. No exit animation -
-                            WinUI closes tooltips instantly.
+                            only hooks once the template has instantiated. WinUI plays a
+                            FadeOutThemeAnimation on close (ToolTip_themeresources.xaml:61); this
+                            port has no exit animation yet (not implemented, not a parity claim
+                            that WinUI closes instantly) because coordinating an exit fade with
+                            the native ToolTip's own close/popup teardown needs more plumbing
+                            than the open fade does.
                         -->
                         <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="ToolTipSurface">
                             <BeginStoryboard>
@@ -68,7 +91,7 @@
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToolTipSurface" Storyboard.TargetProperty="Opacity">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                         <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
+                                            KeySpline="0,0,0,1"
                                             KeyTime="0:0:0.083"
                                             Value="1" />
                                     </DoubleAnimationUsingKeyFrames>

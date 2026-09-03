@@ -9,9 +9,11 @@
         day/month/year segments with thin dividers, and a flyout of three selector columns
         over an accept/dismiss button row; 78*/132*/78* column weights).
         The field reuses the Fluence Button visuals (ControlFillColorDefaultBrush +
-        ControlElevationBorderBrush); the flyout surface reuses the canonical flyout tokens
-        from FlyoutPresenter.xaml: SolidBackgroundFillColorTertiaryBrush +
-        SurfaceStrokeColorFlyoutBrush + OverlayCornerRadius.
+        ControlElevationBorderBrush); the flyout surface reuses the acrylic-fallback token
+        from FlyoutPresenter.xaml: AcrylicBackgroundFillColorDefaultBrush +
+        SurfaceStrokeColorFlyoutBrush + ControlCornerRadius (DatePicker_themeresources.xaml:272;
+        WinUI's own DatePickerFlyoutPresenter uses ControlCornerRadius, not the flyout
+        OverlayCornerRadius other Fluence popups share).
         The selector columns are LoopingSelectorList primitives: nine 40px rows with the
         selected row centred under the accent HighlightRect band, matching WinUI's
         DatePickerFlyoutPresenter. All three columns wrap endlessly (see DatePicker.cs and
@@ -149,8 +151,8 @@
                                     x:Name="ShadowCaster"
                                     MinWidth="{Binding ActualWidth, ElementName=PART_FlyoutButton}"
                                     Margin="0,4,0,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                    Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="{DynamicResource ControlCornerRadius}"
                                     Effect="{DynamicResource FlyoutShadowEffect}"
                                     RenderTransform="{Binding RenderTransform, ElementName=FlyoutSurface}"
                                     UseLayoutRounding="True" />
@@ -158,10 +160,10 @@
                                 x:Name="FlyoutSurface"
                                 MinWidth="{Binding ActualWidth, ElementName=PART_FlyoutButton}"
                                 Margin="0,4,0,0"
-                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
-                                CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}"
                                 RenderOptions.ClearTypeHint="Enabled"
                                 UseLayoutRounding="True">
                                 <Border.RenderTransform>
@@ -256,7 +258,7 @@
                         <!--
                             Flyout open reveal, ContextMenu.xaml submenu precedent: the surface
                             slides down from Y=-8 to 0 (the popup is Placement=Bottom) with a fade
-                            0 to 1 over 167ms on the 0.8,0,0,1 spline (Typography.xaml motion
+                            0 to 1 over 167ms on the 0,0,0,1 spline (Typography.xaml motion
                             tokens ControlFastAnimationDuration + ControlFastOutSlowInKeySpline;
                             storyboard attributes need literal values). The popup keeps
                             PopupAnimation=None so this storyboard owns the reveal.
@@ -267,14 +269,14 @@
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurfaceTranslate" Storyboard.TargetProperty="Y">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
                                         <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
+                                            KeySpline="0,0,0,1"
                                             KeyTime="0:0:0.167"
                                             Value="0" />
                                     </DoubleAnimationUsingKeyFrames>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurface" Storyboard.TargetProperty="Opacity">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                         <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
+                                            KeySpline="0,0,0,1"
                                             KeyTime="0:0:0.167"
                                             Value="1" />
                                     </DoubleAnimationUsingKeyFrames>

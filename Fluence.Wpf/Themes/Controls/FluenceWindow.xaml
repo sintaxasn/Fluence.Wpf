@@ -28,8 +28,13 @@
                             RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Inactive-window caption glyph: TextFillColorTertiaryBrush, matching
+                            WinUI's TitleBarDeactivatedForegroundBrush (TitleBar_themeresources.xaml:11),
+                            not the unrelated IsEnabled=false disabled-button state below.
+                        -->
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Path=IsActive}" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
@@ -74,8 +79,13 @@
                             RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Inactive-window caption glyph: TextFillColorTertiaryBrush, matching
+                            WinUI's TitleBarDeactivatedForegroundBrush (TitleBar_themeresources.xaml:11),
+                            not the unrelated IsEnabled=false disabled-button state below.
+                        -->
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Path=IsActive}" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseButtonBackgroundPointerOverBrush}" />
@@ -325,9 +335,13 @@
                             <Setter TargetName="TitleText" Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
 
-                        <!--  Inactive window: dim title text  -->
+                        <!--
+                            Inactive window: dim title text. WinUI's TitleBarDeactivatedForegroundBrush
+                            (TitleBar_themeresources.xaml:11) resolves to TextFillColorTertiaryBrush,
+                            not TextFillColorDisabledBrush.
+                        -->
                         <Trigger Property="IsActive" Value="False">
-                            <Setter TargetName="TitleText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="TitleText" Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
                         </Trigger>
 
                         <!--
