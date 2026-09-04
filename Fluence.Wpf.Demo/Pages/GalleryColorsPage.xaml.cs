@@ -273,8 +273,8 @@ namespace Fluence.Wpf.Demo.Pages
                 "Text",
                 "For UI labels and static text.",
                 "TextFillColorPrimaryBrush",
-                "SolidBackgroundFillColorBaseBrush",
-                "CardStrokeColorDefaultBrush",
+                "SolidBackgroundFillColorQuarternaryBrush",
+                "ControlFillColorTransparentBrush",
                 [
                     new("Text / Primary", "Rest or hover.", "TextFillColorPrimaryBrush"),
                     new("Text / Secondary", "Body text and supporting details.", "TextFillColorSecondaryBrush"),
@@ -286,8 +286,8 @@ namespace Fluence.Wpf.Demo.Pages
                 "Accent Text",
                 "Recommended for links.",
                 "AccentTextFillColorPrimaryBrush",
-                "SolidBackgroundFillColorBaseBrush",
-                "CardStrokeColorDefaultBrush",
+                "SolidBackgroundFillColorQuarternaryBrush",
+                "ControlFillColorTransparentBrush",
                 [
                     new("Accent Text / Primary", "Rest or hover.", "AccentTextFillColorPrimaryBrush"),
                     new("Accent Text / Secondary", "Secondary accent text.", "AccentTextFillColorSecondaryBrush"),
@@ -353,7 +353,8 @@ namespace Fluence.Wpf.Demo.Pages
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
             };
-            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
+            // WinUI Gallery ColorPageExample: the example surface is SolidBackgroundFillColorQuarternary inside the tile outline.
+            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorQuarternaryBrush");
             panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             Controls.StackPanel stack = new()
@@ -409,7 +410,8 @@ namespace Fluence.Wpf.Demo.Pages
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
             };
-            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
+            // WinUI Gallery ColorPageExample: the example surface is SolidBackgroundFillColorQuarternary inside the tile outline.
+            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorQuarternaryBrush");
             panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             Controls.StackPanel stack = new()
