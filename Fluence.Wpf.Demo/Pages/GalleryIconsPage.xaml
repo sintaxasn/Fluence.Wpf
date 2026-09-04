@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="900"
     d:DesignWidth="1200"
@@ -102,7 +103,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Iconography" />
+            <local:GalleryPageHeader DocsAnchor="icons" Title="Iconography" />
             <TextBlock
                 Grid.Row="1"
                 Style="{StaticResource SectionDescriptionStyle}"

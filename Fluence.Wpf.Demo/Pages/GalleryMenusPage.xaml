@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Menus" />
+            <local:GalleryPageHeader DocsAnchor="menus-and-popups" Title="Menus" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Menus group commands, contextual actions, hints, and split choices near the work they affect." />
 
 

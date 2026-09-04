@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Navigation" />
+            <local:GalleryPageHeader DocsAnchor="navigation" Title="Navigation" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="NavigationView organizes top-level destinations and can place the pane on the left, across the top, or in compact left mode." />
 
 
