@@ -139,6 +139,7 @@ The guides live under [`docs/`](docs/). A hosted documentation site is planned b
 - [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
 - [Contributing](docs/contributing.md) - build matrix, tests, PR notes
 - [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
+- [Roadmap](docs/roadmap.md) - release policy, 1.0 readiness, candidate work
 
 ## Contributing
 
