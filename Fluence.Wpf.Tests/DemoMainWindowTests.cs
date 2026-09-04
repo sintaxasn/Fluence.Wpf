@@ -1340,10 +1340,8 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (DemoPageExpectation expectation in PageExpectations)
                     {
-                        // Design-reference catalog pages (Typography, Iconography) render
-                        // directly without DemoSampleControl source samples.
-                        if (expectation.PageType == typeof(GalleryTypographyPage)
-                            || expectation.PageType == typeof(GalleryIconsPage))
+                        // The Iconography catalog page renders directly without DemoSampleControl source samples.
+                        if (expectation.PageType == typeof(GalleryIconsPage))
                         {
                             continue;
                         }
@@ -1606,7 +1604,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
-        public Task GalleryTypographyPage_DirectTableKeepsCopyColumnWithoutSourceExpanderAsync()
+        public Task GalleryTypographyPage_TypeRampSampleCarriesSourceAndCopyColumnAsync()
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
@@ -1616,7 +1614,10 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     List<DemoSampleControl> samples = [.. FindAllVisualChildren<DemoSampleControl>(page)];
-                    Assert.Empty(samples);
+                    DemoSampleControl sample = Assert.Single(samples);
+                    Assert.Equal("Type ramp", sample.SampleDescription, StringComparer.Ordinal);
+                    Assert.Contains("CaptionTextBlockStyle", sample.XamlSource, StringComparison.Ordinal);
+                    Assert.Contains("DisplayTextBlockStyle", sample.XamlSource, StringComparison.Ordinal);
 
                     Grid table = Assert.IsType<Grid>(FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
 

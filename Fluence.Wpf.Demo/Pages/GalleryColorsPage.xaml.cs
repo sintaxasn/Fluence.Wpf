@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Demo.Pages
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
             };
-            panel.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
             panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             Controls.StackPanel stack = new()
@@ -353,7 +353,7 @@ namespace Fluence.Wpf.Demo.Pages
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
             };
-            panel.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            panel.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
             panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             Controls.StackPanel stack = new()
@@ -471,12 +471,17 @@ namespace Fluence.Wpf.Demo.Pages
                     _ = rowGrid.Children.Add(CreateTokenTile(tokens[start + offset], offset, count));
                 }
 
+                // WinUI Gallery GalleryTileGridStyle: every tile row sits on the SolidBackgroundFillColorBase
+                // surface with a CardStrokeColorDefault outline, the same "table" surface the Spacing page uses.
                 Controls.Border rowBorder = new()
                 {
+                    BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(8),
                     Child = rowGrid,
                     Tag = "ColorTokenRow",
                 };
+                rowBorder.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
+                rowBorder.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
                 _ = rows.Children.Add(rowBorder);
             }
 

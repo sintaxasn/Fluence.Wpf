@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="800"
     d:DesignWidth="900"
@@ -16,18 +17,19 @@
                 Text="Typography" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Fluent type styles use Segoe UI Variable when available and fall back to Segoe UI." />
 
-            <Grid
-                x:Name="TypographyTable"
-                Margin="0,12,0,0"
-                HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="180" />
-                    <ColumnDefinition Width="1.2*" MinWidth="140" />
-                    <ColumnDefinition Width="1*" MinWidth="120" />
-                    <ColumnDefinition Width="1.7*" MinWidth="180" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-            </Grid>
+            <!--  WinUI Gallery Typography page: the type ramp table is a ControlExample with source, not a bare catalog.  -->
+            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
+                <Grid x:Name="TypographyTable" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="180" />
+                        <ColumnDefinition Width="1.2*" MinWidth="140" />
+                        <ColumnDefinition Width="1*" MinWidth="120" />
+                        <ColumnDefinition Width="1.7*" MinWidth="180" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Type ramp" />
         </StackPanel>
     </fluence:SmoothScrollViewer>
 </UserControl>

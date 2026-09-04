@@ -21,6 +21,7 @@
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
     <Resource Include="Resources\ControlImages\*.png" />
+    <Resource Include="Resources\SampleMedia\*.png" />
     <Resource Include="Resources\SegoeFluentIcons.tsv" />
   </ItemGroup>
 
