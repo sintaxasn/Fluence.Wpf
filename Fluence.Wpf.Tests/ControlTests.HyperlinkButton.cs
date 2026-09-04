@@ -32,6 +32,7 @@ using System.Windows.Automation.Peers;
 using Fluence.Wpf.Automation;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {

@@ -32,10 +32,10 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shell;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
@@ -242,28 +242,6 @@ namespace Fluence.Wpf.Tests
         private static System.Windows.Controls.Button GetTemplateButton(Controls.TitleBar titleBar, string partName)
         {
             return Assert.IsType<System.Windows.Controls.Button>(titleBar.Template.FindName(partName, titleBar));
-        }
-
-        private static T? FindVisualChild<T>(DependencyObject parent)
-            where T : DependencyObject
-        {
-            int childCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childCount; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T typedChild)
-                {
-                    return typedChild;
-                }
-
-                T? descendant = FindVisualChild<T>(child);
-                if (descendant is not null)
-                {
-                    return descendant;
-                }
-            }
-
-            return null;
         }
 
         private static void InvokeButton(System.Windows.Controls.Button button)

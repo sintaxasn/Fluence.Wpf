@@ -34,13 +34,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    NavigationView navigationView = Assert.IsType<NavigationView>(FindByName<NavigationView>(window, "DemoNav"), exactMatch: false);
+                    NavigationView navigationView = Assert.IsType<NavigationView>(DemoTestHost.FindByName<NavigationView>(window, "DemoNav"), exactMatch: false);
                     _ = Assert.IsType<GalleryColorsPage>(navigationView.Content, exactMatch: false);
                 }
                 finally
@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Tests
                 {
                     SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(FindVisualChild<SmoothScrollViewer>(page), exactMatch: false);
 
-                    TabControl colorTabs = Assert.IsType<TabControl>(FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
+                    TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
                     Assert.Equal(SectionNames.Length, colorTabs.Items.Count);
 
                     for (int i = 0; i < SectionNames.Length; i++)
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Tests
         private static SortedSet<string> CollectColorTokenResourceKeys(GalleryColorsPage page, Dispatcher dispatcher)
         {
             SortedSet<string> resourceKeys = new(StringComparer.OrdinalIgnoreCase);
-            TabControl colorTabs = Assert.IsType<TabControl>(FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
+            TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
 
             for (int index = 0; index < colorTabs.Items.Count; index++)
             {
@@ -331,77 +331,6 @@ namespace Fluence.Wpf.Tests
             window.UpdateLayout();
             WpfTestSta.DrainDispatcher(window.Dispatcher);
             return window;
-        }
-
-        private static void CloseWindowAndDrain(Window window)
-        {
-            window.Content = null;
-            window.Close();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-        }
-
-        private static T? FindByName<T>(DependencyObject? root, string name)
-            where T : FrameworkElement
-        {
-            return FindVisualChildren<T>(root).FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
-        }
-
-        private static T? FindVisualChild<T>(DependencyObject root)
-            where T : DependencyObject
-        {
-            return FindVisualChildren<T>(root).FirstOrDefault();
-        }
-
-        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject? root)
-            where T : DependencyObject
-        {
-            HashSet<DependencyObject> visited = [];
-            foreach (T item in FindVisualChildren<T>(root, visited))
-            {
-                yield return item;
-            }
-        }
-
-        private static IEnumerable<T> FindVisualChildren<T>(
-            DependencyObject? root,
-            HashSet<DependencyObject> visited)
-            where T : DependencyObject
-        {
-            if (root is null || !visited.Add(root))
-            {
-                yield break;
-            }
-
-            if (root is T match)
-            {
-                yield return match;
-            }
-
-            int visualChildren = 0;
-            if (root is Visual or Visual3D)
-            {
-                visualChildren = VisualTreeHelper.GetChildrenCount(root);
-            }
-
-            for (int i = 0; i < visualChildren; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                foreach (T item in FindVisualChildren<T>(child, visited))
-                {
-                    yield return item;
-                }
-            }
-
-            foreach (object logicalChild in LogicalTreeHelper.GetChildren(root))
-            {
-                if (logicalChild is DependencyObject dependencyObject)
-                {
-                    foreach (T item in FindVisualChildren<T>(dependencyObject, visited))
-                    {
-                        yield return item;
-                    }
-                }
-            }
         }
     }
 }
