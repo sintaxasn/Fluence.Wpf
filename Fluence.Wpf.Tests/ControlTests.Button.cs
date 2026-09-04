@@ -85,6 +85,46 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task Button_RestFill_InsetByStrokeExceptForAccentAsync()
+        {
+            // WinUI DefaultButtonStyle is BackgroundSizing=InnerBorderEdge (fill stops at the stroke's inner edge,
+            // so the stroke composites over the surface); AccentButtonStyle is OuterBorderEdge (fill under the stroke).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.Button standard = new() { Width = 120, Content = "Standard" };
+                Controls.Button accent = new() { Width = 120, Content = "Accent", Appearance = ControlAppearance.Accent };
+                StackPanel panel = new();
+                _ = panel.Children.Add(standard);
+                _ = panel.Children.Add(accent);
+
+                try
+                {
+                    window.Content = panel;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border standardFill = Assert.IsType<Border>(standard.Template.FindName("RestFill", standard));
+                    Border standardStroke = Assert.IsType<Border>(standard.Template.FindName("OuterBorder", standard));
+                    Assert.Equal(standardStroke.BorderThickness, standardFill.BorderThickness);
+                    Assert.Equal(new Thickness(1), standardFill.BorderThickness);
+                    Assert.Null(standardFill.BorderBrush);
+
+                    Border accentFill = Assert.IsType<Border>(accent.Template.FindName("RestFill", accent));
+                    Assert.Equal(new Thickness(0), accentFill.BorderThickness);
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [Fact]
         public Task Button_ExplicitToolTip_IsNotClearedByTruncationFallbackAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
