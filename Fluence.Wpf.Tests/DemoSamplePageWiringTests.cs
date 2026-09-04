@@ -36,6 +36,7 @@ using System.Windows.Controls;
 using System.Xml;
 using System.Xml.Linq;
 using Fluence.Wpf.Demo.Pages;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

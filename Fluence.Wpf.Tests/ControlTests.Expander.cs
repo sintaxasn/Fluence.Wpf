@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

@@ -33,6 +33,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

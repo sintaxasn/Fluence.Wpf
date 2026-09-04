@@ -36,7 +36,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Fluence.Wpf.Helpers;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Infrastructure
 {
     /// <summary>
     /// Shared single-threaded STA dispatcher for WPF tests so <see cref="Application.Current"/>

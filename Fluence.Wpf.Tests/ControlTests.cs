@@ -41,6 +41,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Fluence.Wpf.Demo;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

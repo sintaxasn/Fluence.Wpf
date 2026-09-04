@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Media;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
+using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.UI.WindowsAndMessaging;

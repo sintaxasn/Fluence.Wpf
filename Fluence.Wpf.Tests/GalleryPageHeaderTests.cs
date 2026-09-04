@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
