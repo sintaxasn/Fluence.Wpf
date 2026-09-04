@@ -34,7 +34,7 @@ against the working tree. Corrections to the audit are marked **[correction]**.
 
 ### 2.1 Folders
 
-```
+```text
 Fluence.Wpf.Tests/
   Infrastructure/   WpfTestSta.cs, TestApp.cs, VisualTree.cs, BrushAssert.cs,
                     ThemeTestHelpers.cs, DemoTestHost.cs, SlopwatchSuppressAttribute.cs
@@ -99,7 +99,7 @@ current role and signatures unchanged, per AGENTS.md section 6. The new classes 
 than duplicating tree walks.
 
 | Class | Member |
-| --- | --- |
+| ----- | ------ |
 | `TestApp` | `internal static Application EnsureLibraryTheme(ApplicationTheme theme = ApplicationTheme.Light, BackdropType backdrop = BackdropType.None)` |
 | `TestApp` | `internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)` |
 | `TestApp` | `internal static ResourceDictionary GenericDictionary(Application application)` |
@@ -134,7 +134,7 @@ name is being preserved verbatim for the section 8 diff.
 MergeThemeAndGeneric` was missed.
 
 | Site | `Resources.Clear()` | Merges `DemoSharedStyles.xaml` | Returns |
-| --- | --- | --- | --- |
+| ---- | ------------------- | ------------------------------ | ------- |
 | `ControlTests.cs:85` (61 partials) | yes | yes | last merged dictionary |
 | `ControlRenderingTests.cs:39` | no | yes | void |
 | `ListViewIsItemSelectableTests.cs:39` | no | yes | last merged dictionary |
@@ -196,7 +196,7 @@ later animation tests.
 All seven duplicate groups were re-read and confirmed against the tree.
 
 | ID | Delete | Duplicates | Why no coverage is lost |
-| --- | --- | --- | --- |
+| --- | ------ | ---------- | ----------------------- |
 | D1 | `ThemeMetricsTests.cs:56,68,80,96,108,120` (6) | `ThemeMetricsTests.cs:187` | The cycle test applies Light, Dark, HighContrast, Light and asserts `ControlCornerRadius == 4` and `OverlayCornerRadius == 8` at every step. Each deleted test asserts one of those pairs at one theme. |
 | D2 | `ThemeMetricsTests.cs:169` (1) | `ControlTests.FocusVisual.cs:51` | Same loop over the three themes, same `Assert.IsType<Style>` on `DefaultControlFocusVisualStyle`. Only the reset helper differs. After section 3.2 both run without demo styles, so the survivor covers the same resource state. |
 | D3 | `ControlTests.BackgroundParity.cs:114` (1) | `ControlTests.ProgressBar.cs:569` | Both resolve `PART_Track` on a 240x24 ProgressBar and compare its background to `ControlStrongStrokeColorDefaultBrush`. The survivor compares the brush instance, not just the colour, and also asserts `progressBar.Background` and `CornerRadius(0.5)`. |
@@ -220,7 +220,7 @@ before the theory folds. `NotRunnable` goes from 5 to 1; the surviving Explicit 
 Two folds land with the deletions. Both preserve case count.
 
 | Fold | Sites | Result |
-| --- | --- | --- |
+| ---- | ----- | ------ |
 | `DefaultCollectionFocusVisualStyle_PresentIn{Light,Dark,HighContrast}ThemeAsync` | `ThemeMetricsTests.cs:210,221,232` | one `[Theory]`, three `[InlineData]`, 3 cases |
 | D4 survivor accent flag | `DictionaryStabilityTests.cs:60` | one `[Theory]`, two `[InlineData]`, 2 cases |
 
@@ -233,7 +233,7 @@ diff unreadable, and they save no wall clock. They are recorded as a follow-up.
 ## 5. Non-test files
 
 | File | Decision | Reason |
-| --- | --- | --- |
+| ---- | -------- | ------ |
 | `AccentPaletteRegenerationExperiment.cs` | Delete | Dead experiment. Its own doc comment at line 102 records the answer, dated 2026-05-23. Mutates the user's system accent. |
 | `AccentRampScoreboard.cs` | Delete the code, keep the fixtures | The scoring harness compares four candidate ramp algorithms and cannot fail. The eight captured OS ramp fixtures are real measurements and are worth keeping, so they move into a comment block in `Theming/AccentTests.cs`. |
 | `ImmersiveColorSetProbe.cs` | Delete | Dead probe. Answer recorded in its doc comment at line 72. |
@@ -294,7 +294,7 @@ the list is the seven costliest classes: `DemoShellTests`, `DemoSampleContractTe
 `NavigationViewTests`, `ProgressBarTests`, `ContentDialogTests`, `ColorPickerTests`,
 `TimePickerTests`.
 
-```
+```pwsh
 Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe ^
   --filter-class Fluence.Wpf.Tests.DemoShellTests ... (seven) ^
   --report-xunit-trx --results-directory <dir> --no-ansi --progress off
@@ -318,7 +318,7 @@ of every phase. Every phase runs both TFMs in the two lanes of section 6.2 and c
 against the expected number for that phase.
 
 | Phase | Content | Expected net10 cases | Verification |
-| --- | --- | ---: | --- |
+| ----- | ------- | -------------------: | ------------ |
 | 0 | Capture the `--list-tests` baseline per TFM. Move one file into `Infrastructure/` keeping the flat namespace. | 1188 | Build clean, format clean. Decides the section 2.2 namespace question. |
 | 1 | Add `Infrastructure/TestApp.cs`, `VisualTree.cs`, `BrushAssert.cs`. Delete the seven merge copies and the private walkers. Add `using static` per file. No file moves, no class changes. | 1188 | Name diff empty. |
 | 2 | Switch the 61 former demo-styles callers to `EnsureLibraryTheme`. Land alone. | 1188 | Name diff empty. Any new failure is listed in the commit message with its cause. |
@@ -339,7 +339,7 @@ consumers, defined in a different file from all of them).
 
 Before phase 0 and after each phase, per TFM:
 
-```
+```pwsh
 Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe --list-tests --no-ansi > <phase>.<tfm>.txt
 ```
 
@@ -365,7 +365,7 @@ names that are not unique, and by listing those pairs in the allowlist header.
 ## 9. Documentation updates
 
 | File | Change |
-| --- | --- |
+| ---- | ------ |
 | `AGENTS.md` section 6 | Replace the `MergeGenericDictionary(Application.Current.Resources)` step with `TestApp.EnsureLibraryTheme()` and the demo opt-in. Describe the folder layout and the flat namespace. Replace the `ControlTests.FluentStroke.cs` reference-pattern pointer with `Controls/Shared/FluentStrokeTests.cs`. Add the two-lane invocation and the net472 abort. |
 | `AGENTS.md` section 6, parallelization bullet | **[correction]** It states `[assembly: CollectionBehavior(DisableTestParallelization = true)]`. The file actually carries `[assembly: Parallelization(Mode = ParallelMode.None)]` at `Properties/AssemblyInfo.cs:32`. Fix the text. |
 | `AGENTS.md` section 9 | Update the "relying on a previous test's theme state" pitfall: the fix is now the class `IAsyncLifetime`, not a call in the test body. |
@@ -383,7 +383,7 @@ names that are not unique, and by listing those pairs in the allowlist header.
 ## 10. Risks and mitigations
 
 | Risk | Mitigation |
-| --- | --- |
+| ---- | ---------- |
 | Splitting the partial breaks 140 helper call sites at once. | Phase 1 lifts every shared helper first, with names unchanged and `using static` at each call site, so phase 3 is a pure class-shape change. |
 | Dropping demo styles from library tests surfaces new failures in 61 files. | Phase 2 lands alone. Each failure is triaged as either a real library brush shadowed by a demo style, which is a bug worth having found, or a test that genuinely needs the demo dictionary, which moves to `EnsureDemoTheme` with a comment. Both outcomes are listed in the commit message. |
 | A flat namespace trips IDE0130 under `latest-all`. | Phase 0 probes it with one file before any bulk move. The fallback folder names and the extra `using` are specified in section 2.2, so neither branch is open. |
