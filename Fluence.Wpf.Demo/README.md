@@ -27,8 +27,9 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug
    has a `Tag`; `NavigateTo(tag)` swaps the content frame to the matching `Gallery*Page` and
    keeps a lightweight visited-page stack for the shell Back button.
 3. **Each page** is a `UserControl` under `Pages/`. Most pages are a `SmoothScrollViewer` over a
-   `StackPanel` of `DemoSampleControl` cards. (The Icons catalog page renders its content directly
-   without a trailing source expander.)
+   `StackPanel` of `DemoSampleControl` cards, opening with a shared `GalleryPageHeader` (page
+   title plus Documentation, Toggle theme, and Favorite actions). (The Icons catalog page renders
+   its content directly without a trailing source expander.)
 4. **`DemoSampleControl`** is the reusable "sample card": a description, the live control(s), an
    optional options rail, and an expandable XAML/C# source viewer.
 
