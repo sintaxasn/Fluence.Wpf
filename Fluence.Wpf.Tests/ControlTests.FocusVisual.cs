@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

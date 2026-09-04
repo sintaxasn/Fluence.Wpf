@@ -27,6 +27,7 @@
  */
 
 using System.Windows;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests

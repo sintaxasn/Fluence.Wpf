@@ -38,6 +38,7 @@ using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;

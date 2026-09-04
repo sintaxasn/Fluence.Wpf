@@ -34,6 +34,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
