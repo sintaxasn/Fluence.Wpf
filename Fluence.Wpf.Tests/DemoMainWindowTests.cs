@@ -44,7 +44,6 @@ using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
@@ -354,7 +353,7 @@ namespace Fluence.Wpf.Tests
                         // header; every other gallery page carries exactly one.
                         if (page is not GalleryHomePage)
                         {
-                            GalleryPageHeader header = Assert.Single(FindVisualChildren<GalleryPageHeader>(page));
+                            GalleryPageHeader header = Assert.Single(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page));
                             Assert.False(string.IsNullOrWhiteSpace(header.Title),
                                 page.GetType().Name + " should expose exactly one GalleryPageHeader with a non-empty Title.");
                         }
@@ -373,7 +372,7 @@ namespace Fluence.Wpf.Tests
                             continue;
                         }
 
-                        SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(FindVisualChild<SmoothScrollViewer>(page), exactMatch: false);
+                        SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(DemoTestHost.FindVisualChildren<SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
                         Assert.Same(scrollStyle, scrollViewer.Style);
 
                         System.Windows.Controls.StackPanel content = Assert.IsType<System.Windows.Controls.StackPanel>(scrollViewer.Content);
@@ -489,21 +488,21 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Visible, titleBarToggle.Visibility);
                     Assert.Equal(40.0, titleBarToggle.ActualWidth, 0.5);
 
-                    System.Windows.Controls.TextBlock titleBarGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChild<System.Windows.Controls.TextBlock>(titleBarToggle), exactMatch: false);
+                    System.Windows.Controls.TextBlock titleBarGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(DemoTestHost.FindVisualChildren<System.Windows.Controls.TextBlock>(titleBarToggle).FirstOrDefault(), exactMatch: false);
                     Assert.Equal(16.0, titleBarGlyph.FontSize, 0.01);
 
                     System.Windows.Controls.Button titleBarBack = Assert.IsType<System.Windows.Controls.Button>(DemoTestHost.FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, titleBarBack.Visibility);
                     Assert.True(GetVisualX(titleBarBack, window) < GetVisualX(titleBarToggle, window), "Back should occupy the first title-bar navigation slot.");
-                    System.Windows.Controls.TextBlock titleBarBackGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChild<System.Windows.Controls.TextBlock>(titleBarBack), exactMatch: false);
+                    System.Windows.Controls.TextBlock titleBarBackGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(DemoTestHost.FindVisualChildren<System.Windows.Controls.TextBlock>(titleBarBack).FirstOrDefault(), exactMatch: false);
 
                     NavigationViewItem firstItem = Assert.IsType<NavigationViewItem>(nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null);
-                    FontIcon itemGlyph = Assert.IsType<FontIcon>(FindVisualChild<FontIcon>(firstItem), exactMatch: false);
+                    FontIcon itemGlyph = Assert.IsType<FontIcon>(DemoTestHost.FindVisualChildren<FontIcon>(firstItem).FirstOrDefault(), exactMatch: false);
                     Assert.Equal(GetVisualCenterX(itemGlyph, window), GetVisualCenterX(titleBarBackGlyph, window), 2.5);
 
                     ContentPresenter titleIcon = Assert.IsType<ContentPresenter>(DemoTestHost.FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, titleIcon.Visibility);
-                    System.Windows.Controls.Image titleIconImage = Assert.IsType<System.Windows.Controls.Image>(FindVisualChild<System.Windows.Controls.Image>(titleIcon), exactMatch: false);
+                    System.Windows.Controls.Image titleIconImage = Assert.IsType<System.Windows.Controls.Image>(DemoTestHost.FindVisualChildren<System.Windows.Controls.Image>(titleIcon).FirstOrDefault(), exactMatch: false);
                     Assert.Equal(20.0, titleIconImage.ActualWidth, 0.5);
                     Assert.Equal(20.0, titleIconImage.ActualHeight, 0.5);
                     Assert.True(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
@@ -637,7 +636,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, titleBarToggle.Visibility);
                     System.Windows.Controls.Button titleBarBack = Assert.IsType<System.Windows.Controls.Button>(DemoTestHost.FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, titleBarBack.Visibility);
-                    System.Windows.Controls.TextBlock titleBarBackGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChild<System.Windows.Controls.TextBlock>(titleBarBack), exactMatch: false);
+                    System.Windows.Controls.TextBlock titleBarBackGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(DemoTestHost.FindVisualChildren<System.Windows.Controls.TextBlock>(titleBarBack).FirstOrDefault(), exactMatch: false);
                     Assert.Equal(16.0, titleBarBackGlyph.FontSize, 0.01);
                     ContentPresenter titleIcon = Assert.IsType<ContentPresenter>(DemoTestHost.FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter"), exactMatch: false);
                     AutoSuggestBox search = Assert.IsType<AutoSuggestBox>(DemoTestHost.FindByName<AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
@@ -1403,7 +1402,7 @@ namespace Fluence.Wpf.Tests
                         object content = GetSelectedPageContent(window);
                         DependencyObject root = Assert.IsType<DependencyObject>(content, exactMatch: false);
 
-                        bool found = FindVisualChildren<DemoSampleControl>(root).Any(static sample => !string.IsNullOrWhiteSpace(sample.XamlSource));
+                        bool found = DemoTestHost.FindVisualChildren<DemoSampleControl>(root).Any(static sample => !string.IsNullOrWhiteSpace(sample.XamlSource));
                         Assert.True(found, "Page must expose at least one inline XAML source sample: " + expectation.PageType.Name);
                     }
                 }
@@ -1467,7 +1466,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.Equal(0.0, progressBar.Value, 0.001);
 
-                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(FindVisualChildren<DemoSampleControl>(page)
+                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
                         .FirstOrDefault(static control => control.XamlSource.Contains("ProgressBarValue", StringComparison.Ordinal)), exactMatch: false);
                     Assert.Contains("x:Name=\"ProgressValueNumberBox\"", sample.XamlSource, StringComparison.Ordinal);
                     Assert.Contains("Minimum=\"0\"", sample.XamlSource, StringComparison.Ordinal);
@@ -1490,9 +1489,9 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    DemoSampleControl stepSample = Assert.IsType<DemoSampleControl>(FindVisualChildren<DemoSampleControl>(page)
+                    DemoSampleControl stepSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
                         .FirstOrDefault(static control => control.XamlSource.Contains("ProgressBarSteps", StringComparison.Ordinal)), exactMatch: false);
-                    DemoSampleControl ringSample = Assert.IsType<DemoSampleControl>(FindVisualChildren<DemoSampleControl>(page)
+                    DemoSampleControl ringSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
                         .FirstOrDefault(static control => control.XamlSource.Contains("ProgressRings", StringComparison.Ordinal)), exactMatch: false);
 
                     Assert.Contains("Steps=\"10\"", stepSample.XamlSource, StringComparison.Ordinal);
@@ -1567,7 +1566,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(FindVisualChildren<DemoSampleControl>(page)
+                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
                         .FirstOrDefault(static control => control.XamlSource.Contains("CompactNavigationView", StringComparison.Ordinal)), exactMatch: false);
 
                     Assert.Contains("IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"", sample.XamlSource, StringComparison.Ordinal);
@@ -1613,7 +1612,7 @@ namespace Fluence.Wpf.Tests
                     TabViewItem selectedTab = Assert.IsType<TabViewItem>(tabView.SelectedItem);
                     AssertTabViewItemContentSurface(selectedTab);
 
-                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(FindVisualChildren<DemoSampleControl>(page)
+                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
                         .FirstOrDefault(static control => control.XamlSource.Contains("TabViewDocuments", StringComparison.Ordinal)), exactMatch: false);
                     Assert.Contains("LayerFillColorDefaultBrush", sample.XamlSource, StringComparison.Ordinal);
                     Assert.Contains("LayerFillColorDefaultBrush", sample.CSharpSource, StringComparison.Ordinal);
@@ -1662,7 +1661,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    List<DemoSampleControl> samples = [.. FindVisualChildren<DemoSampleControl>(page)];
+                    List<DemoSampleControl> samples = [.. DemoTestHost.FindVisualChildren<DemoSampleControl>(page)];
                     DemoSampleControl sample = Assert.Single(samples);
                     Assert.Equal("Type ramp", sample.SampleDescription, StringComparer.Ordinal);
                     Assert.Contains("CaptionTextBlockStyle", sample.XamlSource, StringComparison.Ordinal);
@@ -1670,7 +1669,7 @@ namespace Fluence.Wpf.Tests
 
                     Grid table = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
 
-                    List<Controls.Button> copyButtons = [.. FindVisualChildren<Controls.Button>(table)];
+                    List<Controls.Button> copyButtons = [.. DemoTestHost.FindVisualChildren<Controls.Button>(table)];
                     Assert.NotEmpty(copyButtons);
                     Assert.True(copyButtons.Exists(static button => "BodyTextBlockStyle".Equals(button.Tag as string, StringComparison.Ordinal)),
                         "Typography table should keep per-row style-key copy actions.");
@@ -1866,7 +1865,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(3, tabOrder.Children.Count);
                     Assert.Equal(KeyboardNavigationMode.Local, KeyboardNavigation.GetTabNavigation(tabOrder));
 
-                    HyperlinkButton hyperlink = Assert.IsType<HyperlinkButton>(FindVisualChildren<HyperlinkButton>(primary).FirstOrDefault(), exactMatch: false);
+                    HyperlinkButton hyperlink = Assert.IsType<HyperlinkButton>(DemoTestHost.FindVisualChildren<HyperlinkButton>(primary).FirstOrDefault(), exactMatch: false);
                     Controls.Button? tabOrderFirst = DemoTestHost.FindByName<Controls.Button>(page, "ExplicitTabOrderFirstButton");
                     Controls.Button? tabOrderSecond = DemoTestHost.FindByName<Controls.Button>(page, "ExplicitTabOrderSecondButton");
                     Controls.Button? tabOrderThird = DemoTestHost.FindByName<Controls.Button>(page, "ExplicitTabOrderThirdButton");
@@ -1877,7 +1876,7 @@ namespace Fluence.Wpf.Tests
                     AssertNextFocus(window, tabOrderFirst, tabOrderSecond, "Explicit tab-order group should move from 1 to 2.");
                     AssertNextFocus(window, tabOrderSecond, tabOrderThird, "Explicit tab-order group should move from 2 to 3.");
 
-                    List<DemoSampleControl> samples = [.. FindVisualChildren<DemoSampleControl>(page)];
+                    List<DemoSampleControl> samples = [.. DemoTestHost.FindVisualChildren<DemoSampleControl>(page)];
                     Assert.Equal(6, samples.Count);
                     Assert.True(samples.TrueForAll(static sample => !string.IsNullOrWhiteSpace(sample.XamlSource)),
                         "Every accessibility sample should have inline XAML source.");
@@ -1924,7 +1923,7 @@ namespace Fluence.Wpf.Tests
                     AssertIconBrush(detailsPanel.Background, "CardBackgroundFillColorDefaultBrush");
                     AssertIconBrush(detailsPanel.BorderBrush, "DividerStrokeColorDefaultBrush");
 
-                    ScrollViewer viewer = Assert.IsType<ScrollViewer>(FindVisualChild<ScrollViewer>(list), exactMatch: false);
+                    ScrollViewer viewer = Assert.IsType<ScrollViewer>(DemoTestHost.FindVisualChildren<ScrollViewer>(list).FirstOrDefault(), exactMatch: false);
                     Assert.True(viewer.ViewportHeight > 0, "Icon catalog needs a bounded viewport height.");
                     Assert.True(viewer.ExtentHeight > viewer.ViewportHeight, "Icon catalog should have a scrollable extent.");
                     Assert.True(viewer.ScrollableHeight > 0, "Icon catalog should be scrollable.");
@@ -2162,7 +2161,7 @@ namespace Fluence.Wpf.Tests
 
         private static Controls.Button? FindStepButton(DependencyObject root, string tag)
         {
-            return FindVisualChildren<Controls.Button>(root)
+            return DemoTestHost.FindVisualChildren<Controls.Button>(root)
                 .FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal));
         }
 
@@ -2210,7 +2209,7 @@ namespace Fluence.Wpf.Tests
             where T : DependencyObject
         {
             int count = 0;
-            foreach (T item in FindVisualChildren<T>(root))
+            foreach (T item in DemoTestHost.FindVisualChildren<T>(root))
             {
                 count++;
             }

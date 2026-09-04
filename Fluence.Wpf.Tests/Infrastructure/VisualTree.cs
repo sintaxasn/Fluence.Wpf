@@ -144,10 +144,13 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <summary>
         /// Enumerates every visual descendant of <paramref name="root"/> of type
         /// <typeparamref name="T"/>. Forwards to the canonical
-        /// <see cref="WpfTestSta.FindVisualDescendants{T}(DependencyObject?)"/>; the broader
-        /// logical-and-visual walk lives there too, as
-        /// <see cref="WpfTestSta.FindLogicalAndVisualDescendants{T}(DependencyObject?)"/>, and is
-        /// what the demo host uses.
+        /// <see cref="WpfTestSta.FindVisualDescendants{T}(DependencyObject?)"/>. This walk covers
+        /// the visual tree only, so an element realized only in the logical tree (for example an
+        /// unselected <see cref="System.Windows.Controls.TabItem"/> content) is not found here.
+        /// <see cref="DemoTestHost.FindVisualChildren{T}(DependencyObject?)"/>
+        /// shares this method's name but walks logical and visual together; if an element may
+        /// live only in the logical tree, reach for that overload or the underlying
+        /// <see cref="WpfTestSta.FindLogicalAndVisualDescendants{T}(DependencyObject?)"/> instead.
         /// </summary>
         /// <typeparam name="T">The descendant type to enumerate.</typeparam>
         /// <param name="root">The element to search below.</param>
