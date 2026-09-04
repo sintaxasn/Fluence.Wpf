@@ -41,18 +41,6 @@ namespace Fluence.Wpf.Tests
 {
     public class SplitButtonTests
     {
-        private static void MergeGeneric(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            application.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            });
-        }
-
         #region Defaults and DPs
 
         [Fact]
@@ -105,8 +93,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                MergeGeneric(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new();
                 try
@@ -151,8 +138,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                MergeGeneric(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new();
                 try
@@ -196,8 +182,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                MergeGeneric(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new();
                 try
@@ -244,8 +229,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                MergeGeneric(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new();
                 try
