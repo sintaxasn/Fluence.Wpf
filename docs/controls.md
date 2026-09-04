@@ -132,7 +132,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.RatingControl.html">RatingControl</a>
 </div>
 
-Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection). `RatingControl` adds value-based selection for simple scoring UI.
+Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection). `RatingControl` adds value-based selection for simple scoring UI. `CheckBox` defaults to `HorizontalAlignment="Left"` and `MinWidth="120"` per WinUI's `DefaultCheckBoxStyle`: `HorizontalAlignment="Left"` stops the control and its focus visual stretching to the parent's width, and `MinWidth="120"` sets a 120 dp floor so short-labelled checkboxes keep a comfortable hit target, so short-labelled demo checkboxes (Selection page) now occupy 120 dp.
 
 ### Inputs
 

@@ -296,6 +296,65 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task CheckBox_DefaultStyle_UsesWinUiLeftAlignmentAndMinWidthAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.CheckBox checkBox = new()
+                    {
+                        Content = "Ok",
+                    };
+                    Grid grid = new()
+                    {
+                        Width = 400,
+                    };
+                    _ = grid.Children.Add(checkBox);
+                    window.Content = grid;
+                    window.Width = 440;
+                    window.Height = 80;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = checkBox.ApplyTemplate();
+
+                    // WinUI parity: DefaultCheckBoxStyle sets HorizontalAlignment=Left
+                    // (CheckBox_themeresources.xaml:284) and MinWidth to CheckBoxMinWidth,
+                    // 120 (CheckBox_themeresources.xaml:273,290), so the box, label, and focus
+                    // visual sit flush against the parent's left edge with a 120 dp floor
+                    // instead of stretching to the parent's width.
+                    Point leftEdge = checkBox.TranslatePoint(new Point(0, 0), grid);
+                    Assert.True(checkBox.ActualWidth >= 120.0,
+                        "CheckBox should keep the 120 dp MinWidth floor for a short label.");
+                    Assert.True(checkBox.ActualWidth < 200.0,
+                        "CheckBox should not stretch to the 400 dp parent width.");
+                    Assert.True(System.Math.Abs(leftEdge.X) < 0.5,
+                        "CheckBox should sit flush against the parent's left edge.");
+
+                    // Secondary checks: the setters that drive the layout above.
+                    Assert.Equal(HorizontalAlignment.Left, checkBox.HorizontalAlignment);
+                    Assert.Equal(120.0, checkBox.MinWidth);
+                }
+                finally
+                {
+                    window.Content = null;
+                    window.UpdateLayout();
+                    window.Close();
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [Fact]
         public Task Card_Click_FiresOnMouseDownThenUp_WhenIsClickableAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

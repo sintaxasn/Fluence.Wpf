@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -215,6 +216,50 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(Visibility.Collapsed, checkBox.Visibility);
                     Assert.Equal(false, item.IsSelectionChecked);
                     Assert.Empty(treeView.SelectedItems);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [Fact]
+        public Task TreeView_MultipleSelectionCheckbox_StaysCompactAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.TreeViewItem item = new() { Header = "Contracts" };
+                    Controls.TreeView treeView = new()
+                    {
+                        SelectionMode = TreeViewSelectionMode.Multiple,
+                    };
+                    _ = treeView.Items.Add(item);
+                    window.Content = treeView;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.CheckBox checkBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
+
+                    // A content-less checkbox living in TreeViewItem's Auto-width selection
+                    // column must not inherit the WinUI DefaultCheckBoxStyle MinWidth of 120
+                    // (Fluence.Wpf/Themes/Controls/CheckBox.xaml), or every row grows a wide
+                    // dead-click gap between the box and the header text.
+                    Assert.True(checkBox.ActualWidth < 40,
+                        string.Format(CultureInfo.InvariantCulture, "SelectionCheckBox should stay compact (no MinWidth 120 inheritance); actual width was {0}.", checkBox.ActualWidth));
                 }
                 finally
                 {
