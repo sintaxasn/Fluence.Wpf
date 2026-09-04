@@ -43,7 +43,7 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [Fact]
-        public Task GalleryButtonsPage_EnableCheckBoxControlsOnlyVisibleButtonVariantsAsync()
+        public Task GalleryButtonsPage_EnableCheckBoxControlsOnlyTheStandardButtonAsync()
         {
             return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
@@ -64,8 +64,8 @@ namespace Fluence.Wpf.Tests
                 window.UpdateLayout();
 
                 Assert.False(standard.IsEnabled, "Enable toggle should disable the Standard button.");
-                Assert.False(accent.IsEnabled, "Enable toggle should disable the Accent button.");
-                Assert.False(subtle.IsEnabled, "Enable toggle should disable the Subtle button.");
+                Assert.True(accent.IsEnabled, "The Accent button lives in its own sample and must not follow the Standard sample's toggle.");
+                Assert.True(subtle.IsEnabled, "The Subtle button lives in its own sample and must not follow the Standard sample's toggle.");
             });
         }
 

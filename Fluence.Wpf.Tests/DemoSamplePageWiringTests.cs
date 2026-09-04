@@ -46,11 +46,12 @@ namespace Fluence.Wpf.Tests
         private static readonly XNamespace XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
 
         // GalleryIconsPage is a design reference page (WinUI Gallery Iconography catalog)
-        // and renders directly instead of through DemoSampleControl, like Typography.
+        // and renders directly instead of through DemoSampleControl.
         private static readonly Func<UIElement>[] SamplePageFactories =
         [
             static () => new GalleryAccessibilityPage(),
             static () => new GalleryButtonsPage(),
+            static () => new GalleryTypographyPage(),
             static () => new GallerySelectionPage(),
             static () => new GalleryInputsPage(),
             static () => new GalleryFormsPage(),

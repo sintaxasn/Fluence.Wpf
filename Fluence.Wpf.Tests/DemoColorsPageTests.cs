@@ -84,7 +84,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                _ = EnsureDemoTheme();
+                Application application = EnsureDemoTheme();
                 GalleryColorsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
@@ -118,6 +118,15 @@ namespace Fluence.Wpf.Tests
                         List<UniformGrid> rows = [.. FindVisualChildren<UniformGrid>(page)
                             .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal))];
                         Assert.True(rows.Count > 0, "Selected Colors page section should contain token rows.");
+
+                        // WinUI Gallery GalleryTileGridStyle: token rows sit on the SolidBackgroundFillColorBase tile surface.
+                        Color surfaceColor = Assert.IsType<SolidColorBrush>(application.TryFindResource("SolidBackgroundFillColorBaseBrush"), exactMatch: false).Color;
+                        foreach (UniformGrid row in rows)
+                        {
+                            System.Windows.Controls.Border surface = Assert.IsType<System.Windows.Controls.Border>(row.Parent, exactMatch: false);
+                            Assert.Equal(surfaceColor, Assert.IsType<SolidColorBrush>(surface.Background, exactMatch: false).Color);
+                            Assert.Equal(new Thickness(1), surface.BorderThickness);
+                        }
 
                         foreach (UniformGrid row in rows)
                         {

@@ -2,7 +2,7 @@
 
 Referenced from `AGENTS.md` Section 14. Lifted out of the handbook to keep the always-loaded file lean. This is the standard the `demo-sample-page` skill and the demo-page tests enforce.
 
-Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design reference pages that mirror WinUI Gallery catalog surfaces, such as Typography, may render directly when a trailing source expander would diverge from the reference.
+Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design reference pages that mirror WinUI Gallery catalog surfaces, such as Icons, may render directly when a trailing source expander would diverge from the reference. Typography is a `DemoSampleControl` sample because the Gallery's own type ramp is a `ControlExample` with source.
 
 ## Page skeleton
 
@@ -61,7 +61,9 @@ Named live controls must not be declared directly inside `DemoSampleControl` pro
 
 ## Catalog surfaces
 
-Icons and Accessibility are part of this standard for discrete demonstrations. Typography is a direct WinUI Gallery-style reference page and does not add a trailing source expander.
+Icons and Accessibility are part of this standard for discrete demonstrations. Icons renders its catalog directly without a trailing source expander. Typography hosts its type ramp table in a `DemoSampleControl` with the ramp XAML as source, as the WinUI Gallery does.
+
+Catalog rows that carry no source, such as the Colors page token rows and example panels, sit on the WinUI Gallery `GalleryTileGridStyle` surface: `SolidBackgroundFillColorBaseBrush` with a 1 px `CardStrokeColorDefaultBrush` outline at `OverlayCornerRadius`, the tile the Gallery Spacing page uses for its value table.
 
 ## Definition of done
 

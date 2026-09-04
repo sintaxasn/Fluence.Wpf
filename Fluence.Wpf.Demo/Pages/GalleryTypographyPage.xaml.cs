@@ -38,6 +38,33 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private const string CopyGlyph = "\uE8C8";
 
+        // WinUI Gallery Typography\TypographyTypeRamp.txt: the type ramp sample source is the ramp applied to TextBlocks.
+        private static readonly string TypeRampXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Typography.TypeRamp",
+            "    <StackPanel>\n" +
+            "        <TextBlock Style=\"{StaticResource CaptionTextBlockStyle}\" Text=\"Caption\" />\n" +
+            "        <TextBlock Style=\"{StaticResource BodyTextBlockStyle}\" Text=\"Body\" />\n" +
+            "        <TextBlock Style=\"{StaticResource BodyStrongTextBlockStyle}\" Text=\"Body Strong\" />\n" +
+            "        <TextBlock Style=\"{StaticResource BodyLargeTextBlockStyle}\" Text=\"Body Large\" />\n" +
+            "        <TextBlock Style=\"{StaticResource SubtitleTextBlockStyle}\" Text=\"Subtitle\" />\n" +
+            "        <TextBlock Style=\"{StaticResource TitleTextBlockStyle}\" Text=\"Title\" />\n" +
+            "        <TextBlock Style=\"{StaticResource TitleLargeTextBlockStyle}\" Text=\"Title Large\" />\n" +
+            "        <TextBlock Style=\"{StaticResource DisplayTextBlockStyle}\" Text=\"Display\" />\n" +
+            "    </StackPanel>\n");
+
+        private const string TypeRampCSharpSource = "using System.Windows.Controls;\n" +
+                                                    "\n" +
+                                                    "namespace Fluence.Wpf.Demo.Pages.Typography\n" +
+                                                    "{\n" +
+                                                    "    public partial class TypeRamp : UserControl\n" +
+                                                    "    {\n" +
+                                                    "        public TypeRamp()\n" +
+                                                    "        {\n" +
+                                                    "            InitializeComponent();\n" +
+                                                    "        }\n" +
+                                                    "    }\n" +
+                                                    "}\n";
+
         private static readonly TypographyRow[] Rows =
         [
             new("Caption", "Small, Regular", "12/16 epx", "CaptionTextBlockStyle"),
@@ -54,6 +81,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
             BuildTypographyTable();
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, TypeRampXamlSource, TypeRampCSharpSource));
         }
 
         private void BuildTypographyTable()

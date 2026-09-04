@@ -54,6 +54,27 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task GalleryButtonsPage_GraphicalButtonClickReportsAutomationNameAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
+            {
+                Controls.Button button = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(window, "GraphicalButton"), exactMatch: false);
+                TextBlock output = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "GraphicalButtonOutputText"), exactMatch: false);
+                Image image = Assert.IsType<Image>(button.Content, exactMatch: false);
+
+                Assert.NotNull(image.Source);
+                Assert.Equal(50.0, button.Width, 0.1);
+                Assert.Equal(50.0, button.Height, 0.1);
+                Assert.True(string.IsNullOrWhiteSpace(output.Text), "The graphical sample output starts empty.");
+
+                button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.Equal("You clicked: Pie", output.Text, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
         public Task GalleryButtonsPage_RepeatButtonIncrementsNearbyCountTextAsync()
         {
             return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
