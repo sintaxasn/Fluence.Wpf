@@ -42,6 +42,8 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
+                _ = WpfTestSta.EnsureApplication();
+
                 ResourceDictionary library = new()
                 {
                     Source = new Uri("/Fluence.Wpf;component/Properties/DesignTimeResources.xaml", UriKind.Relative),

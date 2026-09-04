@@ -10,6 +10,10 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <!--  WinUI parity: DefaultCheckBoxStyle sets HorizontalAlignment=Left (CheckBox_themeresources.xaml:284) so the box and label hug the left edge instead of stretching across the parent.  -->
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <!--  WinUI parity: DefaultCheckBoxStyle sets MinWidth to CheckBoxMinWidth, 120 (CheckBox_themeresources.xaml:273,290).  -->
+        <Setter Property="MinWidth" Value="120" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:CheckBox}">

@@ -104,10 +104,12 @@
                                         </ToggleButton.Template>
                                     </ToggleButton>
 
+                                    <!--  A content-less checkbox in this Auto-width column must not inherit the WinUI DefaultCheckBoxStyle MinWidth of 120 (CheckBox.xaml), or every row grows a wide dead-click gap before the header text.  -->
                                     <controls:CheckBox
                                         x:Name="SelectionCheckBox"
                                         Grid.Column="1"
                                         Margin="0,0,8,0"
+                                        MinWidth="0"
                                         VerticalAlignment="Center"
                                         Focusable="False"
                                         IsChecked="{Binding IsSelectionChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
