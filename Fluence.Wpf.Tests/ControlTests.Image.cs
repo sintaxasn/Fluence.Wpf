@@ -35,6 +35,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {

@@ -42,6 +42,7 @@ using System.Windows.Threading;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
@@ -80,89 +81,6 @@ namespace Fluence.Wpf.Tests
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.MergedDictionaries.Clear();
             application.Resources.Clear();
-        }
-
-        private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
-        {
-            if (root is null)
-            {
-                return null;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, index);
-                if (child is T match)
-                {
-                    return match;
-                }
-
-                if (FindVisualChild<T>(child) is T visual)
-                {
-                    return visual;
-                }
-            }
-
-            return null;
-        }
-
-        // Visual-tree-only descendant search. Forwards to the canonical WpfTestSta implementation
-        // (FindVisualDescendants); the logical+visual cycle-guarded variant lives there too as
-        // FindLogicalAndVisualDescendants, which is what DemoTestHost-style callers use.
-        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject root) where T : DependencyObject
-        {
-            return WpfTestSta.FindVisualDescendants<T>(root);
-        }
-
-        private static DependencyObject? FindVisualChildByTypeName(DependencyObject root, string typeName)
-        {
-            if (root is null)
-            {
-                return null;
-            }
-
-            if (string.Equals(root.GetType().Name, typeName, StringComparison.Ordinal))
-            {
-                return root;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                DependencyObject? found = FindVisualChildByTypeName(VisualTreeHelper.GetChild(root, index), typeName);
-                if (found is not null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
-        }
-
-        private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
-        {
-            if (root is null || string.IsNullOrWhiteSpace(name))
-            {
-                return null;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && string.Equals(child.Name, name, StringComparison.Ordinal) && child is T match)
-                {
-                    return match;
-                }
-
-                T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
-                if (found is not null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
         }
 
         private static StackPanel? GetNavigationViewItemsHostPanel(Controls.NavigationView nav)

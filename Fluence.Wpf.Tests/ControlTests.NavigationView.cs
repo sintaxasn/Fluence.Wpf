@@ -41,19 +41,12 @@ using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
-        private static void CloseWindowAndDrain(Window window)
-        {
-            window.Content = null;
-            window.UpdateLayout();
-            window.Close();
-            WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
-        }
-
         // Pump the dispatcher for `milliseconds` so any in-flight storyboard
         // (e.g. the LeftCompact pane's 167 ms Width animation) reaches its
         // HoldEnd state before the test samples layout values.
@@ -161,7 +154,7 @@ namespace Fluence.Wpf.Tests
 
                     NavigationView nav = Assert.IsType<NavigationView>(FindVisualChildByName<NavigationView>(mw, "DemoNav"), exactMatch: false);
                     NavigationViewItem footer = Assert.IsType<NavigationViewItem>(nav.FooterMenuItems.Count > 0 ? nav.FooterMenuItems[0] as NavigationViewItem : null);
-                    ContentPresenter footerIcon = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter"), exactMatch: false);
+                    ContentPresenter footerIcon = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer, "IconPresenter"), exactMatch: false);
 
                     nav.IsPaneOpen = false;
                     await WaitForAnimationAndDrainAsync(mw.Dispatcher, 300).ConfigureAwait(true);
