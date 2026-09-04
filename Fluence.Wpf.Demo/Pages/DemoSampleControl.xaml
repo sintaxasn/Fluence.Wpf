@@ -152,7 +152,7 @@
                                     CornerRadius="0,0,8,8">
                                     <Border
                                         x:Name="SourceContentBorder"
-                                        Background="{DynamicResource SystemFillColorSolidAttentionBackgroundBrush}"
+                                        Background="{TemplateBinding Background}"
                                         CornerRadius="0,0,8,8">
                                         <ContentPresenter
                                             x:Name="ExpandSite"

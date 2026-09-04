@@ -496,7 +496,8 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             };
-            viewer.SetResourceReference(BackgroundProperty, "SystemFillColorSolidAttentionBackgroundBrush");
+            // WinUI Gallery: code sits directly on the Expander content tier (CardBackgroundFillColorSecondary), no opaque plate.
+            viewer.SetResourceReference(BackgroundProperty, "SubtleFillColorTransparentBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             viewer.SetResourceReference(FontFamilyProperty, "DemoMonospaceFontFamily");
             viewer.Document = CreateSourceDocument(source, language);
