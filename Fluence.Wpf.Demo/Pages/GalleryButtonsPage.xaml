@@ -26,7 +26,7 @@
             <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
                 <fluence:Button
                     x:Name="StandardButton"
-                    Content="Standard"
+                    Content="Standard XAML button"
                     IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
             </ContentControl>
             <ContentControl x:Name="DemoSampleSlot01RightRailContentHost" Visibility="Collapsed">
@@ -59,11 +59,11 @@
                     <fluence:Button
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Appearance="Accent"
-                        Content="Accent" />
+                        Content="Accent style button" />
                     <fluence:Button
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Appearance="Subtle"
-                        Content="Subtle" />
+                        Content="Subtle style button" />
                 </WrapPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Built-in appearances applied to Button: Accent for the primary action, Subtle for low-emphasis commands." />

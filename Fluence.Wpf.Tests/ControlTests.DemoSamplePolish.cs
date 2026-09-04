@@ -48,9 +48,9 @@ namespace Fluence.Wpf.Tests
             return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
                 Controls.CheckBox enable = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "ButtonEnableCheckBox"), exactMatch: false);
-                Controls.Button standard = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Standard"), exactMatch: false);
-                Controls.Button accent = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Accent"), exactMatch: false);
-                Controls.Button subtle = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Subtle"), exactMatch: false);
+                Controls.Button standard = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Standard XAML button"), exactMatch: false);
+                Controls.Button accent = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Accent style button"), exactMatch: false);
+                Controls.Button subtle = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Subtle style button"), exactMatch: false);
                 Controls.Button? disabled = FindFluentButtonByContent(window, "Disabled");
 
                 Assert.Null(disabled);
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Tests
         {
             return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
             {
-                Controls.Button subtle = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Subtle"), exactMatch: false);
+                Controls.Button subtle = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Subtle style button"), exactMatch: false);
                 Controls.Button refresh = Assert.IsType<Controls.Button>(FindFluentButtonByContent(window, "Refresh"), exactMatch: false);
 
                 AssertBrushIsTransparent(subtle.BorderBrush);

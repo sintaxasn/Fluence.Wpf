@@ -27,6 +27,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,6 +52,50 @@ namespace Fluence.Wpf.Tests
                 Assert.NotEqual(System.Windows.Controls.Primitives.TickPlacement.None, vertical.TickPlacement);
                 Assert.True(horizontal.TickFrequency > 0);
                 Assert.True(vertical.TickFrequency > 0);
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_LoadsWithoutDataBindingErrorsAsync()
+        {
+            // Regression: the flyout ShadowCaster in DropDownButton, SplitButton and ToggleSplitButton bound its
+            // MinWidth by ElementName from inside the Popup, which logged "Cannot find source for binding with
+            // reference 'ElementName=OuterBorder'" (Data Error 4) on every page load.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                using BindingErrorListener listener = new();
+                PresentationTraceSources.Refresh();
+                SourceLevels previousLevel = PresentationTraceSources.DataBindingSource.Switch.Level;
+                _ = PresentationTraceSources.DataBindingSource.Listeners.Add(listener);
+                PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
+                Window window = new()
+                {
+                    Width = 900,
+                    Height = 700,
+                    Content = new GalleryButtonsPage(),
+                };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Empty(listener.Messages);
+                }
+                finally
+                {
+                    PresentationTraceSources.DataBindingSource.Listeners.Remove(listener);
+                    PresentationTraceSources.DataBindingSource.Switch.Level = previousLevel;
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
             });
         }
 
@@ -287,6 +333,24 @@ namespace Fluence.Wpf.Tests
         private static Controls.RepeatButton? FindRepeatButtonByContent(DependencyObject root, string content)
         {
             return FindVisualChildren<Controls.RepeatButton>(root).FirstOrDefault(repeatButton => string.Equals(repeatButton.Content as string, content, StringComparison.Ordinal));
+        }
+
+        private sealed class BindingErrorListener : TraceListener
+        {
+            public List<string> Messages { get; } = [];
+
+            public override void Write(string? message)
+            {
+                // WPF writes the trace header through Write; only the message line matters.
+            }
+
+            public override void WriteLine(string? message)
+            {
+                if (message is not null && !string.IsNullOrWhiteSpace(message))
+                {
+                    Messages.Add(message);
+                }
+            }
         }
 
         private static Task RunDemoPageTestAsync(Func<UserControl> createPage, Action<Window> verify)

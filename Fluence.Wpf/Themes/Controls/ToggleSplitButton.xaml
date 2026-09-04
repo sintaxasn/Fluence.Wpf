@@ -188,11 +188,15 @@
                                     Elevation caster: an empty sibling behind the surface, because WPF
                                     drops ClearType for text under an Effect and this surface opts into
                                     it. No layout gutter is needed, PopupRoot already reserves about
-                                    15 px per side for popup shadows.
+                                    15 px per side for popup shadows. The width follows the templated
+                                    parent (whose width OuterBorder fills) instead of an ElementName
+                                    reference: this is the first element created under the Popup and it
+                                    binds before the Popup child joins the template name scope, so an
+                                    ElementName binding here logged Data Error 4 on every load.
                                 -->
                                 <Border
                                     x:Name="ShadowCaster"
-                                    MinWidth="{Binding ActualWidth, ElementName=OuterBorder}"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                     Margin="0,4,0,0"
                                     Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
                                     CornerRadius="{TemplateBinding DropdownCornerRadius}"
