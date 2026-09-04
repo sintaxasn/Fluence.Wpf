@@ -124,7 +124,7 @@
             <Border
                 x:Name="IconCatalogCard"
                 Grid.Row="3"
-                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">

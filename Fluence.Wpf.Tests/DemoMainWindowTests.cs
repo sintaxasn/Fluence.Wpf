@@ -1865,7 +1865,7 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new Thickness(0), catalogCard.Padding);
                     Assert.Equal(new CornerRadius(8), catalogCard.CornerRadius);
                     Assert.Equal(new Thickness(1), catalogCard.BorderThickness);
-                    AssertIconBrush(catalogCard.Background, "SolidBackgroundFillColorBaseBrush");
+                    AssertIconBrush(catalogCard.Background, "CardBackgroundFillColorTertiaryBrush");
                     AssertIconBrush(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush");
                     Assert.Equal(new Thickness(0), list.BorderThickness);
 

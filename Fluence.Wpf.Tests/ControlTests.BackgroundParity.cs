@@ -249,7 +249,9 @@ namespace Fluence.Wpf.Tests
 
                     RichTextBox sourceViewer = Assert.IsType<RichTextBox>(FindVisualChildByName<RichTextBox>(sourceExpander, "SourceTextViewer"), exactMatch: false);
                     Border copyButtonHost = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "CopySourceButtonHost"), exactMatch: false);
-                    AssertBrushColor(sourceViewer.Background, "SystemFillColorSolidAttentionBackgroundBrush");
+                    Border sourceContentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "SourceContentBorder"), exactMatch: false);
+                    AssertBrushColor(sourceContentBorder.Background, "CardBackgroundFillColorSecondaryBrush");
+                    AssertBrushColor(sourceViewer.Background, "SubtleFillColorTransparentBrush");
                     AssertBrushColor(copyButtonHost.Background, "CardBackgroundFillColorDefaultBrush");
                 }
                 finally

@@ -30,7 +30,7 @@ Demo sample surfaces use the native Fluence brush resources and control defaults
 | Sample card surface       | `SolidBackgroundFillColorBaseBrush` (WinUI Gallery `ControlExampleDisplayBrush`; opaque, so samples composite at token brightness) |
 | Right rail / options pane | `CardBackgroundFillColorDefaultBrush` with a `DividerStrokeColorDefaultBrush` left divider (Gallery `OptionsPresenter`) |
 | Expander header           | `CardBackgroundFillColorDefaultBrush`, one layer over the page (WinUI `ExpanderHeaderBackground`); the root paints no fill under it |
-| Expander expanded content | `CardBackgroundFillColorSecondaryBrush` as the Expander `Background`; the code viewer inside sits on the opaque `SystemFillColorSolidAttentionBackgroundBrush` plate |
+| Expander expanded content | `CardBackgroundFillColorSecondaryBrush` as the Expander `Background`, painted by the content tier (WinUI `ExpanderContent`); the code viewer is transparent so the code sits directly on that translucent layer, as in the Gallery |
 | Secondary labels          | `TextFillColorSecondaryBrush`                                                                                 |
 
 The page background has no dedicated brush (it uses the host control defaults), so the other five rows are the surface-token brushes that the Definition of done checks resolve across themes. The roles were measured against the installed WinUI 3 Gallery (2.9.3) on the Button page: plate 243 Light / 32 Dark, options rail 251 / 43, header 54 Dark over a 43 page, all reproduced by the brushes above.

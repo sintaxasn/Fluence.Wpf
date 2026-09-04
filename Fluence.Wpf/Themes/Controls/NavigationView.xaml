@@ -136,14 +136,14 @@
                     </ControlTemplate.Resources>
                     <Border
                         x:Name="OuterBorder"
-                        Margin="4,2,4,2"
+                        Margin="4,2,0,2"
                         Background="{TemplateBinding Background}"
                         BorderThickness="2"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid MinHeight="32">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition x:Name="IconColumn" Width="40" />
-                                <ColumnDefinition x:Name="GapColumn" Width="12" />
+                                <ColumnDefinition x:Name="GapColumn" Width="6" />
                                 <ColumnDefinition x:Name="ContentColumn" Width="*" />
                                 <ColumnDefinition x:Name="InfoBadgeColumn" Width="Auto" />
                             </Grid.ColumnDefinitions>
