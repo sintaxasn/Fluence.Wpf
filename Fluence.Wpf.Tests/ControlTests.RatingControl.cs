@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 2 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 0 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -172,7 +172,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 4, Caption = "4.0" };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -192,7 +192,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Caption = string.Empty };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { MaxRating = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -254,7 +254,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
@@ -292,7 +292,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 2, IsEnabled = false };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -365,7 +365,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 RatingControl rc = new() { Value = 1 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };

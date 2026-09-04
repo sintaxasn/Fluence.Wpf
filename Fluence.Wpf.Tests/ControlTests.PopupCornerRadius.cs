@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
 
@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ComboBox cb = new();
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
@@ -92,7 +92,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
 
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 DropDownButton ddb = new();
                 Window w = new() { Content = ddb, Width = 200, Height = 100 };

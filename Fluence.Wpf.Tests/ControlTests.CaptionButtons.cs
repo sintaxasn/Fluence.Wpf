@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try
@@ -152,7 +152,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try
@@ -237,7 +237,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow? window = null;
                 try

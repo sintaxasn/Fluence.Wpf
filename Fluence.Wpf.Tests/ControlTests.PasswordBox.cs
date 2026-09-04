@@ -54,8 +54,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -70,7 +69,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -80,8 +79,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -96,7 +94,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -106,8 +104,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -124,7 +121,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -134,8 +131,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -160,7 +156,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -171,7 +167,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -190,7 +186,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -201,7 +197,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -218,7 +214,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -248,8 +244,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -279,7 +274,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -291,8 +286,7 @@ namespace Fluence.Wpf.Tests
             // Contract: press-and-hold = transient reveal; release = hide immediately.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -335,7 +329,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -345,8 +339,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -377,7 +370,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -387,8 +380,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -413,7 +405,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -423,8 +415,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -454,7 +445,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -464,8 +455,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
@@ -484,7 +474,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -494,8 +484,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
@@ -515,7 +504,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -525,8 +514,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -552,7 +540,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ClosePasswordBoxTest(window, application, genericDictionary);
+                    ClosePasswordBoxTest(window);
                 }
             });
         }
@@ -580,13 +568,9 @@ namespace Fluence.Wpf.Tests
             return box;
         }
 
-        private static void ClosePasswordBoxTest(Window window, Application application, ResourceDictionary? genericDictionary)
+        private static void ClosePasswordBoxTest(Window window)
         {
             CloseWindowAndDrain(window);
-            if (genericDictionary is not null)
-            {
-                _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-            }
         }
 
         private static Button FindRevealButton(PasswordBox box)

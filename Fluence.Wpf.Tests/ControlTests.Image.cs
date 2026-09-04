@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 BitmapSource probe = CreateProbeBitmap();
                 Controls.Image image = new() { Source = probe, Stretch = Stretch.UniformToFill };
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new() { Source = CreateProbeBitmap(), CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new() { Source = CreateProbeBitmap() };
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -188,7 +188,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Image image = new();
                 AutomationProperties.SetName(image, "Company logo");
@@ -245,7 +245,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 System.Windows.Controls.TextBlock label = new() { Text = "Product photo" };
                 Controls.Image image = new();

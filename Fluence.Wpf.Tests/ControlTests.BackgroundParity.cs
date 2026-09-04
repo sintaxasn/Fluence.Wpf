@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.CheckBox checkBox = new() { Content = "Check" };
                 Controls.RadioButton radioButton = new() { Content = "Radio" };
@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ProgressBar progressBar = new()
                 {
@@ -154,7 +154,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 ScrollBar scrollBar = new()
                 {
@@ -196,7 +196,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
 
@@ -268,7 +268,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.HighContrast })
@@ -309,7 +309,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
                 string[] keys =

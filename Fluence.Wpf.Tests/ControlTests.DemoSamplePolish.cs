@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
                 DemoSampleControl sample = new()

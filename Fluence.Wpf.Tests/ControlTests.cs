@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -81,25 +80,6 @@ namespace Fluence.Wpf.Tests
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.MergedDictionaries.Clear();
             application.Resources.Clear();
-        }
-
-        private static ResourceDictionary? MergeGenericDictionary(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
-            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[^1] : null;
-
-            ResourceDictionary demoShared = new()
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            };
-            application.Resources.MergedDictionaries.Add(demoShared);
-
-            return genericDictionary;
         }
 
         private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
@@ -280,7 +260,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
@@ -306,7 +286,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -317,7 +296,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
@@ -342,7 +321,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -377,7 +355,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView listView = new()
@@ -403,7 +381,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -414,7 +391,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView listView = new()
@@ -442,7 +419,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -453,7 +429,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 Window window = new()
@@ -498,7 +474,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -509,24 +484,14 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    TextBlock textBlock = new();
+                TextBlock textBlock = new();
 
-                    Controls.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+                Controls.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
 
-                    Assert.Same(application.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
-                    Assert.Equal(18.0, textBlock.FontSize);
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                Assert.Same(application.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
+                Assert.Equal(18.0, textBlock.FontSize);
             });
         }
 
@@ -536,7 +501,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.TextBox textBox = new()
                 {
@@ -573,7 +538,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -584,7 +548,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
@@ -613,7 +577,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -624,7 +587,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Button button = new()
                 {
@@ -649,7 +612,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -660,7 +622,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Button button = new()
                 {
@@ -686,7 +648,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -697,7 +658,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Button button = new()
                 {
@@ -724,7 +685,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -735,7 +695,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
@@ -779,7 +739,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -790,7 +749,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -827,7 +786,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -838,7 +796,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -861,7 +819,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -872,7 +829,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, updateAccent: true);
                 MainWindow? window = null;
 
@@ -901,7 +858,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -912,7 +868,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -935,7 +891,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -946,7 +901,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 MainWindow? window = null;
 
@@ -976,7 +931,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -987,7 +941,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1025,7 +979,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1036,7 +989,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1077,7 +1030,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1088,7 +1040,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1121,7 +1073,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1132,7 +1083,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1162,7 +1113,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1173,7 +1123,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1205,7 +1155,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1216,7 +1165,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1253,7 +1202,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1264,7 +1212,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1285,7 +1233,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1296,7 +1243,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1326,7 +1273,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1337,7 +1283,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1363,7 +1309,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1374,7 +1319,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -1397,7 +1342,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1448,7 +1392,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new() { Width = 240 };
                 _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
@@ -1474,7 +1418,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1485,7 +1428,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new() { Width = 240 };
                 _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
@@ -1513,7 +1456,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1524,7 +1466,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.ComboBox combo = new() { Width = 240 };
                 _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
@@ -1575,7 +1517,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1586,7 +1527,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new()
                 {
@@ -1615,7 +1556,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1626,7 +1566,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new()
                 {
@@ -1662,7 +1602,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1673,7 +1612,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new()
                 {
@@ -1697,7 +1636,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1708,7 +1646,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ComboBox combo = new()
                 {
@@ -1741,7 +1679,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1844,7 +1781,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.FontIcon icon = new()
@@ -1875,7 +1812,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1886,7 +1822,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.FontIcon icon = new()
@@ -1913,7 +1849,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1934,7 +1869,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
@@ -1957,7 +1892,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1968,7 +1902,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView list = new()
@@ -1991,7 +1925,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2002,7 +1935,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ProgressBar bar = new() { Width = 200, Height = 8, Value = 40, Maximum = 100 };
@@ -2020,7 +1953,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2031,7 +1963,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.Slider slider = new() { Width = 220, Minimum = 0, Maximum = 100, Value = 30 };
@@ -2048,7 +1980,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2059,7 +1990,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -2084,7 +2015,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2095,7 +2025,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -2120,7 +2050,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2131,7 +2060,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 MainWindow? window = null;
 
                 try
@@ -2158,7 +2087,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2169,7 +2097,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.HyperlinkButton button = new()
@@ -2192,7 +2120,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2203,7 +2130,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.HyperlinkButton button = new()
                 {
@@ -2228,7 +2155,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2239,7 +2165,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.InfoBar infoBar = new()
@@ -2266,7 +2192,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2277,7 +2202,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.InfoBar infoBar = new()
                 {
@@ -2307,7 +2232,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2318,7 +2242,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.InfoBar infoBar = new()
                 {
@@ -2350,7 +2274,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2361,7 +2284,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 Window window = new();
@@ -2389,7 +2312,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2400,7 +2322,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.RadioButton radio = new()
                 {
@@ -2429,7 +2351,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2440,7 +2361,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 StackPanel panel = new();
                 Controls.RadioButton radio1 = new() { Content = "A", GroupName = "TestGroup", IsChecked = true };
@@ -2469,7 +2390,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2480,7 +2400,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ToggleSwitch toggle = new()
                 {
@@ -2512,7 +2432,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2523,7 +2442,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ToggleSwitch toggle = new() { IsChecked = false };
 
@@ -2545,7 +2464,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2556,7 +2474,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ProgressRing ring = new()
                 {
@@ -2583,7 +2501,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2594,7 +2511,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ProgressRing ring = new()
                 {
@@ -2628,7 +2545,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2639,7 +2555,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, updateAccent: true);
                 ApplicationAccentColorManager.ApplySystemAccent();
@@ -2661,7 +2577,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }

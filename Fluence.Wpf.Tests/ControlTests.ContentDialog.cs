@@ -83,7 +83,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ContentDialog defaults = new();
                 Assert.Equal(string.Empty, defaults.PrimaryButtonText, StringComparer.Ordinal);
@@ -146,7 +146,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Grid host = new();
                 Controls.ContentDialog dialog = new()
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 TextBox body = new() { AcceptsReturn = true, MinLines = 3 };
@@ -246,7 +246,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -295,7 +295,7 @@ namespace Fluence.Wpf.Tests
             await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -336,7 +336,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -388,7 +388,7 @@ namespace Fluence.Wpf.Tests
             await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -434,7 +434,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -485,7 +485,7 @@ namespace Fluence.Wpf.Tests
             await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -539,7 +539,7 @@ namespace Fluence.Wpf.Tests
             await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -586,7 +586,7 @@ namespace Fluence.Wpf.Tests
             await WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -637,7 +637,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -683,7 +683,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
@@ -700,7 +700,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Button behind = new() { Content = "Behind" };
                 Window window = new() { Width = 640, Height = 480, Content = behind };
@@ -769,7 +769,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 TextBox behind = new() { Text = "Behind" };
                 Window window = new() { Width = 640, Height = 480, Content = behind };
@@ -841,7 +841,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -885,7 +885,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.FluenceWindow window = new()
                 {
@@ -933,7 +933,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ContentDialog dialog = new() { Title = "Confirm" };
 
@@ -951,7 +951,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ContentDialog dialog = new() { Title = "Delete file?" };
                 Window window = new() { Width = 320, Height = 240, Content = dialog };

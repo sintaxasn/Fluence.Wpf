@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -79,10 +79,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -93,7 +89,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -117,10 +113,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -131,7 +123,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -156,10 +148,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -170,7 +158,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -202,10 +190,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -216,23 +200,13 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    Card card = new() { IsClickable = true };
-                    Assert.True(card.IsTabStop,
-                        "A clickable Card must be IsTabStop=true so keyboard users can reach it.");
-                    Assert.True(card.Focusable,
-                        "A clickable Card must be Focusable=true.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                Card card = new() { IsClickable = true };
+                Assert.True(card.IsTabStop,
+                    "A clickable Card must be IsTabStop=true so keyboard users can reach it.");
+                Assert.True(card.Focusable,
+                    "A clickable Card must be Focusable=true.");
             });
         }
 
@@ -242,7 +216,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -266,10 +240,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -280,7 +250,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -305,10 +275,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -319,21 +285,11 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    Card card = new() { IsClickable = false };
-                    Assert.False(card.IsTabStop,
-                        "A non-clickable Card must not be in the tab order.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                Card card = new() { IsClickable = false };
+                Assert.False(card.IsTabStop,
+                    "A non-clickable Card must not be in the tab order.");
             });
         }
 
@@ -347,28 +303,18 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                CheckBox checkBox = new()
                 {
-                    CheckBox checkBox = new()
-                    {
-                        Content = "Enable feature",
-                        Description = "Enables the optional feature for this session.",
-                    };
+                    Content = "Enable feature",
+                    Description = "Enables the optional feature for this session.",
+                };
 
-                    string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.True(
-                        string.Equals("Enables the optional feature for this session.", helpText, StringComparison.Ordinal),
-                        $"CheckBox.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                string helpText = AutomationProperties.GetHelpText(checkBox);
+                Assert.True(
+                    string.Equals("Enables the optional feature for this session.", helpText, StringComparison.Ordinal),
+                    $"CheckBox.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
 
@@ -378,29 +324,19 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                CheckBox checkBox = new()
                 {
-                    CheckBox checkBox = new()
-                    {
-                        Content = "Enable feature",
-                        Description = "First description.",
-                    };
+                    Content = "Enable feature",
+                    Description = "First description.",
+                };
 
-                    checkBox.Description = "Updated description.";
-                    string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.True(
-                        string.Equals("Updated description.", helpText, StringComparison.Ordinal),
-                        $"CheckBox.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                checkBox.Description = "Updated description.";
+                string helpText = AutomationProperties.GetHelpText(checkBox);
+                Assert.True(
+                    string.Equals("Updated description.", helpText, StringComparison.Ordinal),
+                    $"CheckBox.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
 
@@ -410,29 +346,19 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                CheckBox checkBox = new()
                 {
-                    CheckBox checkBox = new()
-                    {
-                        Content = "Enable feature",
-                        Description = "Some description.",
-                    };
-                    checkBox.Description = null;
+                    Content = "Enable feature",
+                    Description = "Some description.",
+                };
+                checkBox.Description = null;
 
-                    string helpText = AutomationProperties.GetHelpText(checkBox);
-                    Assert.True(
-                        string.IsNullOrWhiteSpace(helpText),
-                        $"Null CheckBox.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                string helpText = AutomationProperties.GetHelpText(checkBox);
+                Assert.True(
+                    string.IsNullOrWhiteSpace(helpText),
+                    $"Null CheckBox.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
 
@@ -446,28 +372,18 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                RadioButton radioButton = new()
                 {
-                    RadioButton radioButton = new()
-                    {
-                        Content = "Option A",
-                        Description = "Choose this option for better performance.",
-                    };
+                    Content = "Option A",
+                    Description = "Choose this option for better performance.",
+                };
 
-                    string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.True(
-                        string.Equals("Choose this option for better performance.", helpText, StringComparison.Ordinal),
-                        $"RadioButton.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                string helpText = AutomationProperties.GetHelpText(radioButton);
+                Assert.True(
+                    string.Equals("Choose this option for better performance.", helpText, StringComparison.Ordinal),
+                    $"RadioButton.Description must be surfaced as AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
 
@@ -477,29 +393,19 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                RadioButton radioButton = new()
                 {
-                    RadioButton radioButton = new()
-                    {
-                        Content = "Option A",
-                        Description = "Initial description.",
-                    };
+                    Content = "Option A",
+                    Description = "Initial description.",
+                };
 
-                    radioButton.Description = "Revised description.";
-                    string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.True(
-                        string.Equals("Revised description.", helpText, StringComparison.Ordinal),
-                        $"RadioButton.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                radioButton.Description = "Revised description.";
+                string helpText = AutomationProperties.GetHelpText(radioButton);
+                Assert.True(
+                    string.Equals("Revised description.", helpText, StringComparison.Ordinal),
+                    $"RadioButton.Description change must update AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
 
@@ -509,29 +415,19 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                RadioButton radioButton = new()
                 {
-                    RadioButton radioButton = new()
-                    {
-                        Content = "Option A",
-                        Description = "Some description.",
-                    };
-                    radioButton.Description = null;
+                    Content = "Option A",
+                    Description = "Some description.",
+                };
+                radioButton.Description = null;
 
-                    string helpText = AutomationProperties.GetHelpText(radioButton);
-                    Assert.True(
-                        string.IsNullOrWhiteSpace(helpText),
-                        $"Null RadioButton.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                string helpText = AutomationProperties.GetHelpText(radioButton);
+                Assert.True(
+                    string.IsNullOrWhiteSpace(helpText),
+                    $"Null RadioButton.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
     }

@@ -27,7 +27,6 @@
  */
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,16 +41,6 @@ namespace Fluence.Wpf.Tests
 {
     public class TabViewTests
     {
-        private static ResourceDictionary? MergeGenericDictionary(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries?.Count > 0 ? dictionaries[^1] : null;
-        }
-
         // ---- TabViewItem defaults ----
 
         [Fact]
@@ -124,8 +113,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new()
                 {
@@ -147,10 +135,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -181,8 +165,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = true };
 
@@ -208,10 +191,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -221,8 +200,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem first = new() { Header = "Alpha", IsSelected = true };
@@ -258,10 +236,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -271,8 +245,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem locked = new() { Header = "Pinned", IsClosable = false, IsSelected = true };
@@ -293,10 +266,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -306,8 +275,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = false };
 
@@ -325,10 +293,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -338,8 +302,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem first = new() { Header = "Alpha", IsSelected = true };
@@ -369,10 +332,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

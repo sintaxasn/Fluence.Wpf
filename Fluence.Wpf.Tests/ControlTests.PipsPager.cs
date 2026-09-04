@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.PipsPager)));
 
@@ -96,7 +96,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
@@ -133,7 +133,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
@@ -190,7 +190,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new()
@@ -247,7 +247,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -295,7 +295,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -441,7 +441,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -485,7 +485,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -537,7 +537,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
                 Assert.Equal(0, pager.SelectedPageIndex);
@@ -575,7 +575,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
 
@@ -624,7 +624,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 3 };
@@ -670,7 +670,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
@@ -722,7 +722,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 string[] brushKeys =
                 [
@@ -752,7 +752,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new()
@@ -828,7 +828,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
@@ -899,7 +899,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 3 };

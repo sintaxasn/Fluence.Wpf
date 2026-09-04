@@ -27,8 +27,6 @@
  */
 
 using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -36,24 +34,13 @@ using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
-using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
 namespace Fluence.Wpf.Tests
 {
-    public sealed class TitleBarTests : IAsyncLifetime
+    public sealed class TitleBarTests
     {
-        public ValueTask InitializeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(ResetSharedWpfStateAsync));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(ResetSharedWpfStateAsync));
-        }
-
         [Fact]
         public Task TitleBar_Template_ExposesNavigationButtonsAsync()
         {
@@ -215,8 +202,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(delegate
             {
-                Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureLibraryTheme();
                 Window? window = null;
                 Controls.TitleBar? titleBar = null;
 
@@ -248,11 +234,6 @@ namespace Fluence.Wpf.Tests
                     {
                         window.Content = null;
                         window.Close();
-                    }
-
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -291,39 +272,6 @@ namespace Fluence.Wpf.Tests
             IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
             invoke.Invoke();
             WpfTestSta.DrainDispatcher(button.Dispatcher);
-        }
-
-        private static ResourceDictionary? MergeGenericDictionary(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries?.Count > 0 ? dictionaries[^1] : null;
-        }
-
-        private static async Task ResetSharedWpfStateAsync()
-        {
-            Application application = WpfTestSta.EnsureApplication();
-            Keyboard.ClearFocus();
-
-            foreach (Window? window in application.Windows.Cast<Window>() ?? [])
-            {
-                window.Content = null;
-                window.Close();
-            }
-
-            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Loaded, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
-            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ContextIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
-            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
-
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
         }
 
         private sealed class RecordingCommand : ICommand

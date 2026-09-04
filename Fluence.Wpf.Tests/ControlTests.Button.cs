@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 try
                 {
@@ -57,7 +57,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -68,7 +67,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 try
                 {
@@ -80,7 +79,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -93,7 +91,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Button standard = new() { Width = 120, Content = "Standard" };
                 Controls.Button accent = new() { Width = 120, Content = "Accent", Appearance = ControlAppearance.Accent };
@@ -120,7 +118,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -131,7 +128,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.ToolTip toolTip = new() { Content = "Save changes" };
                 Controls.Button button = new()
@@ -153,7 +150,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -164,7 +160,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Button button = new()
                 {
@@ -196,7 +192,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -207,7 +202,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
@@ -249,7 +244,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }

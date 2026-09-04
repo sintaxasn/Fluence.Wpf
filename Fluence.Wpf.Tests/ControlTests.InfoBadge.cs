@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 // Default: Value=-1, no IconSource → Dot state.
                 InfoBadge badge = new();
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
@@ -130,7 +130,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 InfoBadge badge = new() { Value = 12 };
                 Window w = new() { Content = badge, Width = 100, Height = 80 };
@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
@@ -197,7 +197,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 // WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is
                 // TextOnAccentFillColorPrimaryBrush, matching the accent-derived default
