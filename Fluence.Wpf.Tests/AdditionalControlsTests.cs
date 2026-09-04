@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,25 +37,12 @@ namespace Fluence.Wpf.Tests
 {
     public class AdditionalControlsTests
     {
-        private static void MergeGeneric(Application app)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            app.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            });
-        }
-
         [Fact]
         public Task NumberBox_DefaultStyle_LoadsPartsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.NumberBox numberBox = new() { Width = 160, Value = 3 };
                 try
@@ -99,8 +85,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.Expander ex = new() { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
                 try
@@ -123,8 +108,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
@@ -147,8 +131,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
@@ -187,8 +170,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 160, Flyout = new StackPanel() };
                 try
@@ -213,8 +195,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.SplitButton btn = new() { Content = "Export", Width = 180, Flyout = new StackPanel() };
                 try
@@ -249,8 +230,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                MergeGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
                 Controls.InfoBadge badge = new() { Value = 2, Width = 32, Height = 32 };
                 try
