@@ -82,6 +82,13 @@ namespace Fluence.Wpf.Demo.Pages
                 owner.DemoNavigationPaneStateChanged += Owner_DemoNavigationPaneStateChanged;
             }
 
+            // The gallery page header's theme toggle changes the theme through
+            // ApplicationThemeManager.Apply directly, bypassing AppThemeComboBox_SelectionChanged.
+            // Subscribing here (and unsubscribing on Unloaded, never in the constructor, see
+            // AGENTS.md section 9) keeps the combo in sync with an external theme change.
+            ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
+            ApplicationThemeManager.Changed += ApplicationThemeManager_Changed;
+
             UpdatePageContentWidth(SettingsScrollViewer.ActualWidth);
             SyncSelections();
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
@@ -95,11 +102,29 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 owner.DemoNavigationPaneStateChanged -= Owner_DemoNavigationPaneStateChanged;
             }
+
+            ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
         }
 
         private void Owner_DemoNavigationPaneStateChanged(object? sender, EventArgs e)
         {
             SyncSelections();
+        }
+
+        private void ApplicationThemeManager_Changed(object? sender, ThemeChangedEventArgs e)
+        {
+            // Re-entrant guard: selecting the combo item here must not fire
+            // AppThemeComboBox_SelectionChanged back into ApplicationThemeManager.Apply.
+            _syncing = true;
+            try
+            {
+                SelectComboItemByTag(AppThemeComboBox, GetCurrentThemeOption());
+                UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
+            }
+            finally
+            {
+                _syncing = false;
+            }
         }
 
         private void SettingsScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -209,7 +234,15 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void AppThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_syncing || GetSelectedTag(AppThemeComboBox) is not SettingsThemeOption option)
+            // Fluence's ComboBox auto-selects its first item as soon as its items are populated
+            // (see Controls/ComboBox.cs OnItemsChanged/TryAutoSelectFirstItem), which happens
+            // synchronously during InitializeComponent, before this page has loaded and before
+            // SyncSelections has run. Without the IsLoaded guard that auto-select fires this
+            // handler with "Use system setting" and forces ApplicationThemeManager.Apply(Auto, ...)
+            // on the very first construction of the page, silently discarding whatever theme was
+            // already in effect. NavigationStyleComboBox_SelectionChanged already guards the same
+            // way for the same reason.
+            if (!IsLoaded || _syncing || GetSelectedTag(AppThemeComboBox) is not SettingsThemeOption option)
             {
                 return;
             }
@@ -230,7 +263,10 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_syncing || GetSelectedTag(BackdropComboBox) is not SettingsBackdropOption option)
+            // Same construction-time auto-select hazard as AppThemeComboBox_SelectionChanged: guard
+            // with IsLoaded so the very first page construction cannot force the backdrop back to
+            // the first ComboBoxItem ("Auto") before SyncSelections has synced the real value.
+            if (!IsLoaded || _syncing || GetSelectedTag(BackdropComboBox) is not SettingsBackdropOption option)
             {
                 return;
             }

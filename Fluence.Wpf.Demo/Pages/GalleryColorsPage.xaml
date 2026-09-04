@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fluence="http://schemas.fluencewpf.com"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     d:DesignHeight="900"
@@ -11,7 +12,7 @@
     mc:Ignorable="d">
     <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Colors" />
+            <local:GalleryPageHeader Title="Colors" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use Fluence theme brushes for text, fills, strokes, backgrounds, semantic states, and high contrast mappings." />
 
             <fluence:Border

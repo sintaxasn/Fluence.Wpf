@@ -80,6 +80,28 @@ namespace Fluence.Wpf.Tests
         }
 
         [Fact]
+        public Task GalleryColorsPage_ExposesGalleryPageHeaderWithColorsTitleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                _ = EnsureDemoTheme();
+                GalleryColorsPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(FindVisualChild<GalleryPageHeader>(page), exactMatch: false);
+                    Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
+                    Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
+                        "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task GalleryColorsPage_UsesWinUiGalleryColorStructureAsync()
         {
             return WpfTestSta.RunOnStaAsync(static delegate
