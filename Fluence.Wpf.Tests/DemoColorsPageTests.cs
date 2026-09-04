@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(FindVisualChild<GalleryPageHeader>(page), exactMatch: false);
+                    GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page).FirstOrDefault(), exactMatch: false);
                     Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
                     Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
                         "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(FindVisualChild<SmoothScrollViewer>(page), exactMatch: false);
+                    SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(DemoTestHost.FindVisualChildren<SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
 
                     TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
                     Assert.Equal(SectionNames.Length, colorTabs.Items.Count);
@@ -123,13 +123,13 @@ namespace Fluence.Wpf.Tests
                         Assert.Equal(SectionNames[i], tabItem.Header as string, StringComparer.Ordinal);
                     }
 
-                    List<string> exampleTitles = [.. FindVisualChildren<System.Windows.Controls.TextBlock>(page)
+                    List<string> exampleTitles = [.. DemoTestHost.FindVisualChildren<System.Windows.Controls.TextBlock>(page)
                         .Where(static text => string.Equals(text.Tag as string, "ColorExampleTitle", StringComparison.Ordinal))
                         .Select(static text => text.Text)];
                     Assert.Equal(["Text", "Accent Text", "Text On Accent"], exampleTitles, StringComparer.Ordinal);
 
-                    Assert.Empty(FindVisualChildren<WrapPanel>(page));
-                    Assert.Empty(FindVisualChildren<DemoSampleControl>(page));
+                    Assert.Empty(DemoTestHost.FindVisualChildren<WrapPanel>(page));
+                    Assert.Empty(DemoTestHost.FindVisualChildren<DemoSampleControl>(page));
 
                     int totalTiles = 0;
                     bool sawSystemColorAlias = false;
@@ -138,7 +138,7 @@ namespace Fluence.Wpf.Tests
                     {
                         SelectTab(colorTabs, i, window.Dispatcher);
 
-                        List<UniformGrid> rows = [.. FindVisualChildren<UniformGrid>(page)
+                        List<UniformGrid> rows = [.. DemoTestHost.FindVisualChildren<UniformGrid>(page)
                             .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal))];
                         Assert.True(rows.Count > 0, "Selected Colors page section should contain token rows.");
 
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
             for (int index = 0; index < colorTabs.Items.Count; index++)
             {
                 SelectTab(colorTabs, index, dispatcher);
-                foreach (UniformGrid row in FindVisualChildren<UniformGrid>(page)
+                foreach (UniformGrid row in DemoTestHost.FindVisualChildren<UniformGrid>(page)
                     .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal)))
                 {
                     foreach (UIElement child in row.Children)
