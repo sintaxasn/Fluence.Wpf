@@ -39,7 +39,7 @@ namespace Fluence.Wpf.Demo.Pages
             "Fluence.Wpf.Demo.Pages.Buttons.ButtonStandard",
                                                         "    <StackPanel>\n" +
                                                         "        <fluence:Button\n" +
-                                                        "            Content=\"Standard\"\n" +
+                                                        "            Content=\"Standard XAML button\"\n" +
                                                         "            IsEnabled=\"{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}\" />\n" +
                                                         "        <fluence:CheckBox\n" +
                                                         "            x:Name=\"ButtonEnableCheckBox\"\n" +
@@ -98,11 +98,11 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "        <fluence:Button\n" +
                                                       "            Margin=\"0,0,8,8\"\n" +
                                                       "            Appearance=\"Accent\"\n" +
-                                                      "            Content=\"Accent\" />\n" +
+                                                      "            Content=\"Accent style button\" />\n" +
                                                       "        <fluence:Button\n" +
                                                       "            Margin=\"0,0,8,8\"\n" +
                                                       "            Appearance=\"Subtle\"\n" +
-                                                      "            Content=\"Subtle\" />\n" +
+                                                      "            Content=\"Subtle style button\" />\n" +
                                                       "    </WrapPanel>\n");
 
         private const string ButtonStylesCSharpSource = "using System.Windows.Controls;\n" +
