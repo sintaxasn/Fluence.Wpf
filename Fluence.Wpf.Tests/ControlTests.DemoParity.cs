@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 using BindingErrorListener listener = new();
                 PresentationTraceSources.Refresh();
                 SourceLevels previousLevel = PresentationTraceSources.DataBindingSource.Switch.Level;
@@ -92,10 +92,6 @@ namespace Fluence.Wpf.Tests
                     PresentationTraceSources.DataBindingSource.Listeners.Remove(listener);
                     PresentationTraceSources.DataBindingSource.Switch.Level = previousLevel;
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -359,7 +355,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 UserControl page = createPage();
                 Window window = new()
                 {
@@ -379,10 +375,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

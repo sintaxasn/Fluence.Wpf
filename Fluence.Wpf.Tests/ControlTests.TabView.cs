@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "A" });

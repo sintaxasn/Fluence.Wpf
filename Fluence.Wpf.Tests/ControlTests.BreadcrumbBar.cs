@@ -77,7 +77,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.BreadcrumbBar)));
 
@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new();
@@ -174,7 +174,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new()
@@ -228,7 +228,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new();
@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new();
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 string[] brushKeys =
                 [
@@ -372,7 +372,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new()
@@ -407,7 +407,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.BreadcrumbBar bar = new();

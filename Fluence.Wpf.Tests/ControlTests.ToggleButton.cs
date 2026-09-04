@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 T toggleButton = createToggleButton();
                 Window window = new();
@@ -91,7 +91,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }

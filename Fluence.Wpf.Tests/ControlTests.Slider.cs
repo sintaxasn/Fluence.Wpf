@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
@@ -98,7 +98,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };

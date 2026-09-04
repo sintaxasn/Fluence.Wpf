@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.AutoSuggestBox)));
 
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -261,7 +261,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -299,7 +299,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new();
@@ -410,7 +410,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 400, Height = 300 };
                 Controls.AutoSuggestBox box = new()
@@ -459,7 +459,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
@@ -478,7 +478,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.AutoSuggestBox box = new();
                 Assert.Equal(374.0, box.MaxSuggestionListHeight, 0.01);
@@ -503,7 +503,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -529,10 +529,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

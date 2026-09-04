@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.NumberBox numberBox = new()
                 {
@@ -76,7 +76,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -87,7 +86,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.FluenceWindow window = new();
 
@@ -113,7 +112,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -124,7 +122,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 // QueryIcon must be non-null so the template trigger does not clear the icon
                 // slot; the button is only wired into the visual tree while QueryIcon is set.
@@ -151,7 +149,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -162,7 +159,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.DatePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
@@ -191,7 +188,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -202,7 +198,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.TimePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
@@ -231,7 +227,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -242,71 +237,64 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
+
+                // --- InfoBar PART_CloseButton ---
+                Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
+                Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
 
                 try
                 {
-                    // --- InfoBar PART_CloseButton ---
-                    Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
-                    Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
+                    infoBarWindow.Show();
+                    _ = infoBar.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(infoBarWindow.Dispatcher);
 
-                    try
+                    ControlTemplate infoBarTemplate = Assert.IsType<ControlTemplate>(infoBar.Template, exactMatch: false);
+                    FrameworkElement closeButton = Assert.IsType<FrameworkElement>(infoBarTemplate.FindName("PART_CloseButton", infoBar), exactMatch: false);
+                    string closeActualName = AutomationProperties.GetName(closeButton);
+                    Assert.True(
+                        string.Equals("Close", closeActualName, StringComparison.Ordinal),
+                        $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
+                }
+                finally
+                {
+                    infoBarWindow.Close();
+                }
+
+                // --- PipsPager PART_PreviousButton and PART_NextButton ---
+                Controls.PipsPager pipsPager = new()
+                {
+                    NumberOfPages = 5,
+                    PreviousButtonVisibility = PipsPagerButtonVisibility.Visible,
+                    NextButtonVisibility = PipsPagerButtonVisibility.Visible,
+                    Width = 200,
+                };
+                Window pipsWindow = new() { Content = pipsPager, Width = 300, Height = 80 };
+
+                try
+                {
+                    pipsWindow.Show();
+                    _ = pipsPager.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(pipsWindow.Dispatcher);
+
+                    ControlTemplate pipsTemplate = Assert.IsType<ControlTemplate>(pipsPager.Template, exactMatch: false);
+
+                    foreach ((string part, string expectedName) in new[]
                     {
-                        infoBarWindow.Show();
-                        _ = infoBar.ApplyTemplate();
-                        WpfTestSta.DrainDispatcher(infoBarWindow.Dispatcher);
-
-                        ControlTemplate infoBarTemplate = Assert.IsType<ControlTemplate>(infoBar.Template, exactMatch: false);
-                        FrameworkElement closeButton = Assert.IsType<FrameworkElement>(infoBarTemplate.FindName("PART_CloseButton", infoBar), exactMatch: false);
-                        string closeActualName = AutomationProperties.GetName(closeButton);
+                        ("PART_PreviousButton", "Previous page"),
+                        ("PART_NextButton", "Next page"),
+                    })
+                    {
+                        FrameworkElement btn = Assert.IsType<FrameworkElement>(pipsTemplate.FindName(part, pipsPager), exactMatch: false);
+                        string actualName = AutomationProperties.GetName(btn);
                         Assert.True(
-                            string.Equals("Close", closeActualName, StringComparison.Ordinal),
-                            $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
-                    }
-                    finally
-                    {
-                        infoBarWindow.Close();
-                    }
-
-                    // --- PipsPager PART_PreviousButton and PART_NextButton ---
-                    Controls.PipsPager pipsPager = new()
-                    {
-                        NumberOfPages = 5,
-                        PreviousButtonVisibility = PipsPagerButtonVisibility.Visible,
-                        NextButtonVisibility = PipsPagerButtonVisibility.Visible,
-                        Width = 200,
-                    };
-                    Window pipsWindow = new() { Content = pipsPager, Width = 300, Height = 80 };
-
-                    try
-                    {
-                        pipsWindow.Show();
-                        _ = pipsPager.ApplyTemplate();
-                        WpfTestSta.DrainDispatcher(pipsWindow.Dispatcher);
-
-                        ControlTemplate pipsTemplate = Assert.IsType<ControlTemplate>(pipsPager.Template, exactMatch: false);
-
-                        foreach ((string part, string expectedName) in new[]
-                        {
-                            ("PART_PreviousButton", "Previous page"),
-                            ("PART_NextButton", "Next page"),
-                        })
-                        {
-                            FrameworkElement btn = Assert.IsType<FrameworkElement>(pipsTemplate.FindName(part, pipsPager), exactMatch: false);
-                            string actualName = AutomationProperties.GetName(btn);
-                            Assert.True(
-                                string.Equals(expectedName, actualName, StringComparison.Ordinal),
-                                $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
-                        }
-                    }
-                    finally
-                    {
-                        pipsWindow.Close();
+                            string.Equals(expectedName, actualName, StringComparison.Ordinal),
+                            $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                     }
                 }
                 finally
                 {
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    pipsWindow.Close();
                 }
             });
         }
@@ -317,7 +305,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 // TabViewItem is a ContentControl subclass; it can be templated standalone
                 // without a parent TabView. IsClosable defaults to true so PART_CloseButton
@@ -347,7 +335,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -358,43 +345,36 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
+
+                // Default pane mode (Left) instantiates the template block that hosts both buttons.
+                Controls.NavigationView nav = new() { Width = 320, Height = 240 };
+                Window navWindow = new() { Content = nav, Width = 400, Height = 300 };
 
                 try
                 {
-                    // Default pane mode (Left) instantiates the template block that hosts both buttons.
-                    Controls.NavigationView nav = new() { Width = 320, Height = 240 };
-                    Window navWindow = new() { Content = nav, Width = 400, Height = 300 };
+                    navWindow.Show();
+                    _ = nav.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(navWindow.Dispatcher);
 
-                    try
+                    ControlTemplate navTemplate = Assert.IsType<ControlTemplate>(nav.Template, exactMatch: false);
+
+                    foreach ((string part, string expectedName) in new[]
                     {
-                        navWindow.Show();
-                        _ = nav.ApplyTemplate();
-                        WpfTestSta.DrainDispatcher(navWindow.Dispatcher);
-
-                        ControlTemplate navTemplate = Assert.IsType<ControlTemplate>(nav.Template, exactMatch: false);
-
-                        foreach ((string part, string expectedName) in new[]
-                        {
-                            ("PART_BackButton", "Back"),
-                            ("PART_PaneToggleButton", "Navigation"),
-                        })
-                        {
-                            FrameworkElement btn = Assert.IsType<FrameworkElement>(navTemplate.FindName(part, nav), exactMatch: false);
-                            string actualName = AutomationProperties.GetName(btn);
-                            Assert.True(
-                                string.Equals(expectedName, actualName, StringComparison.Ordinal),
-                                $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
-                        }
-                    }
-                    finally
+                        ("PART_BackButton", "Back"),
+                        ("PART_PaneToggleButton", "Navigation"),
+                    })
                     {
-                        navWindow.Close();
+                        FrameworkElement btn = Assert.IsType<FrameworkElement>(navTemplate.FindName(part, nav), exactMatch: false);
+                        string actualName = AutomationProperties.GetName(btn);
+                        Assert.True(
+                            string.Equals(expectedName, actualName, StringComparison.Ordinal),
+                            $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
                     }
                 }
                 finally
                 {
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    navWindow.Close();
                 }
             });
         }
@@ -405,40 +385,33 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
+
+                Controls.NavigationView nav = new()
+                {
+                    PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    Width = 640,
+                    Height = 240,
+                };
+                Window navWindow = new() { Content = nav, Width = 700, Height = 300 };
 
                 try
                 {
-                    Controls.NavigationView nav = new()
-                    {
-                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
-                        Width = 640,
-                        Height = 240,
-                    };
-                    Window navWindow = new() { Content = nav, Width = 700, Height = 300 };
+                    navWindow.Show();
+                    _ = nav.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(navWindow.Dispatcher);
 
-                    try
-                    {
-                        navWindow.Show();
-                        _ = nav.ApplyTemplate();
-                        WpfTestSta.DrainDispatcher(navWindow.Dispatcher);
+                    ControlTemplate navTemplate = Assert.IsType<ControlTemplate>(nav.Template, exactMatch: false);
 
-                        ControlTemplate navTemplate = Assert.IsType<ControlTemplate>(nav.Template, exactMatch: false);
-
-                        FrameworkElement backButton = Assert.IsType<FrameworkElement>(navTemplate.FindName("PART_BackButton", nav), exactMatch: false);
-                        string actualName = AutomationProperties.GetName(backButton);
-                        Assert.True(
-                            string.Equals("Back", actualName, StringComparison.Ordinal),
-                            $"PART_BackButton must expose accessible name 'Back' for Narrator in Top mode. Actual: '{actualName}'.");
-                    }
-                    finally
-                    {
-                        navWindow.Close();
-                    }
+                    FrameworkElement backButton = Assert.IsType<FrameworkElement>(navTemplate.FindName("PART_BackButton", nav), exactMatch: false);
+                    string actualName = AutomationProperties.GetName(backButton);
+                    Assert.True(
+                        string.Equals("Back", actualName, StringComparison.Ordinal),
+                        $"PART_BackButton must expose accessible name 'Back' for Narrator in Top mode. Actual: '{actualName}'.");
                 }
                 finally
                 {
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    navWindow.Close();
                 }
             });
         }
@@ -449,25 +422,18 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    Controls.FontIcon icon = new() { Glyph = "" };
-                    AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(icon), exactMatch: false);
+                Controls.FontIcon icon = new() { Glyph = "" };
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(icon), exactMatch: false);
 
-                    _ = Assert.IsType<Automation.FontIconAutomationPeer>(peer, exactMatch: false);
-                    Assert.False(
-                        peer.IsControlElement(),
-                        "Decorative FontIcon must be excluded from the UI Automation control view (AccessibilityView=Raw equivalent).");
-                    Assert.False(
-                        peer.IsContentElement(),
-                        "Decorative FontIcon must be excluded from the UI Automation content view.");
-                }
-                finally
-                {
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                }
+                _ = Assert.IsType<Automation.FontIconAutomationPeer>(peer, exactMatch: false);
+                Assert.False(
+                    peer.IsControlElement(),
+                    "Decorative FontIcon must be excluded from the UI Automation control view (AccessibilityView=Raw equivalent).");
+                Assert.False(
+                    peer.IsContentElement(),
+                    "Decorative FontIcon must be excluded from the UI Automation content view.");
             });
         }
 
@@ -485,7 +451,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -523,10 +489,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

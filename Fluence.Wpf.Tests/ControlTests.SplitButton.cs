@@ -52,7 +52,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 SplitButton btn = new();
                 Assert.Equal(
@@ -67,7 +67,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 SplitButton btn = new() { Appearance = ControlAppearance.Accent, Content = "Go" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 SplitButton btn = new() { Content = "Test" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
@@ -110,7 +110,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 SplitButton button = new()
                 {
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 // Standard appearance - get divider color
                 SplitButton btnStd = new() { Appearance = ControlAppearance.Standard, Content = "Std" };

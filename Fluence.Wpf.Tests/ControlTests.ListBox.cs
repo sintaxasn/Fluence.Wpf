@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ListBox lb = new();
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item A" });
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ListBox lb = new();
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item A" });

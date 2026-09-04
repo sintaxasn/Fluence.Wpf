@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -48,22 +47,12 @@ namespace Fluence.Wpf.Tests
 {
     public class FluenceWindowTitleBarTests
     {
-        private static ResourceDictionary? MergeTheme(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[^1] : null;
-        }
-
         private static Task RunWithWindowAsync(Action<FluenceWindow> testBody)
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
                 try
@@ -75,10 +64,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -101,7 +86,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
                 try
@@ -124,10 +109,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -350,7 +331,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
                 try
@@ -369,10 +350,6 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -383,7 +360,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 int fireCount = 0;
                 void handler(object? s, ThemeChangedEventArgs e)
                 {
@@ -401,10 +378,6 @@ namespace Fluence.Wpf.Tests
                     ApplicationThemeManager.Changed -= handler;
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -445,7 +418,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
 
                 try
                 {
@@ -460,10 +433,6 @@ namespace Fluence.Wpf.Tests
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -474,7 +443,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
 
                 try
                 {
@@ -492,10 +461,6 @@ namespace Fluence.Wpf.Tests
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -1085,7 +1050,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
                 try
@@ -1140,10 +1105,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -1160,7 +1121,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
                 WindowState observedStateAfterMinimize = WindowState.Normal;
                 bool minimizeCommandCanExecute = false;
@@ -1247,10 +1208,6 @@ namespace Fluence.Wpf.Tests
                         window.Close();
                     }
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }
@@ -1265,25 +1222,15 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
 
-                try
+                System.Windows.Controls.PasswordBox passwordBox = new()
                 {
-                    System.Windows.Controls.PasswordBox passwordBox = new()
-                    {
-                        Password = "hidden",
-                    };
-                    passwordBox.SelectAll();
+                    Password = "hidden",
+                };
+                passwordBox.SelectAll();
 
-                    Assert.Equal("hidden", passwordBox.Password, StringComparer.Ordinal);
-                }
-                finally
-                {
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
-                }
+                Assert.Equal("hidden", passwordBox.Password, StringComparer.Ordinal);
             });
         }
 
@@ -1360,7 +1307,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResourceDictionary? dict = MergeTheme(app);
+                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
                 try
@@ -1419,10 +1366,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict is not null)
-                    {
-                        _ = app.Resources.MergedDictionaries.Remove(dict);
-                    }
                 }
             });
         }

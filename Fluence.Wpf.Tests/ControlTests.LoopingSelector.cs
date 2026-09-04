@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.LoopingSelectorList)));
 
@@ -217,7 +217,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -345,7 +345,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -382,7 +382,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -427,7 +427,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
@@ -479,7 +479,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
@@ -536,7 +536,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
@@ -597,7 +597,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };

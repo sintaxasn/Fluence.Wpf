@@ -26,8 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -37,24 +35,6 @@ namespace Fluence.Wpf.Tests
 {
     public class ListViewIsItemSelectableTests
     {
-        private static ResourceDictionary? MergeGenericDictionary(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
-            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[^1] : null;
-
-            ResourceDictionary demoShared = new()
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            };
-            application.Resources.MergedDictionaries.Add(demoShared);
-
-            return genericDictionary;
-        }
-
         [Fact]
         public Task IsItemSelectable_DefaultIsTrueAsync()
         {
@@ -71,7 +51,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView lv = new() { Width = 260, Height = 120 };
@@ -94,10 +74,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -108,7 +84,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView lv = new()
@@ -132,10 +108,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -146,7 +118,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView lv = new()
@@ -171,10 +143,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -185,7 +153,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.ListView lv = new()
@@ -210,10 +178,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

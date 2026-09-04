@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
                 foreach (string key in new[]
                 {
                     InfoBar.GetSeverityBrushKey(InfoBarSeverity.Informational), InfoBar.GetSeverityBrushKey(InfoBarSeverity.Success),

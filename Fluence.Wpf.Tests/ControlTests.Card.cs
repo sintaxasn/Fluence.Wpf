@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -100,7 +100,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Subtle, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Outlined, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Filled, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -193,7 +193,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Default, IsClickable = true, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -217,7 +217,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Outlined, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -244,7 +244,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 Card card = new() { Variant = CardVariant.Default, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };

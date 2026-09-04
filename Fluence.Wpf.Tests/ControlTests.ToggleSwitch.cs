@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new();
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -99,7 +99,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = true };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -137,7 +137,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -257,7 +257,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -363,10 +363,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Controls.Button button = new()
@@ -92,7 +92,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Close();
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -103,7 +102,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Button button = new()
                 {
@@ -129,7 +128,6 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Close();
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -140,7 +138,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.HyperlinkButton link = new()
                 {
@@ -169,7 +167,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -180,7 +177,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.NavigationViewItem item = new()
                 {
@@ -216,7 +213,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -227,7 +223,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.TabViewItem iconTab = new()
                 {
@@ -266,7 +262,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -277,7 +272,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.MenuItem menuItem = new()
                 {
@@ -309,7 +304,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -320,7 +314,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.InfoBar custom = new()
                 {
@@ -371,7 +365,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -382,7 +375,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.Card card = new()
                 {
@@ -415,7 +408,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -426,7 +418,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.ComboBox combo = new()
                 {
@@ -458,7 +450,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -469,7 +460,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 Controls.TextBox textBox = new()
                 {
@@ -502,7 +493,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -513,7 +503,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 // Secondary / overflow style: icon column + label column side by side.
@@ -592,7 +582,6 @@ namespace Fluence.Wpf.Tests
                 {
                     compactWindow.Close();
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }

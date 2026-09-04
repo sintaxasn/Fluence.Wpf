@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica, updateAccent: true);
 
                 Demo.MainWindow mw = new()
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -219,10 +219,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -233,7 +229,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -257,10 +253,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -271,20 +263,10 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
-                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.LeftCompact, isPaneOpen: false);
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
-                }
+                AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.LeftCompact, isPaneOpen: false);
             });
         }
 
@@ -294,7 +276,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -331,10 +313,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -345,7 +323,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -380,10 +358,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -394,7 +368,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -429,10 +403,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -443,7 +413,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -466,10 +436,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -480,7 +446,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -515,10 +481,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -529,7 +491,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -552,10 +514,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -566,7 +524,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -595,10 +553,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -609,7 +563,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -640,10 +594,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -654,7 +604,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -705,10 +655,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -719,7 +665,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -749,10 +695,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -763,7 +705,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -793,10 +735,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -807,7 +745,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -832,10 +770,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -846,7 +780,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -873,10 +807,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -887,65 +817,55 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
+                NavigationViewPaneDisplayMode[] modes =
+                [
+                    NavigationViewPaneDisplayMode.Left,
+                    NavigationViewPaneDisplayMode.LeftCompact,
+                ];
+
+                foreach (NavigationViewPaneDisplayMode mode in modes)
                 {
-                    NavigationViewPaneDisplayMode[] modes =
-                    [
-                        NavigationViewPaneDisplayMode.Left,
-                        NavigationViewPaneDisplayMode.LeftCompact,
-                    ];
+                    Window window = new();
 
-                    foreach (NavigationViewPaneDisplayMode mode in modes)
+                    try
                     {
-                        Window window = new();
-
-                        try
+                        NavigationView nav = new()
                         {
-                            NavigationView nav = new()
-                            {
-                                Width = 400,
-                                Height = 320,
-                                PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
-                                IsPaneToggleButtonVisible = false,
-                            };
-                            _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
-                            window.Content = nav;
-                            window.Show();
-                            WpfTestSta.DrainDispatcher(window.Dispatcher);
-                            window.UpdateLayout();
+                            Width = 400,
+                            Height = 320,
+                            PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                            IsPaneToggleButtonVisible = false,
+                        };
+                        _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
+                        window.Content = nav;
+                        window.Show();
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
 
-                            Assert.False(nav.IsPaneToggleButtonVisible,
-                                "Top mode should keep the pane toggle hidden before switching to " + mode + ".");
+                        Assert.False(nav.IsPaneToggleButtonVisible,
+                            "Top mode should keep the pane toggle hidden before switching to " + mode + ".");
 
-                            nav.PaneDisplayMode = mode;
-                            WpfTestSta.DrainDispatcher(window.Dispatcher);
-                            window.UpdateLayout();
+                        nav.PaneDisplayMode = mode;
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
 
-                            Assert.True(nav.IsPaneToggleButtonVisible,
-                                mode + " should coerce the pane toggle visible after switching from Top.");
-                            AssertPaneToggleVisible(nav);
+                        Assert.True(nav.IsPaneToggleButtonVisible,
+                            mode + " should coerce the pane toggle visible after switching from Top.");
+                        AssertPaneToggleVisible(nav);
 
-                            nav.IsPaneToggleButtonVisible = false;
-                            WpfTestSta.DrainDispatcher(window.Dispatcher);
-                            window.UpdateLayout();
+                        nav.IsPaneToggleButtonVisible = false;
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
 
-                            Assert.True(nav.IsPaneToggleButtonVisible,
-                                mode + " should coerce runtime attempts to hide the pane toggle back to visible.");
-                            AssertPaneToggleVisible(nav);
-                        }
-                        finally
-                        {
-                            CloseWindowAndDrain(window);
-                        }
+                        Assert.True(nav.IsPaneToggleButtonVisible,
+                            mode + " should coerce runtime attempts to hide the pane toggle back to visible.");
+                        AssertPaneToggleVisible(nav);
                     }
-                }
-                finally
-                {
-                    if (genericDictionary is not null)
+                    finally
                     {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        CloseWindowAndDrain(window);
                     }
                 }
             });
@@ -957,7 +877,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -987,10 +907,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1001,7 +917,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1033,10 +949,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1047,7 +959,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1081,10 +993,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1095,7 +1003,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1126,10 +1034,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1140,7 +1044,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1183,10 +1087,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1197,7 +1097,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1245,10 +1145,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1259,7 +1155,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1346,10 +1242,6 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1360,7 +1252,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1417,10 +1309,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1431,7 +1319,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1488,10 +1376,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1502,7 +1386,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1544,10 +1428,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1558,26 +1438,16 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
-                try
-                {
-                    Style style = Assert.IsType<Style>(application.TryFindResource("NavigationViewItemFocusVisual"));
-                    ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(static setter => setter.Property == Control.TemplateProperty)?.Value as ControlTemplate);
-                    DependencyObject root = Assert.IsType<DependencyObject>(template.LoadContent(), exactMatch: false);
+                Style style = Assert.IsType<Style>(application.TryFindResource("NavigationViewItemFocusVisual"));
+                ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(static setter => setter.Property == Control.TemplateProperty)?.Value as ControlTemplate);
+                DependencyObject root = Assert.IsType<DependencyObject>(template.LoadContent(), exactMatch: false);
 
-                    foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
-                    {
-                        Assert.True(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
-                            "Navigation item focus strokes should stay inside the selected item bounds horizontally.");
-                    }
-                }
-                finally
+                foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
                 {
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
+                    Assert.True(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
+                        "Navigation item focus strokes should stay inside the selected item bounds horizontally.");
                 }
             });
         }
@@ -1588,7 +1458,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1623,10 +1493,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1637,7 +1503,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1666,10 +1532,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1680,7 +1542,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1719,10 +1581,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1733,7 +1591,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1767,10 +1625,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1781,7 +1635,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1822,10 +1676,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1836,7 +1686,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1866,10 +1716,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1880,7 +1726,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1907,10 +1753,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1921,7 +1763,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1948,10 +1790,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -1962,7 +1800,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -1990,10 +1828,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2004,7 +1838,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2038,10 +1872,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2054,7 +1884,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2095,10 +1925,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2110,7 +1936,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2139,10 +1965,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2153,7 +1975,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2182,10 +2004,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2196,7 +2014,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2222,10 +2040,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2236,7 +2050,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2274,10 +2088,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2288,7 +2098,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2325,10 +2135,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2341,7 +2147,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2365,10 +2171,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2381,7 +2183,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2408,10 +2210,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2426,7 +2224,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2446,10 +2244,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2460,7 +2254,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2476,10 +2270,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2495,7 +2285,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2529,10 +2319,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2551,7 +2337,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
 
                 // ---- Left pane ----
                 Window winLeft = new();
@@ -2626,10 +2412,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(winTop);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }
@@ -2719,7 +2501,7 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                _ = TestApp.EnsureDemoTheme();
                 Window window = new();
 
                 try
@@ -2742,10 +2524,6 @@ topMode: false,
                 finally
                 {
                     CloseWindowAndDrain(window);
-                    if (genericDictionary is not null)
-                    {
-                        _ = application.Resources.MergedDictionaries.Remove(genericDictionary);
-                    }
                 }
             });
         }

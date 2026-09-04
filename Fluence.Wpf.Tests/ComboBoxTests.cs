@@ -27,7 +27,6 @@
  */
 
 using System;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Controls;
@@ -38,16 +37,6 @@ namespace Fluence.Wpf.Tests
 {
     public class ComboBoxTests
     {
-        private static ResourceDictionary? MergeTheme(Application application)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            Collection<ResourceDictionary>? dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[^1] : null;
-        }
-
         private static Task RunWithComboBoxAsync(Action<ComboBox> testBody)
         {
             return WpfTestSta.RunOnStaAsync(() =>
@@ -183,7 +172,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = MergeTheme(application);
+                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = new();
                 try

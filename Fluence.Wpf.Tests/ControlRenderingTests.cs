@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Threading.Tasks;
 using System.Windows;
 using Fluence.Wpf.Controls;
@@ -37,19 +36,6 @@ namespace Fluence.Wpf.Tests
 {
     public class ControlRenderingTests
     {
-        private static void MergeThemeAndGeneric(Application app)
-        {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            app.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            ResourceDictionary demoShared = new()
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            };
-            app.Resources.MergedDictionaries.Add(demoShared);
-        }
-
         private static void AssertCrispRenderingSetters(FrameworkElement element)
         {
             Assert.True(element.UseLayoutRounding, "UseLayoutRounding should be true from default style.");
@@ -61,7 +47,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                MergeThemeAndGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 Button button = new();
                 _ = new Window { Content = button };
                 _ = button.ApplyTemplate();
@@ -75,7 +61,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                MergeThemeAndGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
                 TextBox textBox = new();
                 _ = new Window { Content = textBox };
                 _ = textBox.ApplyTemplate();
@@ -89,7 +75,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                MergeThemeAndGeneric(app);
+                _ = TestApp.EnsureDemoTheme();
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {

@@ -27,7 +27,6 @@
  */
 
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Fluence.Wpf.Controls;
@@ -50,7 +49,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow window = new();
                 try
@@ -70,7 +69,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 FluenceWindow window = new();
                 try
@@ -98,7 +97,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 _ = WpfTestSta.EnsureApplication();
-                _ = MergeGenericDictionary(Application.Current);
+                _ = TestApp.EnsureDemoTheme();
 
                 BitmapSource icon = Assert.IsType<BitmapSource>(FluenceWindow.DefaultIcon, exactMatch: false);
                 Assert.Equal(icon.PixelWidth, icon.PixelHeight);
