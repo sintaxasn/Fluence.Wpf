@@ -63,7 +63,7 @@ Named live controls must not be declared directly inside `DemoSampleControl` pro
 
 Icons and Accessibility are part of this standard for discrete demonstrations. Icons renders its catalog directly without a trailing source expander. Typography hosts its type ramp table in a `DemoSampleControl` with the ramp XAML as source, as the WinUI Gallery does.
 
-Catalog rows that carry no source, such as the Colors page token rows and example panels, sit on the WinUI Gallery `GalleryTileGridStyle` surface: `SolidBackgroundFillColorBaseBrush` with a 1 px `CardStrokeColorDefaultBrush` outline at `OverlayCornerRadius`, the tile the Gallery Spacing page uses for its value table.
+Catalog rows that carry no source, such as the Colors page token rows, sit on the WinUI Gallery `GalleryTileGridStyle` surface: `SolidBackgroundFillColorBaseBrush` with a 1 px `CardStrokeColorDefaultBrush` outline at `OverlayCornerRadius`, the tile the Gallery Spacing page uses for its value table. The Colors example panels follow the Gallery `ColorPageExample`: `SolidBackgroundFillColorQuarternaryBrush` inside the same outline, with the accent example on `AccentFillColorDefaultBrush`.
 
 ## Definition of done
 
