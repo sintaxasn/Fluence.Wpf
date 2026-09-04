@@ -8,7 +8,8 @@
         <Style x:Key="DemoSampleSourceHeaderToggleButtonStyle" TargetType="{x:Type ToggleButton}">
             <Setter Property="UseLayoutRounding" Value="True" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <!--  WinUI ExpanderHeaderBackground: CardBackgroundFillColorDefaultBrush, a single layer over the page.  -->
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="Padding" Value="{DynamicResource DemoSampleSourceHeaderPadding}" />
@@ -118,9 +119,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type fluence:Expander}">
+                        <!--  No Background here: WinUI's Expander paints Background only on the content tier, so the header must not composite over a second card layer.  -->
                         <Border
                             x:Name="RootBorder"
-                            Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}">
@@ -324,8 +325,8 @@
                     Grid.Column="1"
                     MinWidth="{DynamicResource DemoSampleRightRailMinWidth}"
                     Padding="{DynamicResource DemoSampleRightRailPadding}"
-                    Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
-                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="1,0,0,0"
                     CornerRadius="0,8,0,0">
                     <ContentPresenter x:Name="RightRailContentPresenter" Content="{Binding RightRailContent, ElementName=Root}" />

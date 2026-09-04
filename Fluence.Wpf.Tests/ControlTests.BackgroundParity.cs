@@ -232,9 +232,16 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new Thickness(0), sampleCard.Padding);
                     Assert.Equal((Thickness)sample.FindResource("DemoSampleCardPadding"), demoRegionGrid.Margin);
                     Assert.Equal(new Thickness(0), rightRail.Margin);
-                    AssertBrushColor(rightRail.Background, "CardBackgroundFillColorSecondaryBrush");
+                    AssertBrushColor(rightRail.Background, "CardBackgroundFillColorDefaultBrush");
+                    AssertBrushColor(rightRail.BorderBrush, "DividerStrokeColorDefaultBrush");
                     AssertBrushColor(sourceExpander.Background, "CardBackgroundFillColorSecondaryBrush");
                     Assert.Equal("Source code", sourceExpander.Header);
+
+                    // WinUI Gallery ControlExample: the source Expander header is one CardBackgroundFillColorDefault layer over the page.
+                    Border rootBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "RootBorder"), exactMatch: false);
+                    ToggleButton header = Assert.IsType<ToggleButton>(FindVisualChildByName<ToggleButton>(sourceExpander, "PART_ToggleButton"), exactMatch: false);
+                    Assert.Null(rootBorder.Background);
+                    AssertBrushColor(header.Background, "CardBackgroundFillColorDefaultBrush");
 
                     sourceExpander.IsExpanded = true;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -559,7 +566,7 @@ namespace Fluence.Wpf.Tests
                 "SolidBackgroundFillColorBaseBrush",
                 "CardBackgroundFillColorDefaultBrush",
                 "CardBackgroundFillColorSecondaryBrush",
-                "ControlFillColorDefaultBrush",
+                "DividerStrokeColorDefaultBrush",
                 "TextFillColorSecondaryBrush",
             ];
         }
