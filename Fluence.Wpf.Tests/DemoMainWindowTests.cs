@@ -348,9 +348,14 @@ namespace Fluence.Wpf.Tests
                     Window window = CreateHostWindow(page);
                     try
                     {
-                        GalleryPageHeader header = Assert.Single(FindAllVisualChildren<GalleryPageHeader>(page));
-                        Assert.False(string.IsNullOrWhiteSpace(header.Title),
-                            page.GetType().Name + " should expose exactly one GalleryPageHeader with a non-empty Title.");
+                        // Home mirrors the WinUI Gallery home page, which has no page title
+                        // header; every other gallery page carries exactly one.
+                        if (page is not GalleryHomePage)
+                        {
+                            GalleryPageHeader header = Assert.Single(FindAllVisualChildren<GalleryPageHeader>(page));
+                            Assert.False(string.IsNullOrWhiteSpace(header.Title),
+                                page.GetType().Name + " should expose exactly one GalleryPageHeader with a non-empty Title.");
+                        }
 
                         if (page is GalleryIconsPage)
                         {
@@ -754,6 +759,44 @@ namespace Fluence.Wpf.Tests
 
                     Controls.ComboBox navigationStyle = Assert.IsType<Controls.ComboBox>(FindByName<Controls.ComboBox>(nav.Content as DependencyObject, "NavigationStyleComboBox"), exactMatch: false);
                     Assert.Equal(2, navigationStyle.SelectedIndex);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task GallerySettingsPage_AppThemeCombo_TracksExternalThemeChangeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    window.NavigateTo("settings");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    NavigationView nav = Assert.IsType<NavigationView>(FindByName<NavigationView>(window, "DemoNav"), exactMatch: false);
+                    Controls.ComboBox appTheme = Assert.IsType<Controls.ComboBox>(FindByName<Controls.ComboBox>(nav.Content as DependencyObject, "AppThemeComboBox"), exactMatch: false);
+                    Assert.Equal("Light", (appTheme.SelectedItem as ComboBoxItem)?.Content as string);
+
+                    // The gallery page header's theme toggle (and any other external caller) flips
+                    // the theme through ApplicationThemeManager.Apply directly, bypassing
+                    // AppThemeComboBox_SelectionChanged entirely. The combo must still follow it.
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal("Dark", (appTheme.SelectedItem as ComboBoxItem)?.Content as string);
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                 }
                 finally
                 {

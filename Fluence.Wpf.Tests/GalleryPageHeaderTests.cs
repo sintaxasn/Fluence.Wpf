@@ -29,6 +29,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Xunit;
 
@@ -114,6 +115,76 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     DemoTestHost.CloseWindow(window);
+
+                    // The click above resolved the theme to Dark. Restore the neutral Light
+                    // state the neighbouring tests in this file expect at their own start, so
+                    // this test never leaves Dark applied for whatever runs after it.
+                    ApplicationThemeManager.ResetForTesting();
+                    ApplicationAccentColorManager.ResetForTesting();
+                    _ = DemoTestHost.EnsureDemoTheme();
+                }
+            });
+        }
+
+        [Fact]
+        public Task GalleryPageHeader_ThemeToggle_PreservesShellBackdropAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                Application application = DemoTestHost.EnsureDemoTheme();
+                Assert.Equal(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme);
+
+                // ThemeToggleButton_Click resolves its owner through Application.Current.MainWindow
+                // (see GalleryPageHeader.xaml.cs), exactly as App.xaml.cs assigns it at startup
+                // (MainWindow = mainWindow;). The backdrop is preserved only when a real MainWindow
+                // occupies that property, so this test hosts the header inside one instead of the
+                // plain Window the other tests in this file use.
+                MainWindow window = new()
+                {
+                    Left = -20000,
+                    Top = -20000,
+                    Width = 1200,
+                    Height = 900,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    ShowInTaskbar = false,
+                };
+                application.MainWindow = window;
+                window.Show();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                window.UpdateLayout();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                try
+                {
+                    // Mirror GallerySettingsPage.BackdropComboBox_SelectionChanged: set the shell's
+                    // backdrop DP and apply it through the theme manager together.
+                    window.SystemBackdropType = BackdropType.Acrylic;
+                    ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, BackdropType.Acrylic);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    window.NavigateTo("buttons");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    GalleryPageHeader header = Assert.Single(DemoTestHost.FindVisualChildren<GalleryPageHeader>(window));
+                    Controls.Button themeToggle = Assert.IsType<Controls.Button>(DemoTestHost.FindByName<Controls.Button>(header, "ThemeToggleButton"), exactMatch: false);
+
+                    themeToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, themeToggle));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme);
+                    Assert.Equal(BackdropType.Acrylic, ApplicationThemeManager.CurrentBackdrop);
+                }
+                finally
+                {
+                    window.Close();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    application.MainWindow = null;
+
+                    ApplicationThemeManager.ResetForTesting();
+                    ApplicationAccentColorManager.ResetForTesting();
+                    _ = DemoTestHost.EnsureDemoTheme();
                 }
             });
         }

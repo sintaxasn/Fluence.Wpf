@@ -2,7 +2,7 @@
     Copyright (C) 2026 Dan Cunningham. All rights reserved.
 
     Shared gallery page header, modelled on the WinUI 3 Gallery's Controls/PageHeader.xaml:
-    a page title on the left, and a row of Subtle-appearance action buttons on the right
+    a page title on the left, and a row of default-appearance action buttons on the right
     (Documentation, Toggle theme, Favorite). See GalleryPageHeader.xaml.cs.
 -->
 <UserControl
@@ -41,11 +41,10 @@
                 MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
                 Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                 AutomationProperties.Name="Documentation"
-                Appearance="Subtle"
                 Click="DocsButton_Click"
                 ToolTip="Documentation">
                 <fluence:Button.Icon>
-                    <fluence:FontIcon Glyph="&#xE8A5;" IconFontSize="14" />
+                    <fluence:FontIcon Glyph="&#xE8A5;" IconFontSize="16" />
                 </fluence:Button.Icon>
             </fluence:Button>
             <fluence:Button
@@ -53,11 +52,10 @@
                 MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
                 Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                 AutomationProperties.Name="Toggle theme"
-                Appearance="Subtle"
                 Click="ThemeToggleButton_Click"
                 ToolTip="Toggle theme">
                 <fluence:Button.Icon>
-                    <fluence:FontIcon Glyph="&#xE793;" IconFontSize="14" />
+                    <fluence:FontIcon Glyph="&#xE793;" IconFontSize="16" />
                 </fluence:Button.Icon>
             </fluence:Button>
             <fluence:ToggleButton
@@ -68,7 +66,7 @@
                 Checked="FavoriteToggleButton_CheckedChanged"
                 ToolTip="Add to favorites"
                 Unchecked="FavoriteToggleButton_CheckedChanged">
-                <fluence:FontIcon x:Name="FavoriteIcon" Glyph="&#xE734;" IconFontSize="14" />
+                <fluence:FontIcon x:Name="FavoriteIcon" Glyph="&#xE734;" IconFontSize="16" />
             </fluence:ToggleButton>
         </fluence:StackPanel>
     </Grid>
