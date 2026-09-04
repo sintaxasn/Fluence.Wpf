@@ -11,10 +11,7 @@
     mc:Ignorable="d">
     <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Typography" />
+            <local:GalleryPageHeader DocsAnchor="typography-1" Title="Typography" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Fluent type styles use Segoe UI Variable when available and fall back to Segoe UI." />
 
             <!--  WinUI Gallery Typography page: the type ramp table is a ControlExample with source, not a bare catalog.  -->
