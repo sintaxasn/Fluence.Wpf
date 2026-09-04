@@ -36,7 +36,7 @@
     <Thickness x:Key="DemoNavigationHeaderMargin">12,8</Thickness>
     <Thickness x:Key="DemoNavigationContentMargin">20</Thickness>
     <Thickness x:Key="DemoNavigationDescriptionMargin">0,6,0,0</Thickness>
-    <!--  GalleryPageHeader action row: matches the WinUI 3 Gallery PageHeader's Spacing="4" StackPanel around ThemeButton, CopyLinkButton, and FavoriteButton.  -->
+    <!--  GalleryPageHeader action row: the WinUI 3 Gallery PageHeader's right-side action StackPanel carries no Spacing; the 4px gaps come from per-button Margin on ThemeButton, CopyLinkButton, and FavoriteButton.  -->
     <sys:Double x:Key="DemoPageHeaderActionSpacing">4</sys:Double>
     <Thickness x:Key="DemoFlyoutPanelMargin">4</Thickness>
     <Thickness x:Key="DemoSingleBorderThickness">1</Thickness>

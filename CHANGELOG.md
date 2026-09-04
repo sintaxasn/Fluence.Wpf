@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Demo: `GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is a shared gallery page header modelled on the WinUI 3 Gallery's `Controls/PageHeader.xaml`: a page title on the left and a row of Subtle-appearance action buttons on the right (Documentation, which opens the matching `docs/controls.md` section on GitHub; Toggle theme, which flips Light and Dark and disables itself under High Contrast; and an in-page Favorite toggle). All 18 `Gallery*Page.xaml` pages now open with this header in place of a bare page title `TextBlock`. Demo only; no library change.
+- Demo: `GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is a shared gallery page header modelled on the WinUI 3 Gallery's `Controls/PageHeader.xaml`: a page title on the left and a row of default-appearance action buttons on the right (Documentation, which opens the matching `docs/controls.md` section on GitHub; Toggle theme, which flips Light and Dark and disables itself under High Contrast; and an in-page Favorite toggle). 17 of the 18 `Gallery*Page.xaml` pages now open with this header in place of a bare page title `TextBlock`; Home mirrors the WinUI Gallery home page, which has no page title header, and keeps its hero lockup instead. Demo only; no library change.
 
 ### Fixed
 

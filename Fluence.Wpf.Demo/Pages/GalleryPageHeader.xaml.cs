@@ -37,7 +37,7 @@ namespace Fluence.Wpf.Demo.Pages
 {
     /// <summary>
     /// Shared gallery page header modelled on the WinUI 3 Gallery's Controls/PageHeader.xaml:
-    /// a page title on the left and a row of Subtle-appearance action buttons on the right
+    /// a page title on the left and a row of default-appearance action buttons on the right
     /// (Documentation, Toggle theme, Favorite).
     /// </summary>
     public partial class GalleryPageHeader : UserControl

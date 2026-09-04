@@ -20,7 +20,7 @@ ScrollViewer
             └── Source expander                  [XAML and C# tabs]
 ```
 
-`GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is the shared page header for every gallery page, modelled on the WinUI 3 Gallery `Controls/PageHeader.xaml`. Set `Title` for the page name; set `DocsAnchor` to the matching `docs/controls.md` heading slug to show the Documentation button, or leave it empty to hide it (Home, Colors, and Settings have no matching section).
+`GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is the shared page header for every gallery page except Home, modelled on the WinUI 3 Gallery `Controls/PageHeader.xaml`. Home mirrors the WinUI Gallery home page, which has no page title header, and keeps its hero lockup instead. Set `Title` for the page name; set `DocsAnchor` to the matching `docs/controls.md` heading slug to show the Documentation button, or leave it empty to hide it (Colors and Settings have no matching section).
 
 ## Color layering
 
