@@ -9,7 +9,7 @@ Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design
 ```text
 ScrollViewer
 └── StackPanel (page root)
-    ├── TextBlock        - Page name              [Title typography]
+    ├── GalleryPageHeader - Page name, Documentation/Toggle theme/Favorite actions [Title typography]
     ├── TextBlock        - Page description       [Body, secondary foreground]
     └── for each sample:
         └── DemoSampleControl
@@ -19,6 +19,8 @@ ScrollViewer
             ├── RightRailContent                 [optional options pane]
             └── Source expander                  [XAML and C# tabs]
 ```
+
+`GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is the shared page header for every gallery page, modelled on the WinUI 3 Gallery `Controls/PageHeader.xaml`. Set `Title` for the page name; set `DocsAnchor` to the matching `docs/controls.md` heading slug to show the Documentation button, or leave it empty to hide it (Home, Colors, and Settings have no matching section).
 
 ## Color layering
 
