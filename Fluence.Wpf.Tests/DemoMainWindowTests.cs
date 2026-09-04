@@ -348,6 +348,10 @@ namespace Fluence.Wpf.Tests
                     Window window = CreateHostWindow(page);
                     try
                     {
+                        GalleryPageHeader header = Assert.Single(FindAllVisualChildren<GalleryPageHeader>(page));
+                        Assert.False(string.IsNullOrWhiteSpace(header.Title),
+                            page.GetType().Name + " should expose exactly one GalleryPageHeader with a non-empty Title.");
+
                         if (page is GalleryIconsPage)
                         {
                             Grid pageRoot = Assert.IsType<Grid>(FindByName<Grid>(page, "PageRoot"), exactMatch: false);
