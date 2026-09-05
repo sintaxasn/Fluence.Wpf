@@ -514,5 +514,11 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        private static TranslateTransform GetToggleSwitchKnobTranslate(Controls.ToggleSwitch toggleSwitch)
+        {
+            FrameworkElement knob = Assert.IsType<FrameworkElement>(FindVisualChildByName<FrameworkElement>(toggleSwitch, "SwitchKnob"), exactMatch: false);
+            return Assert.IsType<TranslateTransform>(knob.RenderTransform);
+        }
     }
 }

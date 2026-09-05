@@ -36,14 +36,24 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 B11 tests: Slider thumb scale animations.
+    /// Fluent <see cref="Slider"/> control: thumb scale animations.
     /// WinUI canonical: hover 1.167, pressed 0.86, ControlFastOutSlowIn easing.
     /// </summary>
-    public partial class ControlTests
+    public sealed class SliderTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 B11  Slider thumb scale
         // ---------------------------------------------------------------------------
@@ -53,9 +63,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
@@ -71,9 +78,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
@@ -98,9 +102,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
