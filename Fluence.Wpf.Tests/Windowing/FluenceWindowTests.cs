@@ -43,7 +43,7 @@ namespace Fluence.Wpf.Tests.Windowing
     /// WI-2 hardening tests for FluenceWindow: backdrop swap, full HC theme cycle,
     /// close-button DynamicResource fix (Finding B).
     /// </summary>
-    public class FluenceWindowTests
+    public sealed class FluenceWindowTests
     {
 
         private static void ResetAndApply(ApplicationTheme theme, Application app)
