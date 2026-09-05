@@ -28,7 +28,9 @@
 
 using System.Globalization;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
+using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -110,6 +112,12 @@ namespace Fluence.Wpf.Controls
         {
             get => GetValue(IconSourceProperty);
             set => SetValue(IconSourceProperty, value);
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new InfoBadgeAutomationPeer(this);
         }
 
         /// <inheritdoc />
