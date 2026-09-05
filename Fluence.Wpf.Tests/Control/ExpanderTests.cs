@@ -43,16 +43,11 @@ namespace Fluence.Wpf.Tests.Control
     /// Fluent <see cref="Controls.Expander"/> control: chevron rotation easing
     /// (ControlFastOutSlowIn / SplineDoubleKeyFrame) and content slide.
     /// </summary>
-    public sealed class ExpanderTests : IAsyncLifetime
+    public sealed class ExpanderTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public ExpanderTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

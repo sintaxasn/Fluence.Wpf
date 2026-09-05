@@ -40,16 +40,11 @@ namespace Fluence.Wpf.Tests.Control
     /// rotation and spin state roundtrips, and the spin animation's pause/resume/stop behavior
     /// across visibility and load state changes.
     /// </summary>
-    public sealed class FontIconTests : IAsyncLifetime
+    public sealed class FontIconTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public FontIconTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]
@@ -102,7 +97,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.FontIcon icon = new()
                 {
@@ -141,7 +135,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.FontIcon icon = new()
                 {

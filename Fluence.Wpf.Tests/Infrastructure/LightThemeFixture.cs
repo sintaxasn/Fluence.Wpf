@@ -27,38 +27,35 @@
  */
 
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests.Control
+namespace Fluence.Wpf.Tests.Infrastructure
 {
     /// <summary>
-    /// <see cref="Controls.TextBlockExtensions"/>: the Typography attached property applies the
-    /// matching WinUI type-ramp style, including its font size, to a plain <see cref="TextBlock"/>.
+    /// One reset and one Light apply per test class, for classes in which no test applies a theme,
+    /// changes the accent intent, or toggles reduced motion. Those classes pay the fixture cost
+    /// once instead of once per test. A class that mutates any of that state keeps its own
+    /// per-test <see cref="IAsyncLifetime"/> and must not take this fixture.
     /// </summary>
-    public sealed class TextBlockExtensionsTests : IClassFixture<LightThemeFixture>
+    public sealed class LightThemeFixture : IAsyncLifetime
     {
-        public TextBlockExtensionsTests(LightThemeFixture fixture)
+        /// <summary>
+        /// Resets the application and applies the Light theme on the shared STA thread, once for
+        /// the whole class. xunit constructs fixtures on the runner thread, so the work is
+        /// marshalled through <see cref="WpfTestSta.RunOnStaAsync(System.Action)"/>.
+        /// </summary>
+        public ValueTask InitializeAsync()
         {
-            _ = fixture;
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
 
-        [Fact]
-        public Task TextBlockExtensions_Typography_SetsCorrectFontSizeAsync()
+        /// <summary>
+        /// Closes any window the class left open and returns the application to a known Light
+        /// state so the next class does not inherit this one's tree.
+        /// </summary>
+        public ValueTask DisposeAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application application = WpfTestSta.EnsureApplication();
-
-                TextBlock textBlock = new();
-
-                Controls.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
-
-                Assert.Same(application.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
-                Assert.Equal(18.0, textBlock.FontSize);
-            });
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
     }
 }

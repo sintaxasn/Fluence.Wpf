@@ -38,16 +38,11 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
-    public sealed class HyperlinkButtonTests : IAsyncLifetime
+    public sealed class HyperlinkButtonTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public HyperlinkButtonTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]
@@ -112,7 +107,6 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.HyperlinkButton button = new()
                 {

@@ -44,16 +44,11 @@ namespace Fluence.Wpf.Tests.Control
     /// without a pane ScrollViewer, the overflow menu (invocation, item recovery, reflow, and
     /// the exact-fit boundary grace), and the Top footer's icon-only rendering and indicator.
     /// </summary>
-    public sealed class NavigationViewTopModeTests : IAsyncLifetime
+    public sealed class NavigationViewTopModeTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public NavigationViewTopModeTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

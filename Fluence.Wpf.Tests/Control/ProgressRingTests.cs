@@ -374,7 +374,6 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                 ProgressRing ring = new()
                 {

@@ -49,16 +49,11 @@ namespace Fluence.Wpf.Tests.Control
     /// Fluent <see cref="ToggleSwitch"/> control: knob easing (SplineDoubleKeyFrame /
     /// ControlFastOutSlowIn).
     /// </summary>
-    public sealed class ToggleSwitchTests : IAsyncLifetime
+    public sealed class ToggleSwitchTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public ToggleSwitchTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

@@ -41,16 +41,11 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
-    public sealed class NumberBoxTests : IAsyncLifetime
+    public sealed class NumberBoxTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public NumberBoxTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

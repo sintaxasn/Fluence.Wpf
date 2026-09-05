@@ -43,16 +43,11 @@ namespace Fluence.Wpf.Tests.Control
     /// centered selection indicator, and left/bottom strip placements keep the header and
     /// content regions properly separated.
     /// </summary>
-    public sealed class TabControlTests : IAsyncLifetime
+    public sealed class TabControlTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public TabControlTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

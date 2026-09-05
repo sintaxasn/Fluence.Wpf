@@ -36,16 +36,11 @@ namespace Fluence.Wpf.Tests.Control
     /// Layout primitive defaults: <see cref="Controls.Border"/>, <see cref="Controls.StackPanel"/>
     /// and <see cref="Controls.DockPanel"/> each roundtrip their Fluence-only property defaults.
     /// </summary>
-    public sealed class LayoutPrimitiveTests : IAsyncLifetime
+    public sealed class LayoutPrimitiveTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public LayoutPrimitiveTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

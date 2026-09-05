@@ -45,16 +45,11 @@ namespace Fluence.Wpf.Tests.Control
     /// <summary>
     /// Fluent <see cref="InfoBadge"/> control: DisplayKindStates VSM group.
     /// </summary>
-    public sealed class InfoBadgeTests : IAsyncLifetime
+    public sealed class InfoBadgeTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public InfoBadgeTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

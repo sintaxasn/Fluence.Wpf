@@ -877,7 +877,6 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(application.Resources.MergedDictionaries.Count > 0);
                     Color lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
@@ -2187,7 +2186,6 @@ topMode: false,
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"));

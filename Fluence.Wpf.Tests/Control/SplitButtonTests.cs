@@ -42,16 +42,11 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
-    public sealed class SplitButtonTests : IAsyncLifetime
+    public sealed class SplitButtonTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public SplitButtonTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         #region Defaults and DPs

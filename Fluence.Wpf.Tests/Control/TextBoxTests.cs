@@ -410,7 +410,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
                 {
@@ -444,7 +443,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
                 {
@@ -541,7 +539,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Controls.TextBox textBox = new()
                 {
