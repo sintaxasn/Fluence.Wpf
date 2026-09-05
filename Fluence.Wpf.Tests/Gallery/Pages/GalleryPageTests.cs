@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,10 +42,293 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Gallery.Pages
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Demo gallery page parity and polish tests: gallery sample pages must render without data
+    /// binding errors and must match the WinUI Gallery source layout, states, and interactions.
+    /// A temporary home for <see cref="RunDemoPageTestAsync"/> and its callers; Task 26 of the
+    /// consolidation plan splits this class one gallery page at a time.
+    /// </summary>
+    public sealed class GalleryPageTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
+        }
+
+        [Fact]
+        public Task GalleryInputsPage_SliderSamplesIncludeHorizontalAndVerticalTicksAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryInputsPage(), static window =>
+            {
+                Controls.Slider horizontal = Assert.IsType<Controls.Slider>(FindVisualChildByName<Controls.Slider>(window, "HorizontalTickSlider"), exactMatch: false);
+                Controls.Slider vertical = Assert.IsType<Controls.Slider>(FindVisualChildByName<Controls.Slider>(window, "VerticalTickSlider"), exactMatch: false);
+
+                Assert.NotEqual(TickPlacement.None, horizontal.TickPlacement);
+                Assert.NotEqual(TickPlacement.None, vertical.TickPlacement);
+                Assert.True(horizontal.TickFrequency > 0);
+                Assert.True(vertical.TickFrequency > 0);
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_LoadsWithoutDataBindingErrorsAsync()
+        {
+            // Regression: the flyout ShadowCaster in DropDownButton, SplitButton and ToggleSplitButton bound its
+            // MinWidth by ElementName from inside the Popup, which logged "Cannot find source for binding with
+            // reference 'ElementName=OuterBorder'" (Data Error 4) on every page load.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                using BindingErrorListener listener = new();
+                PresentationTraceSources.Refresh();
+                SourceLevels previousLevel = PresentationTraceSources.DataBindingSource.Switch.Level;
+                _ = PresentationTraceSources.DataBindingSource.Listeners.Add(listener);
+                PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
+                Window window = new()
+                {
+                    Width = 900,
+                    Height = 700,
+                    Content = new GalleryButtonsPage(),
+                };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Empty(listener.Messages);
+                }
+                finally
+                {
+                    PresentationTraceSources.DataBindingSource.Listeners.Remove(listener);
+                    PresentationTraceSources.DataBindingSource.Switch.Level = previousLevel;
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_GraphicalButtonClickReportsAutomationNameAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
+            {
+                Controls.Button button = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(window, "GraphicalButton"), exactMatch: false);
+                TextBlock output = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "GraphicalButtonOutputText"), exactMatch: false);
+                Image image = Assert.IsType<Image>(button.Content, exactMatch: false);
+
+                Assert.NotNull(image.Source);
+                Assert.Equal(50.0, button.Width, 0.1);
+                Assert.Equal(50.0, button.Height, 0.1);
+                Assert.True(string.IsNullOrWhiteSpace(output.Text), "The graphical sample output starts empty.");
+
+                button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.Equal("You clicked: Pie", output.Text, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_RepeatButtonIncrementsNearbyCountTextAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
+            {
+                Controls.RepeatButton button = Assert.IsType<Controls.RepeatButton>(FindVisualChildByName<Controls.RepeatButton>(window, "RepeatCounterButton"), exactMatch: false);
+                TextBlock count = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "RepeatButtonCountText"), exactMatch: false);
+                Controls.RepeatButton? accentRepeat = FindRepeatButtonByContent(window, "Accent repeat");
+
+                Assert.Null(accentRepeat);
+                Assert.Equal("Clicks: 0", count.Text, StringComparer.Ordinal);
+
+                button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.Equal("Clicks: 2", count.Text, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_ToggleButtonSampleUpdatesStateTextAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
+            {
+                Controls.ToggleButton wrapToggle = Assert.IsType<Controls.ToggleButton>(FindVisualChildByName<Controls.ToggleButton>(window, "WrapToggleButton"), exactMatch: false);
+                Controls.ToggleButton threeStateToggle = Assert.IsType<Controls.ToggleButton>(FindVisualChildByName<Controls.ToggleButton>(window, "ThreeStateToggleButton"), exactMatch: false);
+                TextBlock stateText = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "ToggleButtonStateText"), exactMatch: false);
+
+                Assert.True(threeStateToggle.IsThreeState, "The three-state sample should opt into IsThreeState.");
+                Assert.Equal("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
+
+                wrapToggle.IsChecked = true;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.Equal("Wrap text: On", stateText.Text, StringComparer.Ordinal);
+
+                wrapToggle.IsChecked = false;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.Equal("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task GalleryButtonsPage_ToggleSplitButtonSampleTogglesStateTextAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryButtonsPage(), static window =>
+            {
+                Controls.ToggleSplitButton listToggle = Assert.IsType<Controls.ToggleSplitButton>(FindVisualChildByName<Controls.ToggleSplitButton>(window, "ListToggleSplitButton"), exactMatch: false);
+                TextBlock stateText = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "ToggleSplitButtonStateText"), exactMatch: false);
+
+                Assert.Equal("List formatting: Off", stateText.Text, StringComparer.Ordinal);
+
+                Button primary = Assert.IsType<Button>(listToggle.Template?.FindName("PART_PrimaryButton", listToggle));
+
+                primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.True(listToggle.IsChecked, "Clicking the primary half should check the sample.");
+                Assert.Equal("List formatting: Bulleted list", stateText.Text, StringComparer.Ordinal);
+
+                primary.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.False(listToggle.IsChecked, "A second primary click should uncheck the sample.");
+                Assert.Equal("List formatting: Off", stateText.Text, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task GallerySelectionPage_CheckBoxSamplesMatchWinUIGalleryStatesAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GallerySelectionPage(), static window =>
+            {
+                Controls.CheckBox twoState = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "TwoStateCheckBox"), exactMatch: false);
+                Controls.CheckBox threeState = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "ThreeStateCheckBox"), exactMatch: false);
+                Controls.CheckBox selectAll = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "SelectAllCheckBox"), exactMatch: false);
+                Controls.CheckBox optionOne = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "OptionOneCheckBox"), exactMatch: false);
+                Controls.CheckBox optionTwo = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "OptionTwoCheckBox"), exactMatch: false);
+                Controls.CheckBox optionThree = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "OptionThreeCheckBox"), exactMatch: false);
+
+                Assert.False(twoState.IsThreeState);
+                Assert.True(threeState.IsThreeState);
+
+                selectAll.IsChecked = true;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.True(optionOne.IsChecked.GetValueOrDefault());
+                Assert.True(optionTwo.IsChecked.GetValueOrDefault());
+                Assert.True(optionThree.IsChecked.GetValueOrDefault());
+
+                optionTwo.IsChecked = false;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                Assert.Null(selectAll.IsChecked);
+            });
+        }
+
+        [Fact]
+        public Task GallerySelectionPage_RatingAndRequestedToggleSamplesArePresentAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GallerySelectionPage(), static window =>
+            {
+                Controls.RatingControl rating = Assert.IsType<Controls.RatingControl>(FindVisualChildByName<Controls.RatingControl>(window, "RatingSample"), exactMatch: false);
+                Controls.RatingControl readOnlyRating = Assert.IsType<Controls.RatingControl>(FindVisualChildByName<Controls.RatingControl>(window, "ReadOnlyRatingSample"), exactMatch: false);
+                TextBlock workHeader = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "WorkToggleHeaderText"), exactMatch: false);
+                Controls.ToggleSwitch workToggle = Assert.IsType<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(window, "WorkToggleSwitch"), exactMatch: false);
+                TextBlock workLabel = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "WorkToggleStateText"), exactMatch: false);
+                Controls.ProgressRing ring = Assert.IsType<Controls.ProgressRing>(FindVisualChildByName<Controls.ProgressRing>(window, "WorkToggleProgressRing"), exactMatch: false);
+
+                Assert.Equal(1, CountVisualChildren<Controls.ToggleSwitch>(window));
+                Assert.Null(FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch"));
+                Assert.Null(FindVisualChildByName<TextBlock>(window, "SimpleToggleStateText"));
+                Assert.Equal("Toggle work", workHeader.Text, StringComparer.Ordinal);
+                Assert.True(workToggle.IsChecked.GetValueOrDefault());
+                Assert.Equal("On", workLabel.Text, StringComparer.Ordinal);
+                Assert.True(ring.IsIndeterminate);
+                Assert.Equal(new Thickness(24, 0, 0, 0), ring.Margin);
+
+                workToggle.IsChecked = false;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.False(ring.IsActive);
+
+                workToggle.IsChecked = true;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.True(ring.IsActive);
+            });
+        }
+
+        [Fact]
+        public Task GalleryTreesPage_IncludesMultipleSelectionTreeViewAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
+            {
+                Controls.TreeView treeView = Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"), exactMatch: false);
+
+                Assert.Equal(TreeViewSelectionMode.Multiple, treeView.SelectionMode);
+            });
+        }
+
+        [Fact]
+        public Task GalleryLayoutPage_ExpanderStartsCollapsedAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryLayoutPage(), static window =>
+            {
+                Controls.Expander expander = Assert.IsType<Controls.Expander>(FindVisualChildByName<Controls.Expander>(window, "AdvancedOptionsExpander"), exactMatch: false);
+
+                Assert.False(expander.IsExpanded, "Layout page Expander sample should be collapsed by default.");
+            });
+        }
+
+        [Fact]
+        public Task GalleryDataPage_ListBoxSamplesExposeSelectionModesAsync()
+        {
+            return RunDemoPageTestAsync(static () => new GalleryDataPage(), static window =>
+            {
+                Controls.ListBox singleSelect = Assert.IsType<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox"), exactMatch: false);
+                Controls.ListBox multiSelect = Assert.IsType<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox"), exactMatch: false);
+
+                Assert.Equal(SelectionMode.Single, singleSelect.SelectionMode);
+                Assert.Equal(SelectionMode.Extended, multiSelect.SelectionMode);
+                Assert.True(singleSelect.Items.Count > 0, "Single-selection ListBox sample should contain items.");
+                Assert.True(multiSelect.SelectedItems.Count >= 2,
+                    "Multi-selection ListBox sample should start with multiple items selected.");
+            });
+        }
+
+        [Fact]
+        public async Task GalleryDataAndTreeSamplesExposeThemedBordersAsync()
+        {
+            await RunDemoPageTestAsync(static () => new GalleryDataPage(), static window =>
+            {
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "SimpleListView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "RichListView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListBox>(FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox"), exactMatch: false));
+            }).ConfigureAwait(true);
+
+            await RunDemoPageTestAsync(static () => new GalleryDataBindingPage(), static window =>
+            {
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "BoundListView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "SelectionModeListView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "DataTemplateListView"), exactMatch: false));
+            }).ConfigureAwait(true);
+
+            await RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
+            {
+                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "HierarchyTreeView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "SelectionTreeView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"), exactMatch: false));
+                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "ExpansionTreeView"), exactMatch: false));
+            }).ConfigureAwait(true);
+        }
+
         [Fact]
         public Task GalleryButtonsPage_EnableCheckBoxControlsOnlyTheStandardButtonAsync()
         {
@@ -77,8 +361,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
-
                 DemoSampleControl sample = new()
                 {
                     SampleDescription = "Sample",
@@ -581,6 +863,74 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        private static void AssertControlHasThemedBorder(System.Windows.Controls.Control control)
+        {
+            Assert.Equal(new Thickness(1), control.BorderThickness);
+            Assert.NotNull(control.BorderBrush);
+        }
+
+        private static int CountVisualChildren<T>(DependencyObject root) where T : DependencyObject
+        {
+            int count = 0;
+            foreach (T child in FindVisualChildren<T>(root))
+            {
+                count++;
+            }
+
+            return count;
+        }
+
+        private static Controls.RepeatButton? FindRepeatButtonByContent(DependencyObject root, string content)
+        {
+            return FindVisualChildren<Controls.RepeatButton>(root).FirstOrDefault(repeatButton => string.Equals(repeatButton.Content as string, content, StringComparison.Ordinal));
+        }
+
+        private sealed class BindingErrorListener : TraceListener
+        {
+            public List<string> Messages { get; } = [];
+
+            public override void Write(string? message)
+            {
+                // WPF writes the trace header through Write; only the message line matters.
+            }
+
+            public override void WriteLine(string? message)
+            {
+                if (message is not null && !string.IsNullOrWhiteSpace(message))
+                {
+                    Messages.Add(message);
+                }
+            }
+        }
+
+        private static Task RunDemoPageTestAsync(Func<UserControl> createPage, Action<Window> verify)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                _ = TestApp.EnsureDemoTheme();
+                UserControl page = createPage();
+                Window window = new()
+                {
+                    Width = 900,
+                    Height = 700,
+                    Content = page,
+                };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    verify(window);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         private static double GetExplicitHeaderWidth(IDictionary<string, TabItem> items, string header)
         {
             Assert.True(items.TryGetValue(header, out TabItem? item), "TabItem should exist: " + header);
@@ -603,6 +953,16 @@ namespace Fluence.Wpf.Tests
         private static Controls.RadioButton? FindRadioButtonByContent(DependencyObject root, string content)
         {
             return FindVisualChildren<Controls.RadioButton>(root).FirstOrDefault(radioButton => string.Equals(radioButton.Content as string, content, StringComparison.Ordinal));
+        }
+
+        // FindFluentButtonByContent is also defined in the base ControlTests.cs, which still
+        // owns the MainWindow_* tests until Task 18 moves them into Gallery/DemoShellTests.cs.
+        // Task 18 is expected to reconcile the two copies once that second destination exists,
+        // per the controller amendment's rule against copying a helper more than one
+        // destination needs.
+        private static Controls.Button? FindFluentButtonByContent(DependencyObject root, string content)
+        {
+            return FindVisualChildren<Controls.Button>(root).FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
         }
     }
 }

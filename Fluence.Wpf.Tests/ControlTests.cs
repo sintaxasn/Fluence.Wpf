@@ -47,7 +47,7 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
 {
-    public sealed partial class ControlTests : IAsyncLifetime
+    public sealed class ControlTests : IAsyncLifetime
     {
         public ValueTask InitializeAsync()
         {
