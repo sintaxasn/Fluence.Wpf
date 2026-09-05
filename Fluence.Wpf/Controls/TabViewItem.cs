@@ -26,7 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Controls
         public static readonly RoutedEvent CloseRequestedEvent = EventManager.RegisterRoutedEvent(
             nameof(CloseRequested),
             RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
+            typeof(EventHandler<TabViewTabCloseRequestedEventArgs>),
             typeof(TabViewItem));
 
         /// <summary>
@@ -108,8 +108,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the per-tab close button. The parent <see cref="TabView"/>
         /// aggregates this into <see cref="TabView.TabCloseRequested"/> for convenience.
         /// </summary>
-        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
-        public event RoutedEventHandler CloseRequested
+        public event EventHandler<TabViewTabCloseRequestedEventArgs> CloseRequested
         {
             add => AddHandler(CloseRequestedEvent, value);
             remove => RemoveHandler(CloseRequestedEvent, value);
