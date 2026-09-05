@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    CheckBox firstCheckBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(first, "SelectionCheckBox"), exactMatch: false);
+                    System.Windows.Controls.CheckBox firstCheckBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(first, "SelectionCheckBox"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, firstCheckBox.Visibility);
                     Assert.True(firstCheckBox.IsThreeState,
                         "Multiple-selection TreeViewItem checkbox should support indeterminate parent state.");
@@ -446,7 +446,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    CheckBox checkBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
+                    System.Windows.Controls.CheckBox checkBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, checkBox.Visibility);
                     Assert.Equal(false, item.IsSelectionChecked);
                     Assert.Empty(treeView.SelectedItems);
@@ -480,7 +480,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    CheckBox checkBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
+                    System.Windows.Controls.CheckBox checkBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
 
                     // A content-less checkbox living in TreeViewItem's Auto-width selection
                     // column must not inherit the WinUI DefaultCheckBoxStyle MinWidth of 120
