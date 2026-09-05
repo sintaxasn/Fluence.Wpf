@@ -67,47 +67,47 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Name of the back button template part.
         /// </summary>
-        public const string PartBackButton = "PART_BackButton";
+        internal const string PartBackButton = "PART_BackButton";
 
         /// <summary>
         /// Name of the main content presenter template part.
         /// </summary>
-        public const string PartContentPresenter = "PART_ContentPresenter";
+        internal const string PartContentPresenter = "PART_ContentPresenter";
 
         /// <summary>
         /// Name of the scroll viewer that hosts pane items.
         /// </summary>
-        public const string PartPaneItemsScrollViewer = "PART_PaneItemsScrollViewer";
+        internal const string PartPaneItemsScrollViewer = "PART_PaneItemsScrollViewer";
 
         /// <summary>
         /// Name of the pane collapse/expand toggle button.
         /// </summary>
-        public const string PartPaneToggleButton = "PART_PaneToggleButton";
+        internal const string PartPaneToggleButton = "PART_PaneToggleButton";
 
         /// <summary>
         /// Name of the shared selection indicator element.
         /// </summary>
-        public const string PartSelectionIndicator = "PART_SelectionIndicator";
+        internal const string PartSelectionIndicator = "PART_SelectionIndicator";
 
         /// <summary>
         /// Name of the items host that renders <see cref="FooterMenuItems"/>.
         /// </summary>
-        public const string PartFooterItemsHost = "PART_FooterItemsHost";
+        internal const string PartFooterItemsHost = "PART_FooterItemsHost";
 
         /// <summary>
         /// Name of the selection indicator element for the footer items region.
         /// </summary>
-        public const string PartFooterSelectionIndicator = "PART_FooterSelectionIndicator";
+        internal const string PartFooterSelectionIndicator = "PART_FooterSelectionIndicator";
 
         /// <summary>
         /// Name of the top pane items host template part.
         /// </summary>
-        public const string PartTopItemsHost = "PART_TopItemsHost";
+        internal const string PartTopItemsHost = "PART_TopItemsHost";
 
         /// <summary>
         /// Name of the top pane overflow button template part.
         /// </summary>
-        public const string PartTopOverflowButton = "PART_TopOverflowButton";
+        internal const string PartTopOverflowButton = "PART_TopOverflowButton";
 
         private const string PartPaneColumn = "PaneColumn";
         private const double PaneClosedWidth = 48.0;
