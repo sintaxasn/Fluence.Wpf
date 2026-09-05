@@ -39,6 +39,7 @@ using System.Windows.Input;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 
 namespace Fluence.Wpf.Tests
 {
