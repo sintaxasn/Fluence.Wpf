@@ -37,7 +37,7 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Theming
 {
     /// <summary>
     /// Tests for <see cref="ThemeResourceExtension"/> and <see cref="ThemeDictionary"/>.
