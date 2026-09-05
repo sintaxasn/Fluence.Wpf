@@ -27,18 +27,34 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Fluent <see cref="Controls.ProgressBar"/> control.
+    /// Authority: WinUI 3 ProgressBar_themeresources.xaml.
+    /// </summary>
+    public sealed class ProgressBarTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task ProgressBar_PausedMode_UsesCautionBrushAsync()
         {
@@ -51,7 +67,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                 Controls.ProgressBar progressBar = new()
@@ -95,9 +110,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -125,7 +137,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new()
                 {
@@ -156,9 +167,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -189,9 +197,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -220,9 +225,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -274,9 +276,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -324,9 +323,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -368,9 +364,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     ProgressMode = ProgressBarMode.Indeterminate,
@@ -389,9 +382,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -422,9 +412,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -453,9 +440,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -486,7 +470,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new()
                 {
@@ -517,9 +500,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new() { Value = 50, Width = 240, Height = 24 };
                 Window window = new() { Content = progressBar };
                 window.Show();
@@ -536,7 +516,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new()
                 {
@@ -573,7 +552,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new() { Width = 240, Height = 24, Value = 50 };
                 Window w = new() { Content = progressBar, Width = 300, Height = 120 };
@@ -596,7 +574,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new() { Width = 240, Height = 24, Value = 50 };
                 Window w = new() { Content = progressBar, Width = 300, Height = 120 };
@@ -618,9 +595,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -638,6 +612,35 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(1.0, bar2.Opacity, 0.001);
                 w.Close();
             });
+        }
+
+        private static async Task<bool> WaitUntilAsync(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+            do
+            {
+                await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                if (condition())
+                {
+                    return true;
+                }
+
+                DispatcherFrame frame = new();
+                DispatcherTimer timer = new(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
+
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            return condition();
         }
     }
 }

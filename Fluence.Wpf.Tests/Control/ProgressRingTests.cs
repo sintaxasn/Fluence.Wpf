@@ -28,6 +28,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -35,19 +36,30 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// Tests for the rewritten <see cref="ProgressRing"/> - WinUI 3 arc-length
-    /// pulse + rotation indeterminate animation plus code-driven determinate arc.
+    /// Fluent <see cref="ProgressRing"/> control - WinUI 3 arc-length pulse + rotation
+    /// indeterminate animation plus code-driven determinate arc.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ProgressRingTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ----------------------------------------------------------------------
         // Default values + template part
         // ----------------------------------------------------------------------
@@ -57,9 +69,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new();
                 Assert.True(ring.IsActive, "Default IsActive must be true.");
                 Assert.True(ring.IsIndeterminate, "Default IsIndeterminate must be true.");
@@ -78,9 +87,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
@@ -100,9 +106,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new() { IsIndeterminate = true, IsActive = true };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
@@ -136,9 +139,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new() { Width = 32, Height = 32 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
@@ -157,9 +157,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new() { Width = 64, Height = 64 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
@@ -182,9 +179,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
@@ -210,9 +204,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
@@ -238,9 +229,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
@@ -269,9 +257,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsIndeterminate = true,
@@ -301,9 +286,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsIndeterminate = true,
@@ -336,7 +318,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
@@ -358,7 +339,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new()
                 {
@@ -394,7 +374,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                 ProgressRing ring = new()
@@ -468,9 +447,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     ProgressState = ProgressRingState.Paused,
@@ -512,7 +488,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new()
                 {
@@ -555,7 +530,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new()
                 {
@@ -597,7 +571,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new()
                 {
@@ -637,9 +610,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new()
                 {
                     IsActive = true,
@@ -682,7 +652,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ProgressRing ring = new()
                 {
@@ -726,9 +695,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new();
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
@@ -752,9 +718,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ProgressRing ring = new() { Width = 64, Height = 64 };
                 Window window = new() { Content = ring };
                 window.Show();
@@ -822,6 +785,51 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(KeyTimeType.Percent, animation.KeyFrames[i].KeyTime.Type);
                 Assert.Equal(expectedPercents[i], animation.KeyFrames[i].KeyTime.Percent, 0.001);
             }
+        }
+
+        // Pump the dispatcher for `milliseconds` so any in-flight storyboard
+        // reaches its HoldEnd state before the test samples layout values.
+        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
+        {
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+        }
+
+        private static async Task<bool> WaitUntilAsync(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+            do
+            {
+                await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                if (condition())
+                {
+                    return true;
+                }
+
+                DispatcherFrame frame = new();
+                DispatcherTimer timer = new(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
+
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            return condition();
         }
     }
 }
