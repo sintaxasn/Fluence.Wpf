@@ -645,11 +645,11 @@ namespace Fluence.Wpf.Controls
         /// <c language="csharp">DWMWA_SYSTEMBACKDROP_TYPE</c>. Only called when the OS supports that attribute
         /// (22H2+) and the effective backdrop is not <see cref="WindowBackdropType.None"/>.
         /// </summary>
-        /// <param name="WindowBackdropType">The effective backdrop type after capability resolution.</param>
+        /// <param name="backdropType">The effective backdrop type after capability resolution.</param>
         /// <returns>The <c language="csharp">DWMSBT_*</c> constant for the system backdrop.</returns>
-        private static DWM_SYSTEMBACKDROP_TYPE MapSystemBackdropType(WindowBackdropType WindowBackdropType)
+        private static DWM_SYSTEMBACKDROP_TYPE MapSystemBackdropType(WindowBackdropType backdropType)
         {
-            return WindowBackdropType switch
+            return backdropType switch
             {
                 WindowBackdropType.Acrylic => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW,
                 WindowBackdropType.Tabbed => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TABBEDWINDOW,
