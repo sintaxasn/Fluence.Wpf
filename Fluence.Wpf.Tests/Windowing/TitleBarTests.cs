@@ -52,7 +52,6 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
@@ -64,7 +63,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 finally
                 {
                     window?.Close();
-
                 }
             });
         }
@@ -86,7 +84,6 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             return WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
@@ -109,7 +106,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 finally
                 {
                     window?.Close();
-
                 }
             });
         }
@@ -331,7 +327,6 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
@@ -350,7 +345,6 @@ namespace Fluence.Wpf.Tests.Windowing
                     window?.Close();
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-
                 }
             });
         }
@@ -360,7 +354,6 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 int fireCount = 0;
                 void handler(object? s, ThemeChangedEventArgs e)
@@ -378,7 +371,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 {
                     ApplicationThemeManager.Changed -= handler;
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-
                 }
             });
         }
@@ -433,7 +425,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-
                 }
             });
         }
@@ -1022,7 +1013,6 @@ namespace Fluence.Wpf.Tests.Windowing
             // instead of only in manual QA.
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
@@ -1077,7 +1067,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 finally
                 {
                     window?.Close();
-
                 }
             });
         }
@@ -1093,7 +1082,6 @@ namespace Fluence.Wpf.Tests.Windowing
             // the command fires after the modal frame is pumping, then verify WindowState.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
                 WindowState observedStateAfterMinimize = WindowState.Normal;
@@ -1180,7 +1168,6 @@ namespace Fluence.Wpf.Tests.Windowing
                     {
                         window.Close();
                     }
-
                 }
             });
         }
@@ -1203,7 +1190,6 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow? window = null;
 
@@ -1262,7 +1248,6 @@ namespace Fluence.Wpf.Tests.Windowing
                 finally
                 {
                     window?.Close();
-
                 }
             });
         }

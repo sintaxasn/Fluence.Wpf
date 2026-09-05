@@ -5,7 +5,7 @@ This folder contains the xunit.v3 suite for the Fluence.Wpf library and demo she
 ## What Lives Here
 
 - `Infrastructure/WpfTestSta.cs` - the single STA-thread dispatcher used by every UI-touching test.
-- `Infrastructure/TestApp.cs` - the single application and theme reset. `EnsureLibraryTheme` for library tests, `EnsureDemoTheme` for the demo opt-in, `GenericDictionary` for slot `[2]`.
+- `Infrastructure/TestApp.cs` - the single application and theme reset. `EnsureLibraryTheme` for library tests, `EnsureDemoTheme` for the demo opt-in.
 - `Infrastructure/VisualTree.cs` - the tree walkers and `CloseWindowAndDrain`, brought into scope with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`.
 - `Infrastructure/BrushAssert.cs` - resolve a theme brush key and compare colours.
 - `Infrastructure/LightThemeFixture.cs` - one reset and one Light apply per class, for classes that do not mutate the theme.
@@ -39,6 +39,6 @@ Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --
 
 ## Maintenance Notes
 
-The class owns the reset, through `IAsyncLifetime` or `IClassFixture<LightThemeFixture>`; test bodies do not call a setup helper. Keep tests non-parallel and route UI work through `WpfTestSta`; WPF resource dictionaries, storyboards, and template application are not safe to exercise from parallel worker threads.
+New classes, and everything under `Control/`, `Control/Rules/` and `Gallery/Pages/`, own the reset through `IAsyncLifetime` or `IClassFixture<LightThemeFixture>`; test bodies do not call a setup helper. A small set of `Theming/` and `Windowing/` classes, plus `Gallery/DemoResourceCleanupTests.cs` and `Gallery/DemoSampleContractTests.cs`, predate this rule and still reset in the test body; see `AGENTS.md` section 6 for the list. Keep tests non-parallel and route UI work through `WpfTestSta`; WPF resource dictionaries, storyboards, and template application are not safe to exercise from parallel worker threads.
 
 Environment-dependent tests use xunit.v3 declarative skips (`[Fact(SkipUnless = ...)]` with a static condition property) rather than body-level `Assert.Skip`. Manual/maintainer-only probes (registry accent experiments, design-time resource regeneration) are marked `[Fact(Explicit = true)]` and never run in normal passes. Polling helpers honour `TestContext.Current.CancellationToken` so cancelled runs terminate promptly.

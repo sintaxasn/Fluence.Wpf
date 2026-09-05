@@ -125,7 +125,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                Application app = WpfTestSta.EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
 
                 FluenceWindow window = new();

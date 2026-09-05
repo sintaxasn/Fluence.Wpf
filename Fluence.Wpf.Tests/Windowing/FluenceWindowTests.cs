@@ -45,7 +45,6 @@ namespace Fluence.Wpf.Tests.Windowing
     /// </summary>
     public sealed class FluenceWindowTests
     {
-
         private static void ResetAndApply(ApplicationTheme theme, Application app)
         {
             ApplicationThemeManager.ResetForTesting();
