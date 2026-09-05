@@ -26,29 +26,36 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
+using System.Windows;
+using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Infrastructure
 {
     /// <summary>
-    /// Suppresses a specific Slopwatch rule (the LLM anti-cheat analyzer) on the annotated member,
-    /// with a written justification. Slopwatch recognizes this attribute by name and reads the rule
-    /// id and justification; the type is declared here because the tool ships no attribute package.
-    /// Test-assembly only.
+    /// Shared theme assertions and sequences for the xUnit suite (run on <see cref="WpfTestSta"/>).
     /// </summary>
-    /// <param name="ruleId">The Slopwatch rule id to suppress (for example <c language="text">SW001</c>).</param>
-    /// <param name="justification">Why the flagged pattern is acceptable here.</param>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-    internal sealed class SlopwatchSuppressAttribute(string ruleId, string justification) : Attribute
+    internal static class ThemeTestHelpers
     {
         /// <summary>
-        /// Gets the suppressed Slopwatch rule id.
+        /// Applies Light → Dark → High Contrast → Light with a stable backdrop.
         /// </summary>
-        public string RuleId { get; } = ruleId;
+        /// <param name="backdrop">Backdrop to use for all themes.</param>
+        /// <param name="updateAccent">Whether to update the accent color for each theme.</param>
+        internal static void ApplyStandardThemeCycle(
+            BackdropType backdrop = BackdropType.None,
+            bool updateAccent = true)
+        {
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, backdrop, updateAccent);
+            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, backdrop, updateAccent);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);
+        }
 
-        /// <summary>
-        /// Gets the written justification for the suppression.
-        /// </summary>
-        public string Justification { get; } = justification;
+        internal static void AssertKeyThemeBrushesResolve(Application application)
+        {
+            Assert.NotNull(application.TryFindResource("ApplicationBackgroundBrush"));
+            Assert.NotNull(application.TryFindResource("TextFillColorPrimaryBrush"));
+            Assert.NotNull(application.TryFindResource("AccentFillColorDefaultBrush"));
+        }
     }
 }

@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica);
                     ApplicationAccentColorManager.ApplySystemAccent();
-                    DemoTestHost.AddDemoSharedStyles(application);
+                    TestApp.AddDemoSharedStyles(application);
 
                     Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
                     Assert.Equal(4, dictionaries.Count);

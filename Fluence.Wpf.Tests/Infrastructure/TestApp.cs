@@ -75,8 +75,19 @@ namespace Fluence.Wpf.Tests.Infrastructure
         {
             Application application = EnsureLibraryTheme(ApplicationTheme.Light, backdrop);
             ApplicationAccentColorManager.ApplySystemAccent();
-            application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
+            AddDemoSharedStyles(application);
             return application;
+        }
+
+        /// <summary>
+        /// Merges the demo shared styles dictionary onto the given application. Exposed
+        /// separately from <see cref="EnsureDemoTheme"/> for tests that must apply their own
+        /// theme and backdrop combination before appending the demo styles.
+        /// </summary>
+        /// <param name="application">The application to merge the demo shared styles onto.</param>
+        internal static void AddDemoSharedStyles(Application application)
+        {
+            application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
         }
 
         /// <summary>

@@ -32,18 +32,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Infrastructure
 {
     internal static class DemoTestHost
     {
-        private static readonly Uri DemoSharedStylesUri = new(
-            "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
-            UriKind.Relative);
-
         internal static Task RunOnStaAsync(Action action)
         {
             return WpfTestSta.RunOnStaAsync(action);
@@ -51,17 +45,7 @@ namespace Fluence.Wpf.Tests
 
         internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)
         {
-            Application application = WpfTestSta.EnsureApplication() ?? throw new InvalidOperationException("WPF application was not created.");
-            ResetApplication(application);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent: true);
-            ApplicationAccentColorManager.ApplySystemAccent();
-            AddDemoSharedStyles(application);
-            return application;
-        }
-
-        internal static void AddDemoSharedStyles(Application application)
-        {
-            application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
+            return TestApp.EnsureDemoTheme(backdrop);
         }
 
         internal static Window CreateHostWindow(UIElement content)
@@ -118,21 +102,6 @@ namespace Fluence.Wpf.Tests
         {
             string path = GetRepositoryFilePath(relativeSegments);
             return File.ReadAllTextAsync(path, TestContext.Current.CancellationToken);
-        }
-
-        private static void ResetApplication(Application application)
-        {
-            foreach (Window window in (Window[])[.. application.Windows.Cast<Window>()])
-            {
-                window.Content = null;
-                window.Close();
-            }
-
-            WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
         }
     }
 }
