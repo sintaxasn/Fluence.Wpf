@@ -226,16 +226,16 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
                         </MultiTrigger>
-                        <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Hidden}">
+                        <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Hidden}">
                             <Setter TargetName="SpinPanel" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}">
+                        <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Compact}">
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="False" />
                             <Setter TargetName="SpinPanel" Property="Opacity" Value="0" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
+                                <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
@@ -243,7 +243,7 @@
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
+                                <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsKeyboardFocusWithin" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
