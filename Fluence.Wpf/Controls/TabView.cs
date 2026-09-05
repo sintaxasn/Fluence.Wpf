@@ -56,17 +56,17 @@ namespace Fluence.Wpf.Controls
     /// shown or hidden based on whether the tab strip overflows the available width.
     /// </para>
     /// </remarks>
-    [TemplatePart(Name = PartAddTabButton, Type = typeof(ButtonBase))]
-    [TemplatePart(Name = PartScrollBackButton, Type = typeof(RepeatButton))]
-    [TemplatePart(Name = PartScrollForwardButton, Type = typeof(RepeatButton))]
-    [TemplatePart(Name = PartTabContentScroller, Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = PART_AddTabButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_ScrollBackButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PART_ScrollForwardButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PART_TabContentScroller, Type = typeof(ScrollViewer))]
     public class TabView : TabControl
     {
         // Template part names - must match names in the default control template.
-        private const string PartAddTabButton = "PART_AddTabButton";
-        private const string PartScrollBackButton = "PART_ScrollBackButton";
-        private const string PartScrollForwardButton = "PART_ScrollForwardButton";
-        private const string PartTabContentScroller = "PART_TabContentScroller";
+        private const string PART_AddTabButton = "PART_AddTabButton";
+        private const string PART_ScrollBackButton = "PART_ScrollBackButton";
+        private const string PART_ScrollForwardButton = "PART_ScrollForwardButton";
+        private const string PART_TabContentScroller = "PART_TabContentScroller";
 
         // Scroll amount for each click of the scroll navigation buttons. This is a fixed value rather than
         private const double ScrollAmount = 200.0;
@@ -194,10 +194,10 @@ namespace Fluence.Wpf.Controls
             _scrollBackButton?.Click -= OnScrollBackClick;
             _scrollForwardButton?.Click -= OnScrollForwardClick;
             _tabContentScroller?.ScrollChanged -= OnTabScrollChanged;
-            _addTabButton = GetTemplateChild(PartAddTabButton) as ButtonBase;
-            _scrollBackButton = GetTemplateChild(PartScrollBackButton) as RepeatButton;
-            _scrollForwardButton = GetTemplateChild(PartScrollForwardButton) as RepeatButton;
-            _tabContentScroller = GetTemplateChild(PartTabContentScroller) as ScrollViewer;
+            _addTabButton = GetTemplateChild(PART_AddTabButton) as ButtonBase;
+            _scrollBackButton = GetTemplateChild(PART_ScrollBackButton) as RepeatButton;
+            _scrollForwardButton = GetTemplateChild(PART_ScrollForwardButton) as RepeatButton;
+            _tabContentScroller = GetTemplateChild(PART_TabContentScroller) as ScrollViewer;
             _addTabButton?.Click += OnAddTabButtonClick;
             _scrollBackButton?.Click += OnScrollBackClick;
             _scrollForwardButton?.Click += OnScrollForwardClick;

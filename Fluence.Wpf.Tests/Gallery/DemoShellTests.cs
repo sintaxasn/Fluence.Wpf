@@ -1427,7 +1427,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         "Title identity should start after the title-bar navigation slot.");
 
                     _ = nav.ApplyTemplate();
-                    Button internalToggle = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PartPaneToggleButton, nav));
+                    Button internalToggle = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PART_PaneToggleButton, nav));
                     Assert.Equal(Visibility.Collapsed, internalToggle.Visibility);
                 }
                 finally
@@ -1560,8 +1560,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     Assert.True(GetVisualX(titleBarBack, window) < GetVisualX(search, window), "Top mode back should appear before centered title-bar content.");
 
                     _ = nav.ApplyTemplate();
-                    Button internalBack = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PartBackButton, nav));
-                    Button? internalToggle = nav.Template.FindName(Controls.NavigationView.PartPaneToggleButton, nav) as Button;
+                    Button internalBack = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PART_BackButton, nav));
+                    Button? internalToggle = nav.Template.FindName(Controls.NavigationView.PART_PaneToggleButton, nav) as Button;
                     Assert.Equal(Visibility.Collapsed, internalBack.Visibility);
                     Assert.Null(internalToggle);
 
@@ -1699,7 +1699,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    FrameworkElement overflowButton = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(nav, Controls.NavigationView.PartTopOverflowButton), exactMatch: false);
+                    FrameworkElement overflowButton = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(nav, Controls.NavigationView.PART_TopOverflowButton), exactMatch: false);
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
                     int visibleNavigationItems = nav.Items.OfType<Controls.NavigationViewItem>().Count(static item => item.Visibility is Visibility.Visible);
                     Assert.True(visibleNavigationItems > 1,

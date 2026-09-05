@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests.Control
         {
             _ = nav.ApplyTemplate();
             System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(
-                nav.Template.FindName(NavigationView.PartPaneToggleButton, nav), exactMatch: false);
+                nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav), exactMatch: false);
             Assert.Equal(Visibility.Visible, paneToggle.Visibility);
         }
 
@@ -430,8 +430,8 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
-                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav));
 
                     System.Windows.Controls.StackPanel chrome = Assert.IsType<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome"), exactMatch: false);
                     Assert.Equal(Orientation.Horizontal, chrome.Orientation);
@@ -715,7 +715,7 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
                     Assert.Equal(Visibility.Collapsed, back.Visibility);
                 }
                 finally
@@ -748,8 +748,8 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
 
                     _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
-                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav));
                     Assert.Equal(Visibility.Collapsed, back.Visibility);
                     Assert.Equal(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5);
                 }
@@ -1656,7 +1656,7 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.Equal(48.0, offset.X, 1.0);
@@ -1691,7 +1691,7 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.Equal(42.0, offset.Y, 1.0);
@@ -1727,7 +1727,7 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.Equal(20.0, offset.Y, 1.0);
@@ -1762,7 +1762,7 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
 
@@ -1859,7 +1859,7 @@ topMode: false,
                     _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
                 }
@@ -1895,7 +1895,7 @@ topMode: false,
                     await WaitForAnimationAndDrainAsync(window.Dispatcher, 300).ConfigureAwait(true);
                     window.UpdateLayout();
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.Equal(20.0, offset.Y, 1.0);
@@ -1930,7 +1930,7 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     await AssertContentOffsetEventuallyAsync(window, nav, presenter, 48.0).ConfigureAwait(true);
                 }
@@ -1972,9 +1972,9 @@ topMode: false,
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
-                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartPaneToggleButton, nav));
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
+                    System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav));
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
                     Assert.Equal(Visibility.Visible, back.Visibility);
                     Assert.Equal(Visibility.Visible, paneToggle.Visibility);
                     Assert.Equal(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0);
@@ -2013,7 +2013,7 @@ topMode: false,
                     _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
 
-                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter), exactMatch: false);
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
 
                     await AssertContentOffsetEventuallyAsync(window, nav, presenter, 320.0).ConfigureAwait(true);
 
@@ -2150,7 +2150,7 @@ topMode: false,
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PartBackButton, nav));
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
                     Assert.Equal(Visibility.Visible, back.Visibility);
                 }
                 finally
@@ -2347,7 +2347,7 @@ topMode: false,
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
-                ScrollViewer scrollViewer = Assert.IsType<ScrollViewer>(FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer), exactMatch: false);
+                ScrollViewer scrollViewer = Assert.IsType<ScrollViewer>(FindVisualChildByName<ScrollViewer>(nav, NavigationView.PART_PaneItemsScrollViewer), exactMatch: false);
                 _ = Assert.IsType<SmoothScrollViewer>(scrollViewer, exactMatch: false);
                 Assert.Same(expected, scrollViewer.Style);
             }

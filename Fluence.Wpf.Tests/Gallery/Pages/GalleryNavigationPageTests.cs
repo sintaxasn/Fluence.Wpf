@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(page, "CompactNavigationDemo"), exactMatch: false);
                     Assert.False(nav.IsPaneOpen, "Compact sample should start collapsed.");
 
-                    Button paneToggle = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PartPaneToggleButton, nav));
+                    Button paneToggle = Assert.IsType<Button>(nav.Template.FindName(Controls.NavigationView.PART_PaneToggleButton, nav));
 
                     Controls.Button? sampleToggle = DemoTestHost.FindByName<Controls.Button>(page, "CompactPaneToggleButton");
                     Assert.Null(sampleToggle);
@@ -140,8 +140,8 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Assert.True(compact.IsPaneToggleButtonVisible,
                     "Compact navigation sample should explicitly show the pane toggle button.");
 
-                Button back = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PartBackButton, compact));
-                Button paneToggle = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact));
+                Button back = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PART_BackButton, compact));
+                Button paneToggle = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PART_PaneToggleButton, compact));
                 Assert.Equal(Visibility.Visible, back.Visibility);
                 Assert.Equal(Visibility.Visible, paneToggle.Visibility);
                 Assert.Null(FindVisualChildByName<Controls.Button>(window, "CompactPaneToggleButton"));

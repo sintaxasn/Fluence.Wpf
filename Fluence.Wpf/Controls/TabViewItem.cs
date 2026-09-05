@@ -37,11 +37,11 @@ namespace Fluence.Wpf.Controls
     /// A <see cref="TabItem"/> container used by <see cref="TabView"/> that renders an icon, a header,
     /// and an optional close button aligned with the WinUI 3 TabView visual language.
     /// </summary>
-    [TemplatePart(Name = PartCloseButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
     public class TabViewItem : TabItem
     {
         // Template part names.
-        private const string PartCloseButton = "PART_CloseButton";
+        private const string PART_CloseButton = "PART_CloseButton";
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
             _closeButton?.Click -= OnCloseButtonClick;
-            _closeButton = GetTemplateChild(PartCloseButton) as ButtonBase;
+            _closeButton = GetTemplateChild(PART_CloseButton) as ButtonBase;
             _closeButton?.Click += OnCloseButtonClick;
         }
 
