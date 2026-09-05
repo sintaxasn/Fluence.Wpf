@@ -468,5 +468,78 @@ namespace Fluence.Wpf.Tests.Theming
             while (d is not null && !File.Exists(Path.Join(d.FullName, "Fluence.Wpf.sln"))) { d = d.Parent; }
             return d?.FullName ?? AppContext.BaseDirectory;
         }
+
+        /// <summary>
+        /// Adds every string key defined directly by <paramref name="dictionary"/> to
+        /// <paramref name="keys"/>, then recurses into its merged dictionaries. A dictionary whose
+        /// Source is under Themes/Controls/ or Themes/Icons/ contributes nothing: its keys are
+        /// template internal, unsupported, and free to change in any release.
+        /// </summary>
+        /// <param name="dictionary">The dictionary to walk.</param>
+        /// <param name="keys">The set to fill.</param>
+        private static void CollectPublicKeys(ResourceDictionary dictionary, ISet<string> keys)
+        {
+            string source = dictionary.Source?.ToString() ?? string.Empty;
+            bool templateInternal =
+                source.Contains("Themes/Controls/", StringComparison.OrdinalIgnoreCase)
+                || source.Contains("Themes/Icons/", StringComparison.OrdinalIgnoreCase);
+
+            if (!templateInternal)
+            {
+                foreach (object key in dictionary.Keys)
+                {
+                    if (key is string text)
+                    {
+                        _ = keys.Add(text);
+                    }
+                }
+            }
+
+            foreach (ResourceDictionary merged in dictionary.MergedDictionaries)
+            {
+                CollectPublicKeys(merged, keys);
+            }
+        }
+
+        /// <summary>
+        /// The public XAML key set is frozen at 1.0 the way the CLR surface is frozen by
+        /// PublicApiAnalyzers. This asserts the Light theme's published keys against
+        /// Theming/golden/PublicKeys.txt and fails on an addition as well as a removal, so an
+        /// intentional change has to update the file in the same commit.
+        /// </summary>
+        /// <remarks>
+        /// Light is the reference theme. High contrast overrides the value of existing keys rather
+        /// than publishing new ones, so one file covers the contract.
+        /// The current set is always written to data/theme-golden/PublicKeys.txt, which is what an
+        /// intentional change copies over the committed file.
+        /// </remarks>
+        [Fact]
+        public async Task PublicKeyInventory_MatchesFrozenSetAsync()
+        {
+            SortedSet<string> actual = new(StringComparer.Ordinal);
+            await WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = TestApp.EnsureLibraryTheme();
+                CollectPublicKeys(app.Resources, actual);
+            }).ConfigureAwait(true);
+
+            string outDirectory = Path.Join(FindRepoRoot(), "data", "theme-golden");
+            _ = Directory.CreateDirectory(outDirectory);
+            await File.WriteAllLinesAsync(
+                Path.Join(outDirectory, "PublicKeys.txt"), actual, TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+            string frozenPath = Path.Join(AppContext.BaseDirectory, "Theming", "golden", "PublicKeys.txt");
+            Assert.True(File.Exists(frozenPath),
+                "Theming/golden/PublicKeys.txt is missing. Copy data/theme-golden/PublicKeys.txt over it.");
+
+            string[] frozen = await File.ReadAllLinesAsync(frozenPath, TestContext.Current.CancellationToken).ConfigureAwait(true);
+            List<string> added = [.. actual.Except(frozen, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+            List<string> removed = [.. frozen.Except(actual, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+
+            Assert.True(added.Count is 0,
+                "New public keys are not in the frozen set: " + string.Join(", ", added));
+            Assert.True(removed.Count is 0,
+                "Frozen public keys no longer resolve: " + string.Join(", ", removed));
+        }
     }
 }
