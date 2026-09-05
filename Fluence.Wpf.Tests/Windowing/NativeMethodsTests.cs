@@ -35,10 +35,11 @@ using Fluence.Wpf.Native;
 using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     /// <summary>
     /// Pins the pure, handle-free interop selectors in <see cref="NativeMethods"/>:
@@ -316,5 +317,59 @@ namespace Fluence.Wpf.Tests
             mmi.ptMaxSize.Y = 600;
             return mmi;
         }
+
+        #region WM_GETMINMAXINFO
+
+        [Fact]
+        public void MinMaxInfo_StructLayout_HasCorrectSize()
+        {
+            // MINMAXINFO must be 5 POINTs = 5 * 8 bytes = 40 bytes.
+            int size = System.Runtime.InteropServices.Marshal.SizeOf<MINMAXINFO>();
+            Assert.Equal(40, size);
+        }
+
+        [Fact]
+        public void MonitorInfo_StructLayout_HasCorrectSize()
+        {
+            // MONITORINFO = int + 3 RECTs (16 bytes each) + uint = 4 + 16 + 16 + 16 + 4 = 40 bytes.
+            // Actually: cbSize(4) + rcMonitor(16) + rcWork(16) + dwFlags(4) = 40 bytes.
+            int size = System.Runtime.InteropServices.Marshal.SizeOf<MONITORINFO>();
+            Assert.Equal(40, size);
+        }
+
+        [Fact]
+        public void MinMaxInfo_RoundTrip_PreservesValues()
+        {
+            MINMAXINFO mmi = new()
+            {
+                ptMaxPosition = new() { X = 10, Y = 20 },
+                ptMaxSize = new() { X = 1920, Y = 1040 },
+                ptMaxTrackSize = new() { X = 3840, Y = 2160 },
+                ptMinTrackSize = new() { X = 200, Y = 150 },
+            };
+
+            int size = System.Runtime.InteropServices.Marshal.SizeOf<MINMAXINFO>();
+            nint ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+            try
+            {
+                System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, ptr, fDeleteOld: false);
+                MINMAXINFO result = System.Runtime.InteropServices.Marshal.PtrToStructure<MINMAXINFO>(ptr);
+
+                Assert.Equal(10, result.ptMaxPosition.X);
+                Assert.Equal(20, result.ptMaxPosition.Y);
+                Assert.Equal(1920, result.ptMaxSize.X);
+                Assert.Equal(1040, result.ptMaxSize.Y);
+                Assert.Equal(3840, result.ptMaxTrackSize.X);
+                Assert.Equal(2160, result.ptMaxTrackSize.Y);
+                Assert.Equal(200, result.ptMinTrackSize.X);
+                Assert.Equal(150, result.ptMinTrackSize.Y);
+            }
+            finally
+            {
+                System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
+            }
+        }
+
+        #endregion WM_GETMINMAXINFO
     }
 }

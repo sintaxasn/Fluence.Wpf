@@ -258,5 +258,94 @@ namespace Fluence.Wpf.Tests.Windowing
                 }
             });
         }
+
+        #region CaptionButtonChrome - visibility and enablement matrix
+
+        [Fact]
+        public void Minimize_NoResize_Hides()
+        {
+            CaptionButtonChrome.GetMinimizeChrome(
+                ResizeMode.NoResize,
+                out Visibility vis,
+                out bool en);
+
+            Assert.Equal(Visibility.Collapsed, vis);
+            Assert.False(en);
+        }
+
+        [Fact]
+        public void Minimize_CanResize_ShowsEnabled()
+        {
+            CaptionButtonChrome.GetMinimizeChrome(
+                ResizeMode.CanResize,
+                out Visibility vis,
+                out bool en);
+
+            Assert.Equal(Visibility.Visible, vis);
+            Assert.True(en);
+        }
+
+        [Fact]
+        public void MaximizeRestore_CanResize_Normal_ShowsMaximizeOnly()
+        {
+            CaptionButtonChrome.GetMaximizeRestoreChrome(
+                ResizeMode.CanResize,
+                WindowState.Normal,
+                out Visibility maxVis,
+                out Visibility restVis,
+                out bool maxEn,
+                out bool restEn);
+
+            Assert.Equal(Visibility.Visible, maxVis);
+            Assert.Equal(Visibility.Collapsed, restVis);
+            Assert.True(maxEn);
+            Assert.False(restEn);
+        }
+
+        [Fact]
+        public void MaximizeRestore_CanResize_Maximized_ShowsRestoreOnly()
+        {
+            CaptionButtonChrome.GetMaximizeRestoreChrome(
+                ResizeMode.CanResize,
+                WindowState.Maximized,
+                out Visibility maxVis,
+                out Visibility restVis,
+                out bool maxEn,
+                out bool restEn);
+
+            Assert.Equal(Visibility.Collapsed, maxVis);
+            Assert.Equal(Visibility.Visible, restVis);
+            Assert.False(maxEn);
+            Assert.True(restEn);
+        }
+
+        [Fact]
+        public void MaximizeRestore_CanMinimize_DisablesBoth()
+        {
+            CaptionButtonChrome.GetMaximizeRestoreChrome(
+                ResizeMode.CanMinimize,
+                WindowState.Normal,
+                out Visibility maxVis,
+                out _,
+                out bool maxEn,
+                out bool restEn);
+
+            Assert.Equal(Visibility.Visible, maxVis);
+            Assert.False(maxEn);
+            Assert.False(restEn);
+        }
+
+        [Fact]
+        public void Close_VisibleAndEnabled()
+        {
+            CaptionButtonChrome.GetCloseChrome(
+                out Visibility vis,
+                out bool en);
+
+            Assert.Equal(Visibility.Visible, vis);
+            Assert.True(en);
+        }
+
+        #endregion CaptionButtonChrome - visibility and enablement matrix
     }
 }

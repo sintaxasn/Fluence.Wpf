@@ -542,6 +542,24 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        [Fact]
+        public Task PasswordBox_SelectAll_DoesNotThrowWithoutTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                _ = TestApp.EnsureLibraryTheme();
+
+                PasswordBox passwordBox = new()
+                {
+                    Password = "hidden",
+                };
+                passwordBox.SelectAll();
+
+                Assert.Equal("hidden", passwordBox.Password, StringComparer.Ordinal);
+            });
+        }
+
         private static PasswordBox ShowPasswordBox(Window window, string password = "", double width = 200)
         {
             PasswordBox box = new()
