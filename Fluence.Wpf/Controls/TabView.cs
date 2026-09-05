@@ -116,7 +116,7 @@ namespace Fluence.Wpf.Controls
         public static readonly RoutedEvent TabCloseRequestedEvent = EventManager.RegisterRoutedEvent(
             nameof(TabCloseRequested),
             RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
+            typeof(EventHandler<TabViewTabCloseRequestedEventArgs>),
             typeof(TabView));
 
         static TabView()
@@ -132,7 +132,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public TabView()
         {
-            AddHandler(TabViewItem.CloseRequestedEvent, new RoutedEventHandler(OnChildCloseRequested));
+            AddHandler(TabViewItem.CloseRequestedEvent, new EventHandler<TabViewTabCloseRequestedEventArgs>(OnChildCloseRequested));
         }
 
         /// <summary>
@@ -177,8 +177,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the close (×) button of a <see cref="TabViewItem"/>. The event
         /// args include the container and the bound item; consumers decide whether to remove it.
         /// </summary>
-        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
-        public event RoutedEventHandler TabCloseRequested
+        public event EventHandler<TabViewTabCloseRequestedEventArgs> TabCloseRequested
         {
             add => AddHandler(TabCloseRequestedEvent, value);
             remove => RemoveHandler(TabCloseRequestedEvent, value);
@@ -258,16 +257,11 @@ namespace Fluence.Wpf.Controls
                 : Visibility.Collapsed;
         }
 
-        private void OnChildCloseRequested(object sender, RoutedEventArgs e)
+        private void OnChildCloseRequested(object? sender, TabViewTabCloseRequestedEventArgs e)
         {
-            if (e is not TabViewTabCloseRequestedEventArgs inner)
-            {
-                return;
-            }
-
             // Consumers should handle one aggregate close request from TabView rather
             // than both the child TabViewItem event and the forwarded parent event.
-            TabViewTabCloseRequestedEventArgs forwarded = new(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
+            TabViewTabCloseRequestedEventArgs forwarded = new(TabCloseRequestedEvent, this, e.Tab, e.Item);
             RaiseEvent(forwarded);
             e.Handled = true;
         }
