@@ -41,8 +41,9 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.InputSimulation;
+using static Fluence.Wpf.Tests.Infrastructure.LoopingSelectorTestSupport;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the looping selector primitive behind the <see cref="Controls.DatePicker"/>
@@ -50,59 +51,16 @@ namespace Fluence.Wpf.Tests
     /// column's default style and template part, the two-way sync between the item-unit scroll
     /// offset and the selection, the keyboard contract, and virtualization.
     /// </summary>
-    public partial class ControlTests
+    public sealed class LoopingSelectorTests : IAsyncLifetime
     {
-        /// <summary>
-        /// The number of padding rows a looping column keeps above the selected row; the
-        /// selected row is the middle one of a nine-row viewport. Aliases the control's own
-        /// constant so the tests can never drift from the geometry the control actually uses.
-        /// </summary>
-        private const int LoopingPaddingItemsCount = Controls.LoopingSelectorList.PaddingItemsCount;
-
-        /// <summary>
-        /// Returns how many distinct values a selector column holds, which for a looping column
-        /// is the length of one band rather than the length of the repeated list.
-        /// </summary>
-        /// <param name="selector">The column to measure.</param>
-        /// <returns>The number of distinct values.</returns>
-        private static int LoopingColumnSourceCount(Selector selector)
+        public ValueTask InitializeAsync()
         {
-            return LoopingSelectorColumns.GetSourceCount(selector);
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
 
-        /// <summary>
-        /// Returns the index of the selected value within one band of a looping column.
-        /// </summary>
-        /// <param name="selector">The column to read.</param>
-        /// <returns>The index within the band, or -1 when there is no selection.</returns>
-        private static int LoopingColumnSourceIndex(Selector selector)
+        public ValueTask DisposeAsync()
         {
-            return LoopingSelectorColumns.GetSourceIndex(selector);
-        }
-
-        /// <summary>
-        /// Selects a value in a looping column by its index within one band, positioning the
-        /// selection in the middle band the way the pickers do. The first and last few list
-        /// positions cannot be centred under the selection band, so a test must never set a raw
-        /// band-relative index on a looping column.
-        /// </summary>
-        /// <param name="selector">The column to drive.</param>
-        /// <param name="sourceIndex">The index within one band to select.</param>
-        private static void SelectLoopingColumnValue(Selector selector, int sourceIndex)
-        {
-            Controls.LoopingItemsSource looping = Assert.IsType<Controls.LoopingItemsSource>(selector.ItemsSource);
-            selector.SelectedIndex = looping.MiddleBandStart + sourceIndex;
-        }
-
-        /// <summary>
-        /// Selects a value in a padded (non-looping) column by its index among the real values,
-        /// skipping the leading placeholder rows.
-        /// </summary>
-        /// <param name="selector">The column to drive.</param>
-        /// <param name="sourceIndex">The index among the real values to select.</param>
-        private static void SelectPaddedColumnValue(Selector selector, int sourceIndex)
-        {
-            selector.SelectedIndex = LoopingPaddingItemsCount + sourceIndex;
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
 
         /// <summary>
@@ -170,7 +128,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.LoopingSelectorList)));
 
@@ -219,7 +176,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
@@ -253,9 +209,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
 
@@ -307,9 +260,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
 
@@ -346,9 +296,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
 
@@ -383,9 +330,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 300, Height = 600 };
                 Controls.LoopingSelectorList list = new();
 
@@ -428,9 +372,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
                 {
@@ -480,9 +421,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -537,9 +475,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
                 {
@@ -599,7 +534,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };

@@ -39,7 +39,7 @@ using System.Windows.Media.Imaging;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.ColorPicker"/> control: default style
@@ -49,15 +49,24 @@ namespace Fluence.Wpf.Tests
     /// contract, the previous-color swatch, automation peer naming, and surface brush
     /// theming.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ColorPickerTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task ColorPicker_DefaultStyle_AppliesTemplatePartsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.ColorPicker)));
 
@@ -103,9 +112,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -135,9 +141,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -182,9 +185,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -242,9 +242,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -285,9 +282,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -336,9 +330,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -391,9 +382,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -437,9 +425,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 640 };
                 Controls.ColorPicker picker = new();
 
@@ -477,7 +462,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
@@ -494,9 +478,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 520, Height = 860 };
                 Controls.ColorPicker picker = createPicker();
 
