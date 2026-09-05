@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    _ = TestApp.EnsureDemoTheme();
+                    _ = TestApp.EnsureLibraryTheme();
                     ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
 
                     Style style = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // These per-control duplicate keys must no longer exist now that
                 // all four controls reference DefaultControlFocusVisualStyle.
@@ -88,7 +88,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultCollectionFocusVisualStyle"));
 
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 System.Windows.Controls.TabControl tabControl = new()
                 {
@@ -263,7 +263,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 TabViewItem first = new() { Header = "First", Content = new System.Windows.Controls.TextBlock { Text = "One" } };
                 TabViewItem second = new() { Header = "Second", Content = new System.Windows.Controls.TextBlock { Text = "Two" } };
@@ -343,7 +343,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 NavigationViewItem first = new() { Content = "Home" };
                 NavigationViewItem second = new() { Content = "Colors" };

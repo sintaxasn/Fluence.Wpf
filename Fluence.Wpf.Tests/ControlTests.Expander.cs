@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Content" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
@@ -72,7 +72,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
@@ -96,7 +96,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
@@ -141,7 +141,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
@@ -173,7 +173,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
@@ -212,7 +212,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new()
                 {
@@ -345,7 +345,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new()
                 {
@@ -378,7 +378,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new()
                 {
@@ -412,7 +412,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsEnabled = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
@@ -438,7 +438,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
