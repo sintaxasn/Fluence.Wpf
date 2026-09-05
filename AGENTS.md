@@ -260,7 +260,7 @@ When adding a new control or materially changing an existing one:
 4. **Demo**
    - Add or extend a gallery page under `Fluence.Wpf.Demo/Pages/Gallery*.xaml`. Register the page in `MainWindow.NavigateTo(string tag)` if it should be navigable from the `NavigationView`.
 5. **Tests (mandatory)**
-   - Add a partial `ControlTests.MyArea.cs` in `Fluence.Wpf.Tests`. Use `RunOnStaThread`, `EnsureApplication`, `MergeGenericDictionary`, and `FindVisualChild*` helpers.
+   - Add `Fluence.Wpf.Tests/Control/MyControlTests.cs` holding one sealed class. Use `WpfTestSta.RunOnStaAsync`, `TestApp.EnsureLibraryTheme` from `IAsyncLifetime`, and the `VisualTree` and `BrushAssert` helpers.
    - Cover at minimum: default style applies, key template parts found, critical DP/state transitions, and (if theme-sensitive) one theme cycle via `ThemeTestHelpers.ApplyStandardThemeCycle`.
 6. **Docs**
    - Append to `docs/controls.md` when the public catalogue changes.
@@ -271,23 +271,44 @@ When adding a new control or materially changing an existing one:
 
 ## 6. Testing
 
-- **Framework**: xunit.v3 3.2.2 (`xunit.v3` / `xunit.runner.visualstudio`) via `Microsoft.NET.Test.Sdk` 18.8.1.
+- **Framework**: xunit.v3 4.0.0 (`xunit.v3` / `xunit.runner.visualstudio`) via `Microsoft.NET.Test.Sdk` 18.8.1, running on Microsoft Testing Platform.
 - **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
-- **Parallelization**: `[assembly: CollectionBehavior(DisableTestParallelization = true)]` lives in `Fluence.Wpf.Tests/Properties/AssemblyInfo.cs`, `xunit.runner.json` disables assembly and collection parallelism, and the test project sets `<TestTfmsInParallel>false</TestTfmsInParallel>`. WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures or target-framework lanes.
-- **STA**: `WpfTestSta` in the test project owns a single STA thread + `Dispatcher`. All UI-touching work goes through `WpfTestSta.Invoke(...)` / `RunOnStaThread(...)`.
-- **Shared test helpers** live in `WpfTestSta` (single canonical copy): `RunOnSta` (STA invoke with `ExceptionDispatchInfo` rethrow), `DrainDispatcher` (`ApplicationIdle` pump), and two explicitly named tree walkers - `FindVisualDescendants<T>` (visual tree only) and `FindLogicalAndVisualDescendants<T>` (visual + logical, cycle-guarded). Per-fixture wrappers forward to these; do not reintroduce divergent copies. Prefer the condition-based `WaitUntil(dispatcher, timeoutMs, predicate)` (sampling the value you assert) over a fixed `WaitForAnimationAndDrain(ms)` delay.
-- **Application**: `WpfTestSta.EnsureApplication()` creates an `Application` with `ShutdownMode.OnExplicitShutdown` so tests do not tear it down. It also forces `MotionHelper.OverrideIsMotionEnabled = true` so animation assertions are deterministic on headless runners (CI reports `SystemParameters.ClientAreaAnimation` as false); the reduced-motion tests override this to `false` for their own scope and reset it to null in their `finally` blocks.
-- **Theme helpers**: `ThemeTestHelpers.ApplyStandardThemeCycle` (Light -> Dark -> HighContrast -> Light); `AssertKeyThemeBrushesResolve` for canonical key sanity.
+- **Invocation**: run the built executable, not `dotnet test`. The SDK 10 VSTest bridge is gone.
+
+  ```powershell
+  Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe --filter-class <FullName> --no-ansi --progress off
+  ```
+
+  `--filter-class` and `--filter-not-class` take several space-separated class names after one flag.
+- **The two lanes.** A single-process run of the whole `net472` assembly aborts with exit `-1` at a non-deterministic point (see `KNOWN_ISSUES.md`). Both TFMs therefore run as two complementary lanes whose union is provably the whole assembly, so a newly added class lands in lane B automatically rather than going unrun. Lane A is the seven costliest classes: `Fluence.Wpf.Tests.Gallery.DemoShellTests`, `Fluence.Wpf.Tests.Gallery.DemoSampleContractTests`, `Fluence.Wpf.Tests.Control.NavigationViewTests`, `Fluence.Wpf.Tests.Control.ProgressBarTests`, `Fluence.Wpf.Tests.Control.ContentDialogTests`, `Fluence.Wpf.Tests.Control.ColorPickerTests`, `Fluence.Wpf.Tests.Control.TimePickerTests`. Lane B is `--filter-not-class` over the same seven. Both lanes carry `--filter-not-trait "Category=Screenshots"`. Sum the two case counts per TFM and compare against the expected total.
+- **Parallelization**: `[assembly: Parallelization(Mode = ParallelMode.None)]` lives in `Fluence.Wpf.Tests/Properties/AssemblyInfo.cs`, `xunit.runner.json` disables assembly and collection parallelism, and the test project sets `<TestTfmsInParallel>false</TestTfmsInParallel>`. WPF's shared `ResourceDictionary` and storyboard sealing is not thread-safe across parallel fixtures or target-framework lanes.
+- **STA**: `WpfTestSta` in `Fluence.Wpf.Tests/Infrastructure/` owns a single STA thread plus `Dispatcher`. All UI-touching work goes through `WpfTestSta.RunOnStaAsync(...)`.
+- **Layout**: one sealed class per subject, in the folder that owns the concern. Every folder is also a namespace segment, because `IDE0130` is an error here. Folder names are chosen so that no segment shadows a name the tests use: `Control/` rather than `Controls/`, because a segment `Controls` would shadow `Fluence.Wpf.Controls` at the 1200-plus `Controls.X` shorthand sites; `Gallery/` rather than `Demo/`, because a segment `Demo` would shadow `Fluence.Wpf.Demo`; and `Windowing/` rather than `Window/`, because a segment `Window` would shadow `System.Windows.Window`. The one residual shadow is the type `System.Windows.Controls.Control`, which is written out in full at the handful of sites that use it bare.
+
+  | Folder | Contents |
+  | ------ | -------- |
+  | `Infrastructure/` | `WpfTestSta.cs`, `TestApp.cs`, `VisualTree.cs`, `BrushAssert.cs`, `LightThemeFixture.cs`, `ThemeTestHelpers.cs`, `DemoTestHost.cs`, `SlopwatchSuppressAttribute.cs`, and the remaining narrow support types (`ContentDialogTestHost.cs`, `DispatcherDelayWaits.cs`, `DispatcherWaits.cs`, `FluentButtonQueries.cs`, `InputSimulation.cs`, `LoopingSelectorTestSupport.cs`, `TemplatePartTransforms.cs`, `VisualGeometry.cs`) |
+  | `Control/` | `<Control>Tests.cs`, one per control |
+  | `Control/Rules/` | the nine rules asserted across many controls at once |
+  | `Theming/` | theme engine, dictionary stability, accent, markup, metrics, parity, design-time |
+  | `Windowing/` | `WindowPolicyTests`, `FluenceWindowTests`, `TitleBarTests`, `CaptionButtonTests`, `NativeMethodsTests`, `SnapLayoutHelperTests`, `WindowIconTests` |
+  | `Gallery/`, `Gallery/Pages/` | the demo gallery shell, the sample contracts, and one class per gallery page |
+  | `Tools/` | `GalleryScreenshotHarness.cs`, which is not a test |
+  | `Baselines/` | the committed `--list-tests` baseline per TFM and the name-change allowlist |
+
+- **Application and theme setup**: `TestApp.EnsureLibraryTheme()` resets the application, closes every open window, resets both managers, clears the resources, and applies a theme. It does **not** merge the demo dictionary. `TestApp.EnsureDemoTheme()` is the explicit opt-in that adds `DemoSharedStyles.xaml`, and only `Gallery/` uses it; a test elsewhere that needs it says so in a comment at its own call site, naming the demo style it depends on. `TestApp.GenericDictionary(application)` returns slot `[2]`.
+- **Per-test isolation**: every class whose tests touch `Application`, application resources, or a `Window` implements `IAsyncLifetime` and calls `TestApp.EnsureLibraryTheme()` (or `EnsureDemoTheme()`) from `InitializeAsync` on the STA thread. Test bodies do not call a setup helper themselves. A class in which no test applies a theme, changes the accent, or toggles reduced motion takes `IClassFixture<LightThemeFixture>` instead and pays that cost once. Pure-logic classes (`WindowPolicyTests`, `NativeMethodsTests`, `SnapLayoutHelperTests`) take neither.
+- **Shared helpers**: `WpfTestSta` (`RunOnStaAsync`, `DrainDispatcher`, `FindVisualDescendants`, `FindLogicalAndVisualDescendants`), `VisualTree` (`FindVisualChild`, `FindVisualChildByName`, `FindVisualChildByTypeName`, `FindVisualChildren`, `CloseWindowAndDrain`, brought in with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`), `BrushAssert` (`AssertBrushColor`, `ResolvedColor`), `ThemeTestHelpers` (`ApplyStandardThemeCycle`, `AssertKeyThemeBrushesResolve`) and `DemoTestHost`. Do not reintroduce a private copy of any of them. Prefer the condition-based `WaitUntil(dispatcher, timeoutMs, predicate)` over a fixed delay.
 - **Tests for controls** typically:
-  1. Merge `Themes/Generic.xaml` via `MergeGenericDictionary(Application.Current.Resources)` (this also calls `Apply(Light)` to seed canonical keys).
+  1. Let the class `IAsyncLifetime` or `LightThemeFixture` do the reset; the body starts with the control.
   2. Create a minimal `Window`, attach the control, call `Window.Show()` so `ApplyTemplate` runs.
-  3. Drive the control (simulate mouse/keyboard by invoking protected `OnMouse*` members via a small probe subclass if needed; see `ClickableCardProbe` in `ControlTests.FluentStroke.cs`).
-  4. Assert via `VisualTreeHelper` / `FindVisualChildByName` and `TryFindResource`.
-  5. Drain the dispatcher with `DrainDispatcher()` and close the window.
+  3. Drive the control (simulate mouse or keyboard by invoking protected `OnMouse*` members via a small probe subclass if needed; see `ClickableCardProbe` in `Control/Rules/FluentStrokeTests.cs`).
+  4. Assert via `VisualTree` helpers and `TryFindResource`.
+  5. Drain with `WpfTestSta.DrainDispatcher` and close through `CloseWindowAndDrain(window)` in a `finally`.
 - **InternalsVisibleTo**: the test assembly sees library internals; theme tests can call `ApplicationThemeManager.ResetForTesting()` to isolate fixtures.
-- **Baseline policy**: the HEAD-of-branch test count is the floor. Add tests, do not weaken it. If a test is legitimately obsoleted by a design change, remove the whole file in the same commit that supersedes it, record the rationale in `CHANGELOG.md`, and update this handbook if the testing pattern itself changed.
-- **Known pre-existing failures**: a root `KNOWN_ISSUES.md` exists; it tracks deliberate non-features and resolved follow-ups, not accepted test failures. If a failing test is ever accepted instead of fixed, record it there with the reproduction, affected TFM, reason, owner, and intended fix. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
-- **Screenshot harness**: `Fluence.Wpf.Tests/GalleryScreenshotHarness.cs` writes the ten documentation PNGs under `docs/screenshots/` - the gallery shell in its three navigation modes (`gallery-home` / Left, `gallery-buttons` / LeftCompact, `gallery-status` / Top) plus the MVVM (`mvvm`) and PowerShell controls-tour (`powershell`) apps, each in Light and Dark. Capture is **opt-in**: the tests are `[Trait("Category", "Screenshots")]` and skip (inconclusive) unless `FLUENCE_CAPTURE_SCREENSHOTS=1`, so an ordinary `dotnet test` never overwrites the committed images; set the variable to regenerate. DWM backdrops (Mica / Acrylic) are _not_ captured by `RenderTargetBitmap`, so each surface is hosted in a plain off-screen `Window` over a solid `SolidBackgroundFillColorBaseBrush`.
+- **Baseline policy**: the HEAD-of-branch case count is the floor. `Fluence.Wpf.Tests/Baselines/` holds the `--list-tests` capture per TFM; a change that adds or removes a test case must update it and say why in `CHANGELOG.md`. Diff by method name, not by fully qualified name: classes get renamed, method names do not.
+- **Known failures**: `KNOWN_ISSUES.md` records the `net472` whole-assembly abort and the `net472` TimePicker flyout flake. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
+- **Screenshot harness**: `Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs` writes the ten documentation PNGs under `docs/screenshots/`. Capture is **opt-in**: the tests are `[Trait("Category", "Screenshots")]` and skip unless `FLUENCE_CAPTURE_SCREENSHOTS=1`, so an ordinary run never overwrites the committed images. DWM backdrops are not captured by `RenderTargetBitmap`, so each surface is hosted in a plain off-screen `Window` over a solid `SolidBackgroundFillColorBaseBrush`.
 
 ---
 
@@ -376,12 +397,12 @@ flowchart TD
 - **`StaticResource` on a theme- or accent-bound brush** -> stale colors after the first theme switch. Fix: change to `DynamicResource`.
 - **Clearing `Application.Current.Resources.MergedDictionaries`** directly, then adding your own, without going through `ApplicationThemeManager.Apply` -> broken `DynamicResource` chains and missing templates. Fix: always go through the manager; the first call initializes all slots.
 - **Creating `FrameworkElement` instances on a worker thread** in tests -> `InvalidOperationException`. Fix: route through `WpfTestSta.Invoke`.
-- **Skipping `[assembly: CollectionBehavior(DisableTestParallelization = true)]`** (or dropping `xunit.runner.json`) on a new test project / renaming the assembly-info entry -> intermittent `ResourceReferenceExpression` / sealed-storyboard failures.
+- **Skipping `[assembly: Parallelization(Mode = ParallelMode.None)]`** (or dropping `xunit.runner.json`) on a new test project / renaming the assembly-info entry -> intermittent `ResourceReferenceExpression` / sealed-storyboard failures.
 - **Assuming the old "subtle stroke" for selection rings** -> RadioButton / CheckBox rings disappear in light theme. Fix: use `ControlStrongStrokeColorDefaultBrush` (and `ControlStrongStrokeColorDisabledBrush` for disabled state).
 - **Hard-coding caption metrics or backdrop flags in child controls** -> breaks on Windows 10 / unsupported DWM builds. Fix: read `OsVersionHelper` and honour `FluenceWindow` policy.
 - **Replacing the demo's tag navigation with an external navigation service** -> divergence with the current `NavigateTo` contract. Keep routes tag-driven; the only stack is the lightweight shell Back history in `MainWindow`.
 - **Holding designer-only brushes as immutable resources** -> designer no longer matches runtime after a theme change. Fix: keep `Properties/DesignTimeResources.xaml` minimal and aligned with Light + `#0078D4`.
-- **Relying on a previous test's theme state leaking into yours** -> intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: always call `MergeGenericDictionary(Application.Current)` (which resets managers, clears dictionaries, and applies a known theme) as the first step of any control test body.
+- **Relying on a previous test's theme state leaking into yours** -> intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: the class, not the test body, owns the reset. Implement `IAsyncLifetime` and call `TestApp.EnsureLibraryTheme()` from `InitializeAsync` through `WpfTestSta.RunOnStaAsync`, or take `IClassFixture<LightThemeFixture>` if no test in the class applies a theme, changes the accent, or toggles reduced motion. Do not call a setup helper from inside a test body.
 - **Binding to a prefixed attached-property path from a theme dictionary** -> the binding fails at runtime with `BindingExpression path error: '(controls:MyExtensions.MyProp)' property not found on 'object'`, and the target silently keeps its default. The path parser cannot resolve the xmlns prefix from BAML loaded out of `Themes/Generic.xaml`, so `{Binding (controls:PasswordBoxExtensions.CornerRadius), RelativeSource={RelativeSource TemplatedParent}}` and the `DataTrigger` equivalents never evaluate, while a code-built `new PropertyPath("(0)", MyExtensions.MyProperty)` binds correctly. Fix: drive those parts from the behavior in code (see `PasswordBoxExtensions.UpdateChromeCore`), or build the binding in code with the resolved `DependencyProperty`. `TemplateBinding` and plain property `Trigger`s are unaffected; only string paths naming an attached property by prefix are.
 - **Using `string.IsNullOrEmpty()`** -> build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
 - **Win32 bit-mask arithmetic without `unchecked`** -> `OverflowException` at runtime; caught as a build error because `CheckForOverflowUnderflow=True`. Fix: wrap HIWORD/LOWORD extractions in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
@@ -473,7 +494,7 @@ Step-by-step scaffolding playbooks that bake the checklists into the work:
 
 | Skill | Use when |
 | --- | --- |
-design-time/demo entries, xUnit test partial, docs/CHANGELOG). |
+| `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, xUnit test class, docs/CHANGELOG). |
 | `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page. The full demo sample-page spec - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [.claude/skills/demo-sample-page/SPEC.md](.claude/skills/demo-sample-page/SPEC.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly. |
 
 ### 13.3 Hooks (`.claude/hooks/`)
