@@ -123,8 +123,7 @@ no Fluent brushes.
 ```powershell
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Auto,
-    [Fluence.Wpf.WindowBackdropType]::Mica,
-    $true)
+    [Fluence.Wpf.WindowBackdropType]::Mica)
 [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
 ```
 
@@ -196,26 +195,22 @@ Static methods on .NET types are called with `[Namespace.ClassName]::MethodName(
 # Follow the Windows light/dark setting (default for scripts)
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Auto,
-    [Fluence.Wpf.WindowBackdropType]::Mica,
-    $true)
+    [Fluence.Wpf.WindowBackdropType]::Mica)
 
 # Force light
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Light,
-    [Fluence.Wpf.WindowBackdropType]::Mica,
-    $true)
+    [Fluence.Wpf.WindowBackdropType]::Mica)
 
 # Force dark
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Dark,
-    [Fluence.Wpf.WindowBackdropType]::Mica,
-    $true)
+    [Fluence.Wpf.WindowBackdropType]::Mica)
 
 # High contrast
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::HighContrast,
-    [Fluence.Wpf.WindowBackdropType]::None,
-    $true)
+    [Fluence.Wpf.WindowBackdropType]::None)
 ```
 
 `Apply` can be called at any time - including from button click handlers - to change the
@@ -422,7 +417,7 @@ $themeCombo.add_SelectionChanged({
         3       { [Fluence.Wpf.ApplicationTheme]::HighContrast }
         default { [Fluence.Wpf.ApplicationTheme]::Auto }
     }
-    [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.WindowBackdropType]::Mica, $true)
+    [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.WindowBackdropType]::Mica)
 })
 ```
 

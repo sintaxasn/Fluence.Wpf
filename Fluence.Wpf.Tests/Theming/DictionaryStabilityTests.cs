@@ -58,23 +58,28 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
-        /// Twenty Light and Dark switches must not grow the merged dictionary collection, with and
-        /// without a system accent apply in front of them. The accent apply is the real behaviour
-        /// the retired updateAccent flag stood for.
+        /// Twenty Light and Dark switches must not grow the merged dictionary collection, whether or
+        /// not a distinct custom accent is pinned before the switching loop. Pinning a color far from
+        /// the default Windows blue is a genuine accent-intent and ramp transition that clears the
+        /// redundant-publish gate on any host, unlike re-pinning the System intent (already the
+        /// resting state after test reset), which the gate would swallow as a no-op.
         /// </summary>
-        /// <param name="applySystemAccentFirst">Whether to pin the system accent before switching.</param>
+        /// <param name="pinDistinctAccentFirst">Whether to pin a non-default custom accent before switching.</param>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public Task RepeatedThemeSwitches_NoDictionaryAccumulationAsync(bool applySystemAccentFirst)
+        public Task RepeatedThemeSwitches_NoDictionaryAccumulationAsync(bool pinDistinctAccentFirst)
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                if (applySystemAccentFirst)
+                if (pinDistinctAccentFirst)
                 {
-                    ApplicationAccentColorManager.ApplySystemAccent();
+                    // Deliberately far from the default Windows blue (#0078D4): guarantees a real
+                    // ramp transition past the redundant-publish gate on any host, unlike re-pinning
+                    // the System intent that Apply(Light, ...) above already resolved.
+                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC8, 0x1E, 0x7A));
                 }
 
                 int baselineCount = app.Resources.MergedDictionaries.Count;
