@@ -50,86 +50,6 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         // ---------------------------------------------------------------------------
-        // ControlCornerRadius token
-        // ---------------------------------------------------------------------------
-
-        [Fact]
-        public Task ControlCornerRadius_PresentInLightThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Light, app);
-                CornerRadius cr = Assert.IsType<CornerRadius>(app.TryFindResource("ControlCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(4), cr);
-            });
-        }
-
-        [Fact]
-        public Task ControlCornerRadius_PresentInDarkThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Dark, app);
-                CornerRadius cr = Assert.IsType<CornerRadius>(app.TryFindResource("ControlCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(4), cr);
-            });
-        }
-
-        [Fact]
-        public Task ControlCornerRadius_PresentInHighContrastThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.HighContrast, app);
-                CornerRadius cr = Assert.IsType<CornerRadius>(app.TryFindResource("ControlCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(4), cr);
-            });
-        }
-
-        // ---------------------------------------------------------------------------
-        // OverlayCornerRadius token
-        // ---------------------------------------------------------------------------
-
-        [Fact]
-        public Task OverlayCornerRadius_PresentInLightThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Light, app);
-                CornerRadius or_ = Assert.IsType<CornerRadius>(app.TryFindResource("OverlayCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(8), or_);
-            });
-        }
-
-        [Fact]
-        public Task OverlayCornerRadius_PresentInDarkThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Dark, app);
-                CornerRadius or_ = Assert.IsType<CornerRadius>(app.TryFindResource("OverlayCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(8), or_);
-            });
-        }
-
-        [Fact]
-        public Task OverlayCornerRadius_PresentInHighContrastThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.HighContrast, app);
-                CornerRadius or_ = Assert.IsType<CornerRadius>(app.TryFindResource("OverlayCornerRadius"), exactMatch: false);
-                Assert.Equal(new CornerRadius(8), or_);
-            });
-        }
-
-        // ---------------------------------------------------------------------------
         // FlyoutShadowEffect
         // ---------------------------------------------------------------------------
 
@@ -163,24 +83,6 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         // ---------------------------------------------------------------------------
-        // DefaultControlFocusVisualStyle
-        // ---------------------------------------------------------------------------
-
-        [Fact]
-        public Task DefaultControlFocusVisualStyle_PresentInAllThemesAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
-                {
-                    ResetAndApply(theme, app);
-                    _ = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"), exactMatch: false);
-                }
-            });
-        }
-
-        // ---------------------------------------------------------------------------
         // Full theme cycle - tokens survive all three theme transitions
         // ---------------------------------------------------------------------------
 
@@ -207,35 +109,16 @@ namespace Fluence.Wpf.Tests.Theming
         // DefaultCollectionFocusVisualStyle token
         // ---------------------------------------------------------------------------
 
-        [Fact]
-        public Task DefaultCollectionFocusVisualStyle_PresentInLightThemeAsync()
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public Task DefaultCollectionFocusVisualStyle_PresentInThemeAsync(ApplicationTheme theme)
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Light, app);
-                _ = Assert.IsType<Style>(app.TryFindResource("DefaultCollectionFocusVisualStyle"), exactMatch: false);
-            });
-        }
-
-        [Fact]
-        public Task DefaultCollectionFocusVisualStyle_PresentInDarkThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.Dark, app);
-                _ = Assert.IsType<Style>(app.TryFindResource("DefaultCollectionFocusVisualStyle"), exactMatch: false);
-            });
-        }
-
-        [Fact]
-        public Task DefaultCollectionFocusVisualStyle_PresentInHighContrastThemeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                ResetAndApply(ApplicationTheme.HighContrast, app);
+                ResetAndApply(theme, app);
                 _ = Assert.IsType<Style>(app.TryFindResource("DefaultCollectionFocusVisualStyle"), exactMatch: false);
             });
         }

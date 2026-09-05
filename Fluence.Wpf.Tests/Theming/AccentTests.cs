@@ -34,6 +34,21 @@ using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
+// Captured Windows accent ramps, measured 2026-05-23 from the OS palette on this
+// hardware. Kept as data after AccentRampScoreboard was deleted: the scoring
+// harness compared four candidate algorithms and could not fail, but these eight
+// measurements are real and are the reference any future ramp change is judged
+// against.
+//
+// Windows Blue   #0078D4: requested #0078D4, actual #0078D4, L3 #99EBFF, L2 #4CC2FF, L1 #0091F8, D1 #0067C0, D2 #003E92, D3 #001A68
+// Mango          #CA5010: requested #CA5010, actual #CA5010, L3 #F5C07C, L2 #F09346, L1 #E46012, D1 #B6440E, D2 #872808, D3 #5C0E03
+// Mint           #00B7C3: requested #00B7C3, actual #00B7C3, L3 #69FCFF, L2 #29F7FF, L1 #00D5E1, D1 #009FAA, D2 #006770, D3 #00343B
+// Plum           #881798: requested #881798, actual #881798, L3 #EFACF2, L2 #D95BE6, L1 #AB1DBE, D1 #7B148B, D2 #5B0C6D, D3 #3F0451
+// Brick OS=>     #C94947: requested #A4262C, actual #C94947, L3 #F5BDB2, L2 #E89B93, L1 #D2605C, D1 #AF3533, D2 #852524, D3 #590D0D
+// Liddy Green    #498205: requested #498205, actual #498205, L3 #C1F96C, L2 #99F618, L1 #61A907, D1 #3E7204, D2 #254B03, D3 #0D2801
+// Teal  OS=>     #17866E: requested #1A8870, actual #17866E, L3 #90ECDF, L2 #59E2CB, L1 #1DAB8F, D1 #126D56, D2 #0C4E37, D3 #042A14
+// MS Red         #E81123: requested #E81123, actual #E81123, L3 #FB9D8B, L2 #F46762, L1 #EF2733, D1 #D20E1E, D2 #9E0912, D3 #6F0306
+
 namespace Fluence.Wpf.Tests.Theming
 {
     /// <summary>

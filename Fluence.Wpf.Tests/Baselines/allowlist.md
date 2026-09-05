@@ -49,3 +49,8 @@ Eighteen are deleted test cases; three are the method names retired by the
 | `RepeatedThemeSwitches_NoDictionaryAccumulationAsync` | 1 extra, taking it from 1 line to 2 | Fold 2: the D4 survivor becomes a `[Theory]` with `[InlineData(false)]` and `[InlineData(true)]`. |
 
 Net: 21 removed, 4 added, 17 fewer cases. 1197 to 1180 on net10, 1195 to 1178 on net472.
+
+## Status
+
+Consumed. The baseline files beside this one were refreshed to the post-deletion
+state in the same commit, so every task after this one diffs empty against them.

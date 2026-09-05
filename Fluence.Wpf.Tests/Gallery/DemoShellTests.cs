@@ -445,38 +445,6 @@ namespace Fluence.Wpf.Tests.Gallery
         }
 
         [Fact]
-        public Task MainWindow_ProgressNumberBox_UpdatesFirstProgressBarAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(async static () =>
-            {
-                MainWindow? window = null;
-
-                try
-                {
-                    window = new MainWindow();
-                    window.Show();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    await SelectMainWindowNavPageAsync(window, window.Dispatcher, "Status").ConfigureAwait(true);
-
-                    Controls.NumberBox numberBox = Assert.IsType<Controls.NumberBox>(FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox"), exactMatch: false);
-                    Controls.ProgressBar progressBar = Assert.IsType<Controls.ProgressBar>(FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar"), exactMatch: false);
-
-                    numberBox.Value = 73;
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    Assert.Equal(73d, progressBar.Value, 0.1);
-                }
-                finally
-                {
-                    window?.Close();
-                }
-            });
-        }
-
-        [Fact]
         public Task MainWindow_SelectionDemoCombo_SelectionUpdatesIndexAsync()
         {
             return WpfTestSta.RunOnStaAsync(async static () =>

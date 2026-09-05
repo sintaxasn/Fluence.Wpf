@@ -57,19 +57,21 @@ namespace Fluence.Wpf.Tests.Theming
             return default;
         }
 
-        [Fact]
-        public Task RepeatedThemeSwitches_NoDictionaryAccumulationAsync()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public Task RepeatedThemeSwitches_NoDictionaryAccumulationAsync(bool updateAccent)
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent);
                 int baselineCount = app.Resources.MergedDictionaries.Count;
 
                 for (int i = 0; i < 10; i++)
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent);
                 }
 
                 int finalCount = app.Resources.MergedDictionaries.Count;
