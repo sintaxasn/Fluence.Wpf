@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: false);
 
                 Color textColor = Assert.IsType<Color>(app.Resources["TextFillColorPrimary"]);
 
@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: false);
 
                 SolidColorBrush brush = Assert.IsType<SolidColorBrush>(app.Resources["TextFillColorPrimaryBrush"]);
             });
@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: false);
 
                 SolidColorBrush pointerOver = Assert.IsType<SolidColorBrush>(app.Resources["WindowCloseButtonBackgroundPointerOverBrush"]);
                 SolidColorBrush pressed = Assert.IsType<SolidColorBrush>(app.Resources["WindowCloseButtonBackgroundPressedBrush"]);
@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.Changed += handler;
                 try
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                     Assert.Equal(1, eventCount);
                 }
                 finally
@@ -136,8 +136,8 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.Changed += handler;
                 try
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: false);
                     Assert.Equal(2, eventCount);
                 }
                 finally
@@ -171,7 +171,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: false);
                 Assert.Equal(theme, ApplicationThemeManager.ResolvedTheme);
             });
         }
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: false);
                 Assert.NotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme);
             });
         }
@@ -193,13 +193,13 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                 Assert.Equal(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: false);
                 Assert.Equal(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: false);
                 Assert.Equal(ApplicationTheme.HighContrast, ApplicationThemeManager.ResolvedTheme);
             });
         }
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: false);
                 ApplicationTheme themeBeforeAccent = ApplicationThemeManager.ResolvedTheme;
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xFF, 0x00, 0x00));

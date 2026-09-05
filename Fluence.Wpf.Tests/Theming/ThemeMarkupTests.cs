@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 const string xaml =
                     $"<TextBlock {XamlNamespaces} Text=\"probe\" " +
@@ -83,7 +83,7 @@ namespace Fluence.Wpf.Tests.Theming
                 {
                     Color lightColor = AssertForegroundMatchesToken(probe);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkColor = AssertForegroundMatchesToken(probe);
 
@@ -101,7 +101,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 const string xaml =
                     $"<Style {XamlNamespaces} TargetType=\"TextBlock\">" +
@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Tests.Theming
                 {
                     Color lightColor = AssertForegroundMatchesToken(probe);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkColor = AssertForegroundMatchesToken(probe);
 
@@ -133,7 +133,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 const string xaml =
                     $"<fluence:ThemeDictionary {XamlNamespaces}>" +
@@ -164,17 +164,17 @@ namespace Fluence.Wpf.Tests.Theming
                     Assert.Equal("Light theme", probe.Text, StringComparer.Ordinal);
                     AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Dark theme", probe.Text, StringComparer.Ordinal);
                     AssertProbeBrush(window, Color.FromRgb(0x33, 0x33, 0x33));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("High contrast theme", probe.Text, StringComparer.Ordinal);
                     AssertProbeBrush(window, Color.FromRgb(0x00, 0xFF, 0x00));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Light theme", probe.Text, StringComparer.Ordinal);
                     AssertProbeBrush(window, Color.FromRgb(0xEE, 0xEE, 0xEE));
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 ThemeDictionary themeDictionary = new()
                 {
@@ -208,13 +208,13 @@ namespace Fluence.Wpf.Tests.Theming
                 {
                     Assert.Equal("light", window.TryFindResource("ProbeValue"));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     Assert.Equal("fallback", window.TryFindResource("ProbeValue"));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                     Assert.Equal("fallback", window.TryFindResource("ProbeValue"));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     Assert.Equal("light", window.TryFindResource("ProbeValue"));
                 }
                 finally
@@ -229,7 +229,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 ThemeDictionary withPolarity = new()
                 {
@@ -255,7 +255,7 @@ namespace Fluence.Wpf.Tests.Theming
                 window.Resources.MergedDictionaries.Add(genericOnly);
                 try
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
 
                     // Polarity is judged from the live system window color with the same
                     // luminance formula the library uses, so the expectation is stable on
@@ -279,7 +279,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 ThemeDictionary themeDictionary = new()
                 {
@@ -297,8 +297,8 @@ namespace Fluence.Wpf.Tests.Theming
 
                 // Without the read-only guard this throws InvalidOperationException from the
                 // static Changed handler and crashes the theme apply.
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 Assert.Equal("light", themeDictionary["ProbeValue"]);
             });

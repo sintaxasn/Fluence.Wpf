@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     // theme changes via the page's ThemeDictionary (no code-behind).
                     Assert.Same(light, image.Source);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -77,14 +77,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                     // High contrast has no fixed polarity, so the page picks whichever
                     // variant reads against the live system window color.
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(ReferenceEquals(image.Source, light) || ReferenceEquals(image.Source, dark),
                         "High contrast should show one of the two header lockups.");
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);

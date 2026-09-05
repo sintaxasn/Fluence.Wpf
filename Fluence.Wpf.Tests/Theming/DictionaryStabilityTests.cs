@@ -65,13 +65,13 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent);
                 int baselineCount = app.Resources.MergedDictionaries.Count;
 
                 for (int i = 0; i < 10; i++)
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent);
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent);
                 }
 
                 int finalCount = app.Resources.MergedDictionaries.Count;
@@ -92,10 +92,10 @@ namespace Fluence.Wpf.Tests.Theming
             {
                 Application app = Application.Current;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: false);
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 Assert.Equal(3, app.Resources.MergedDictionaries.Count);
 
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: false);
 
                 FluenceWindow window = new();
                 try
@@ -151,10 +151,10 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                 int countAfterFirst = app.Resources.MergedDictionaries.Count;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: false);
                 int countAfterSecond = app.Resources.MergedDictionaries.Count;
 
                 Assert.Equal(countAfterFirst, countAfterSecond);
@@ -167,13 +167,13 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                 int lightCount = app.Resources.MergedDictionaries.Count;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: false);
                 int darkCount = app.Resources.MergedDictionaries.Count;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: false);
                 int hcCount = app.Resources.MergedDictionaries.Count;
 
                 Assert.Equal(lightCount, darkCount);
@@ -187,7 +187,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 Assert.Equal(3, app.Resources.MergedDictionaries.Count);
             });
@@ -199,7 +199,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                 Collection<ResourceDictionary> dicts = app.Resources.MergedDictionaries;
                 Assert.Equal(3, dicts.Count);
 
@@ -207,7 +207,7 @@ namespace Fluence.Wpf.Tests.Theming
                 object typography = dicts[1];
                 object generic = dicts[2];
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
 
                 Assert.NotSame(slot0, dicts[0]);
                 Assert.Same(typography, dicts[1]);
@@ -221,7 +221,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                 int countBefore = app.Resources.MergedDictionaries.Count;
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
@@ -237,9 +237,9 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
 
                 string[] keyBrushNames =
                 [
@@ -263,7 +263,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                 Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
 
                 Assert.Equal(3, dictionaries.Count);

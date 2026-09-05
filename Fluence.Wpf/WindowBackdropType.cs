@@ -29,9 +29,12 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// DWM backdrop material applied to a <see cref="Controls.FluenceWindow"/> non-client area on Windows 11.
+    /// DWM system backdrop material for a top-level window, used with
+    /// <see cref="Controls.FluenceWindow.SystemBackdropType"/>. The name follows the .NET 10 WPF
+    /// Fluent theme, which is this library's authority for window chrome;
+    /// <see cref="Auto"/> is a Fluence addition meaning "the best material this OS supports".
     /// </summary>
-    public enum BackdropType
+    public enum WindowBackdropType
     {
         /// <summary>
         /// No Mica/Acrylic; standard solid backdrop.

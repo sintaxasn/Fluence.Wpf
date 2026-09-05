@@ -67,7 +67,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
 
                     Style style = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
                 }

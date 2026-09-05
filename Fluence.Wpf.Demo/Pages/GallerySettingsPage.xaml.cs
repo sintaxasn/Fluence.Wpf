@@ -222,11 +222,11 @@ namespace Fluence.Wpf.Demo.Pages
         {
             return _owner?.SystemBackdropType switch
             {
-                BackdropType.Auto => SettingsBackdropOption.Auto,
-                BackdropType.Mica => SettingsBackdropOption.Mica,
-                BackdropType.Acrylic => SettingsBackdropOption.Acrylic,
-                BackdropType.Tabbed => SettingsBackdropOption.Tabbed,
-                BackdropType.None => SettingsBackdropOption.None,
+                WindowBackdropType.Auto => SettingsBackdropOption.Auto,
+                WindowBackdropType.Mica => SettingsBackdropOption.Mica,
+                WindowBackdropType.Acrylic => SettingsBackdropOption.Acrylic,
+                WindowBackdropType.Tabbed => SettingsBackdropOption.Tabbed,
+                WindowBackdropType.None => SettingsBackdropOption.None,
                 null => SettingsBackdropOption.Auto,
                 _ => SettingsBackdropOption.Auto,
             };
@@ -247,7 +247,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            ApplicationThemeManager.Apply(MapTheme(option), _owner?.SystemBackdropType ?? BackdropType.Auto);
+            ApplicationThemeManager.Apply(MapTheme(option), _owner?.SystemBackdropType ?? WindowBackdropType.Auto);
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
         }
 
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            BackdropType backdrop = MapBackdrop(option);
+            WindowBackdropType backdrop = MapBackdrop(option);
             if (_owner is MainWindow owner)
             {
                 owner.SystemBackdropType = backdrop;
@@ -393,16 +393,16 @@ namespace Fluence.Wpf.Demo.Pages
             };
         }
 
-        private static BackdropType MapBackdrop(SettingsBackdropOption option)
+        private static WindowBackdropType MapBackdrop(SettingsBackdropOption option)
         {
             return option switch
             {
-                SettingsBackdropOption.Auto => BackdropType.Auto,
-                SettingsBackdropOption.Mica => BackdropType.Mica,
-                SettingsBackdropOption.Acrylic => BackdropType.Acrylic,
-                SettingsBackdropOption.Tabbed => BackdropType.Tabbed,
-                SettingsBackdropOption.None => BackdropType.None,
-                _ => BackdropType.Auto,
+                SettingsBackdropOption.Auto => WindowBackdropType.Auto,
+                SettingsBackdropOption.Mica => WindowBackdropType.Mica,
+                SettingsBackdropOption.Acrylic => WindowBackdropType.Acrylic,
+                SettingsBackdropOption.Tabbed => WindowBackdropType.Tabbed,
+                SettingsBackdropOption.None => WindowBackdropType.None,
+                _ => WindowBackdropType.Auto,
             };
         }
 

@@ -100,7 +100,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
                 Assert.NotEqual(default, ApplicationAccentColorManager.SystemAccentColor);
@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 Color customColor = Color.FromRgb(0xFF, 0x88, 0x00);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 // Pin a seed that is deliberately not the Windows blue ApplyApplicationAccent uses,
                 // so the call under test is a genuine ramp transition on every host. Without this
@@ -174,7 +174,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 int eventCount = 0;
                 void OnAccentColorChanged(object? sender, EventArgs e)
@@ -204,17 +204,17 @@ namespace Fluence.Wpf.Tests.Theming
                 Color lightSeed = Color.FromRgb(0x0F, 0x6C, 0xBD);
                 Color darkSeed = Color.FromRgb(0x47, 0x9E, 0xF5);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(lightSeed, darkSeed);
                 Assert.Equal(lightSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 Assert.Equal(darkSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 Assert.Equal(darkSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 Assert.Equal(lightSeed, ApplicationAccentColorManager.SystemAccentColor);
             });
         }
@@ -224,7 +224,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: false);
 
                 int eventCount = 0;
                 void OnAccentColorChanged(object? sender, EventArgs e)
@@ -255,10 +255,10 @@ namespace Fluence.Wpf.Tests.Theming
                 Color customColor = Color.FromRgb(0x00, 0x78, 0xD4);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                 Color darkPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                 Color lightPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
                 Assert.NotEqual(darkPrimary, lightPrimary);

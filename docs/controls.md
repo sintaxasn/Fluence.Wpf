@@ -26,7 +26,7 @@ Most non-Home gallery pages render discrete examples through `DemoSampleControl`
 
 ## Namespaces
 
-- `Fluence.Wpf` - theme, accent, title-bar and window-control helpers, and UI enums (`ApplicationTheme`, `BackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, `TreeViewSelectionMode`, typography enums).
+- `Fluence.Wpf` - theme, accent, title-bar and window-control helpers, and UI enums (`ApplicationTheme`, `WindowBackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, `TreeViewSelectionMode`, typography enums).
 - `Fluence.Wpf.Controls` - styled controls, primitives, and `FluenceWindow`.
 
 Example XML namespace declarations:
@@ -89,7 +89,7 @@ Key API:
 <div class="fluence-api-list">
   <a href="../../api/Fluence.Wpf.Controls.FluenceWindow.html">FluenceWindow</a>
   <a href="../../api/Fluence.Wpf.Controls.TitleBar.html">TitleBar</a>
-  <a href="../../api/Fluence.Wpf.BackdropType.html">BackdropType</a>
+  <a href="../../api/Fluence.Wpf.WindowBackdropType.html">WindowBackdropType</a>
   <a href="../../api/Fluence.Wpf.CornerPreference.html">CornerPreference</a>
 </div>
 

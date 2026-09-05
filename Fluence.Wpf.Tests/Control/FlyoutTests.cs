@@ -530,7 +530,7 @@ namespace Fluence.Wpf.Tests.Control
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
                     foreach (string? key in brushKeys)
                     {
                         Assert.NotNull(app.TryFindResource(key));

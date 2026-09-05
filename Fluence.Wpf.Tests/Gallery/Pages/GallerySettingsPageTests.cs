@@ -77,14 +77,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     // The gallery page header's theme toggle (and any other external caller) flips
                     // the theme through ApplicationThemeManager.Apply directly, bypassing
                     // AppThemeComboBox_SelectionChanged entirely. The combo must still follow it.
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal("Dark", (appTheme.SelectedItem as ComboBoxItem)?.Content as string);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                 }
                 finally
@@ -322,7 +322,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                     ApplicationAccentColorManager.ApplyApplicationAccent();
                     DemoTestHost.CloseWindow(window);
                 }

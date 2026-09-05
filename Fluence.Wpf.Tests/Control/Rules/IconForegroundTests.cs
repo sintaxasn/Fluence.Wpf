@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     Assert.Equal(1.0, iconPresenter.Opacity, 0.001);
 
                     button.IsEnabled = true;
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     Assert.True(
                         await WaitUntilAsync(window.Dispatcher, 2000, () => IconMatchesText(button, "MainContentPresenter")).ConfigureAwait(true),
                         "Button icon must keep matching the text foreground after a Light to Dark theme switch.");
@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                     Assert.Equal(Colors.Red, GetIconForegroundColor(button));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Colors.Red, GetIconForegroundColor(button));
                 }
@@ -568,7 +568,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
                         GetIconForegroundColor(compact));
 
                     // Switch to Dark theme; icon must re-resolve to the new Foreground brush value.
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     Assert.True(
                         await WaitUntilAsync(compactWindow.Dispatcher, 2000, () =>
                             GetControlForegroundColor(compact) == GetIconForegroundColor(compact)).ConfigureAwait(true),

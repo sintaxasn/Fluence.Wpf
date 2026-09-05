@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     application.Resources.MergedDictionaries.Clear();
                     application.Resources.Clear();
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
                     ApplicationAccentColorManager.ApplySystemAccent();
                     TestApp.AddDemoSharedStyles(application);
 
@@ -89,8 +89,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     Assert.True(IsDemoSharedStyles(dictionaries[3]),
                         "DemoSharedStyles should be appended after the Fluence theme slots.");
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica);
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Mica);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.Mica);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.Mica);
 
                     Assert.Equal(4, dictionaries.Count);
                     Assert.True(IsDemoSharedStyles(dictionaries[3]),
