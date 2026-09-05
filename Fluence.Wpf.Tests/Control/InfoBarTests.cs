@@ -444,8 +444,8 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
                     _ = infoBar.ApplyTemplate();
 
-                    InfoBarClosedEventArgs? received = null;
-                    infoBar.Closed += (_, e) => received = e;
+                    List<InfoBarCloseReason> reasons = [];
+                    infoBar.Closed += (_, e) => reasons.Add(e.Reason);
 
                     ButtonBase closeButton = Assert.IsType<ButtonBase>(
                         infoBar.Template.FindName("PART_CloseButton", infoBar), exactMatch: false);
@@ -453,8 +453,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.False(infoBar.IsOpen, "The close button must close the bar.");
-                    Assert.NotNull(received);
-                    Assert.Equal(InfoBarCloseReason.CloseButton, received.Reason);
+                    Assert.Equal([InfoBarCloseReason.CloseButton], reasons);
                 }
                 finally
                 {
