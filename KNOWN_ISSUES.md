@@ -6,6 +6,53 @@ maintainers.
 
 ## Current follow-ups (not defects)
 
+- **A single-process `net472` run of the whole test assembly aborts** - two
+  attempts at running `Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe`
+  with no class filter both died with exit `-1`, no failure output, no crash
+  dump and no Application event-log entry. The first died after 48 seconds; the
+  second after 1 minute 56 seconds, about 591 tests in. The abort point moved
+  between runs, so it is non-deterministic, and neither run named a test. Class
+  filtering is unaffected: the same assembly completes when it is split, and the
+  two complementary lanes AGENTS.md section 6 describes cover all cases in about
+  2 minutes 57 seconds. CI and the pull-request template therefore run both TFMs
+  as two lanes and sum the case counts, which keeps the union provably equal to
+  the whole assembly. Nothing here is known to be a product defect; the
+  suspicion is a WPF or dispatcher resource exhaustion late in a very long
+  single-process `net472` run, and confirming that needs a dump captured at the
+  abort, which no attempt has produced yet.
+
+- **`TimePicker_Cancel_RevertsPendingSelectionAsync` is flaky on `net472`** -
+  `Fluence.Wpf.Tests/Control/TimePickerTests.cs` fails there with "The selector
+  flyout must open before the cancel scenario" after about 2.45 seconds, and
+  passes on `net10`. It passes in isolation. This is flyout-open timing, not a
+  product defect: the test asserts the flyout is open before it clicks Cancel,
+  and on `net472` the popup occasionally has not composited by the time the
+  dispatcher drain returns. Do not treat a failure of this test alone as a
+  regression, and do not add a fixed delay to hide it; the fix is a
+  condition-based wait on the popup's `IsOpen`, which is a follow-up.
+
+- **`RadioButton_Checked_HasAccentFillAsync` fails in a `net472` whole-suite
+  run and passes in isolation** - `Fluence.Wpf.Tests/Control/RadioButtonTests.cs`
+  failed during a single-process `net472` run of the whole assembly twice
+  while this branch was executing, once during Task 4 and again during
+  Task 5. Both times, running the test alone immediately afterward reproduced
+  the same isolated-pass result, so the whole-suite-only pattern was confirmed
+  on both occasions rather than observed once. Nothing in the project's prior
+  flaky-test notes named this test. This is grouped with the whole-assembly
+  abort above as a suspected symptom of the same `net472` resource pressure
+  late in a long single-process run, not a defect in the accent-fill
+  assertion; the two-lane split in AGENTS.md section 6 covers this test
+  without reproducing the failure.
+
+- **`GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggleAsync`
+  failed once in a Lane A run and has not reproduced** -
+  `Fluence.Wpf.Tests/Gallery/DemoShellTests.cs` failed once during the Lane A
+  run in Task 24 of this branch's own execution; a subsequent Lane A run did
+  not reproduce the failure, and it has not failed again since. This is
+  recorded as a single unreproduced observation, not an established flake:
+  do not treat one failure of this test as a regression by itself, but do
+  not dismiss a second occurrence either.
+
 - **Windows 10 legacy acrylic is unverified on real hardware** - the
   `SetWindowCompositionAttribute` acrylic path (`BackdropType.Acrylic` on
   Windows 10 build 17063+) is covered by pure policy tests only. The resolution

@@ -47,14 +47,59 @@ jobs:
       # "rendered without throwing"); they run in full local test runs to refresh
       # docs/screenshots but are skipped here to keep CI fast.
       #
-      # global.json opts dotnet test into the Microsoft.Testing.Platform runner, so these steps
-      # use MTP options. The VSTest target these previously used is rejected outright by MTP on
-      # the .NET 10 SDK. Trait filtering is by the xunit trait name (Category), not TestCategory.
-      - name: Test (.NET Framework 4.7.2)
-        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net472 --no-build --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net472.trx --results-directory TestResults/net472
+      # The suite runs on Microsoft Testing Platform, so these steps invoke the built test
+      # executable rather than dotnet test: the VSTest target the previous steps used is
+      # rejected outright by MTP on the .NET 10 SDK. Trait filtering is by the xunit trait
+      # name (Category), not TestCategory.
+      #
+      # Each TFM runs as two complementary lanes. A single-process whole-assembly run on
+      # net472 aborts with exit -1 at a non-deterministic point (see KNOWN_ISSUES.md). The
+      # lanes are exact complements of one explicit class list, so their union is provably
+      # the whole assembly and a newly added class lands in lane B automatically. The sum
+      # check below is what turns that into a guarantee.
+      - name: Test (.NET Framework 4.7.2, lane A)
+        run: Fluence.Wpf.Tests\bin\Release\net472\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net472.laneA.trx --results-directory TestResults/net472 --no-ansi --progress off
+        shell: cmd
 
-      - name: Test (.NET 10)
-        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net10.0-windows10.0.26100.0 --no-build --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net10.trx --results-directory TestResults/net10
+      - name: Test (.NET Framework 4.7.2, lane B)
+        run: Fluence.Wpf.Tests\bin\Release\net472\Fluence.Wpf.Tests.exe --filter-not-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net472.laneB.trx --results-directory TestResults/net472 --no-ansi --progress off
+        shell: cmd
+
+      - name: Test (.NET 10, lane A)
+        run: Fluence.Wpf.Tests\bin\Release\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net10.laneA.trx --results-directory TestResults/net10 --no-ansi --progress off
+        shell: cmd
+
+      - name: Test (.NET 10, lane B)
+        run: Fluence.Wpf.Tests\bin\Release\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net10.laneB.trx --results-directory TestResults/net10 --no-ansi --progress off
+        shell: cmd
+
+      # The lanes are complements, so their case counts must sum to the whole assembly. A
+      # filter typo that silently matches nothing shows up here and nowhere else. The
+      # expected totals exclude the three Screenshots-category cases removed by
+      # --filter-not-trait above; net10 carries all three (the Mvvm capture only targets
+      # net10.0-windows10.0.26100.0), while net472 carries only the two that target it, so
+      # the two expected totals differ by one screenshot case, not by zero.
+      - name: Check lane case-count sums
+        shell: pwsh
+        run: |
+          $expected = @{ 'net472' = 1176; 'net10' = 1177 }
+          $failed = $false
+          foreach ($tfm in $expected.Keys) {
+            $total = 0
+            foreach ($lane in 'laneA', 'laneB') {
+              $path = "TestResults/$tfm/$tfm.$lane.trx"
+              if (-not (Test-Path $path)) { Write-Error "Missing $path"; $failed = $true; continue }
+              [xml]$trx = Get-Content $path
+              $total += [int]$trx.TestRun.ResultSummary.Counters.total
+            }
+            if ($total -ne $expected[$tfm]) {
+              Write-Error "$tfm : lanes summed to $total, expected $($expected[$tfm])"
+              $failed = $true
+            } else {
+              Write-Host "$tfm : $total cases across both lanes."
+            }
+          }
+          if ($failed) { exit 1 }
 
       - name: Upload test results
         if: always()
