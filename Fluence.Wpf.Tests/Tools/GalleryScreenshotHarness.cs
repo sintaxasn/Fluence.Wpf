@@ -38,7 +38,7 @@ using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Tools
 {
     /// <summary>
     /// Maintainer-driven, opt-in harness that renders the representative demo surfaces used in the
