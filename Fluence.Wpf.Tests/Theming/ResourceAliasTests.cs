@@ -26,8 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
@@ -90,6 +92,50 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.NotNull(app.TryFindResource("WindowCloseButtonForegroundPointerOverBrush"));
                 Assert.NotNull(app.TryFindResource("SystemFillColorAttentionBrush"));
                 Assert.NotNull(app.TryFindResource("FocusStrokeColorOuterBrush"));
+            });
+        }
+
+        /// <summary>
+        /// ContentControlThemeFontFamily is the WinUI name for the family FluentFontFamily
+        /// carries. Both ship for the life of 1.x: PSADT binds FluentFontFamily with
+        /// DynamicResource, where a rename would fail silently. This test is also the guard that
+        /// keeps the two literals in Typography.xaml in step.
+        /// </summary>
+        [Fact]
+        public Task FontFamilyAlias_ResolvesToTheSameFamilyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = TestApp.EnsureLibraryTheme();
+
+                FontFamily legacy = Assert.IsType<FontFamily>(app.TryFindResource("FluentFontFamily"));
+                FontFamily winui = Assert.IsType<FontFamily>(app.TryFindResource("ContentControlThemeFontFamily"));
+                Assert.Equal(legacy.Source, winui.Source, StringComparer.Ordinal);
+            });
+        }
+
+        /// <summary>
+        /// ApplicationPageBackgroundThemeBrush is the WinUI name for the brush
+        /// ApplicationBackgroundBrush carries, and both must be the same instance in every theme.
+        /// </summary>
+        /// <param name="theme">The theme to apply before probing.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public Task BackgroundBrushAlias_ResolvesToTheSameBrushAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = TestApp.EnsureLibraryTheme(theme);
+
+                SolidColorBrush legacy = Assert.IsType<SolidColorBrush>(app.TryFindResource("ApplicationBackgroundBrush"));
+                SolidColorBrush winui = Assert.IsType<SolidColorBrush>(app.TryFindResource("ApplicationPageBackgroundThemeBrush"));
+                Assert.Same(legacy, winui);
+                Assert.Equal(legacy.Color, winui.Color);
+
+                // The Color key behind them both keeps shipping too.
+                _ = Assert.IsType<Color>(app.TryFindResource("ApplicationBackgroundColor"));
             });
         }
     }

@@ -69,7 +69,16 @@ namespace Fluence.Wpf.Theming
 
             // ApplicationBackgroundBrush is the irregular twin of ApplicationBackgroundColor
             // (the brush key drops the "Color" suffix), so BrushFactory does not emit it.
-            dict["ApplicationBackgroundBrush"] = Solid(colors["ApplicationBackgroundColor"]);
+            //
+            // ApplicationPageBackgroundThemeBrush is WinUI's name for the same role and is the
+            // preferred key for new code. Both ship: the Fluence name is bound downstream with
+            // DynamicResource, where a rename renders a consumer surface transparent with no
+            // error and no build failure. Same instance, so the two can never diverge. HighContrast
+            // reassigns both together below in AddHighContrastBrushes, since that override runs
+            // after this one.
+            SolidColorBrush applicationBackgroundBrush = Solid(colors["ApplicationBackgroundColor"]);
+            dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
+            dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
@@ -358,8 +367,12 @@ namespace Fluence.Wpf.Theming
             Color controlLight = SystemColors.ControlLightColor;
             Color transparent = Colors.Transparent;
 
-            // Application background
-            dict["ApplicationBackgroundBrush"] = Solid(window);
+            // Application background. ApplicationPageBackgroundThemeBrush must be kept pointing at
+            // the same instance here too, since this override runs after the general Add assignment
+            // and would otherwise leave the WinUI alias stale at the non-HC value.
+            SolidColorBrush applicationBackgroundBrush = Solid(window);
+            dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
+            dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
             // Text fill
             dict["TextFillColorPrimaryBrush"] = Solid(windowText);
