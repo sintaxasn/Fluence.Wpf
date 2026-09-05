@@ -281,7 +281,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs after the info bar has closed.
         /// </summary>
-        public event EventHandler? Closed;
+        public event EventHandler<InfoBarClosedEventArgs>? Closed;
 
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
@@ -304,7 +304,26 @@ namespace Fluence.Wpf.Controls
             if ((bool)e.NewValue)
             {
                 bar.AnnounceLiveRegion();
+                return;
             }
+
+            // The close-button path raises Closed itself with the CloseButton reason, so the
+            // flag stops a single dismissal producing two events.
+            if (!bar._closingFromCloseButton)
+            {
+                bar.RaiseClosed(InfoBarCloseReason.Programmatic);
+            }
+        }
+
+        /// <summary>
+        /// Raises <see cref="Closed"/> with <paramref name="reason"/>. Kept as an instance method,
+        /// rather than invoked directly from the static <see cref="OnIsOpenChanged"/> callback, so
+        /// the sender argument is the literal <see langword="this"/>.
+        /// </summary>
+        /// <param name="reason">The reason to report on the raised event.</param>
+        private void RaiseClosed(InfoBarCloseReason reason)
+        {
+            Closed?.Invoke(this, new InfoBarClosedEventArgs(reason));
         }
 
         private static void OnAnnouncingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -341,22 +360,40 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Raises the <see cref="Closing"/> event. If not canceled, sets <see cref="IsOpen"/>
-        /// to <see langword="false"/> and raises the <see cref="Closed"/> event.
+        /// to <see langword="false"/> and raises <see cref="Closed"/> with
+        /// <see cref="InfoBarCloseReason.CloseButton"/>.
         /// </summary>
         protected virtual void OnCloseButtonClick()
         {
             InfoBarClosingEventArgs args = new();
             Closing?.Invoke(this, args);
-            if (!args.Cancel)
+            if (args.Cancel)
+            {
+                return;
+            }
+
+            _closingFromCloseButton = true;
+            try
             {
                 IsOpen = false;
-                Closed?.Invoke(this, EventArgs.Empty);
             }
+            finally
+            {
+                _closingFromCloseButton = false;
+            }
+
+            Closed?.Invoke(this, new InfoBarClosedEventArgs(InfoBarCloseReason.CloseButton));
         }
 
         /// <summary>
         /// Represents a reference to the close button control, or null if the button is not available.
         /// </summary>
         private System.Windows.Controls.Button? _closeButton;
+
+        /// <summary>
+        /// True while <see cref="OnCloseButtonClick()"/> is driving <see cref="IsOpen"/> to false,
+        /// so the property's changed callback does not raise a second, programmatic Closed.
+        /// </summary>
+        private bool _closingFromCloseButton;
     }
 }
