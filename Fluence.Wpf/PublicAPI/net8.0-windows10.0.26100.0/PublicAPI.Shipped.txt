@@ -859,7 +859,6 @@ Fluence.Wpf.InfoBarCloseReason.Programmatic = 1 -> Fluence.Wpf.InfoBarCloseReaso
 Fluence.Wpf.InfoBarClosingEventArgs
 Fluence.Wpf.InfoBarClosingEventArgs.Cancel.get -> bool
 Fluence.Wpf.InfoBarClosingEventArgs.Cancel.set -> void
-Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs() -> void
 Fluence.Wpf.InfoBarSeverity
 Fluence.Wpf.InfoBarSeverity.Error = 3 -> Fluence.Wpf.InfoBarSeverity
 Fluence.Wpf.InfoBarSeverity.Informational = 0 -> Fluence.Wpf.InfoBarSeverity

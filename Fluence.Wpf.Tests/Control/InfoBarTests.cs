@@ -501,5 +501,49 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        /// <summary>
+        /// Closing carries the same reason its matching Closed will, so a handler deciding
+        /// whether to cancel can see what triggered the close.
+        /// </summary>
+        [Fact]
+        public Task Closing_CloseButtonClicked_ReportsCloseButtonReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Closable",
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = infoBar.ApplyTemplate();
+
+                    InfoBarClosingEventArgs? received = null;
+                    infoBar.Closing += (_, e) => received = e;
+
+                    ButtonBase closeButton = Assert.IsType<ButtonBase>(
+                        infoBar.Template.FindName("PART_CloseButton", infoBar), exactMatch: false);
+                    closeButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.NotNull(received);
+                    Assert.Equal(InfoBarCloseReason.CloseButton, received.Reason);
+                    Assert.False(received.Cancel, "Cancel must still default to false.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

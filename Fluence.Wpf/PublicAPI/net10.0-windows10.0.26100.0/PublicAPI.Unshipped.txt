@@ -16,3 +16,6 @@ Fluence.Wpf.Automation.FlyoutPresenterAutomationPeer.FlyoutPresenterAutomationPe
 override Fluence.Wpf.Automation.FlyoutPresenterAutomationPeer.GetAutomationControlTypeCore() -> System.Windows.Automation.Peers.AutomationControlType
 override Fluence.Wpf.Automation.FlyoutPresenterAutomationPeer.GetClassNameCore() -> string!
 override Fluence.Wpf.Controls.FlyoutPresenter.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+*REMOVED*Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs() -> void
+Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs(Fluence.Wpf.InfoBarCloseReason reason) -> void
+Fluence.Wpf.InfoBarClosingEventArgs.Reason.get -> Fluence.Wpf.InfoBarCloseReason
