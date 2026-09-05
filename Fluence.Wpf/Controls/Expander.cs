@@ -29,6 +29,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Fluence.Wpf.Helpers;
@@ -89,6 +90,32 @@ namespace Fluence.Wpf.Controls
                     ExpandDirection.Down,
                     static (d, _) => ((Expander)d).ApplySteadyState()));
         }
+
+        /// <summary>
+        /// Converter that keeps only the top edge of a <see cref="CornerRadius"/> or
+        /// <see cref="Thickness"/> value and zeroes the bottom edge. The Expander template in
+        /// <c language="csharp">Themes/Controls/Expander.xaml</c> consumes this field through
+        /// <c language="csharp">{x:Static controls:Expander.TopCornerRadiusFilter}</c>. The field
+        /// is declared as the public <see cref="IValueConverter"/> interface, rather than the
+        /// internal converter type it constructs, because <c language="csharp">{x:Static}</c>
+        /// sites inside deferred <c language="csharp">Setter.Value</c> and
+        /// <c language="csharp">ControlTemplate</c> content are re-resolved at runtime by
+        /// <see cref="System.Windows.Markup.StaticExtension"/> through public-only reflection,
+        /// which cannot see an internal field regardless of assembly.
+        /// </summary>
+        public static readonly IValueConverter TopCornerRadiusFilter =
+            new CornerRadiusFilterConverter { Edge = CornerRadiusFilterEdge.Top };
+
+        /// <summary>
+        /// Converter that keeps only the bottom edge of a <see cref="CornerRadius"/> or
+        /// <see cref="Thickness"/> value and zeroes the top edge. The Expander template in
+        /// <c language="csharp">Themes/Controls/Expander.xaml</c> consumes this field through
+        /// <c language="csharp">{x:Static controls:Expander.BottomCornerRadiusFilter}</c>. See
+        /// <see cref="TopCornerRadiusFilter"/> for why the field's declared type is the public
+        /// <see cref="IValueConverter"/> interface rather than the internal converter type.
+        /// </summary>
+        public static readonly IValueConverter BottomCornerRadiusFilter =
+            new CornerRadiusFilterConverter { Edge = CornerRadiusFilterEdge.Bottom };
 
         /// <summary>
         /// Identifies the <see cref="CornerRadius"/> dependency property.
