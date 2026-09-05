@@ -42,7 +42,7 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// ToggleSplitButton tests: the WinUI toggle-then-Click primary contract,
@@ -50,8 +50,18 @@ namespace Fluence.Wpf.Tests
     /// accent visuals including the checked divider stroke and CheckedFlyoutOpen,
     /// and the Toggle + ExpandCollapse automation surface (deliberately no Invoke).
     /// </summary>
-    public partial class ControlTests
+    public sealed class ToggleSplitButtonTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         private sealed class ToggleSplitButtonRelayCommand(Action<object?> execute) : ICommand
         {
             private readonly Action<object?> _execute = execute;
@@ -69,7 +79,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 Controls.ToggleSplitButton button = createButton();
                 Window window = new();

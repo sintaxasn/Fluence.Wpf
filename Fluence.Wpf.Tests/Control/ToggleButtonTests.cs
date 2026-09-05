@@ -37,15 +37,25 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// ToggleButton parity tests: WinUI checked/indeterminate state visuals, the
     /// last-wins trigger ordering (rest before hover before pressed), and theme
     /// re-resolution of the checked accent brushes.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ToggleButtonTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ButtonBase.IsPressed has a protected setter, so a probe subclass can drive
         // the pressed triggers for real brush assertions (IsMouseOver stays read-only
         // and is covered structurally by the trigger-order test instead).
@@ -65,7 +75,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 T toggleButton = createToggleButton();
                 Window window = new();

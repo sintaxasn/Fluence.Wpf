@@ -311,7 +311,7 @@ namespace Fluence.Wpf.Tests
             }).ConfigureAwait(true);
         }
 
-        private static void AssertControlHasThemedBorder(Control control)
+        private static void AssertControlHasThemedBorder(System.Windows.Controls.Control control)
         {
             Assert.Equal(new Thickness(1), control.BorderThickness);
             Assert.NotNull(control.BorderBrush);

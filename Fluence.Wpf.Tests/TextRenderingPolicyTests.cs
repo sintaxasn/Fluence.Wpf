@@ -318,7 +318,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void AssertHostedSurfaceEnablesClearType(Control control, string surfaceName)
+        private static void AssertHostedSurfaceEnablesClearType(System.Windows.Controls.Control control, string surfaceName)
         {
             Window window = new()
             {
@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static void AssertSurfaceEnablesClearType(Control control, string surfaceName)
+        private static void AssertSurfaceEnablesClearType(System.Windows.Controls.Control control, string surfaceName)
         {
             System.Windows.Controls.Border surface = FindTemplatedSurface(control, surfaceName);
 
@@ -355,7 +355,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
         }
 
-        private static System.Windows.Controls.Border FindTemplatedSurface(Control control, string surfaceName)
+        private static System.Windows.Controls.Border FindTemplatedSurface(System.Windows.Controls.Control control, string surfaceName)
         {
             ControlTemplate template = control.Template ??
                 throw new InvalidOperationException(

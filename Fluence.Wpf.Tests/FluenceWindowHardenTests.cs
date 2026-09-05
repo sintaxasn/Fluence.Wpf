@@ -31,7 +31,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
@@ -906,7 +905,7 @@ namespace Fluence.Wpf.Tests
                 // BorderBrush is overridden, the way a consumer app would retheme one property.
                 Style baseStyle = Assert.IsType<Style>(app.TryFindResource(typeof(FluenceWindow)), exactMatch: false);
                 Style consumerStyle = new(typeof(FluenceWindow), baseStyle);
-                consumerStyle.Setters.Add(new Setter(Control.BorderBrushProperty, Brushes.HotPink));
+                consumerStyle.Setters.Add(new Setter(System.Windows.Controls.Control.BorderBrushProperty, Brushes.HotPink));
 
                 FluenceWindow w = new()
                 {
@@ -928,7 +927,7 @@ namespace Fluence.Wpf.Tests
                     // a Local value, permanently shadowing the consumer's style setter for the
                     // lifetime of the window; SetCurrentValue instead leaves the Style setter as the
                     // reported base value source and only marks the effective value current.
-                    ValueSource source = DependencyPropertyHelper.GetValueSource(w, Control.BorderBrushProperty);
+                    ValueSource source = DependencyPropertyHelper.GetValueSource(w, System.Windows.Controls.Control.BorderBrushProperty);
                     Assert.Equal(BaseValueSource.Style, source.BaseValueSource);
                     Assert.True(source.IsCurrent);
                 }
