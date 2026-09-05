@@ -32,15 +32,32 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public class TabViewTests
+    /// <summary>
+    /// Tests for the WinUI-style <see cref="TabView"/> / <see cref="TabViewItem"/>
+    /// pair: default property values, container generation, add/close button template parts and
+    /// events, and scroll-button visibility when tabs overflow the strip.
+    /// </summary>
+    public sealed class TabViewTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---- TabViewItem defaults ----
 
         [Fact]
@@ -113,7 +130,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new()
                 {
@@ -165,7 +181,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = true };
 
@@ -200,7 +215,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem first = new() { Header = "Alpha", IsSelected = true };
@@ -245,7 +259,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem locked = new() { Header = "Pinned", IsClosable = false, IsSelected = true };
@@ -275,7 +288,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = false };
 
@@ -302,7 +314,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 TabView tabs = new() { Width = 420, Height = 200 };
                 TabViewItem first = new() { Header = "Alpha", IsSelected = true };
@@ -333,6 +344,82 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Close();
                 }
+            });
+        }
+
+        // ---- TabView scroll buttons ----
+
+        [Fact]
+        public Task TabView_PART_ScrollBackButton_ExistsInTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TabView_PART_ScrollForwardButton_ExistsInTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TabView_PART_TabContentScroller_ExistsInTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ScrollViewer sv = Assert.IsType<ScrollViewer>(FindVisualChildByName<ScrollViewer>(tv, "PART_TabContentScroller"), exactMatch: false);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TabView_ScrollButtons_HiddenWhenNoTabOverflowAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "A" });
+                _ = tv.Items.Add(new TabViewItem { Header = "B" });
+                // Wide window: 2 short tabs will not overflow a 700px wide control
+                Window w = new() { Content = tv, Width = 700, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                System.Windows.Controls.Primitives.RepeatButton back = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
+                System.Windows.Controls.Primitives.RepeatButton fwd = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
+
+                Assert.Equal(
+                    Visibility.Collapsed, back.Visibility);
+                Assert.Equal(
+                    Visibility.Collapsed, fwd.Visibility);
+                w.Close();
             });
         }
     }
