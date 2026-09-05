@@ -35,6 +35,7 @@ using System.Windows.Media;
 using Fluence.Wpf.Markup;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 
 namespace Fluence.Wpf.Tests
 {
@@ -305,10 +306,8 @@ namespace Fluence.Wpf.Tests
 
         private static Color AssertForegroundMatchesToken(TextBlock probe)
         {
-            SolidColorBrush tokenBrush = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource("TextFillColorPrimaryBrush"));
-
             SolidColorBrush foreground = Assert.IsType<SolidColorBrush>(probe.Foreground);
-            Assert.Equal(tokenBrush.Color, foreground.Color);
+            AssertBrushColor(foreground, "TextFillColorPrimaryBrush");
             return foreground.Color;
         }
 

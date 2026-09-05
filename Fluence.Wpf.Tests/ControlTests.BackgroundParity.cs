@@ -38,6 +38,7 @@ using System.Windows.Media;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
@@ -547,15 +548,6 @@ namespace Fluence.Wpf.Tests
         private static bool IsLiteralBackgroundValue(string value)
         {
             return value.Length is not 0 && (value[0] == '#' || (value[0] != '{' && value.All(char.IsLetter)));
-        }
-
-        private static void AssertBrushColor(Brush? actualBrush, string resourceKey)
-        {
-            SolidColorBrush actual = Assert.IsType<SolidColorBrush>(actualBrush);
-
-            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(Application.Current?.TryFindResource(resourceKey));
-
-            Assert.Equal(expected.Color, actual.Color);
         }
 
         private static void AssertBrushResolves(string resourceKey)
