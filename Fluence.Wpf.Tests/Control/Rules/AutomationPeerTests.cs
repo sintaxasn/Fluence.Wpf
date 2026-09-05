@@ -330,5 +330,31 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 Assert.Equal("Application title bar", peer.GetName(), StringComparer.Ordinal);
             });
         }
+
+        /// <summary>
+        /// InfoBadge's count has no other accessible representation: the number lives in a
+        /// template TextBlock with no name, so without a peer a screen reader reads nothing.
+        /// A Value of -1 is the dot form and carries no number to announce.
+        /// </summary>
+        /// <param name="value">The badge value to set.</param>
+        /// <param name="expectedName">The name the peer must report.</param>
+        [Theory]
+        [InlineData(5, "5")]
+        [InlineData(0, "0")]
+        [InlineData(-1, "")]
+        public Task InfoBadge_AutomationPeer_ReportsValueAsNameAsync(int value, string expectedName)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                InfoBadge badge = new() { Value = value };
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(badge), exactMatch: false);
+
+                _ = Assert.IsType<InfoBadgeAutomationPeer>(peer, exactMatch: false);
+                Assert.Equal("InfoBadge", peer.GetClassName(), StringComparer.Ordinal);
+                Assert.Equal(AutomationControlType.Text, peer.GetAutomationControlType());
+                Assert.Equal(expectedName, peer.GetName(), StringComparer.Ordinal);
+            });
+        }
     }
 }

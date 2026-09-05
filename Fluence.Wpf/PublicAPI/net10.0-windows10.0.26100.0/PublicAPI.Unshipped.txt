@@ -5,3 +5,9 @@ override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetAutomationControlTypeC
 override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetClassNameCore() -> string!
 override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetNameCore() -> string!
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+Fluence.Wpf.Automation.InfoBadgeAutomationPeer
+Fluence.Wpf.Automation.InfoBadgeAutomationPeer.InfoBadgeAutomationPeer(Fluence.Wpf.Controls.InfoBadge! owner) -> void
+override Fluence.Wpf.Automation.InfoBadgeAutomationPeer.GetAutomationControlTypeCore() -> System.Windows.Automation.Peers.AutomationControlType
+override Fluence.Wpf.Automation.InfoBadgeAutomationPeer.GetClassNameCore() -> string!
+override Fluence.Wpf.Automation.InfoBadgeAutomationPeer.GetNameCore() -> string!
+override Fluence.Wpf.Controls.InfoBadge.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
