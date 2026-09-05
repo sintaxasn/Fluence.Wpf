@@ -143,9 +143,9 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty SpinButtonPlacementModeProperty =
             DependencyProperty.Register(
                 nameof(SpinButtonPlacementMode),
-                typeof(SpinButtonPlacementMode),
+                typeof(NumberBoxSpinButtonPlacementMode),
                 typeof(NumberBox),
-                new FrameworkPropertyMetadata(SpinButtonPlacementMode.Compact));
+                new FrameworkPropertyMetadata(NumberBoxSpinButtonPlacementMode.Compact));
 
         /// <summary>
         /// Identifies the <see cref="AcceptsExpression"/> dependency property.
@@ -252,9 +252,9 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets where spin buttons are shown.
         /// </summary>
-        public SpinButtonPlacementMode SpinButtonPlacementMode
+        public NumberBoxSpinButtonPlacementMode SpinButtonPlacementMode
         {
-            get => (SpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty);
+            get => (NumberBoxSpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty);
             set => SetValue(SpinButtonPlacementModeProperty, value);
         }
 

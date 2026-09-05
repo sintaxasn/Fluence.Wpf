@@ -29,9 +29,10 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Defines where spin buttons are placed relative to the <see cref="Controls.NumberBox"/> input.
+    /// Placement of the <see cref="Controls.NumberBox"/> spin buttons. Matches WinUI's
+    /// <c language="csharp">NumberBoxSpinButtonPlacementMode</c>.
     /// </summary>
-    public enum SpinButtonPlacementMode
+    public enum NumberBoxSpinButtonPlacementMode
     {
         /// <summary>
         /// Spin buttons are not shown.

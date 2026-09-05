@@ -69,7 +69,7 @@
                     Maximum="100"
                     Minimum="0"
                     SmallChange="1"
-                    SpinButtonPlacementMode="{x:Static fluence:SpinButtonPlacementMode.Inline}"
+                    SpinButtonPlacementMode="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Inline}"
                     Value="25" />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use ProgressBar for measurable work where the current value can be reported." />
@@ -197,7 +197,7 @@
                         Maximum="100"
                         Minimum="1"
                         SmallChange="1"
-                        SpinButtonPlacementMode="{x:Static fluence:SpinButtonPlacementMode.Inline}"
+                        SpinButtonPlacementMode="{x:Static fluence:NumberBoxSpinButtonPlacementMode.Inline}"
                         Value="{Binding Value, ElementName=DeterminateProgressRing, Mode=TwoWay}" />
                     <TextBlock
                         x:Name="DeterminateProgressRingLabel"
