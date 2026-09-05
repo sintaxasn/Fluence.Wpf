@@ -374,7 +374,7 @@ namespace Fluence.Wpf.Controls
         /// Occurs after the tip has closed, whether through <see cref="IsOpen"/>, the close
         /// button, or a light dismiss.
         /// </summary>
-        public event EventHandler? Closed;
+        public event EventHandler<TeachingTipClosedEventArgs>? Closed;
 
         /// <summary>
         /// Gets the popup that hosts the tip. Created lazily the first time the tip opens.
@@ -820,11 +820,15 @@ namespace Fluence.Wpf.Controls
 
         private void OnPopupClosed(object? sender, EventArgs e)
         {
+            TeachingTipCloseReason reason = _pendingCloseReason;
+            _pendingCloseReason = TeachingTipCloseReason.Programmatic;
+
             if (IsOpen)
             {
                 // The popup closed outside the IsOpen pipeline (light dismiss); sync the
                 // property without clobbering a potential binding. The re-entrant changed
                 // callback finds the popup already closed and no-ops.
+                reason = TeachingTipCloseReason.LightDismiss;
                 SetCurrentValue(IsOpenProperty, value: false);
             }
 
@@ -832,7 +836,7 @@ namespace Fluence.Wpf.Controls
             // (or the fallback window content) for its own lifetime.
             _ = HostPopup?.PlacementTarget = null;
 
-            Closed?.Invoke(this, EventArgs.Empty);
+            Closed?.Invoke(this, new TeachingTipClosedEventArgs(reason));
         }
 
         private void OnActionButtonClick(object sender, RoutedEventArgs e)
@@ -848,8 +852,16 @@ namespace Fluence.Wpf.Controls
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
             CloseButtonClick?.Invoke(this, EventArgs.Empty);
+            _pendingCloseReason = TeachingTipCloseReason.CloseButton;
             SetCurrentValue(IsOpenProperty, value: false);
         }
+
+        /// <summary>
+        /// The reason to report on the next Closed. The close button sets it before driving
+        /// IsOpen to false; every other IsOpen-driven close is programmatic, and a popup that
+        /// closes while IsOpen is still true is a light dismiss.
+        /// </summary>
+        private TeachingTipCloseReason _pendingCloseReason = TeachingTipCloseReason.Programmatic;
 
         /// <summary>
         /// The action button wired from the template, when present.
