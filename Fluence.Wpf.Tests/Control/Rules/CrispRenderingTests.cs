@@ -32,7 +32,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// A themed control's <c language="csharp">UseLayoutRounding</c> setter must keep crisp,

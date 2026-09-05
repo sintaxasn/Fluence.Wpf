@@ -41,7 +41,7 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// Cross-control background and fill parity: WinUI role keys must be used for every

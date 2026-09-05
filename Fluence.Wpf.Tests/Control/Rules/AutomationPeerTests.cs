@@ -37,7 +37,7 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// Task-A2 and Task-A3 tests: automation peer SetValue implementations reject writes to a

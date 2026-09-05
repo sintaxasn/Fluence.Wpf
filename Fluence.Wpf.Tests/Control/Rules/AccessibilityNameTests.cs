@@ -36,7 +36,7 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// Cross-control automation name coverage: glyph-only buttons in pickers,

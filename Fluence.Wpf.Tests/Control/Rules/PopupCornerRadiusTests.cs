@@ -32,7 +32,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// WI-3 A5-A6 tests: ComboBox and DropDownButton popup border CornerRadius
