@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 // thickness resources from Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml,
                 // which do not exist in the library theme.
                 _ = TestApp.EnsureDemoTheme();
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
 
                 DemoSampleControl sample = new()
                 {
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
 
                     _ = Assert.IsType<Color>(application.TryFindResource("CardBackgroundFillColorDefault"), exactMatch: false);
                     AssertBrushResolves("CardBackgroundFillColorDefaultBrush");
@@ -276,7 +276,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.HighContrast })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
 
                     foreach (string key in GetNativeDemoSurfaceBrushKeys())
                     {
@@ -350,7 +350,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 foreach (ApplicationTheme theme in themes)
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                     foreach (string key in keys)

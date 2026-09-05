@@ -147,7 +147,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Auto, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Auto);
                 MainWindow? window = null;
 
                 try
@@ -212,7 +212,7 @@ namespace Fluence.Wpf.Tests.Gallery
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 MainWindow? window = null;
 
                 try
@@ -524,7 +524,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Auto, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Auto);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
                 MainWindow? window = null;

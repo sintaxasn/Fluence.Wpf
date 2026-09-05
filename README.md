@@ -48,8 +48,7 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 ```csharp
 Fluence.Wpf.ApplicationThemeManager.Apply(
     Fluence.Wpf.ApplicationTheme.Auto,
-    Fluence.Wpf.WindowBackdropType.Mica,
-    updateAccent: true);
+    Fluence.Wpf.WindowBackdropType.Mica);
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 

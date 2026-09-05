@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests.Windowing
             ApplicationAccentColorManager.ResetForTesting();
             app.Resources.MergedDictionaries.Clear();
 
-            ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
         }
 
         private static void ResetAndApply(Application app)
@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests.Windowing
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             app.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
         }
 
         // ---------------------------------------------------------------------------
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests.Windowing
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     foreach (string? key in keys)
                     {
                         object resource = Assert.IsType<object>(app.TryFindResource(key), exactMatch: false);
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 object brush = Assert.IsType<object>(app.TryFindResource("SystemFillColorCriticalBrush"), exactMatch: false);
             });
         }
@@ -930,7 +930,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Assert.NotEqual(Colors.Transparent, highContrastBackground);
                     Assert.Equal(expectedHighContrastBackground, highContrastBackground);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Color afterLightBackground = Assert.IsType<SolidColorBrush>(w.Background, exactMatch: false).Color;

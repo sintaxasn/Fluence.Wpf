@@ -672,7 +672,7 @@ namespace Fluence.Wpf.Tests.Control
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     foreach (string? key in keys)
                     {
                         Assert.NotNull(app.TryFindResource(key));
@@ -688,7 +688,7 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Application app = WpfTestSta.EnsureApplication();
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
 
                 // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the high
                 // contrast table, so the track has to come from the live system window color or the

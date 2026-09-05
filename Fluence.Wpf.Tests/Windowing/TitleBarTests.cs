@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     window = new FluenceWindow();
                     Brush lightBg = window.Background;
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     Brush darkBg = window.Background;
 
                     Assert.NotEqual(lightBg, darkBg);
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 {
                     window?.Close();
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 }
             });
         }
@@ -364,13 +364,13 @@ namespace Fluence.Wpf.Tests.Windowing
                 try
                 {
                     ApplicationThemeManager.Changed += handler;
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     Assert.Equal(1, fireCount);
                 }
                 finally
                 {
                     ApplicationThemeManager.Changed -= handler;
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 }
             });
         }
@@ -417,14 +417,14 @@ namespace Fluence.Wpf.Tests.Windowing
                 {
                     foreach (ApplicationTheme theme in (ApplicationTheme[])[ApplicationTheme.Dark, ApplicationTheme.Light])
                     {
-                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                         object bg = Assert.IsType<object>(app.TryFindResource("ApplicationBackgroundBrush"), exactMatch: false);
                         object fg = Assert.IsType<object>(app.TryFindResource("TextFillColorPrimaryBrush"), exactMatch: false);
                     }
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 }
             });
         }

@@ -23,8 +23,7 @@ Call **before** showing your main window (typically in `App.OnStartup` or equiva
 ```csharp
 Fluence.Wpf.ApplicationThemeManager.Apply(
     Fluence.Wpf.ApplicationTheme.Auto,
-    Fluence.Wpf.WindowBackdropType.Mica,
-    updateAccent: true);
+    Fluence.Wpf.WindowBackdropType.Mica);
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 

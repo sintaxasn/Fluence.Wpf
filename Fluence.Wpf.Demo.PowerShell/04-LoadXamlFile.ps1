@@ -62,7 +62,7 @@ if ($null -ne $themeCombo) {
             3       { [Fluence.Wpf.ApplicationTheme]::HighContrast }
             default { [Fluence.Wpf.ApplicationTheme]::Auto }
         }
-        [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.WindowBackdropType]::Mica, $true)
+        [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.WindowBackdropType]::Mica)
     })
 }
 # The "Cycle accent" button steps through a small palette of custom accents.

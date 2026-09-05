@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
         {
             Application application = WpfTestSta.EnsureApplication();
             Reset(application);
-            ApplicationThemeManager.Apply(theme, backdrop, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, backdrop);
             return application;
         }
 

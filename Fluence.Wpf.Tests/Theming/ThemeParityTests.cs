@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Tests.Theming
                 // parity check hermetic, and the same machine-independent values are already
                 // covered by DesignTimeResourceTests.
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
             }).ConfigureAwait(true);
 
@@ -202,7 +202,7 @@ namespace Fluence.Wpf.Tests.Theming
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 ResourceDictionary res = app.Resources;
@@ -257,7 +257,7 @@ namespace Fluence.Wpf.Tests.Theming
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 ResourceDictionary res = app.Resources;
@@ -350,7 +350,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlight = SystemColors.HighlightColor;
@@ -380,7 +380,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlightText = SystemColors.HighlightTextColor;
@@ -440,7 +440,7 @@ namespace Fluence.Wpf.Tests.Theming
                 try
                 {
                     // First touch of the theme system.
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 }
                 finally
                 {

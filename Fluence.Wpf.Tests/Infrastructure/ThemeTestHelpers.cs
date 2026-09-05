@@ -40,15 +40,13 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// Applies Light → Dark → High Contrast → Light with a stable backdrop.
         /// </summary>
         /// <param name="backdrop">Backdrop to use for all themes.</param>
-        /// <param name="updateAccent">Whether to update the accent color for each theme.</param>
         internal static void ApplyStandardThemeCycle(
-            WindowBackdropType backdrop = WindowBackdropType.None,
-            bool updateAccent = true)
+            WindowBackdropType backdrop = WindowBackdropType.None)
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, backdrop, updateAccent);
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, backdrop, updateAccent);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, backdrop);
+            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, backdrop);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop);
         }
 
         internal static void AssertKeyThemeBrushesResolve(Application application)

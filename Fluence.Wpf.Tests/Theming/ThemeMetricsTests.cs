@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests.Theming
             ApplicationAccentColorManager.ResetForTesting();
             app.Resources.MergedDictionaries.Clear();
 
-            ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
         }
 
         // ---------------------------------------------------------------------------
@@ -96,7 +96,7 @@ namespace Fluence.Wpf.Tests.Theming
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     CornerRadius cr = Assert.IsType<CornerRadius>(app.TryFindResource("ControlCornerRadius"), exactMatch: false);
                     CornerRadius or_ = Assert.IsType<CornerRadius>(app.TryFindResource("OverlayCornerRadius"), exactMatch: false);
                     Assert.Equal(new CornerRadius(4), cr);
