@@ -31,7 +31,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -195,7 +194,7 @@ namespace Fluence.Wpf.Tests
             window.ShowInTaskbar = false;
             window.ResizeMode = ResizeMode.NoResize;
             window.SizeToContent = SizeToContent.Manual;
-            window.SetResourceReference(Control.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
+            window.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
 
             if (window is Controls.FluenceWindow fluenceWindow)
             {

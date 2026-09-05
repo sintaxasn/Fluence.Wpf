@@ -1438,7 +1438,7 @@ topMode: false,
                 _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(application.TryFindResource("NavigationViewItemFocusVisual"));
-                ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(static setter => setter.Property == Control.TemplateProperty)?.Value as ControlTemplate);
+                ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(static setter => setter.Property == System.Windows.Controls.Control.TemplateProperty)?.Value as ControlTemplate);
                 DependencyObject root = Assert.IsType<DependencyObject>(template.LoadContent(), exactMatch: false);
 
                 foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
