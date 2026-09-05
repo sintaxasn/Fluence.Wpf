@@ -41,7 +41,7 @@ using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.TemplatePartTransforms;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests.Control.Shared
+namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
     /// Reduced-motion tests: when <see cref="MotionHelper.IsMotionEnabled"/> is false (the

@@ -4,7 +4,7 @@
 
 **Goal:** Retire `partial class ControlTests`, collapse the seven divergent resource-merge helpers into one, delete 18 subsumed test cases, and make every test class start from a known application and theme state, without changing what any surviving test asserts.
 
-**Architecture:** Seven folders under `Fluence.Wpf.Tests` (`Infrastructure`, `Control`, `Control/Shared`, `Theming`, `Windowing`, `Gallery`, `Tools`), each one a namespace segment, because IDE0130 is an error in this repository and a flat namespace under a subfolder does not compile. Three new single-concern static helper classes (`TestApp`, `VisualTree`, `BrushAssert`) replace every private copy, and each test class that touches WPF resets through `IAsyncLifetime`. The work lands in eight phases, each verified by a `--list-tests` method-name multiset diff against a committed baseline.
+**Architecture:** Seven folders under `Fluence.Wpf.Tests` (`Infrastructure`, `Control`, `Control/Rules`, `Theming`, `Windowing`, `Gallery`, `Tools`), each one a namespace segment, because IDE0130 is an error in this repository and a flat namespace under a subfolder does not compile. Three new single-concern static helper classes (`TestApp`, `VisualTree`, `BrushAssert`) replace every private copy, and each test class that touches WPF resets through `IAsyncLifetime`. The work lands in eight phases, each verified by a `--list-tests` method-name multiset diff against a committed baseline.
 
 **Tech Stack:** C# with `LangVersion=latest`, xunit.v3 4.0.0 on Microsoft Testing Platform (no `dotnet test`), WPF on `net472` and `net10.0-windows10.0.26100.0`, PowerShell 7 for tooling.
 
@@ -63,7 +63,7 @@ Task 1 creates the branch, so its Step 1 differs. Task 29 runs in the primary wo
 | `Fluence.Wpf.Tests/` root, which only files awaiting a move still occupy | `Fluence.Wpf.Tests` |
 | `Infrastructure/` | `Fluence.Wpf.Tests.Infrastructure` |
 | `Control/` | `Fluence.Wpf.Tests.Control` |
-| `Control/Shared/` | `Fluence.Wpf.Tests.Control.Shared` |
+| `Control/Rules/` | `Fluence.Wpf.Tests.Control.Rules` |
 | `Theming/` | `Fluence.Wpf.Tests.Theming` |
 | `Windowing/` | `Fluence.Wpf.Tests.Windowing` |
 | `Gallery/` | `Fluence.Wpf.Tests.Gallery` |
@@ -170,7 +170,7 @@ New files, and what each is responsible for.
 | `Fluence.Wpf.Tests/Baselines/*.txt`, `allowlist.md` | The committed `--list-tests` baseline per TFM and the allowlist of permitted name changes. |
 | `Fluence.Wpf.Tests/Infrastructure/LightThemeFixture.cs` | Task 24. A class fixture that pays one reset plus one Light apply per class instead of per test. |
 
-Moved files keep one responsibility each: `Infrastructure/` holds only helpers, `Control/<X>Tests.cs` holds exactly one control's tests, `Control/Shared/` holds the eight rules asserted across many controls, `Windowing/`, `Theming/`, `Gallery/` and `Tools/` hold their named concerns.
+Moved files keep one responsibility each: `Infrastructure/` holds only helpers, `Control/<X>Tests.cs` holds exactly one control's tests, `Control/Rules/` holds the eight rules asserted across many controls, `Windowing/`, `Theming/`, `Gallery/` and `Tools/` hold their named concerns.
 
 Every folder name is also a namespace segment, and each was picked so that it shadows nothing the tests already use. `Windowing` is spelled with the `ing` deliberately: a folder named `Window` would invite a namespace segment that shadows `System.Windows.Window`, which hundreds of test bodies declare as `Window w = new()`. `Control` is singular so that it does not shadow `Fluence.Wpf.Controls` at the 1208 `Controls.ProgressBar` shorthand sites, and `Gallery` replaces `Demo` so that it does not shadow `Fluence.Wpf.Demo` at the `Demo.MainWindow` and `Demo.Mvvm.MainWindow` sites. The five files already under `Theming/` keep the namespace they have today; Task 19 gives the seven files moving in the same one. See the Global Constraints section "Folders and namespaces" for the full table and the three rules that follow from it.
 
@@ -1345,7 +1345,7 @@ Twelve tasks, one commit each. Every task takes a set of `ControlTests.<X>.cs` p
 Apply this to every file in a task's table. It is mechanical; nothing about what a test asserts changes.
 
 1. `git mv` the file to its destination path.
-1a. Change the namespace line to the one that matches the destination folder: `Fluence.Wpf.Tests.Control` for `Control/`, `Fluence.Wpf.Tests.Control.Shared` for `Control/Shared/`, `Fluence.Wpf.Tests.Windowing` for `Windowing/`, `Fluence.Wpf.Tests.Gallery.Pages` for `Gallery/Pages/`. IDE0130 is an error, so this is not optional.
+1a. Change the namespace line to the one that matches the destination folder: `Fluence.Wpf.Tests.Control` for `Control/`, `Fluence.Wpf.Tests.Control.Rules` for `Control/Rules/`, `Fluence.Wpf.Tests.Windowing` for `Windowing/`, `Fluence.Wpf.Tests.Gallery.Pages` for `Gallery/Pages/`. IDE0130 is an error, so this is not optional.
 1b. Confirm the file still carries `using Fluence.Wpf.Tests.Infrastructure;` from Task 1. Every one of these files names `WpfTestSta`, so it should already be there.
 1c. If the file uses the bare type `Control`, write it out as `System.Windows.Controls.Control`. Inside a namespace nested under `Fluence.Wpf.Tests`, `Control` now binds to the `Fluence.Wpf.Tests.Control` namespace. Global Constraints lists the three files in this phase that are affected.
 2. Change `public sealed partial class ControlTests : IAsyncLifetime` or `public partial class ControlTests` to `public sealed class <NewClassName> : IAsyncLifetime`.
@@ -1834,19 +1834,19 @@ Private helpers in `ControlTests.NavigationView.cs` that both new classes need, 
 **Starting commit:** the Task 15 commit.
 
 **Interfaces:**
-- Produces: `AccessibilityNameTests`, `IconForegroundTests`, `FocusVisualTests`, `ReducedMotionTests`, `BackgroundParityTests`, `FluentStrokeTests`, `PopupCornerRadiusTests`, `AutomationPeerTests`, `CrispRenderingTests`. `Control/Shared/FluentStrokeTests.cs` becomes the reference pattern that AGENTS.md and `docs/contributing.md` point at in Task 27.
+- Produces: `AccessibilityNameTests`, `IconForegroundTests`, `FocusVisualTests`, `ReducedMotionTests`, `BackgroundParityTests`, `FluentStrokeTests`, `PopupCornerRadiusTests`, `AutomationPeerTests`, `CrispRenderingTests`. `Control/Rules/FluentStrokeTests.cs` becomes the reference pattern that AGENTS.md and `docs/contributing.md` point at in Task 27.
 
 | Source | Destination | New class | `using static` added | Cases |
 | ------ | ----------- | --------- | -------------------- | ----: |
-| `ControlTests.Accessibility.cs` | `Control/Shared/AccessibilityNameTests.cs` | `AccessibilityNameTests` | `VisualTree` | 11 |
-| `ControlTests.IconForeground.cs` | `Control/Shared/IconForegroundTests.cs` | `IconForegroundTests` | `VisualTree`, `BrushAssert` | 11 |
-| `ControlTests.FocusVisual.cs` | `Control/Shared/FocusVisualTests.cs` | `FocusVisualTests` | `VisualTree` | 10 |
-| `ControlTests.ReducedMotion.cs` | `Control/Shared/ReducedMotionTests.cs` | `ReducedMotionTests` | `VisualTree` | 11 |
-| `ControlTests.BackgroundParity.cs` | `Control/Shared/BackgroundParityTests.cs` | `BackgroundParityTests` | `VisualTree`, `BrushAssert` | 10 |
-| `ControlTests.FluentStroke.cs` | `Control/Shared/FluentStrokeTests.cs` | `FluentStrokeTests` | `VisualTree` | 10 |
-| `ControlTests.PopupCornerRadius.cs` | `Control/Shared/PopupCornerRadiusTests.cs` | `PopupCornerRadiusTests` | `VisualTree` | 4 |
-| `ControlTests.PeerSetValueGuards.cs` **merged with** `ControlTests.PeerValueChanged.cs` | `Control/Shared/AutomationPeerTests.cs` | `AutomationPeerTests` | `VisualTree` | 6 (4 + 2) |
-| `ControlRenderingTests.cs` | `Control/Shared/CrispRenderingTests.cs` | `CrispRenderingTests` | `VisualTree` | 3 |
+| `ControlTests.Accessibility.cs` | `Control/Rules/AccessibilityNameTests.cs` | `AccessibilityNameTests` | `VisualTree` | 11 |
+| `ControlTests.IconForeground.cs` | `Control/Rules/IconForegroundTests.cs` | `IconForegroundTests` | `VisualTree`, `BrushAssert` | 11 |
+| `ControlTests.FocusVisual.cs` | `Control/Rules/FocusVisualTests.cs` | `FocusVisualTests` | `VisualTree` | 10 |
+| `ControlTests.ReducedMotion.cs` | `Control/Rules/ReducedMotionTests.cs` | `ReducedMotionTests` | `VisualTree` | 11 |
+| `ControlTests.BackgroundParity.cs` | `Control/Rules/BackgroundParityTests.cs` | `BackgroundParityTests` | `VisualTree`, `BrushAssert` | 10 |
+| `ControlTests.FluentStroke.cs` | `Control/Rules/FluentStrokeTests.cs` | `FluentStrokeTests` | `VisualTree` | 10 |
+| `ControlTests.PopupCornerRadius.cs` | `Control/Rules/PopupCornerRadiusTests.cs` | `PopupCornerRadiusTests` | `VisualTree` | 4 |
+| `ControlTests.PeerSetValueGuards.cs` **merged with** `ControlTests.PeerValueChanged.cs` | `Control/Rules/AutomationPeerTests.cs` | `AutomationPeerTests` | `VisualTree` | 6 (4 + 2) |
+| `ControlRenderingTests.cs` | `Control/Rules/CrispRenderingTests.cs` | `CrispRenderingTests` | `VisualTree` | 3 |
 
 Two special cases:
 
@@ -1874,14 +1874,14 @@ Delete the `MotionHelper.OverrideIsMotionEnabled = null;` line from each test's 
 
 `ControlRenderingTests.cs` is renamed because "control rendering" described nothing; the three tests assert `UseLayoutRounding` and `SnapsToDevicePixels` setters survive a theme switch.
 
-`ControlTests.IconForeground.cs:599` declares `private static Color GetControlForegroundColor(Control control)`. Inside `Fluence.Wpf.Tests.Control.Shared` that `Control` binds to the namespace, so write the parameter type out as `System.Windows.Controls.Control`.
+`ControlTests.IconForeground.cs:599` declares `private static Color GetControlForegroundColor(Control control)`. Inside `Fluence.Wpf.Tests.Control.Rules` that `Control` binds to the namespace, so write the parameter type out as `System.Windows.Controls.Control`.
 
 `ReducedMotionTests` does not qualify for the Task 24 fixture.
 
 - [ ] **Step 1: Executor preamble.** Expected head: the Task 15 commit.
 - [ ] **Step 2: Apply the Phase 3 conversion recipe to each row, with the two special cases above.**
-- [ ] **Step 3: Run the Phase 3 verification checklist.** Targeted filter: the nine class names, each prefixed `Fluence.Wpf.Tests.Control.Shared.`, expect 76 passed.
-- [ ] **Step 4: Commit** with subject `Split the cross-control rule tests into Control/Shared.`
+- [ ] **Step 3: Run the Phase 3 verification checklist.** Targeted filter: the nine class names, each prefixed `Fluence.Wpf.Tests.Control.Rules.`, expect 76 passed.
+- [ ] **Step 4: Commit** with subject `Split the cross-control rule tests into Control/Rules.`
 
 ---
 
@@ -2236,7 +2236,7 @@ move; the run still reports three skipped and docs/screenshots is untouched.
 - Modify: `Fluence.Wpf.Tests/Theming/ThemeManagerTests.cs`
 - Modify: `Fluence.Wpf.Tests/Theming/DictionaryStabilityTests.cs`
 - Modify: `Fluence.Wpf.Tests/Theming/AccentTests.cs`
-- Modify: `Fluence.Wpf.Tests/Control/Shared/BackgroundParityTests.cs`
+- Modify: `Fluence.Wpf.Tests/Control/Rules/BackgroundParityTests.cs`
 - Modify: `Fluence.Wpf.Tests/Windowing/FluenceWindowTests.cs`
 - Modify: `Fluence.Wpf.Tests/Gallery/DemoShellTests.cs`
 - Delete: `Fluence.Wpf.Tests/AccentPaletteRegenerationExperiment.cs`
@@ -2260,11 +2260,11 @@ Survivor: `CornerRadiusTokens_SurviveFullThemeCycleAsync` (line 187) applies Lig
 
 In `Theming/ThemeMetricsTests.cs`, delete `DefaultControlFocusVisualStyle_PresentInAllThemesAsync` (line 169).
 
-Survivor: `Control/Shared/FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`. Same loop over the three themes, same `Assert.IsType<Style>` on `DefaultControlFocusVisualStyle`. The two differed only in which reset helper they used, and Tasks 2 and 6 made both run without demo styles.
+Survivor: `Control/Rules/FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`. Same loop over the three themes, same `Assert.IsType<Style>` on `DefaultControlFocusVisualStyle`. The two differed only in which reset helper they used, and Tasks 2 and 6 made both run without demo styles.
 
 - [ ] **Step 4: D3. Delete the duplicated ProgressBar track test**
 
-In `Control/Shared/BackgroundParityTests.cs`, delete `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync` (branch-point line 114).
+In `Control/Rules/BackgroundParityTests.cs`, delete `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync` (branch-point line 114).
 
 Survivor: `Control/ProgressBarTests.ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync`. Both resolve `PART_Track` on a 240 by 24 ProgressBar and compare its background to `ControlStrongStrokeColorDefaultBrush`; the survivor also asserts `progressBar.Background` and `CornerRadius(0.5)`.
 
@@ -2377,7 +2377,7 @@ Keep whatever the three bodies already assert; the shape above is the required c
 Add this under `## [Unreleased]` in `CHANGELOG.md`, in a `### Changed` section (create the section if `Unreleased` does not have one, placing it after `### Added` and before `### Fixed`):
 
 ```markdown
-- Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Shared/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/`, each folder also a namespace segment, with one sealed class per subject in place of the 62-file `partial class ControlTests`, and a single application and theme reset (`TestApp.EnsureLibraryTheme`, with `TestApp.EnsureDemoTheme` as the explicit demo opt-in) in place of seven divergent private merge helpers. Library control tests no longer run with the demo resource dictionary merged over the theme slots, so a demo style can no longer shadow a library brush. Eighteen test cases are deleted as strictly subsumed or as not being tests, and one case is added by a theory fold, taking net10 from 1197 to 1180 and net472 from 1195 to 1178. No surviving test's assertions changed. The deletions, with the survivor that covers each: six per-theme corner-radius assertions in `ThemeMetricsTests`, covered by `CornerRadiusTokens_SurviveFullThemeCycleAsync`, which asserts both pairs at all four steps of the cycle; `DefaultControlFocusVisualStyle_PresentInAllThemesAsync`, byte-for-byte identical to `FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`; `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync`, covered by `ProgressBarTests.ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync`, which also asserts the control background and the half-pixel corner radius; `FiveSwitches_DictionaryCountStableAsync` and `MergedDictionaries_CountStableAfterMultipleSwitchesAsync`, both covered by `RepeatedThemeSwitches_NoDictionaryAccumulationAsync`, which does twenty switches against five and now runs as a theory over both `updateAccent` values; `BuildBackdropPlan_None_ReturnsOpaqueBackground` and `BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent`, each asserting one field of a plan that `WindowPolicyTests` asserts in full on the same call; `MainWindow_ProgressNumberBox_UpdatesFirstProgressBarAsync`, covered by `GalleryStatusPage_NumberBoxDrivesFirstProgressBarAsync` plus `MainWindow_DirectNavigation_LoadsConcretePagesAsync`; the three `AccentPaletteRegenerationExperiment` probes and the one `ImmersiveColorSetProbe` probe, whose own doc comments record the answers they were written to find and which never ran in CI; and `AccentRampScoreboard.Score_AllAlgorithms_AgainstCapturedFixtures`, whose only assertion was `Assert.True(Fixtures.Length > 0)` and whose eight captured OS ramp fixtures are preserved as a comment block in `Theming/AccentTests.cs`.
+- Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/`, each folder also a namespace segment, with one sealed class per subject in place of the 62-file `partial class ControlTests`, and a single application and theme reset (`TestApp.EnsureLibraryTheme`, with `TestApp.EnsureDemoTheme` as the explicit demo opt-in) in place of seven divergent private merge helpers. Library control tests no longer run with the demo resource dictionary merged over the theme slots, so a demo style can no longer shadow a library brush. Eighteen test cases are deleted as strictly subsumed or as not being tests, and one case is added by a theory fold, taking net10 from 1197 to 1180 and net472 from 1195 to 1178. No surviving test's assertions changed. The deletions, with the survivor that covers each: six per-theme corner-radius assertions in `ThemeMetricsTests`, covered by `CornerRadiusTokens_SurviveFullThemeCycleAsync`, which asserts both pairs at all four steps of the cycle; `DefaultControlFocusVisualStyle_PresentInAllThemesAsync`, byte-for-byte identical to `FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`; `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync`, covered by `ProgressBarTests.ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync`, which also asserts the control background and the half-pixel corner radius; `FiveSwitches_DictionaryCountStableAsync` and `MergedDictionaries_CountStableAfterMultipleSwitchesAsync`, both covered by `RepeatedThemeSwitches_NoDictionaryAccumulationAsync`, which does twenty switches against five and now runs as a theory over both `updateAccent` values; `BuildBackdropPlan_None_ReturnsOpaqueBackground` and `BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent`, each asserting one field of a plan that `WindowPolicyTests` asserts in full on the same call; `MainWindow_ProgressNumberBox_UpdatesFirstProgressBarAsync`, covered by `GalleryStatusPage_NumberBoxDrivesFirstProgressBarAsync` plus `MainWindow_DirectNavigation_LoadsConcretePagesAsync`; the three `AccentPaletteRegenerationExperiment` probes and the one `ImmersiveColorSetProbe` probe, whose own doc comments record the answers they were written to find and which never ran in CI; and `AccentRampScoreboard.Score_AllAlgorithms_AgainstCapturedFixtures`, whose only assertion was `Assert.True(Fixtures.Length > 0)` and whose eight captured OS ramp fixtures are preserved as a comment block in `Theming/AccentTests.cs`.
 ```
 
 - [ ] **Step 12: Build**
@@ -2584,12 +2584,12 @@ Wall clock, net10, two lanes summed: <before> to <after>.
 
 ---
 
-### Task 25: The qualifying `Control/Shared/` and `Windowing/` classes
+### Task 25: The qualifying `Control/Rules/` and `Windowing/` classes
 
 **Starting commit:** the Task 24 commit.
 
 **Files:**
-- Modify: the qualifying classes under `Fluence.Wpf.Tests/Control/Shared/` and `Fluence.Wpf.Tests/Windowing/`
+- Modify: the qualifying classes under `Fluence.Wpf.Tests/Control/Rules/` and `Fluence.Wpf.Tests/Windowing/`
 
 **Interfaces:**
 - Consumes: `LightThemeFixture` from Task 24.
@@ -2597,13 +2597,13 @@ Wall clock, net10, two lanes summed: <before> to <after>.
 
 - [ ] **Step 1: Executor preamble.** Expected head: the Task 24 commit.
 
-- [ ] **Step 2: Delete the redundant same-theme applies under `Control/Shared/` and `Windowing/`**
+- [ ] **Step 2: Delete the redundant same-theme applies under `Control/Rules/` and `Windowing/`**
 
 Same edit as Task 24 Step 4, over those two folders.
 
 - [ ] **Step 3: Re-derive the qualifying list**
 
-Run the `git grep -l` command from the qualification rule over `Fluence.Wpf.Tests/Control/Shared` and `Fluence.Wpf.Tests/Windowing`.
+Run the `git grep -l` command from the qualification rule over `Fluence.Wpf.Tests/Control/Rules` and `Fluence.Wpf.Tests/Windowing`.
 
 Derived at planning time, the qualifying classes are: `AccessibilityNameTests`, `FluentStrokeTests`, `PopupCornerRadiusTests`, `AutomationPeerTests`, `CaptionButtonTests`, `WindowIconTests`. If the grep disagrees, the grep wins.
 
@@ -2819,7 +2819,7 @@ Replace the whole of section 6 (`## 6. Testing`, from its heading down to the li
   | ------ | -------- |
   | `Infrastructure/` | `WpfTestSta.cs`, `TestApp.cs`, `VisualTree.cs`, `BrushAssert.cs`, `LightThemeFixture.cs`, `ThemeTestHelpers.cs`, `DemoTestHost.cs`, `SlopwatchSuppressAttribute.cs` |
   | `Control/` | `<Control>Tests.cs`, one per control |
-  | `Control/Shared/` | the eight rules asserted across many controls at once |
+  | `Control/Rules/` | the eight rules asserted across many controls at once |
   | `Theming/` | theme engine, dictionary stability, accent, markup, metrics, parity, design-time |
   | `Windowing/` | `WindowPolicyTests`, `FluenceWindowTests`, `TitleBarTests`, `CaptionButtonTests`, `NativeMethodsTests`, `SnapLayoutHelperTests`, `WindowIconTests` |
   | `Gallery/`, `Gallery/Pages/` | the demo gallery shell, the sample contracts, and one class per gallery page |
@@ -2832,7 +2832,7 @@ Replace the whole of section 6 (`## 6. Testing`, from its heading down to the li
 - **Tests for controls** typically:
   1. Let the class `IAsyncLifetime` or `LightThemeFixture` do the reset; the body starts with the control.
   2. Create a minimal `Window`, attach the control, call `Window.Show()` so `ApplyTemplate` runs.
-  3. Drive the control (simulate mouse or keyboard by invoking protected `OnMouse*` members via a small probe subclass if needed; see `ClickableCardProbe` in `Control/Shared/FluentStrokeTests.cs`).
+  3. Drive the control (simulate mouse or keyboard by invoking protected `OnMouse*` members via a small probe subclass if needed; see `ClickableCardProbe` in `Control/Rules/FluentStrokeTests.cs`).
   4. Assert via `VisualTree` helpers and `TryFindResource`.
   5. Drain with `WpfTestSta.DrainDispatcher` and close through `CloseWindowAndDrain(window)` in a `finally`.
 - **InternalsVisibleTo**: the test assembly sees library internals; theme tests can call `ApplicationThemeManager.ResetForTesting()` to isolate fixtures.
@@ -2895,14 +2895,14 @@ WPF tests share a single STA dispatcher (`WpfTestSta`), and the assembly carries
 Replace lines 24 to 31, the `## Tests` bullets, with:
 
 ```markdown
-- One sealed class per subject, in the folder that owns the concern: `Control/<Control>Tests.cs` for a control, `Control/Shared/` for a rule asserted across many controls, `Theming/`, `Windowing/`, `Gallery/` and `Gallery/Pages/` for those concerns, `Infrastructure/` for helpers, `Tools/` for the screenshot harness. Each folder is a namespace segment, so a file under `Control/` declares `namespace Fluence.Wpf.Tests.Control`; IDE0130 is an error, so this is not optional. Do not add a folder whose name matches the last segment of a `Fluence.Wpf.*` namespace the tests use by shorthand.
+- One sealed class per subject, in the folder that owns the concern: `Control/<Control>Tests.cs` for a control, `Control/Rules/` for a rule asserted across many controls, `Theming/`, `Windowing/`, `Gallery/` and `Gallery/Pages/` for those concerns, `Infrastructure/` for helpers, `Tools/` for the screenshot harness. Each folder is a namespace segment, so a file under `Control/` declares `namespace Fluence.Wpf.Tests.Control`; IDE0130 is an error, so this is not optional. Do not add a folder whose name matches the last segment of a `Fluence.Wpf.*` namespace the tests use by shorthand.
 - Let the class own the reset: implement `IAsyncLifetime` and call `TestApp.EnsureLibraryTheme()` from `InitializeAsync` through `WpfTestSta.RunOnStaAsync`. Take `IClassFixture<LightThemeFixture>` instead if no test in the class applies a theme, changes the accent, or toggles reduced motion. `TestApp.EnsureDemoTheme()` is the explicit demo opt-in and belongs in `Gallery/`.
 - Use the shared helpers rather than a private copy: `VisualTree` (with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`), `BrushAssert`, `ThemeTestHelpers`, `DemoTestHost`.
 - When adding a new public control, include at minimum:
   - A default-style and template smoke test.
   - A theme-cycle test if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
   - Interaction or state assertions for any public event or read-only DP the control exposes.
-- `Control/Shared/FluentStrokeTests.cs` is the reference pattern for small template and behavior probes: show a minimal `Window`, `ApplyTemplate`, assert template parts and resolved brushes, then drain and close.
+- `Control/Rules/FluentStrokeTests.cs` is the reference pattern for small template and behavior probes: show a minimal `Window`, `ApplyTemplate`, assert template parts and resolved brushes, then drain and close.
 ```
 
 - [ ] **Step 6: Rewrite `Fluence.Wpf.Tests/README.md`**
@@ -2919,13 +2919,13 @@ Replace the "What Lives Here" list and the "Run" section with:
 - `Infrastructure/LightThemeFixture.cs` - one reset and one Light apply per class, for classes that do not mutate the theme.
 - `Infrastructure/ThemeTestHelpers.cs`, `DemoTestHost.cs`, `SlopwatchSuppressAttribute.cs` - theme cycle assertions, demo hosting, and the one analyzer-suppression marker.
 - `Control/` - one sealed class per control.
-- `Control/Shared/` - the rules asserted across many controls at once: icon foreground, focus visuals, reduced motion, background parity, accessibility names, automation peers, stroke compositing, popup corner radius, crisp rendering.
+- `Control/Rules/` - the rules asserted across many controls at once: icon foreground, focus visuals, reduced motion, background parity, accessibility names, automation peers, stroke compositing, popup corner radius, crisp rendering.
 - `Theming/` - theme engine, dictionary stability, accent, markup, metrics, WinUI parity, design-time drift.
 - `Windowing/` - window policy, `FluenceWindow`, title bar, caption buttons, native structs, snap layout, window icon.
 - `Gallery/` and `Gallery/Pages/` - the gallery shell, the sample contracts, and one class per gallery page.
 - `Tools/GalleryScreenshotHarness.cs` - documentation screenshot regeneration. Not a test.
 - `Baselines/` - the committed `--list-tests` capture per TFM and the name-change allowlist.
-- Namespaces match folders: `Fluence.Wpf.Tests.Infrastructure`, `.Control`, `.Control.Shared`, `.Theming`, `.Windowing`, `.Gallery`, `.Gallery.Pages`, `.Tools`. IDE0130 is an error, so a file's namespace and its folder never disagree.
+- Namespaces match folders: `Fluence.Wpf.Tests.Infrastructure`, `.Control`, `.Control.Rules`, `.Theming`, `.Windowing`, `.Gallery`, `.Gallery.Pages`, `.Tools`. IDE0130 is an error, so a file's namespace and its folder never disagree.
 - `Properties/AssemblyInfo.cs` - carries `[assembly: Parallelization(Mode = ParallelMode.None)]` so WPF resource and template work stays serial (the project also ships `xunit.runner.json` and sets `<TestTfmsInParallel>false</TestTfmsInParallel>`).
 
 ## Run

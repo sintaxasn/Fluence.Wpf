@@ -39,7 +39,7 @@ Fluence.Wpf.Tests/
   Infrastructure/   WpfTestSta.cs, TestApp.cs, VisualTree.cs, BrushAssert.cs,
                     ThemeTestHelpers.cs, DemoTestHost.cs, SlopwatchSuppressAttribute.cs
   Control/          <Control>Tests.cs, one per control
-  Control/Shared/   IconForegroundTests.cs, FocusVisualTests.cs, ReducedMotionTests.cs,
+  Control/Rules/   IconForegroundTests.cs, FocusVisualTests.cs, ReducedMotionTests.cs,
                     BackgroundParityTests.cs, AccessibilityNameTests.cs, AutomationPeerTests.cs,
                     FluentStrokeTests.cs, PopupCornerRadiusTests.cs
   Theming/          existing files plus ThemeManagerTests, ThemeMetricsTests, ThemeMarkupTests,
@@ -70,7 +70,7 @@ nothing.
 **`Tools/` as a seventh folder.** `GalleryScreenshotHarness.cs` is not a test. It writes files that
 are committed to `docs/screenshots/`. Isolating it makes the opt-in gate auditable at a glance.
 
-`Control/Shared/` exists because eight files assert a rule across many controls at once and have no
+`Control/Rules/` exists because eight files assert a rule across many controls at once and have no
 single `<Control>Tests.cs` home. `ControlTests.PeerSetValueGuards.cs` and
 `ControlTests.PeerValueChanged.cs` merge into `AutomationPeerTests.cs`.
 
@@ -91,7 +91,7 @@ structure, expected "Fluence.Wpf.Tests.Infrastructure"`. `.editorconfig:32` sets
 | `Fluence.Wpf.Tests/` root, which only files awaiting a move still occupy | `Fluence.Wpf.Tests` |
 | `Infrastructure/` | `Fluence.Wpf.Tests.Infrastructure` |
 | `Control/` | `Fluence.Wpf.Tests.Control` |
-| `Control/Shared/` | `Fluence.Wpf.Tests.Control.Shared` |
+| `Control/Rules/` | `Fluence.Wpf.Tests.Control.Rules` |
 | `Theming/` | `Fluence.Wpf.Tests.Theming` |
 | `Windowing/` | `Fluence.Wpf.Tests.Windowing` |
 | `Gallery/` | `Fluence.Wpf.Tests.Gallery` |
@@ -322,7 +322,7 @@ rather than mutating the tree. Where a page test does mutate (the Status page Nu
 test rebuilds the page itself.
 
 **Not shareable.** Any class that applies a theme, mutates the accent intent, toggles reduced motion,
-or drives input keeps per-test `IAsyncLifetime`. That is all of `Theming/`, `Control/Shared/
+or drives input keeps per-test `IAsyncLifetime`. That is all of `Theming/`, `Control/Rules/
 ReducedMotionTests.cs`, and the interaction-heavy control classes (ContentDialog, DatePicker,
 TimePicker, ColorPicker, CommandBarFlyout, TeachingTip, PipsPager).
 
@@ -428,7 +428,7 @@ names that are not unique, and by listing those pairs in the allowlist header.
 
 | File | Change |
 | ---- | ------ |
-| `AGENTS.md` section 6 | Replace the `MergeGenericDictionary(Application.Current.Resources)` step with `TestApp.EnsureLibraryTheme()` and the demo opt-in. Describe the folder layout and the folder-matching namespaces. Replace the `ControlTests.FluentStroke.cs` reference-pattern pointer with `Control/Shared/FluentStrokeTests.cs`. Add the two-lane invocation and the net472 abort. |
+| `AGENTS.md` section 6 | Replace the `MergeGenericDictionary(Application.Current.Resources)` step with `TestApp.EnsureLibraryTheme()` and the demo opt-in. Describe the folder layout and the folder-matching namespaces. Replace the `ControlTests.FluentStroke.cs` reference-pattern pointer with `Control/Rules/FluentStrokeTests.cs`. Add the two-lane invocation and the net472 abort. |
 | `AGENTS.md` section 6, parallelization bullet | **[correction]** It states `[assembly: CollectionBehavior(DisableTestParallelization = true)]`. The file actually carries `[assembly: Parallelization(Mode = ParallelMode.None)]` at `Properties/AssemblyInfo.cs:32`. Fix the text. |
 | `AGENTS.md` section 9 | Update the "relying on a previous test's theme state" pitfall: the fix is now the class `IAsyncLifetime`, not a call in the test body. |
 | `AGENTS.md` section 13.2 | If `demo-sample-page/SPEC.md` names test file paths, update them. |
