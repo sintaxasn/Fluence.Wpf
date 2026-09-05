@@ -34,7 +34,7 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     // WI-1 F4 regression guard. The four caption buttons on FluenceWindow
     // (PART_MinimizeButton / PART_MaximizeButton / PART_RestoreButton / PART_CloseButton, see
@@ -46,8 +46,18 @@ namespace Fluence.Wpf.Tests
     // drop caption clicks). These tests pin both slots: the XAML binding
     // (Button.Command reference-equals the expected SystemCommand) and the
     // runtime effect (WindowState transition / Closing event).
-    public partial class ControlTests
+    public sealed class CaptionButtonTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         private static async Task<FluenceWindow> CreateAndShowOffScreenFluenceWindowAsync()
         {
             FluenceWindow window = new()
@@ -75,9 +85,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {
@@ -105,9 +112,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {
@@ -152,9 +156,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {
@@ -183,9 +184,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {
@@ -209,9 +207,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {
@@ -237,9 +232,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow? window = null;
                 try
                 {

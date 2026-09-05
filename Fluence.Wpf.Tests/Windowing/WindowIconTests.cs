@@ -33,7 +33,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     // FluenceWindow defaults Window.Icon to the Fluence brand icon embedded in Fluence.Wpf.dll.
     // FluenceWindow.CreateDefaultIcon loads the square, no-background Fluence mark (an embedded
@@ -41,16 +41,23 @@ namespace Fluence.Wpf.Tests
     // which does not render a vector and would distort a non-square source. These tests pin both
     // halves of the contract: the default resolves to a real square BitmapSource, and a
     // consumer-assigned Icon overrides that default instead of being clobbered by it.
-    public partial class ControlTests
+    public sealed class WindowIconTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task FluenceWindow_Icon_DefaultsToEmbeddedFluenceBrandIconAsync()
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow window = new();
                 try
                 {
@@ -68,9 +75,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 FluenceWindow window = new();
                 try
                 {
@@ -96,9 +100,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                _ = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 BitmapSource icon = Assert.IsType<BitmapSource>(FluenceWindow.DefaultIcon, exactMatch: false);
                 Assert.Equal(icon.PixelWidth, icon.PixelHeight);
             });
