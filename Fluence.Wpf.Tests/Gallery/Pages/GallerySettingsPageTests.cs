@@ -323,7 +323,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                    ApplicationAccentColorManager.ApplyApplicationAccent();
+                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                     DemoTestHost.CloseWindow(window);
                 }
             });
