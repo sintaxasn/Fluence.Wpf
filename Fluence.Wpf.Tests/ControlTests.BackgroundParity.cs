@@ -203,7 +203,6 @@ namespace Fluence.Wpf.Tests
                 // thickness resources from Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml,
                 // which do not exist in the library theme.
                 _ = TestApp.EnsureDemoTheme();
-                MergeDemoSharedStyles(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
 
                 DemoSampleControl sample = new()
@@ -274,13 +273,12 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
+                _ = TestApp.EnsureLibraryTheme();
 
-                // Demo opt-in: this test asserts that merging
-                // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml does not shadow the native
-                // CardBackgroundFillColorDefault library role, so it must merge that dictionary
-                // to exercise the interaction it is guarding against.
-                _ = TestApp.EnsureDemoTheme();
-                MergeDemoSharedStyles(application);
+                // This test merges Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml itself, on
+                // top of the library baseline, to prove the demo dictionary does not shadow the
+                // native CardBackgroundFillColorDefault library role.
+                TestApp.AddDemoSharedStyles(application);
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
@@ -298,13 +296,13 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
+                _ = TestApp.EnsureLibraryTheme();
 
-                // Demo opt-in: GetNativeDemoSurfaceBrushKeys asserts native library brushes
-                // still resolve to non-demo colors after merging
-                // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml, so the demo dictionary
-                // must be merged for this test to exercise anything.
-                _ = TestApp.EnsureDemoTheme();
-                MergeDemoSharedStyles(application);
+                // This test merges Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml itself, on
+                // top of the library baseline, to prove GetNativeDemoSurfaceBrushKeys still
+                // resolves native library brushes to non-demo colors once the demo dictionary
+                // is present.
+                TestApp.AddDemoSharedStyles(application);
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.HighContrast })
                 {
@@ -578,15 +576,6 @@ namespace Fluence.Wpf.Tests
                 "DividerStrokeColorDefaultBrush",
                 "TextFillColorSecondaryBrush",
             ];
-        }
-
-        private static void MergeDemoSharedStyles(Application application)
-        {
-            ResourceDictionary demoShared = new()
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            };
-            application.Resources.MergedDictionaries.Add(demoShared);
         }
 
         private static bool IsBackgroundLiteralAllowedPath(string path)
