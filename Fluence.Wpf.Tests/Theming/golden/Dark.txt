@@ -115,7 +115,7 @@ LayerOnMicaBaseAltFillColorTransparent|#00FFFFFF|#00000000
 LayerOnMicaBaseAltFillColorTransparentBrush|#00000000|#00FFFFFF
 NavigationViewContentBackground|#4C3A3A3A|#00000000
 NavigationViewContentBackgroundBrush|#00000000|#4C3A3A3A
-NavigationViewSelectionIndicatorBrush|#00000000|#FF4FB3FF
+NavigationViewSelectionIndicatorForeground|#00000000|#FF4FB3FF
 ScrollBarTrackFillBrush|#00000000|#FF2C2C2C
 SmokeFillColorDefault|#4D000000|#00000000
 SmokeFillColorDefaultBrush|#00000000|#4D000000

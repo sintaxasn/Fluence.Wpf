@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Theming
             // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
             // uses the same accent fill for its Default/Light/Dark dictionaries); HighContrast is
             // overridden below with the live SystemColors.HighlightTextColor.
-            dict["NavigationViewSelectionIndicatorBrush"] = Solid(colors["AccentFillColorDefault"]);
+            dict["NavigationViewSelectionIndicatorForeground"] = Solid(colors["AccentFillColorDefault"]);
             // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
             // dictionary defines with the same tint, opacity, and fallback as
             // AcrylicBackgroundFillColorDefaultBrush in every theme, so the two resolve identically.
@@ -517,7 +517,7 @@ namespace Fluence.Wpf.Theming
             // AccentFillColorDefault. Fluence's HC selected row background stays SystemColors.Control,
             // so HighlightText (designed to sit on a Highlight-colored fill) would be invisible here.
             // The content background binds to Window.
-            dict["NavigationViewSelectionIndicatorBrush"] = Solid(highlight);
+            dict["NavigationViewSelectionIndicatorForeground"] = Solid(highlight);
             dict["NavigationViewContentBackgroundBrush"] = Solid(window);
 
             // Elevation borders are solid in HC.

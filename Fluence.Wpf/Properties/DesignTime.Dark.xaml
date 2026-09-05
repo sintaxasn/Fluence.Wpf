@@ -181,7 +181,7 @@
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTertiaryBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTransparentBrush" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="#4C3A3A3A" />
-    <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="#FF4FB3FF" />
+    <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#FF4FB3FF" />
     <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="SmokeFillColorDefaultBrush" Color="#4D000000" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseAltBrush" Color="#FF0A0A0A" />
