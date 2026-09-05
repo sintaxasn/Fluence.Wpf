@@ -38,6 +38,9 @@ using Xunit;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryTypographyPage"/>.
+    /// </summary>
     public sealed class GalleryTypographyPageTests : IAsyncLifetime
     {
         private Window? _host;

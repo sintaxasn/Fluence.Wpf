@@ -40,33 +40,19 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryNavigationPage"/>.
+    /// </summary>
     public sealed class GalleryNavigationPageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GalleryNavigationPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryNavigationPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         // This test drives the page's compact NavigationView pane toggle, so it builds its own
@@ -114,21 +100,28 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryNavigationPage_CompactSourceMatchesLiveInteractionAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                GalleryNavigationPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GalleryNavigationPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    DemoSampleControl sample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(static control => control.XamlSource.Contains("CompactNavigationView", StringComparison.Ordinal)), exactMatch: false);
 
-                DemoSampleControl sample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
-                    .FirstOrDefault(static control => control.XamlSource.Contains("CompactNavigationView", StringComparison.Ordinal)), exactMatch: false);
-
-                Assert.Contains("IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"", sample.XamlSource, StringComparison.Ordinal);
-                Assert.Contains("IsPaneToggleButtonVisible=\"True\"", sample.XamlSource, StringComparison.Ordinal);
-                Assert.Equal(-1, sample.XamlSource.IndexOf("CompactPaneToggleButton", StringComparison.Ordinal));
-                Assert.Equal(-1, sample.CSharpSource.IndexOf("CompactPaneToggleButton_Click", StringComparison.Ordinal));
-                Assert.Contains("<fluence:NavigationViewItem", sample.XamlSource, StringComparison.Ordinal);
-                Assert.Contains("Content=\"Settings\"", sample.XamlSource, StringComparison.Ordinal);
-                Assert.Equal(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal));
-                Assert.Equal(-1, sample.XamlSource.IndexOf("Footer content", StringComparison.Ordinal));
+                    Assert.Contains("IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"", sample.XamlSource, StringComparison.Ordinal);
+                    Assert.Contains("IsPaneToggleButtonVisible=\"True\"", sample.XamlSource, StringComparison.Ordinal);
+                    Assert.Equal(-1, sample.XamlSource.IndexOf("CompactPaneToggleButton", StringComparison.Ordinal));
+                    Assert.Equal(-1, sample.CSharpSource.IndexOf("CompactPaneToggleButton_Click", StringComparison.Ordinal));
+                    Assert.Contains("<fluence:NavigationViewItem", sample.XamlSource, StringComparison.Ordinal);
+                    Assert.Contains("Content=\"Settings\"", sample.XamlSource, StringComparison.Ordinal);
+                    Assert.Equal(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal));
+                    Assert.Equal(-1, sample.XamlSource.IndexOf("Footer content", StringComparison.Ordinal));
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 

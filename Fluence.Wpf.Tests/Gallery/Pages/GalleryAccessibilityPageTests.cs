@@ -40,33 +40,19 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryAccessibilityPage"/>.
+    /// </summary>
     public sealed class GalleryAccessibilityPageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GalleryAccessibilityPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryAccessibilityPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         // This test drives keyboard focus across the page, so it builds its own instance
@@ -134,12 +120,10 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryAccessibilityPage_RtlSampleDefaultsOnAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return DemoTestHost.RunDemoPageTestAsync(static () => new GalleryAccessibilityPage(), static window =>
             {
-                GalleryAccessibilityPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
-
-                Controls.ToggleSwitch toggle = Assert.IsType<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(page, "RtlToggle"), exactMatch: false);
-                Controls.Card card = Assert.IsType<Controls.Card>(FindVisualChildByName<Controls.Card>(page, "RtlDemoCard"), exactMatch: false);
+                Controls.ToggleSwitch toggle = Assert.IsType<Controls.ToggleSwitch>(FindVisualChildByName<Controls.ToggleSwitch>(window, "RtlToggle"), exactMatch: false);
+                Controls.Card card = Assert.IsType<Controls.Card>(FindVisualChildByName<Controls.Card>(window, "RtlDemoCard"), exactMatch: false);
 
                 Assert.True(toggle.IsChecked.GetValueOrDefault(),
                     "RTL sample should default to On.");
