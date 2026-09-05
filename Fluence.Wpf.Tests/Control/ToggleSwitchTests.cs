@@ -35,18 +35,30 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 B12 tests: ToggleSwitch knob easing (SplineDoubleKeyFrame / ControlFastOutSlowIn).
+    /// Fluent <see cref="ToggleSwitch"/> control: knob easing (SplineDoubleKeyFrame /
+    /// ControlFastOutSlowIn).
     /// </summary>
-    public partial class ControlTests
+    public sealed class ToggleSwitchTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 B12  ToggleSwitch knob easing
         // ---------------------------------------------------------------------------
@@ -56,9 +68,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new();
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -75,9 +84,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -99,9 +105,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = true };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -118,9 +121,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -137,9 +137,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -163,9 +160,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -215,9 +209,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -257,9 +248,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -294,9 +282,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
@@ -338,8 +323,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -366,6 +349,22 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        // Pump the dispatcher for `milliseconds` so any in-flight storyboard
+        // reaches its HoldEnd state before the test samples layout values.
+        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
+        {
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
         }
 
         private static ScaleTransform GetToggleSwitchThumbScale(ToggleSwitch toggleSwitch)

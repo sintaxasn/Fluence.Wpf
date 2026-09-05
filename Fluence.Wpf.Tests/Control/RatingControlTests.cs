@@ -38,14 +38,24 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-6 tests: Fluent <see cref="RatingControl"/>.
+    /// Fluent <see cref="RatingControl"/> control.
     /// Authority: WinUI 3 RatingControl_themeresources.xaml + RatingControl.xaml.
     /// </summary>
-    public partial class ControlTests
+    public sealed class RatingControlTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-6  RatingControl
         // ---------------------------------------------------------------------------
@@ -55,9 +65,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -74,9 +81,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new();
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -93,9 +97,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -124,7 +125,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 RatingControl rc = new() { Value = 2 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -149,7 +149,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 RatingControl rc = new() { Value = 0 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -172,9 +171,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new() { Value = 4, Caption = "4.0" };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -192,9 +188,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new() { Caption = string.Empty };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -211,9 +204,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new() { MaxRating = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -233,9 +223,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 RatingControl rc = new() { Value = 3 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
@@ -254,8 +241,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
@@ -292,8 +277,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 RatingControl rating = new() { Value = 2 };
                 Window window = new() { Content = rating, Width = 300, Height = 100 };
                 window.Show();
@@ -339,7 +322,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 RatingControl rc = new() { Value = 2, IsEnabled = false };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
@@ -366,7 +348,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 RatingControl rc = new() { Value = 1 };
                 Window w = new() { Content = rc, Width = 300, Height = 100 };
