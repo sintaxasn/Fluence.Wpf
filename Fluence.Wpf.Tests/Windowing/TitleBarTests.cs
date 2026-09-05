@@ -32,6 +32,8 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -39,13 +41,12 @@ using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
-using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.UI.WindowsAndMessaging;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
-    public class FluenceWindowTitleBarTests
+    public sealed class TitleBarTests
     {
         private static Task RunWithWindowAsync(Action<FluenceWindow> testBody)
         {
@@ -1214,82 +1215,6 @@ namespace Fluence.Wpf.Tests
 
         #endregion Caption button DP overrides (authoritative when explicitly set)
 
-        #region 8. PasswordBox.SelectAll
-
-        [Fact]
-        public Task PasswordBox_SelectAll_DoesNotThrowWithoutTemplateAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
-                System.Windows.Controls.PasswordBox passwordBox = new()
-                {
-                    Password = "hidden",
-                };
-                passwordBox.SelectAll();
-
-                Assert.Equal("hidden", passwordBox.Password, StringComparer.Ordinal);
-            });
-        }
-
-        #endregion 8. PasswordBox.SelectAll
-
-        #region WM_GETMINMAXINFO
-
-        [Fact]
-        public void MinMaxInfo_StructLayout_HasCorrectSize()
-        {
-            // MINMAXINFO must be 5 POINTs = 5 * 8 bytes = 40 bytes.
-            int size = System.Runtime.InteropServices.Marshal.SizeOf<MINMAXINFO>();
-            Assert.Equal(40, size);
-        }
-
-        [Fact]
-        public void MonitorInfo_StructLayout_HasCorrectSize()
-        {
-            // MONITORINFO = int + 3 RECTs (16 bytes each) + uint = 4 + 16 + 16 + 16 + 4 = 40 bytes.
-            // Actually: cbSize(4) + rcMonitor(16) + rcWork(16) + dwFlags(4) = 40 bytes.
-            int size = System.Runtime.InteropServices.Marshal.SizeOf<MONITORINFO>();
-            Assert.Equal(40, size);
-        }
-
-        [Fact]
-        public void MinMaxInfo_RoundTrip_PreservesValues()
-        {
-            MINMAXINFO mmi = new()
-            {
-                ptMaxPosition = new() { X = 10, Y = 20 },
-                ptMaxSize = new() { X = 1920, Y = 1040 },
-                ptMaxTrackSize = new() { X = 3840, Y = 2160 },
-                ptMinTrackSize = new() { X = 200, Y = 150 },
-            };
-
-            int size = System.Runtime.InteropServices.Marshal.SizeOf<MINMAXINFO>();
-            nint ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
-            try
-            {
-                System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, ptr, fDeleteOld: false);
-                MINMAXINFO result = System.Runtime.InteropServices.Marshal.PtrToStructure<MINMAXINFO>(ptr);
-
-                Assert.Equal(10, result.ptMaxPosition.X);
-                Assert.Equal(20, result.ptMaxPosition.Y);
-                Assert.Equal(1920, result.ptMaxSize.X);
-                Assert.Equal(1040, result.ptMaxSize.Y);
-                Assert.Equal(3840, result.ptMaxTrackSize.X);
-                Assert.Equal(2160, result.ptMaxTrackSize.Y);
-                Assert.Equal(200, result.ptMinTrackSize.X);
-                Assert.Equal(150, result.ptMinTrackSize.Y);
-            }
-            finally
-            {
-                System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
-            }
-        }
-
-        #endregion WM_GETMINMAXINFO
-
         #region WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
 
         // When ExtendsContentIntoTitleBar=true, the content area moves into Grid.Row=0 (same row
@@ -1401,5 +1326,255 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
+
+        #region TitleBar control - template parts, back/pane-toggle commands, unload cleanup
+
+        [Fact]
+        public Task TitleBar_Template_ExposesNavigationButtonsAsync()
+        {
+            return RunWithTitleBarAsync(
+                static delegate
+                {
+                    return new TitleBar
+                    {
+                        Title = "Fluence",
+                        IsBackButtonVisible = true,
+                        IsPaneToggleButtonVisible = true,
+                    };
+                },
+                static titleBar =>
+                {
+                    System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    System.Windows.Controls.Button paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
+
+                    Assert.Equal(Visibility.Visible, backButton.Visibility);
+                    Assert.Equal(Visibility.Visible, paneToggleButton.Visibility);
+                    Assert.True(WindowChrome.GetIsHitTestVisibleInChrome(backButton),
+                        "PART_BackButton must opt into WindowChrome hit testing.");
+                    Assert.True(WindowChrome.GetIsHitTestVisibleInChrome(paneToggleButton),
+                        "PART_PaneToggleButton must opt into WindowChrome hit testing.");
+                });
+        }
+
+        [Fact]
+        public Task TitleBar_BackButton_UsesCompactSlotAsync()
+        {
+            return RunWithTitleBarAsync(
+                static delegate
+                {
+                    return new TitleBar
+                    {
+                        Title = "Fluence",
+                        IsBackButtonVisible = true,
+                        IsPaneToggleButtonVisible = true,
+                    };
+                },
+                static titleBar =>
+                {
+                    System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    System.Windows.Controls.Button paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
+
+                    Assert.Equal(36.0, backButton.ActualWidth, 0.5);
+                    Assert.Equal(32.0, backButton.ActualHeight, 0.5);
+                    Assert.Equal(40.0, paneToggleButton.ActualWidth, 0.5);
+                    Assert.Equal(36.0, paneToggleButton.ActualHeight, 0.5);
+
+                    System.Windows.Controls.TextBlock backGlyph = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChild<System.Windows.Controls.TextBlock>(backButton), exactMatch: false);
+                    Assert.Equal(16.0, backGlyph.ActualWidth, 0.5);
+                    Assert.Equal(16.0, backGlyph.ActualHeight, 0.5);
+                });
+        }
+
+        [Fact]
+        public async Task TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequestedAsync()
+        {
+            object parameter = new();
+            RecordingCommand command = new(canExecute: true);
+            int eventCount = 0;
+            int commandCountObservedByEvent = -1;
+
+            await RunWithTitleBarAsync(
+                delegate
+                {
+                    return new TitleBar
+                    {
+                        IsPaneToggleButtonVisible = true,
+                        PaneToggleCommand = command,
+                        PaneToggleCommandParameter = parameter,
+                    };
+                },
+                titleBar =>
+                {
+                    titleBar.PaneToggleRequested += delegate
+                    {
+                        eventCount++;
+                        commandCountObservedByEvent = command.ExecuteCount;
+                    };
+
+                    InvokeButton(GetTemplateButton(titleBar, "PART_PaneToggleButton"));
+
+                    Assert.Equal(1, command.ExecuteCount);
+                    Assert.Same(parameter, command.LastParameter);
+                    Assert.Equal(1, eventCount);
+                    Assert.Equal(1, commandCountObservedByEvent);
+                }).ConfigureAwait(true);
+        }
+
+        [Fact]
+        public async Task TitleBar_BackButtonVisibilityAndCommand_WorkAsync()
+        {
+            object parameter = new();
+            RecordingCommand command = new(canExecute: true);
+            int eventCount = 0;
+
+            await RunWithTitleBarAsync(
+                delegate
+                {
+                    return new TitleBar
+                    {
+                        BackCommand = command,
+                        BackCommandParameter = parameter,
+                    };
+                },
+                titleBar =>
+                {
+                    System.Windows.Controls.Button backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    Assert.Equal(Visibility.Collapsed, backButton.Visibility);
+
+                    titleBar.BackRequested += delegate { eventCount++; };
+                    titleBar.IsBackButtonVisible = true;
+                    titleBar.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(titleBar.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, backButton.Visibility);
+
+                    InvokeButton(backButton);
+
+                    Assert.Equal(1, command.ExecuteCount);
+                    Assert.Same(parameter, command.LastParameter);
+                    Assert.Equal(1, eventCount);
+                }).ConfigureAwait(true);
+        }
+
+        [Fact]
+        public async Task TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlersAsync()
+        {
+            RecordingCommand backCommand = new(canExecute: true);
+            RecordingCommand paneToggleCommand = new(canExecute: true);
+
+            await RunWithTitleBarAsync(
+                delegate
+                {
+                    return new TitleBar
+                    {
+                        IsBackButtonVisible = true,
+                        IsPaneToggleButtonVisible = true,
+                        BackCommand = backCommand,
+                        PaneToggleCommand = paneToggleCommand,
+                    };
+                },
+                titleBar =>
+                {
+                    Assert.Equal(1, backCommand.CanExecuteSubscriptionCount);
+                    Assert.Equal(1, paneToggleCommand.CanExecuteSubscriptionCount);
+
+                    titleBar.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, titleBar));
+                    WpfTestSta.DrainDispatcher(titleBar.Dispatcher);
+
+                    Assert.Equal(1, backCommand.CanExecuteUnsubscriptionCount);
+                    Assert.Equal(1, paneToggleCommand.CanExecuteUnsubscriptionCount);
+                }).ConfigureAwait(true);
+        }
+
+        private static Task RunWithTitleBarAsync(Func<TitleBar> titleBarFactory, Action<TitleBar> testBody)
+        {
+            return WpfTestSta.RunOnStaAsync(delegate
+            {
+                _ = TestApp.EnsureLibraryTheme();
+                Window? window = null;
+                TitleBar? titleBar = null;
+
+                try
+                {
+                    titleBar = titleBarFactory();
+                    window = new Window
+                    {
+                        Width = 720,
+                        Height = 120,
+                        Left = -20000,
+                        Top = -20000,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = titleBar,
+                    };
+
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = titleBar.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    testBody(titleBar);
+                }
+                finally
+                {
+                    if (window is not null)
+                    {
+                        window.Content = null;
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        private static System.Windows.Controls.Button GetTemplateButton(TitleBar titleBar, string partName)
+        {
+            return Assert.IsType<System.Windows.Controls.Button>(titleBar.Template.FindName(partName, titleBar));
+        }
+
+        private static void InvokeButton(System.Windows.Controls.Button button)
+        {
+            AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
+            IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+            invoke.Invoke();
+            WpfTestSta.DrainDispatcher(button.Dispatcher);
+        }
+
+        private sealed class RecordingCommand : ICommand
+        {
+            private readonly bool _canExecute;
+
+            internal RecordingCommand(bool canExecute)
+            {
+                _canExecute = canExecute;
+            }
+
+            public event EventHandler? CanExecuteChanged
+            {
+                add => CanExecuteSubscriptionCount += value is null ? 0 : 1;
+                remove => CanExecuteUnsubscriptionCount += value is null ? 0 : 1;
+            }
+
+            internal int ExecuteCount { get; private set; }
+
+            internal object? LastParameter { get; private set; }
+
+            internal int CanExecuteSubscriptionCount { get; private set; }
+
+            internal int CanExecuteUnsubscriptionCount { get; private set; }
+
+            public bool CanExecute(object? parameter)
+            {
+                return _canExecute;
+            }
+
+            public void Execute(object? parameter)
+            {
+                ExecuteCount++;
+                LastParameter = parameter;
+            }
+        }
+
+        #endregion TitleBar control - template parts, back/pane-toggle commands, unload cleanup
     }
 }

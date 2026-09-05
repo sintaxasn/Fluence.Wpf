@@ -36,7 +36,7 @@ using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     // WI-2 S2.6 regression floor for WindowPolicy (internal, visible via
     // [InternalsVisibleTo("Fluence.Wpf.Tests")]). WindowPolicy is pure logic: it maps
@@ -1254,5 +1254,28 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion ResolveContentLayerPreBlend - 10 bpc alpha-quantisation gate
+
+        #region BuildBackdropPlan - Acrylic falls back to Mica when only the legacy Mica effect is available
+
+        [Fact]
+        public void BuildBackdropPlan_Acrylic_FallsBackToMica_WhenMicaEffectButNoSystemBackdrop()
+        {
+            // Windows 11 21H2: supports DwmSetWindowAttribute(DWMWA_MICA_EFFECT) but NOT
+            // DWMWA_SYSTEMBACKDROP_TYPE. Acrylic request must downgrade to Mica.
+            WindowCapabilities caps = new(
+                supportsSystemBackdropType: false,
+                supportsMicaEffect: true,
+                supportsRoundedCorners: false,
+                supportsCaptionColor: false);
+
+            Color fallback = Color.FromRgb(0x20, 0x20, 0x20);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
+
+            // Should fall back to Mica (legacy) and use transparent background.
+            Assert.Equal(Colors.Transparent, plan.BackgroundColor);
+            Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
+        }
+
+        #endregion BuildBackdropPlan - Acrylic falls back to Mica when only the legacy Mica effect is available
     }
 }

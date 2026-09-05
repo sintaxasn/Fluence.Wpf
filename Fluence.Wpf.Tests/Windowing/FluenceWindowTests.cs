@@ -37,13 +37,13 @@ using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     /// <summary>
     /// WI-2 hardening tests for FluenceWindow: backdrop swap, full HC theme cycle,
     /// close-button DynamicResource fix (Finding B).
     /// </summary>
-    public class FluenceWindowHardenTests
+    public class FluenceWindowTests
     {
 
         private static void ResetAndApply(ApplicationTheme theme, Application app)
@@ -53,6 +53,14 @@ namespace Fluence.Wpf.Tests
             app.Resources.MergedDictionaries.Clear();
 
             ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+        }
+
+        private static void ResetAndApply(Application app)
+        {
+            ApplicationThemeManager.ResetForTesting();
+            ApplicationAccentColorManager.ResetForTesting();
+            app.Resources.MergedDictionaries.Clear();
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
         }
 
         // ---------------------------------------------------------------------------
@@ -250,25 +258,6 @@ namespace Fluence.Wpf.Tests
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
 
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
-        }
-
-        [Fact]
-        public void BuildBackdropPlan_Acrylic_FallsBackToMica_WhenMicaEffectButNoSystemBackdrop()
-        {
-            // Windows 11 21H2: supports DwmSetWindowAttribute(DWMWA_MICA_EFFECT) but NOT
-            // DWMWA_SYSTEMBACKDROP_TYPE. Acrylic request must downgrade to Mica.
-            WindowCapabilities caps = new(
-                supportsSystemBackdropType: false,
-                supportsMicaEffect: true,
-                supportsRoundedCorners: false,
-                supportsCaptionColor: false);
-
-            Color fallback = Color.FromRgb(0x20, 0x20, 0x20);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
-
-            // Should fall back to Mica (legacy) and use transparent background.
-            Assert.Equal(Colors.Transparent, plan.BackgroundColor);
-            Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
         }
 
         // ---------------------------------------------------------------------------
@@ -998,6 +987,188 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // 12. Regression tests for the SizeToContent double-border fix. A Window with an
+        // active Window.SizeToContent sizes its HWND to the latest content-desired size, but
+        // the template root Border (the accent-bordered window chrome) was left arranged one
+        // layout pass behind the realised client area, so it floated inside the DWM accent
+        // border on every edge. The fix re-arranges the root visual to the full client area
+        // whenever SizeToContent is active, while keeping SizeToContent's auto-grow behavior.
+        // ---------------------------------------------------------------------------
+
+        /// <summary>
+        /// Tolerance (in DIPs) between the window's client size and the template root border's
+        /// arranged size. Layout rounding can introduce a sub-pixel difference; anything larger is the
+        /// multi-DIP inset that produced the double border.
+        /// </summary>
+        private const double FillTolerance = 1.0;
+
+        private static System.Windows.Controls.Border FindWindowBorder(FluenceWindow window)
+        {
+            System.Windows.Controls.Border? border = WpfTestSta
+                .FindVisualDescendants<System.Windows.Controls.Border>(window)
+                .FirstOrDefault(static b => string.Equals(b.Name, "WindowBorder", StringComparison.Ordinal));
+            return border ?? throw new InvalidOperationException(
+                "Expected the template root Border named 'WindowBorder' to be present after Show().");
+        }
+
+        private static System.Windows.Controls.StackPanel BuildContent()
+        {
+            System.Windows.Controls.StackPanel panel = new() { Margin = new Thickness(24) };
+            foreach (string label in new[] { "Full name", "Age", "Country", "Start date" })
+            {
+                _ = panel.Children.Add(new System.Windows.Controls.TextBlock { Text = label, Margin = new Thickness(0, 0, 0, 4) });
+                _ = panel.Children.Add(new System.Windows.Controls.TextBox { Margin = new Thickness(0, 0, 0, 12), MinWidth = 240 });
+            }
+            return panel;
+        }
+
+        /// <summary>
+        /// A SizeToContent window must arrange its template root border to fill the realised client
+        /// area (the window's ActualWidth/ActualHeight), exactly as a fixed-size window already does.
+        /// Before the fix the border was inset several DIPs on every edge, which read as a second
+        /// accent border floating inside the DWM accent border (the double-border bug).
+        /// </summary>
+        [Fact]
+        public Task SizeToContentWindow_TemplateBorder_FillsClientAreaAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+
+                FluenceWindow window = new()
+                {
+                    Title = "SizeToContent fill",
+                    SystemBackdropType = BackdropType.None,
+                    ShowInTaskbar = false,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                    Content = BuildContent(),
+                };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    System.Windows.Controls.Border border = FindWindowBorder(window);
+
+                    Assert.True(window.ActualWidth > 0 && window.ActualHeight > 0,
+                        "The window must have a realised non-zero size after Show() with SizeToContent.");
+
+                    // The root border must coincide with the client area (window ActualWidth/Height
+                    // equal the client area in DIPs). A larger gap is the inset that floated the
+                    // template accent border inside the DWM accent border (the double-border bug).
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
+                }
+                finally
+                {
+                    window.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        /// <summary>
+        /// The fix must not freeze SizeToContent: when the content grows at runtime (the scenario the
+        /// PowerShell dialogs rely on when their validation InfoBar opens), the window must still grow
+        /// AND the template root border must still fill the new, larger client area (stay
+        /// single-bordered after growing).
+        /// </summary>
+        [Fact]
+        public Task SizeToContentWindow_StillGrowsAndStaysFilled_WhenContentGrowsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+
+                System.Windows.Controls.StackPanel panel = BuildContent();
+                FluenceWindow window = new()
+                {
+                    Title = "SizeToContent grow",
+                    SystemBackdropType = BackdropType.None,
+                    ShowInTaskbar = false,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                    Content = panel,
+                };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    double heightBeforeGrow = window.ActualHeight;
+
+                    // Simulate the validation InfoBar opening: add a tall row so the window auto-grows.
+                    // Settle via a dispatcher drain (not a synchronous UpdateLayout): UpdateLayout would
+                    // itself force the fill, masking whether the fix is what keeps the border flush
+                    // after a SizeToContent-driven grow.
+                    _ = panel.Children.Add(new System.Windows.Controls.Border { Height = 120, Margin = new Thickness(0, 12, 0, 0) });
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.True(window.ActualHeight > heightBeforeGrow,
+                        "SizeToContent must remain active so the window grows when its content grows.");
+
+                    System.Windows.Controls.Border border = FindWindowBorder(window);
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
+                }
+                finally
+                {
+                    window.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        /// <summary>
+        /// A fixed-size window already renders with the borders coincident; the fill correction must
+        /// be a no-op for it (its template root border fills the client area before and after the
+        /// fix). This pins that the fix does not regress fixed-size windows.
+        /// </summary>
+        [Fact]
+        public Task FixedSizeWindow_TemplateBorder_FillsClientAreaAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+
+                FluenceWindow window = new()
+                {
+                    Title = "Fixed size",
+                    SystemBackdropType = BackdropType.None,
+                    ShowInTaskbar = false,
+                    Width = 420,
+                    Height = 320,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                    Content = BuildContent(),
+                };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    System.Windows.Controls.Border border = FindWindowBorder(window);
+                    Assert.Equal(window.ActualWidth, border.ActualWidth, FillTolerance);
+                    Assert.Equal(window.ActualHeight, border.ActualHeight, FillTolerance);
+                }
+                finally
+                {
+                    window.Close();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                 }
             });

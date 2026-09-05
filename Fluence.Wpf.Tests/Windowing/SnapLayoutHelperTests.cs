@@ -31,7 +31,7 @@ using Fluence.Wpf.Native;
 using Microsoft.Win32;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Windowing
 {
     public class SnapLayoutHelperTests
     {
