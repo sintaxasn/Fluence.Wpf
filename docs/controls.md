@@ -843,4 +843,4 @@ The xunit.v3 suite exercises templates, theme stability, and control behavior on
 
 - A default-style / template smoke test that confirms the control applies the expected template.
 - A theme-cycle pass if the control leans on `DynamicResource` (`ThemeTestHelpers.ApplyStandardThemeCycle`).
-- Interaction or state assertions where the control exposes behavior (see `ControlTests.NavigationView.cs` and `ControlTests.FluentStroke.cs`).
+- Interaction or state assertions where the control exposes behavior (see `Control/NavigationViewTests.cs` and `Control/Rules/FluentStrokeTests.cs`).
