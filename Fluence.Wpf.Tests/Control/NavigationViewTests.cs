@@ -36,16 +36,51 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Tests for the WinUI-style <see cref="NavigationView"/> control in Left and
+    /// LeftCompact pane display modes: pane chrome, item selection and invocation, the shared
+    /// selection indicator, back button states, content offset, header rendering, pane width
+    /// animation, and surface brush theming.
+    /// </summary>
+    public sealed class NavigationViewTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        /// <summary>
+        /// Returns the StackPanel that hosts a NavigationView's realized items, shared by
+        /// <see cref="NavigationViewTests"/> and <see cref="NavigationViewTopModeTests"/>.
+        /// </summary>
+        /// <param name="nav">The navigation view to inspect.</param>
+        /// <returns>The items host panel, or <see langword="null"/> when not yet realized.</returns>
+        internal static System.Windows.Controls.StackPanel? GetNavigationViewItemsHostPanel(NavigationView nav)
+        {
+            ItemsPresenter? presenter = FindVisualChild<ItemsPresenter>(nav);
+            if (presenter is null)
+            {
+                return null;
+            }
+
+            int childCount = VisualTreeHelper.GetChildrenCount(presenter);
+            return childCount < 1 ? null : VisualTreeHelper.GetChild(presenter, 0) as System.Windows.Controls.StackPanel;
+        }
+
         private static async Task AssertContentOffsetEventuallyAsync(
             Window window,
             FrameworkElement nav,
@@ -85,8 +120,6 @@ namespace Fluence.Wpf.Tests
             // gallery MainWindow and assert the footer icon stays at the left.
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-
                 // Demo opt-in: this test constructs the real gallery Demo.MainWindow, whose
                 // pages (e.g. GalleryHomePage.xaml, GalleryPageScrollViewerStyle) are styled from
                 // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml, not the library theme.
@@ -144,8 +177,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -178,8 +209,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -212,9 +241,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
                 AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.LeftCompact, isPaneOpen: false);
             });
@@ -225,8 +251,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -272,8 +296,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -317,8 +339,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -362,8 +382,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -395,8 +413,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -440,8 +456,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -473,8 +487,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -512,8 +524,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -553,8 +563,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -614,8 +622,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -654,8 +660,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -694,8 +698,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -729,8 +731,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -766,9 +766,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 NavigationViewPaneDisplayMode[] modes =
                 [
                     NavigationViewPaneDisplayMode.Left,
@@ -826,8 +823,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -867,7 +862,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -908,8 +902,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -952,8 +944,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -993,8 +983,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1046,8 +1034,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1104,8 +1090,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1201,8 +1185,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1268,8 +1250,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1335,8 +1315,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1388,7 +1366,6 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(application.TryFindResource("NavigationViewItemFocusVisual"));
                 ControlTemplate template = Assert.IsType<ControlTemplate>(style.Setters.OfType<Setter>().FirstOrDefault(static setter => setter.Property == System.Windows.Controls.Control.TemplateProperty)?.Value as ControlTemplate);
@@ -1407,8 +1384,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1452,8 +1427,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1491,8 +1464,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1540,8 +1511,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1584,8 +1553,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1635,8 +1602,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1675,8 +1640,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1712,8 +1675,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1749,8 +1710,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1787,8 +1746,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1833,8 +1790,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1885,8 +1840,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1924,8 +1877,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1963,8 +1914,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -1999,8 +1948,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2047,8 +1994,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2097,7 +2042,6 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2132,8 +2076,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2173,8 +2115,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2203,8 +2143,6 @@ topMode: false,
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2235,7 +2173,6 @@ topMode: false,
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2286,9 +2223,6 @@ topMode: false,
             // backdrop entirely. This test asserts the reverted state is preserved.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // ---- Left pane ----
                 Window winLeft = new();
                 try
@@ -2450,8 +2384,6 @@ topMode: false,
             // per-item one must NOT exist in the template.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -2470,6 +2402,299 @@ topMode: false,
 
                     System.Windows.Controls.Border? inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");
                     Assert.Null(inner);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Builds a NavigationView with a Left/Top-Home/Docs main pane and one footer item,
+        /// shared by <see cref="NavigationViewTests"/> and <see cref="NavigationViewTopModeTests"/>.
+        /// </summary>
+        /// <param name="footer">Receives the created footer item.</param>
+        /// <param name="mode">The pane display mode to apply.</param>
+        /// <param name="isPaneOpen">Whether the pane starts open.</param>
+        /// <returns>The constructed navigation view.</returns>
+        internal static NavigationView CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode mode, bool isPaneOpen)
+        {
+            footer = new NavigationViewItem
+            {
+                Content = "Settings",
+                Icon = new FontIcon { Glyph = "\uE713", IconFontSize = 16 },
+            };
+            NavigationView nav = new()
+            {
+                Width = 600,
+                Height = 400,
+                PaneDisplayMode = mode,
+                IsPaneOpen = isPaneOpen,
+            };
+            _ = nav.Items.Add(new NavigationViewItem { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } });
+            _ = nav.Items.Add(new NavigationViewItem { Content = "Docs", Icon = new FontIcon { Glyph = "\uE8A5" } });
+            nav.FooterMenuItems.Add(footer);
+            return nav;
+        }
+
+        [Fact]
+        public Task NavigationView_FooterItem_ResolvesOwningNavigationViewAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // The fix that lets footer-hosted items invoke: an item resolves its owning
+                    // NavigationView by ancestor walk, not via ItemsControlFromItemContainer.
+                    Assert.Same(nav, NavigationView.FromItemContainer(footer));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_FooterItem_Invoke_SelectsAndClearsMainSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    nav.SelectedIndex = 0;
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    List<NavigationViewItem> invoked = [];
+                    nav.ItemInvoked += (_, e) => invoked.Add(e.InvokedItemContainer);
+
+                    nav.SelectFooterMenuItem(footer);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Same(footer, nav.SelectedFooterItem);
+                    Assert.True(footer.IsSelected, "The invoked footer item should be marked selected.");
+                    Assert.Null(nav.SelectedItem);
+                    _ = Assert.Single(invoked);
+                    Assert.Same(footer, invoked[0]);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_MainSelection_ClearsFooterSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectFooterMenuItem(footer);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(footer, nav.SelectedFooterItem);
+
+                    nav.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Null(nav.SelectedFooterItem);
+                    Assert.False(footer.IsSelected, "The footer item should be deselected when a main item is selected.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_FooterSelectionIndicator_BecomesVisibleOnFooterSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FrameworkElement footerIndicator = Assert.IsType<FrameworkElement>(nav.GetFooterSelectionIndicatorForTesting(), exactMatch: false);
+                    Assert.Equal(0.0, footerIndicator!.Opacity, 0.01);
+
+                    nav.SelectFooterMenuItem(footer);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(footerIndicator.Opacity >= 0.9, "Selecting a footer item should reveal the footer selection indicator.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_FooterItem_StretchesToPaneWidth_InLeftOpenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+                try
+                {
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    // Settle until the footer item has stretched to the asserted pane width.
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => { window.UpdateLayout(); return footer.ActualWidth > 200.0; }).ConfigureAwait(true);
+                    window.UpdateLayout();
+
+                    // The footer item lives in a stretching StackPanel, so its hover/selection surface
+                    // spans the pane width rather than the "Settings" text width (the original bug).
+                    Assert.True(footer.ActualWidth > 200.0, "An open Left pane footer item should stretch to the pane width, not the content width. Measured: " + footer.ActualWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_FooterItem_IconCentered_InLeftCompactClosedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(async static () =>
+            {
+                Window window = new();
+                try
+                {
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.LeftCompact, isPaneOpen: false);
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 300).ConfigureAwait(true);
+                    window.UpdateLayout();
+
+                    ContentPresenter iconPresenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(footer, "IconPresenter"), exactMatch: false);
+                    Point iconOffset = iconPresenter!.TransformToAncestor(footer).Transform(new Point(0, 0));
+                    Assert.True(iconOffset.X >= 4.0 - 0.5, "Closed LeftCompact footer icon should not be clipped on the left edge.");
+                    Assert.True(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5, "Closed LeftCompact footer icon should stay inside the 40px icon slot, aligned with the main items.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_Automation_GetSelection_ReportsFooterSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ISelectionProvider selectionProvider = (NavigationViewAutomationPeer)new(nav);
+                    Assert.Empty(selectionProvider.GetSelection());
+
+                    nav.SelectFooterMenuItem(footer);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    _ = Assert.Single(selectionProvider.GetSelection());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_AfterUnloadReload_SelectionIndicatorStillUpdatesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+                ContentControl host = new();
+                window.Content = host;
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                    };
+                    NavigationViewItem home = new() { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } };
+                    NavigationViewItem files = new() { Content = "Files", Icon = new FontIcon { Glyph = "\uE8B7" } };
+                    _ = nav.Items.Add(home);
+                    _ = nav.Items.Add(files);
+
+                    host.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    nav.SelectedItem = home;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+
+                    // Simulate navigating away from the cached page and back: the NavigationView is
+                    // unloaded (template parts nulled) and reloaded against the same instance.
+                    host.Content = null;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    host.Content = nav;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+
+                    FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
+                    double homeY = GetSelectionIndicatorTranslate(indicator).Y;
+
+                    nav.InvokeItem(files);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    // Settle until the indicator slide animation has reached its hold-end (no longer
+                    // animating), so the sampled filesY is the final settled offset.
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => !GetSelectionIndicatorTranslate(indicator).HasAnimatedProperties).ConfigureAwait(true);
+
+                    Assert.Same(files, nav.SelectedItem);
+                    double filesY = GetSelectionIndicatorTranslate(indicator).Y;
+                    Assert.NotEqual(homeY, filesY, 0.5);
+                    Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
                 {

@@ -33,19 +33,203 @@ using System.Windows.Controls;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Tests for the WinUI-style <see cref="NavigationView"/> control in Top pane
+    /// display mode: FluenceWindow title-bar coercion, pane-open/toggle coercion, item layout
+    /// without a pane ScrollViewer, the overflow menu (invocation, item recovery, reflow, and
+    /// the exact-fit boundary grace), and the Top footer's icon-only rendering and indicator.
+    /// </summary>
+    public sealed class NavigationViewTopModeTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        [Fact]
+        public Task NavigationView_TopFooterIndicator_CentersUnderFooterItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = NavigationViewTests.CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectFooterMenuItem(footer);
+                    _ = await WaitUntilAsync(window.Dispatcher, 600, () => (nav.GetFooterSelectionIndicatorForTesting()?.Opacity ?? 0.0) >= 0.9).ConfigureAwait(true);
+                    window.UpdateLayout();
+
+                    FrameworkElement footerIndicator = nav.GetFooterSelectionIndicatorForTesting()
+                        ?? throw new Xunit.Sdk.XunitException("PART_FooterSelectionIndicator should exist in the Top pane template.");
+
+                    // The pre-fix bug: the indicator's coordinate host was a zero-size Canvas that was
+                    // not an ancestor of the footer item, so the transform failed and the indicator
+                    // snapped to the left edge of the footer region. Compare the indicator's rendered
+                    // center to the footer item's center in a shared ancestor (nav) to confirm it now
+                    // sits under the gear regardless of which element is the internal host.
+                    double indicatorCenterX = footerIndicator
+                        .TransformToAncestor(nav)
+                        .Transform(new Point(footerIndicator.Width / 2.0, footerIndicator.Height / 2.0)).X;
+                    double itemCenterX = footer
+                        .TransformToAncestor(nav)
+                        .Transform(new Point(footer.ActualWidth / 2.0, footer.ActualHeight / 2.0)).X;
+
+                    Assert.Equal(itemCenterX, indicatorCenterX, 1.5);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopFooterItem_RendersIconOnlyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    window.Content = NavigationViewTests.CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter label = FindVisualChildByName<ContentPresenter>(footer, "ContentPresenter")
+                        ?? throw new Xunit.Sdk.XunitException("Footer item template should expose the label content presenter.");
+                    ContentPresenter icon = FindVisualChildByName<ContentPresenter>(footer, "IconPresenter")
+                        ?? throw new Xunit.Sdk.XunitException("Footer item template should expose the icon presenter.");
+
+                    Assert.False(label.IsVisible,
+                        "In Top mode a footer item (e.g. Settings) must render gear-only: its label content presenter should be collapsed.");
+                    Assert.True(icon.IsVisible,
+                        "In Top mode a footer item must still show its icon.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopFooterItem_KeepsLabel_InLeftAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    window.Content = NavigationViewTests.CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter label = FindVisualChildByName<ContentPresenter>(footer, "ContentPresenter")
+                        ?? throw new Xunit.Sdk.XunitException("Footer item template should expose the label content presenter.");
+
+                    Assert.True(label.IsVisible,
+                        "The gear-only rule is scoped to Top mode; an open Left pane footer item must keep its label.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopMainItem_KeepsLabelAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = NavigationViewTests.CreateNavWithFooterItem(out _, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    NavigationViewItem mainItem = (NavigationViewItem)nav.Items[0]!;
+                    ContentPresenter label = FindVisualChildByName<ContentPresenter>(mainItem, "ContentPresenter")
+                        ?? throw new Xunit.Sdk.XunitException("Main item template should expose the label content presenter.");
+
+                    Assert.True(label.IsVisible,
+                        "Top-level (non-footer) items must keep their labels in Top mode; only footer items collapse to icon-only.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopFooterIndicator_AnimatesOnSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = NavigationViewTests.CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
+                    nav.SelectedIndex = 0;
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FrameworkElement footerIndicator = nav.GetFooterSelectionIndicatorForTesting()
+                        ?? throw new Xunit.Sdk.XunitException("PART_FooterSelectionIndicator should exist in the Top pane template.");
+
+                    // Selecting the footer item should fade/scale the indicator in (animate), not snap.
+                    nav.SelectFooterMenuItem(footer);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher); // runs the queued RefreshIndicators that starts the animation
+                    Assert.True(footerIndicator.HasAnimatedProperties,
+                        "Selecting a footer item in Top mode should animate the indicator in, not snap it to full opacity.");
+
+                    bool shown = await WaitUntilAsync(window.Dispatcher, 600, () => footerIndicator.Opacity >= 0.9).ConfigureAwait(true);
+                    Assert.True(shown, "The footer indicator should reach full opacity after the fade-in completes.");
+
+                    // Navigating away (exiting Settings) should animate the indicator back out.
+                    nav.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(footerIndicator.HasAnimatedProperties,
+                        "Leaving the footer item should animate the indicator out, not hide it instantly.");
+
+                    bool hidden = await WaitUntilAsync(window.Dispatcher, 600, () => footerIndicator.Opacity <= 0.1).ConfigureAwait(true);
+                    Assert.True(hidden, "The footer indicator should fade to hidden after the footer item is deselected.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         [Fact]
         public Task NavigationView_InFluenceWindow_LeftAndTopCoerceTitleBarExtensionAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 FluenceWindow window = new()
                 {
                     Width = 640,
@@ -87,8 +271,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -131,8 +313,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -201,8 +381,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -279,8 +457,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -333,8 +509,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -390,8 +564,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -448,8 +620,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -500,8 +670,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
