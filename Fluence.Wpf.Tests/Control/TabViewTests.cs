@@ -353,11 +353,17 @@ namespace Fluence.Wpf.Tests.Control
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
-                w.Close();
+                    System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -370,11 +376,17 @@ namespace Fluence.Wpf.Tests.Control
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
-                w.Close();
+                    System.Windows.Controls.Primitives.RepeatButton btn = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -386,11 +398,17 @@ namespace Fluence.Wpf.Tests.Control
                 TabView tv = new();
                 _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
                 Window w = new() { Content = tv, Width = 600, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                ScrollViewer sv = Assert.IsType<ScrollViewer>(FindVisualChildByName<ScrollViewer>(tv, "PART_TabContentScroller"), exactMatch: false);
-                w.Close();
+                    ScrollViewer sv = Assert.IsType<ScrollViewer>(FindVisualChildByName<ScrollViewer>(tv, "PART_TabContentScroller"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -404,17 +422,23 @@ namespace Fluence.Wpf.Tests.Control
                 _ = tv.Items.Add(new TabViewItem { Header = "B" });
                 // Wide window: 2 short tabs will not overflow a 700px wide control
                 Window w = new() { Content = tv, Width = 700, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Primitives.RepeatButton back = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
-                System.Windows.Controls.Primitives.RepeatButton fwd = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
+                    System.Windows.Controls.Primitives.RepeatButton back = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollBackButton"), exactMatch: false);
+                    System.Windows.Controls.Primitives.RepeatButton fwd = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(tv, "PART_ScrollForwardButton"), exactMatch: false);
 
-                Assert.Equal(
-                    Visibility.Collapsed, back.Visibility);
-                Assert.Equal(
-                    Visibility.Collapsed, fwd.Visibility);
-                w.Close();
+                    Assert.Equal(
+                        Visibility.Collapsed, back.Visibility);
+                    Assert.Equal(
+                        Visibility.Collapsed, fwd.Visibility);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
     }

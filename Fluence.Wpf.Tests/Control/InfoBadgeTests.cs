@@ -63,23 +63,29 @@ namespace Fluence.Wpf.Tests.Control
             {
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                // Verify the VSM group is present in the template.
-                IList groups = VisualStateManager.GetVisualStateGroups(
-                    FindVisualChild<Grid>(badge));
-                bool found = false;
-                if (groups is not null)
+                try
                 {
-                    foreach (object? g in groups)
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    // Verify the VSM group is present in the template.
+                    IList groups = VisualStateManager.GetVisualStateGroups(
+                        FindVisualChild<Grid>(badge));
+                    bool found = false;
+                    if (groups is not null)
                     {
-                        if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal))
-                        { found = true; break; }
+                        foreach (object? g in groups)
+                        {
+                            if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal))
+                            { found = true; break; }
+                        }
                     }
+                    Assert.True(found, "InfoBadge template must contain a VisualStateGroup named 'DisplayKindStates'.");
                 }
-                Assert.True(found, "InfoBadge template must contain a VisualStateGroup named 'DisplayKindStates'.");
-                w.Close();
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -91,15 +97,21 @@ namespace Fluence.Wpf.Tests.Control
                 // Default: Value=-1, no IconSource → Dot state.
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // DotIndicator should be visible; BadgeBorder should be collapsed.
-                Ellipse dot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(badge, "DotIndicator"), exactMatch: false);
-                System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
-                Assert.Equal(Visibility.Visible, dot.Visibility);
-                Assert.Equal(Visibility.Collapsed, border.Visibility);
-                w.Close();
+                    // DotIndicator should be visible; BadgeBorder should be collapsed.
+                    Ellipse dot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(badge, "DotIndicator"), exactMatch: false);
+                    System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, dot.Visibility);
+                    Assert.Equal(Visibility.Collapsed, border.Visibility);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -110,14 +122,20 @@ namespace Fluence.Wpf.Tests.Control
             {
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Ellipse? dot = FindVisualChildByName<Ellipse>(badge, "DotIndicator");
-                System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
-                Assert.Equal(Visibility.Collapsed, dot?.Visibility);
-                Assert.Equal(Visibility.Visible, border?.Visibility);
-                w.Close();
+                    Ellipse? dot = FindVisualChildByName<Ellipse>(badge, "DotIndicator");
+                    System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                    Assert.Equal(Visibility.Collapsed, dot?.Visibility);
+                    Assert.Equal(Visibility.Visible, border?.Visibility);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -161,24 +179,30 @@ namespace Fluence.Wpf.Tests.Control
             {
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                IList groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
-                VisualStateGroup dkg = Assert.IsType<VisualStateGroup>(groups.OfType<VisualStateGroup>().FirstOrDefault(static vsg => string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal)));
-                HashSet<string> stateNames = new(StringComparer.OrdinalIgnoreCase);
-                foreach (object? s in dkg.States)
+                try
                 {
-                    if (s is VisualState vs)
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    IList groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
+                    VisualStateGroup dkg = Assert.IsType<VisualStateGroup>(groups.OfType<VisualStateGroup>().FirstOrDefault(static vsg => string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal)));
+                    HashSet<string> stateNames = new(StringComparer.OrdinalIgnoreCase);
+                    foreach (object? s in dkg.States)
                     {
-                        _ = stateNames.Add(vs.Name);
+                        if (s is VisualState vs)
+                        {
+                            _ = stateNames.Add(vs.Name);
+                        }
                     }
+                    Assert.True(stateNames.Contains("Dot"), "DisplayKindStates must include 'Dot'.");
+                    Assert.True(stateNames.Contains("Icon"), "DisplayKindStates must include 'Icon'.");
+                    Assert.True(stateNames.Contains("FontIcon"), "DisplayKindStates must include 'FontIcon'.");
+                    Assert.True(stateNames.Contains("Value"), "DisplayKindStates must include 'Value'.");
                 }
-                Assert.True(stateNames.Contains("Dot"), "DisplayKindStates must include 'Dot'.");
-                Assert.True(stateNames.Contains("Icon"), "DisplayKindStates must include 'Icon'.");
-                Assert.True(stateNames.Contains("FontIcon"), "DisplayKindStates must include 'FontIcon'.");
-                Assert.True(stateNames.Contains("Value"), "DisplayKindStates must include 'Value'.");
-                w.Close();
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -194,12 +218,18 @@ namespace Fluence.Wpf.Tests.Control
                 // background, not TextFillColorInverseBrush.
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                object? expected = app.TryFindResource("TextOnAccentFillColorPrimaryBrush");
-                Assert.Equal(expected, badge.Foreground);
-                w.Close();
+                    object? expected = app.TryFindResource("TextOnAccentFillColorPrimaryBrush");
+                    Assert.Equal(expected, badge.Foreground);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

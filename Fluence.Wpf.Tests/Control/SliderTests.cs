@@ -60,11 +60,17 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Track track = Assert.IsType<Track>(FindVisualChildByName<Track>(slider, "PART_Track"), exactMatch: false);
-                w.Close();
+                    Track track = Assert.IsType<Track>(FindVisualChildByName<Track>(slider, "PART_Track"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -75,20 +81,26 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // Only the inner dot carries the ScaleTransform named ThumbScale (WinUI 3 scales the
-                // inner dot, not the fixed outer capsule); its rest value is 0.86, not 1.0
-                // (Slider_themeresources.xaml: "0.86 is relative scale from 14px to 12px").
-                Thumb thumb = Assert.IsType<Thumb>(FindVisualChild<Thumb>(slider), exactMatch: false);
+                    // Only the inner dot carries the ScaleTransform named ThumbScale (WinUI 3 scales the
+                    // inner dot, not the fixed outer capsule); its rest value is 0.86, not 1.0
+                    // (Slider_themeresources.xaml: "0.86 is relative scale from 14px to 12px").
+                    Thumb thumb = Assert.IsType<Thumb>(FindVisualChild<Thumb>(slider), exactMatch: false);
 
-                Ellipse innerDot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(thumb, "ThumbInnerDot"), exactMatch: false);
+                    Ellipse innerDot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(thumb, "ThumbInnerDot"), exactMatch: false);
 
-                ScaleTransform scale = Assert.IsType<ScaleTransform>(innerDot.RenderTransform);
-                Assert.Equal(0.86, scale.ScaleX, 0.001);
-                Assert.Equal(0.86, scale.ScaleY, 0.001);
-                w.Close();
+                    ScaleTransform scale = Assert.IsType<ScaleTransform>(innerDot.RenderTransform);
+                    Assert.Equal(0.86, scale.ScaleX, 0.001);
+                    Assert.Equal(0.86, scale.ScaleY, 0.001);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -99,13 +111,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
                 Window w = new() { Content = slider, Width = 300, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Ellipse thumbEllipse = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbEllipse"), exactMatch: false);
-                Ellipse innerDot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbInnerDot"), exactMatch: false);
-
-                w.Close();
+                    Ellipse thumbEllipse = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbEllipse"), exactMatch: false);
+                    Ellipse innerDot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(slider, "ThumbInnerDot"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

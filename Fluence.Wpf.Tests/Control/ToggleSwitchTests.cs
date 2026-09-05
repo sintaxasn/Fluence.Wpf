@@ -67,12 +67,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new();
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
-                Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-                w.Close();
+                    Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
+                    Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -83,17 +89,23 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
-                Assert.Equal(12.0, thumb.Width, 0.001);
-                Assert.Equal(12.0, thumb.Height, 0.001);
+                    Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
+                    Assert.Equal(12.0, thumb.Width, 0.001);
+                    Assert.Equal(12.0, thumb.Height, 0.001);
 
-                ScaleTransform scale = GetToggleSwitchThumbScale(ts);
-                Assert.Equal(1.0, scale.ScaleX, 0.001);
-                Assert.Equal(1.0, scale.ScaleY, 0.001);
-                w.Close();
+                    ScaleTransform scale = GetToggleSwitchThumbScale(ts);
+                    Assert.Equal(1.0, scale.ScaleX, 0.001);
+                    Assert.Equal(1.0, scale.ScaleY, 0.001);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -104,12 +116,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = true };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-                Assert.Equal(20.0, tx.X, 0.5);
-                w.Close();
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                    Assert.Equal(20.0, tx.X, 0.5);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -120,12 +138,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-                Assert.Equal(0.0, tx.X, 0.5);
-                w.Close();
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                    Assert.Equal(0.0, tx.X, 0.5);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -136,19 +160,25 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-                Assert.Equal(0.0, tx.X, 0.5);
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                    Assert.Equal(0.0, tx.X, 0.5);
 
-                ts.IsChecked = true;
-                Assert.True(tx.X < 20.0,
-                    "Programmatic toggle should start an animation instead of snapping directly to the checked side.");
+                    ts.IsChecked = true;
+                    Assert.True(tx.X < 20.0,
+                        "Programmatic toggle should start an animation instead of snapping directly to the checked side.");
 
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
-                Assert.Equal(20.0, tx.X, 0.5);
-                w.Close();
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.Equal(20.0, tx.X, 0.5);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -159,45 +189,50 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
-                Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-                ScaleTransform scale = GetToggleSwitchThumbScale(ts);
-
-                DragStartedEventArgs started = new(0, 0)
+                try
                 {
-                    RoutedEvent = Thumb.DragStartedEvent,
-                };
-                input.RaiseEvent(started);
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 120).ConfigureAwait(true);
-                Assert.Equal(17.0 / 12.0, scale.ScaleX, 0.05);
-                Assert.Equal(14.0 / 12.0, scale.ScaleY, 0.05);
-                Assert.Equal(12.0, thumb.Width, 0.001);
-                Assert.Equal(12.0, thumb.Height, 0.001);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                DragDeltaEventArgs delta = new(20, 0)
+                    Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
+                    Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                    ScaleTransform scale = GetToggleSwitchThumbScale(ts);
+
+                    DragStartedEventArgs started = new(0, 0)
+                    {
+                        RoutedEvent = Thumb.DragStartedEvent,
+                    };
+                    input.RaiseEvent(started);
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 120).ConfigureAwait(true);
+                    Assert.Equal(17.0 / 12.0, scale.ScaleX, 0.05);
+                    Assert.Equal(14.0 / 12.0, scale.ScaleY, 0.05);
+                    Assert.Equal(12.0, thumb.Width, 0.001);
+                    Assert.Equal(12.0, thumb.Height, 0.001);
+
+                    DragDeltaEventArgs delta = new(20, 0)
+                    {
+                        RoutedEvent = Thumb.DragDeltaEvent,
+                    };
+                    input.RaiseEvent(delta);
+                    Assert.Equal(20.0, tx.X, 0.5);
+
+                    DragCompletedEventArgs completed = new(20, 0, false)
+                    {
+                        RoutedEvent = Thumb.DragCompletedEvent,
+                    };
+                    input.RaiseEvent(completed);
+                    Assert.Equal(true, ts.IsChecked);
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.Equal(20.0, tx.X, 0.5);
+                    Assert.Equal(1.0, scale.ScaleX, 0.05);
+                    Assert.Equal(1.0, scale.ScaleY, 0.05);
+                    Assert.Equal(12.0, thumb.Width, 0.001);
+                }
+                finally
                 {
-                    RoutedEvent = Thumb.DragDeltaEvent,
-                };
-                input.RaiseEvent(delta);
-                Assert.Equal(20.0, tx.X, 0.5);
-
-                DragCompletedEventArgs completed = new(20, 0, false)
-                {
-                    RoutedEvent = Thumb.DragCompletedEvent,
-                };
-                input.RaiseEvent(completed);
-                Assert.Equal(true, ts.IsChecked);
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
-                Assert.Equal(20.0, tx.X, 0.5);
-                Assert.Equal(1.0, scale.ScaleX, 0.05);
-                Assert.Equal(1.0, scale.ScaleY, 0.05);
-                Assert.Equal(12.0, thumb.Width, 0.001);
-
-                w.Close();
+                    w.Close();
+                }
             });
         }
 
@@ -208,35 +243,40 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
-                Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-                ScaleTransform scale = GetToggleSwitchThumbScale(ts);
-                Assert.Equal(1.0, scale.ScaleX, 0.001);
-
-                MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                try
                 {
-                    RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
-                };
-                input.RaiseEvent(pressed);
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 120).ConfigureAwait(true);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(17.0 / 12.0, scale.ScaleX, 0.05);
-                Assert.Equal(14.0 / 12.0, scale.ScaleY, 0.05);
-                Assert.Equal(12.0, thumb.Width, 0.001);
-                Assert.Equal(12.0, thumb.Height, 0.001);
+                    Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(ts, "SwitchThumb"), exactMatch: false);
+                    Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
+                    ScaleTransform scale = GetToggleSwitchThumbScale(ts);
+                    Assert.Equal(1.0, scale.ScaleX, 0.001);
 
-                MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                    };
+                    input.RaiseEvent(pressed);
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 120).ConfigureAwait(true);
+
+                    Assert.Equal(17.0 / 12.0, scale.ScaleX, 0.05);
+                    Assert.Equal(14.0 / 12.0, scale.ScaleY, 0.05);
+                    Assert.Equal(12.0, thumb.Width, 0.001);
+                    Assert.Equal(12.0, thumb.Height, 0.001);
+
+                    MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    {
+                        RoutedEvent = UIElement.LostMouseCaptureEvent,
+                    };
+                    input.RaiseEvent(lostCapture);
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.Equal(1.0, scale.ScaleX, 0.05);
+                }
+                finally
                 {
-                    RoutedEvent = UIElement.LostMouseCaptureEvent,
-                };
-                input.RaiseEvent(lostCapture);
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
-                Assert.Equal(1.0, scale.ScaleX, 0.05);
-
-                w.Close();
+                    w.Close();
+                }
             });
         }
 
@@ -247,30 +287,35 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-
-                MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                try
                 {
-                    RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
-                };
-                input.RaiseEvent(pressed);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
+
+                    MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                    };
+                    input.RaiseEvent(pressed);
+
+                    MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    {
+                        RoutedEvent = UIElement.LostMouseCaptureEvent,
+                    };
+                    input.RaiseEvent(lostCapture);
+
+                    Assert.Equal(true, ts.IsChecked);
+
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                    Assert.Equal(20.0, tx.X, 0.5);
+                }
+                finally
                 {
-                    RoutedEvent = UIElement.LostMouseCaptureEvent,
-                };
-                input.RaiseEvent(lostCapture);
-
-                Assert.Equal(true, ts.IsChecked);
-
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-                Assert.Equal(20.0, tx.X, 0.5);
-
-                w.Close();
+                    w.Close();
+                }
             });
         }
 
@@ -281,37 +326,42 @@ namespace Fluence.Wpf.Tests.Control
             {
                 ToggleSwitch ts = new() { IsChecked = false };
                 Window w = new() { Content = ts, Width = 160, Height = 60 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
-
-                Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-
-                DragStartedEventArgs started = new(0, 0)
+                try
                 {
-                    RoutedEvent = Thumb.DragStartedEvent,
-                };
-                input.RaiseEvent(started);
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                DragDeltaEventArgs delta = new(20, 0)
+                    Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
+                    TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+
+                    DragStartedEventArgs started = new(0, 0)
+                    {
+                        RoutedEvent = Thumb.DragStartedEvent,
+                    };
+                    input.RaiseEvent(started);
+
+                    DragDeltaEventArgs delta = new(20, 0)
+                    {
+                        RoutedEvent = Thumb.DragDeltaEvent,
+                    };
+                    input.RaiseEvent(delta);
+                    Assert.Equal(20.0, tx.X, 0.5);
+
+                    MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    {
+                        RoutedEvent = UIElement.LostMouseCaptureEvent,
+                    };
+                    input.RaiseEvent(lostCapture);
+
+                    Assert.Equal(true, ts.IsChecked);
+
+                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.Equal(20.0, tx.X, 0.5);
+                }
+                finally
                 {
-                    RoutedEvent = Thumb.DragDeltaEvent,
-                };
-                input.RaiseEvent(delta);
-                Assert.Equal(20.0, tx.X, 0.5);
-
-                MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
-                {
-                    RoutedEvent = UIElement.LostMouseCaptureEvent,
-                };
-                input.RaiseEvent(lostCapture);
-
-                Assert.Equal(true, ts.IsChecked);
-
-                await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
-                Assert.Equal(20.0, tx.X, 0.5);
-
-                w.Close();
+                    w.Close();
+                }
             });
         }
 

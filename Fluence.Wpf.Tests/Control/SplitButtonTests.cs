@@ -323,13 +323,19 @@ namespace Fluence.Wpf.Tests.Control
             {
                 SplitButton btn = new() { Appearance = ControlAppearance.Accent, Content = "Go" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(
-                    ControlAppearance.Accent,
-                    btn.Appearance);
-                w.Close();
+                    Assert.Equal(
+                        ControlAppearance.Accent,
+                        btn.Appearance);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -340,11 +346,17 @@ namespace Fluence.Wpf.Tests.Control
             {
                 SplitButton btn = new() { Content = "Test" };
                 Window w = new() { Content = btn, Width = 300, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.NotNull(FindVisualChildByName<Rectangle>(btn, "Divider")?.Fill);
-                w.Close();
+                    Assert.NotNull(FindVisualChildByName<Rectangle>(btn, "Divider")?.Fill);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -399,26 +411,39 @@ namespace Fluence.Wpf.Tests.Control
                 // Standard appearance - get divider color
                 SplitButton btnStd = new() { Appearance = ControlAppearance.Standard, Content = "Std" };
                 Window wStd = new() { Content = btnStd, Width = 300, Height = 100 };
-                wStd.Show();
-                WpfTestSta.DrainDispatcher(wStd.Dispatcher);
+                SolidColorBrush stdBrush;
+                try
+                {
+                    wStd.Show();
+                    WpfTestSta.DrainDispatcher(wStd.Dispatcher);
 
-                Rectangle dividerStd = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(btnStd, "Divider"), exactMatch: false);
-                SolidColorBrush stdBrush = Assert.IsType<SolidColorBrush>(dividerStd.Fill);
-                wStd.Close();
+                    Rectangle dividerStd = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(btnStd, "Divider"), exactMatch: false);
+                    stdBrush = Assert.IsType<SolidColorBrush>(dividerStd.Fill);
+                }
+                finally
+                {
+                    wStd.Close();
+                }
 
                 // Accent appearance - get divider color
                 SplitButton btnAcc = new() { Appearance = ControlAppearance.Accent, Content = "Acc" };
                 Window wAcc = new() { Content = btnAcc, Width = 300, Height = 100 };
-                wAcc.Show();
-                WpfTestSta.DrainDispatcher(wAcc.Dispatcher);
+                try
+                {
+                    wAcc.Show();
+                    WpfTestSta.DrainDispatcher(wAcc.Dispatcher);
 
-                Rectangle dividerAcc = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(btnAcc, "Divider"), exactMatch: false);
-                SolidColorBrush accBrush = Assert.IsType<SolidColorBrush>(dividerAcc.Fill);
+                    Rectangle dividerAcc = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(btnAcc, "Divider"), exactMatch: false);
+                    SolidColorBrush accBrush = Assert.IsType<SolidColorBrush>(dividerAcc.Fill);
 
-                Assert.NotEqual(
-                    stdBrush.Color,
-                    accBrush.Color);
-                wAcc.Close();
+                    Assert.NotEqual(
+                        stdBrush.Color,
+                        accBrush.Color);
+                }
+                finally
+                {
+                    wAcc.Close();
+                }
             });
         }
 
