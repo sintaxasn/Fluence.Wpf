@@ -34,6 +34,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
@@ -74,7 +75,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     AssertIconMatchesText(button, "MainContentPresenter");
                     Assert.Equal(
-                        GetResourceColor("TextOnAccentFillColorPrimaryBrush"),
+                        ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"),
                         GetIconForegroundColor(button));
 
                     button.IsEnabled = false;
@@ -156,7 +157,7 @@ namespace Fluence.Wpf.Tests
 
                     AssertIconMatchesText(link, "MainContentPresenter");
                     Assert.Equal(
-                        GetResourceColor("AccentTextFillColorPrimaryBrush"),
+                        ResolvedColor(application, "AccentTextFillColorPrimaryBrush"),
                         GetIconForegroundColor(link));
 
                     link.IsEnabled = false;
@@ -208,7 +209,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     AssertIconMatchesText(item, "ContentPresenter");
                     Assert.Equal(
-                        GetResourceColor("TextFillColorDisabledBrush"),
+                        ResolvedColor(application, "TextFillColorDisabledBrush"),
                         GetIconForegroundColor(item));
                 }
                 finally
@@ -250,14 +251,14 @@ namespace Fluence.Wpf.Tests
 
                     AssertIconMatchesText(iconTab, "HeaderHost");
                     Assert.Equal(
-                        GetResourceColor("TextFillColorSecondaryBrush"),
+                        ResolvedColor(application, "TextFillColorSecondaryBrush"),
                         GetIconForegroundColor(iconTab));
 
                     iconTab.IsSelected = true;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     AssertIconMatchesText(iconTab, "HeaderHost");
                     Assert.Equal(
-                        GetResourceColor("TextFillColorPrimaryBrush"),
+                        ResolvedColor(application, "TextFillColorPrimaryBrush"),
                         GetIconForegroundColor(iconTab));
                 }
                 finally
@@ -299,7 +300,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(GetControlForegroundColor(menuItem), GetIconForegroundColor(menuItem));
                     Assert.Equal(
-                        GetResourceColor("TextFillColorDisabledBrush"),
+                        ResolvedColor(application, "TextFillColorDisabledBrush"),
                         GetIconForegroundColor(menuItem));
                 }
                 finally
@@ -351,7 +352,7 @@ namespace Fluence.Wpf.Tests
                     TextBlock title = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(custom, "TitleTextBlock"), exactMatch: false);
                     SolidColorBrush titleBrush = Assert.IsType<SolidColorBrush>(title.Foreground);
                     Assert.Equal(titleBrush.Color, GetIconForegroundColor(custom));
-                    Assert.NotEqual(GetResourceColor("SystemFillColorCriticalBrush"), GetIconForegroundColor(custom));
+                    Assert.NotEqual(ResolvedColor(application, "SystemFillColorCriticalBrush"), GetIconForegroundColor(custom));
 
                     custom.Foreground = Brushes.DarkOrchid;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -361,7 +362,7 @@ namespace Fluence.Wpf.Tests
                     // carries the severity brush (SystemFillColorCriticalBrush for Error).
                     TextBlock iconBackground = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(standard, "IconBackground"), exactMatch: false);
                     SolidColorBrush iconBackgroundBrush = Assert.IsType<SolidColorBrush>(iconBackground.Foreground);
-                    Assert.Equal(GetResourceColor("SystemFillColorCriticalBrush"), iconBackgroundBrush.Color);
+                    Assert.Equal(ResolvedColor(application, "SystemFillColorCriticalBrush"), iconBackgroundBrush.Color);
                 }
                 finally
                 {
@@ -403,7 +404,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     AssertIconMatchesText(card, "HeaderPresenter");
                     Assert.Equal(
-                        GetResourceColor("TextFillColorDisabledBrush"),
+                        ResolvedColor(application, "TextFillColorDisabledBrush"),
                         GetIconForegroundColor(card));
                 }
                 finally
@@ -488,7 +489,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(GetControlForegroundColor(textBox), GetIconForegroundColor(textBox));
                     Assert.Equal(
-                        GetResourceColor("TextFillColorDisabledBrush"),
+                        ResolvedColor(application, "TextFillColorDisabledBrush"),
                         GetIconForegroundColor(textBox));
                 }
                 finally
@@ -539,7 +540,7 @@ namespace Fluence.Wpf.Tests
                         GetControlForegroundColor(secondary),
                         GetIconForegroundColor(secondary));
                     Assert.Equal(
-                        GetResourceColor("TextFillColorDisabledBrush"),
+                        ResolvedColor(application, "TextFillColorDisabledBrush"),
                         GetIconForegroundColor(secondary));
                     ContentPresenter secondaryIconPresenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(secondary, "IconPresenter"), exactMatch: false);
                     Assert.Equal(1.0, secondaryIconPresenter.Opacity, 0.001);
@@ -590,12 +591,6 @@ namespace Fluence.Wpf.Tests
         private static Color GetControlForegroundColor(Control control)
         {
             SolidColorBrush brush = Assert.IsType<SolidColorBrush>(control.Foreground);
-            return brush.Color;
-        }
-
-        private static Color GetResourceColor(string brushKey)
-        {
-            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource(brushKey));
             return brush.Color;
         }
 

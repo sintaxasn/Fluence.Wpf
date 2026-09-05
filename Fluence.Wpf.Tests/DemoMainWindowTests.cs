@@ -44,6 +44,7 @@ using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 
 namespace Fluence.Wpf.Tests
 {
@@ -1914,14 +1915,14 @@ namespace Fluence.Wpf.Tests
                     Assert.Equal(new Thickness(0), catalogCard.Padding);
                     Assert.Equal(new CornerRadius(8), catalogCard.CornerRadius);
                     Assert.Equal(new Thickness(1), catalogCard.BorderThickness);
-                    AssertIconBrush(catalogCard.Background, "CardBackgroundFillColorTertiaryBrush");
-                    AssertIconBrush(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush");
+                    AssertBrushColor(catalogCard.Background, "CardBackgroundFillColorTertiaryBrush");
+                    AssertBrushColor(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush");
                     Assert.Equal(new Thickness(0), list.BorderThickness);
 
                     System.Windows.Controls.Border detailsPanel = Assert.IsType<System.Windows.Controls.Border>(DemoTestHost.FindByName<System.Windows.Controls.Border>(page, "IconDetailsPanel"), exactMatch: false);
                     Assert.Equal(new Thickness(1, 0, 0, 0), detailsPanel.BorderThickness);
-                    AssertIconBrush(detailsPanel.Background, "CardBackgroundFillColorDefaultBrush");
-                    AssertIconBrush(detailsPanel.BorderBrush, "DividerStrokeColorDefaultBrush");
+                    AssertBrushColor(detailsPanel.Background, "CardBackgroundFillColorDefaultBrush");
+                    AssertBrushColor(detailsPanel.BorderBrush, "DividerStrokeColorDefaultBrush");
 
                     ScrollViewer viewer = Assert.IsType<ScrollViewer>(DemoTestHost.FindVisualChildren<ScrollViewer>(list).FirstOrDefault(), exactMatch: false);
                     Assert.True(viewer.ViewportHeight > 0, "Icon catalog needs a bounded viewport height.");
@@ -1950,15 +1951,7 @@ namespace Fluence.Wpf.Tests
         private static void AssertTabViewItemContentSurface(TabViewItem item)
         {
             System.Windows.Controls.Border surface = Assert.IsType<System.Windows.Controls.Border>(item.Content);
-            AssertIconBrush(surface.Background, "LayerFillColorDefaultBrush");
-        }
-
-        private static void AssertIconBrush(Brush? actualBrush, string resourceKey)
-        {
-            SolidColorBrush actual = Assert.IsType<SolidColorBrush>(actualBrush);
-
-            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(Application.Current?.TryFindResource(resourceKey));
-            Assert.Equal(expected.Color, actual.Color);
+            AssertBrushColor(surface.Background, "LayerFillColorDefaultBrush");
         }
 
         private static void AssertSourceTab(TabControl? tabs, string expectedHeader, string expectedSource)

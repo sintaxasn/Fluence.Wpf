@@ -39,6 +39,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests
@@ -325,12 +326,12 @@ namespace Fluence.Wpf.Tests
                     Border secondaryBackdrop = Assert.IsType<Border>(FindVisualChildByName<Border>(button, "SecondaryAccentFillBackdrop"), exactMatch: false);
 
 
-                    Color accentDefault = GetResolvedBrushColor(application, "AccentFillColorDefaultBrush");
-                    Assert.Equal(accentDefault, GetSolidColor(primaryFill.Background));
-                    Assert.Equal(accentDefault, GetSolidColor(secondaryFill.Background));
+                    Color accentDefault = ResolvedColor(application, "AccentFillColorDefaultBrush");
+                    Assert.Equal(accentDefault, Assert.IsType<SolidColorBrush>(primaryFill.Background).Color);
+                    Assert.Equal(accentDefault, Assert.IsType<SolidColorBrush>(secondaryFill.Background).Color);
                     Assert.Equal(1.0, primaryBackdrop.Opacity);
                     Assert.Equal(1.0, secondaryBackdrop.Opacity);
-                    Assert.Equal(GetResolvedBrushColor(application, "TextOnAccentFillColorPrimaryBrush"), GetSolidColor(button.Foreground));
+                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"), Assert.IsType<SolidColorBrush>(button.Foreground).Color);
                 });
         }
 
@@ -347,15 +348,15 @@ namespace Fluence.Wpf.Tests
                 {
                     Rectangle divider = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(button, "Divider"), exactMatch: false);
 
-                    Color uncheckedDivider = GetSolidColor(divider.Fill);
+                    Color uncheckedDivider = Assert.IsType<SolidColorBrush>(divider.Fill).Color;
 
                     button.IsChecked = true;
                     WpfTestSta.DrainDispatcher(button.Dispatcher);
                     button.UpdateLayout();
 
-                    Color checkedDivider = GetSolidColor(divider.Fill);
+                    Color checkedDivider = Assert.IsType<SolidColorBrush>(divider.Fill).Color;
 
-                    Assert.Equal(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), checkedDivider);
+                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), checkedDivider);
                     Assert.NotEqual(uncheckedDivider, checkedDivider);
                 });
         }
@@ -381,9 +382,9 @@ namespace Fluence.Wpf.Tests
                     Border secondaryFill = Assert.IsType<Border>(FindVisualChildByName<Border>(button, "SecondaryFill"), exactMatch: false);
 
 
-                    Color accentTertiary = GetResolvedBrushColor(application, "AccentFillColorTertiaryBrush");
-                    Assert.Equal(accentTertiary, GetSolidColor(primaryFill.Background));
-                    Assert.Equal(accentTertiary, GetSolidColor(secondaryFill.Background));
+                    Color accentTertiary = ResolvedColor(application, "AccentFillColorTertiaryBrush");
+                    Assert.Equal(accentTertiary, Assert.IsType<SolidColorBrush>(primaryFill.Background).Color);
+                    Assert.Equal(accentTertiary, Assert.IsType<SolidColorBrush>(secondaryFill.Background).Color);
 
                     secondary.IsChecked = false;
                     WpfTestSta.DrainDispatcher(button.Dispatcher);
@@ -406,10 +407,10 @@ namespace Fluence.Wpf.Tests
                     Border secondaryFill = Assert.IsType<Border>(FindVisualChildByName<Border>(button, "SecondaryFill"), exactMatch: false);
 
 
-                    Color accentDisabled = GetResolvedBrushColor(application, "AccentFillColorDisabledBrush");
-                    Assert.Equal(accentDisabled, GetSolidColor(primaryFill.Background));
-                    Assert.Equal(accentDisabled, GetSolidColor(secondaryFill.Background));
-                    Assert.Equal(GetResolvedBrushColor(application, "TextFillColorDisabledBrush"), GetSolidColor(button.Foreground));
+                    Color accentDisabled = ResolvedColor(application, "AccentFillColorDisabledBrush");
+                    Assert.Equal(accentDisabled, Assert.IsType<SolidColorBrush>(primaryFill.Background).Color);
+                    Assert.Equal(accentDisabled, Assert.IsType<SolidColorBrush>(secondaryFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "TextFillColorDisabledBrush"), Assert.IsType<SolidColorBrush>(button.Foreground).Color);
                 });
         }
 
@@ -536,8 +537,8 @@ namespace Fluence.Wpf.Tests
                     Border primaryFill = Assert.IsType<Border>(FindVisualChildByName<Border>(button, "PrimaryFill"), exactMatch: false);
                     Rectangle divider = Assert.IsType<Rectangle>(FindVisualChildByName<Rectangle>(button, "Divider"), exactMatch: false);
 
-                    Assert.Equal(GetResolvedBrushColor(application, "AccentFillColorDefaultBrush"), GetSolidColor(primaryFill.Background));
-                    Assert.Equal(GetResolvedBrushColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), GetSolidColor(divider.Fill));
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), Assert.IsType<SolidColorBrush>(primaryFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorOnAccentTertiaryBrush"), Assert.IsType<SolidColorBrush>(divider.Fill).Color);
                     ThemeTestHelpers.AssertKeyThemeBrushesResolve(application);
                 });
         }
