@@ -63,14 +63,20 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // A Fluent card surface is flat: background, 1 px stroke, radius. Elevation belongs
-                // to transient surfaces, so no variant, Default included, carries an effect.
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
-                Assert.Null(outerBorder.Effect);
-                w.Close();
+                    // A Fluent card surface is flat: background, 1 px stroke, radius. Elevation belongs
+                    // to transient surfaces, so no variant, Default included, carries an effect.
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    Assert.Null(outerBorder.Effect);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -83,19 +89,25 @@ namespace Fluence.Wpf.Tests.Control
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush cardFill = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardBackgroundFillColorDefaultBrush"));
+                    SolidColorBrush cardFill = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardBackgroundFillColorDefaultBrush"));
 
-                // The card fill token is translucent (#B3FFFFFF in Light). Painting it on two nested
-                // borders composites it with itself and renders the card more opaque than the token
-                // specifies, so exactly one element in the template may carry it.
-                int painters = FindVisualChildren<System.Windows.Controls.Border>(card)
-                    .Count(b => b.Background is SolidColorBrush brush && brush.Color == cardFill.Color);
+                    // The card fill token is translucent (#B3FFFFFF in Light). Painting it on two nested
+                    // borders composites it with itself and renders the card more opaque than the token
+                    // specifies, so exactly one element in the template may carry it.
+                    int painters = FindVisualChildren<System.Windows.Controls.Border>(card)
+                        .Count(b => b.Background is SolidColorBrush brush && brush.Color == cardFill.Color);
 
-                Assert.Equal(1, painters);
-                w.Close();
+                    Assert.Equal(1, painters);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -106,13 +118,19 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Card card = new() { Variant = CardVariant.Subtle, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                Assert.Null(outerBorder.Effect);
-                w.Close();
+                    Assert.Null(outerBorder.Effect);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -123,13 +141,19 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Card card = new() { Variant = CardVariant.Outlined, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                Assert.Null(outerBorder.Effect);
-                w.Close();
+                    Assert.Null(outerBorder.Effect);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -140,13 +164,19 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Card card = new() { Variant = CardVariant.Filled, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                Assert.Null(outerBorder.Effect);
-                w.Close();
+                    Assert.Null(outerBorder.Effect);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -159,21 +189,27 @@ namespace Fluence.Wpf.Tests.Control
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                // One element owns fill, stroke and radius, so there is no second border to drift.
-                SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));
-                SolidColorBrush actualStroke = Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush);
-                Assert.Equal(expectedStroke.Color, actualStroke.Color);
-                Assert.Equal(new Thickness(1), outerBorder.BorderThickness);
-                Assert.Equal(new CornerRadius(8), outerBorder.CornerRadius);
+                    // One element owns fill, stroke and radius, so there is no second border to drift.
+                    SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));
+                    SolidColorBrush actualStroke = Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush);
+                    Assert.Equal(expectedStroke.Color, actualStroke.Color);
+                    Assert.Equal(new Thickness(1), outerBorder.BorderThickness);
+                    Assert.Equal(new CornerRadius(8), outerBorder.CornerRadius);
 
-                // The style routes the radius through OverlayCornerRadius so a consumer can retheme it.
-                Assert.Equal(app.TryFindResource("OverlayCornerRadius"), card.CornerRadius);
-                w.Close();
+                    // The style routes the radius through OverlayCornerRadius so a consumer can retheme it.
+                    Assert.Equal(app.TryFindResource("OverlayCornerRadius"), card.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -191,17 +227,23 @@ namespace Fluence.Wpf.Tests.Control
 
                 Card card = new() { Variant = CardVariant.Default, IsClickable = true, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border hoverLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickHoverLayer"), exactMatch: false);
-                System.Windows.Controls.Border pressLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickPressLayer"), exactMatch: false);
+                    System.Windows.Controls.Border hoverLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickHoverLayer"), exactMatch: false);
+                    System.Windows.Controls.Border pressLayer = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "ClickPressLayer"), exactMatch: false);
 
-                object? expectedHover = app.TryFindResource("SubtleFillColorSecondaryBrush");
-                object? expectedPress = app.TryFindResource("SubtleFillColorTertiaryBrush");
-                Assert.Equal(expectedHover, hoverLayer.Background);
-                Assert.Equal(expectedPress, pressLayer.Background);
-                w.Close();
+                    object? expectedHover = app.TryFindResource("SubtleFillColorSecondaryBrush");
+                    object? expectedPress = app.TryFindResource("SubtleFillColorTertiaryBrush");
+                    Assert.Equal(expectedHover, hoverLayer.Background);
+                    Assert.Equal(expectedPress, pressLayer.Background);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -214,20 +256,26 @@ namespace Fluence.Wpf.Tests.Control
 
                 Card card = new() { Variant = CardVariant.Outlined, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                // Only Default and Filled dim their background when disabled; Outlined must keep
-                // its transparent background instead of picking up ControlFillColorDisabledBrush.
-                SolidColorBrush background = Assert.IsType<SolidColorBrush>(outerBorder.Background);
-                Assert.Equal(Colors.Transparent, background.Color);
+                    // Only Default and Filled dim their background when disabled; Outlined must keep
+                    // its transparent background instead of picking up ControlFillColorDisabledBrush.
+                    SolidColorBrush background = Assert.IsType<SolidColorBrush>(outerBorder.Background);
+                    Assert.Equal(Colors.Transparent, background.Color);
 
-                SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));
-                SolidColorBrush actualStroke = Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush);
-                Assert.Equal(expectedStroke.Color, actualStroke.Color);
-                w.Close();
+                    SolidColorBrush expectedStroke = Assert.IsType<SolidColorBrush>(app.TryFindResource("CardStrokeColorDefaultBrush"));
+                    SolidColorBrush actualStroke = Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush);
+                    Assert.Equal(expectedStroke.Color, actualStroke.Color);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -240,16 +288,22 @@ namespace Fluence.Wpf.Tests.Control
 
                 Card card = new() { Variant = CardVariant.Default, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(card, "OuterBorder"), exactMatch: false);
 
-                object? expectedBackground = app.TryFindResource("ControlFillColorDisabledBrush");
-                object? expectedStroke = app.TryFindResource("CardStrokeColorDefaultBrush");
-                Assert.Equal(expectedBackground, outerBorder.Background);
-                Assert.Equal(expectedStroke, outerBorder.BorderBrush);
-                w.Close();
+                    object? expectedBackground = app.TryFindResource("ControlFillColorDisabledBrush");
+                    object? expectedStroke = app.TryFindResource("CardStrokeColorDefaultBrush");
+                    Assert.Equal(expectedBackground, outerBorder.Background);
+                    Assert.Equal(expectedStroke, outerBorder.BorderBrush);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

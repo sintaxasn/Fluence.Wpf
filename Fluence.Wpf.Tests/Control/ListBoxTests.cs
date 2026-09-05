@@ -61,28 +61,34 @@ namespace Fluence.Wpf.Tests.Control
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item A" });
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item B" });
                 Window w = new() { Content = lb, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
+                    Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
 
-                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
+                    System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
 
-                Assert.Equal(3.0, indicator.Width, 0.01);
-                Assert.Equal(16.0, indicator.Height, 0.01);
-                Assert.Equal(new CornerRadius(1.5), indicator.CornerRadius);
-                Assert.Equal(VerticalAlignment.Center, indicator.VerticalAlignment);
-                Assert.Equal(HorizontalAlignment.Left, indicator.HorizontalAlignment);
+                    Assert.Equal(3.0, indicator.Width, 0.01);
+                    Assert.Equal(16.0, indicator.Height, 0.01);
+                    Assert.Equal(new CornerRadius(1.5), indicator.CornerRadius);
+                    Assert.Equal(VerticalAlignment.Center, indicator.VerticalAlignment);
+                    Assert.Equal(HorizontalAlignment.Left, indicator.HorizontalAlignment);
 
-                // WinUI insets the pill 2 px from the left edge and takes it out of hit testing so it
-                // cannot claim a press aimed at the item (TableView.xaml PART_SelectionIndicator).
-                Assert.Equal(new Thickness(2, 0, 0, 0), indicator.Margin);
-                Assert.False(indicator.IsHitTestVisible);
+                    // WinUI insets the pill 2 px from the left edge and takes it out of hit testing so it
+                    // cannot claim a press aimed at the item (TableView.xaml PART_SelectionIndicator).
+                    Assert.Equal(new Thickness(2, 0, 0, 0), indicator.Margin);
+                    Assert.False(indicator.IsHitTestVisible);
 
-                SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("AccentFillColorDefaultBrush"));
-                SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indicator.Background);
-                Assert.Equal(expected.Color, actual.Color);
-                w.Close();
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("AccentFillColorDefaultBrush"));
+                    SolidColorBrush actual = Assert.IsType<SolidColorBrush>(indicator.Background);
+                    Assert.Equal(expected.Color, actual.Color);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -95,21 +101,27 @@ namespace Fluence.Wpf.Tests.Control
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item A" });
                 _ = lb.Items.Add(new Controls.ListBoxItem { Content = "Item B" });
                 Window w = new() { Content = lb, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
-                System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
-                Assert.Equal(0.0, indicator.Opacity, 0.01);
+                    Controls.ListBoxItem item = Assert.IsType<Controls.ListBoxItem>(FindVisualChild<Controls.ListBoxItem>(lb), exactMatch: false);
+                    System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
+                    Assert.Equal(0.0, indicator.Opacity, 0.01);
 
-                lb.SelectedIndex = 0;
-                bool shown = await WaitUntilAsync(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99).ConfigureAwait(true);
-                Assert.True(shown, "SelectionIndicator must animate to full opacity when the item is selected.");
+                    lb.SelectedIndex = 0;
+                    bool shown = await WaitUntilAsync(w.Dispatcher, 1000, () => indicator.Opacity >= 0.99).ConfigureAwait(true);
+                    Assert.True(shown, "SelectionIndicator must animate to full opacity when the item is selected.");
 
-                // WinUI fades the pill in and never moves it, so the reveal must not add a transform.
-                Assert.Null(indicator.RenderTransform as TranslateTransform);
-                Assert.Equal(16.0, indicator.ActualHeight, 0.5);
-                w.Close();
+                    // WinUI fades the pill in and never moves it, so the reveal must not add a transform.
+                    Assert.Null(indicator.RenderTransform as TranslateTransform);
+                    Assert.Equal(16.0, indicator.ActualHeight, 0.5);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

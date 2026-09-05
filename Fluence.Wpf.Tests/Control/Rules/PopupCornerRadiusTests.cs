@@ -60,11 +60,17 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 ComboBox cb = new();
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(overlayRadius, cb.DropdownCornerRadius);
-                w.Close();
+                    Assert.Equal(overlayRadius, cb.DropdownCornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -75,11 +81,17 @@ namespace Fluence.Wpf.Tests.Control.Rules
             {
                 ComboBox cb = new();
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(new CornerRadius(8), cb.DropdownCornerRadius);
-                w.Close();
+                    Assert.Equal(new CornerRadius(8), cb.DropdownCornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -98,11 +110,17 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                 DropDownButton ddb = new();
                 Window w = new() { Content = ddb, Width = 200, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(overlayRadius, ddb.DropdownCornerRadius);
-                w.Close();
+                    Assert.Equal(overlayRadius, ddb.DropdownCornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -113,11 +131,17 @@ namespace Fluence.Wpf.Tests.Control.Rules
             {
                 DropDownButton ddb = new();
                 Window w = new() { Content = ddb, Width = 200, Height = 100 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Assert.Equal(new CornerRadius(8), ddb.DropdownCornerRadius);
-                w.Close();
+                    Assert.Equal(new CornerRadius(8), ddb.DropdownCornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
     }

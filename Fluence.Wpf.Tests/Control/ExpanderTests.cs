@@ -61,12 +61,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", Content = "Content" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // RootBorder is the template root - proves Fluence style applied.
-                Border rootBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "RootBorder"), exactMatch: false);
-                w.Close();
+                    // RootBorder is the template root - proves Fluence style applied.
+                    Border rootBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "RootBorder"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -77,17 +83,23 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Path chevron = Assert.IsType<Path>(FindVisualChildByName<Path>(expander, "Chevron"), exactMatch: false);
+                    Path chevron = Assert.IsType<Path>(FindVisualChildByName<Path>(expander, "Chevron"), exactMatch: false);
 
-                // Parent Border owns the RotateTransform.
-                Border parent = Assert.IsType<Border>(VisualTreeHelper.GetParent(chevron));
+                    // Parent Border owns the RotateTransform.
+                    Border parent = Assert.IsType<Border>(VisualTreeHelper.GetParent(chevron));
 
-                RotateTransform rt = Assert.IsType<RotateTransform>(parent.RenderTransform);
-                Assert.Equal(0.0, rt.Angle, 1.0);
-                w.Close();
+                    RotateTransform rt = Assert.IsType<RotateTransform>(parent.RenderTransform);
+                    Assert.Equal(0.0, rt.Angle, 1.0);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -98,12 +110,18 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // Structural check: ExpandSite ContentPresenter is present.
-                ContentPresenter site = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(expander, "ExpandSite"), exactMatch: false);
-                w.Close();
+                    // Structural check: ExpandSite ContentPresenter is present.
+                    ContentPresenter site = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(expander, "ExpandSite"), exactMatch: false);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -114,15 +132,21 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // WinUI parity: the header owns the two top corners while the content tier
-                // (PART_ContentBorder) owns the two bottom corners, derived live from the
-                // control's own CornerRadius rather than a shared uniform hardcoded radius.
-                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
-                Assert.Equal(new CornerRadius(8, 8, 0, 0), headerBorder.CornerRadius);
-                w.Close();
+                    // WinUI parity: the header owns the two top corners while the content tier
+                    // (PART_ContentBorder) owns the two bottom corners, derived live from the
+                    // control's own CornerRadius rather than a shared uniform hardcoded radius.
+                    Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                    Assert.Equal(new CornerRadius(8, 8, 0, 0), headerBorder.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -332,20 +356,26 @@ namespace Fluence.Wpf.Tests.Control
                     CornerRadius = new CornerRadius(8),
                 };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
+                    Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
 
-                object? expectedBackground = w.TryFindResource("CardBackgroundFillColorSecondaryBrush");
-                Assert.Equal(expectedBackground, contentBorder.Background);
+                    object? expectedBackground = w.TryFindResource("CardBackgroundFillColorSecondaryBrush");
+                    Assert.Equal(expectedBackground, contentBorder.Background);
 
-                // Down (default) direction: the top edge is skipped so the seam against the
-                // header reads as one line rather than a doubled border, both derived live from
-                // the control's own BorderThickness and CornerRadius rather than a hardcoded literal.
-                Assert.Equal(new Thickness(2, 0, 2, 2), contentBorder.BorderThickness);
-                Assert.Equal(new CornerRadius(0, 0, 8, 8), contentBorder.CornerRadius);
-                w.Close();
+                    // Down (default) direction: the top edge is skipped so the seam against the
+                    // header reads as one line rather than a doubled border, both derived live from
+                    // the control's own BorderThickness and CornerRadius rather than a hardcoded literal.
+                    Assert.Equal(new Thickness(2, 0, 2, 2), contentBorder.BorderThickness);
+                    Assert.Equal(new CornerRadius(0, 0, 8, 8), contentBorder.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -363,20 +393,26 @@ namespace Fluence.Wpf.Tests.Control
                     CornerRadius = new CornerRadius(8),
                 };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
-                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                    Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
+                    Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
 
-                // Up direction mirrors both tiers: content now sits above the header and owns
-                // the top corners plus the bottom-skipped border edge; the header mirrors to
-                // the bottom corners. Both derived live from the control's own BorderThickness
-                // and CornerRadius rather than a hardcoded literal.
-                Assert.Equal(new Thickness(2, 2, 2, 0), contentBorder.BorderThickness);
-                Assert.Equal(new CornerRadius(8, 8, 0, 0), contentBorder.CornerRadius);
-                Assert.Equal(new CornerRadius(0, 0, 8, 8), headerBorder.CornerRadius);
-                w.Close();
+                    // Up direction mirrors both tiers: content now sits above the header and owns
+                    // the top corners plus the bottom-skipped border edge; the header mirrors to
+                    // the bottom corners. Both derived live from the control's own BorderThickness
+                    // and CornerRadius rather than a hardcoded literal.
+                    Assert.Equal(new Thickness(2, 2, 2, 0), contentBorder.BorderThickness);
+                    Assert.Equal(new CornerRadius(8, 8, 0, 0), contentBorder.CornerRadius);
+                    Assert.Equal(new CornerRadius(0, 0, 8, 8), headerBorder.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -387,19 +423,25 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsEnabled = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // WinUI parity: ExpanderHeaderDisabledBorderBrush resolves to the same
-                // CardStrokeColorDefaultBrush as every other state, and there is no disabled
-                // header background token at all, so the header must not swap to a
-                // ControlFill-disabled look the way a plain button would.
-                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
-                object? expectedBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
-                object? expectedBorderBrush = w.TryFindResource("CardStrokeColorDefaultBrush");
-                Assert.Equal(expectedBackground, headerBorder.Background);
-                Assert.Equal(expectedBorderBrush, headerBorder.BorderBrush);
-                w.Close();
+                    // WinUI parity: ExpanderHeaderDisabledBorderBrush resolves to the same
+                    // CardStrokeColorDefaultBrush as every other state, and there is no disabled
+                    // header background token at all, so the header must not swap to a
+                    // ControlFill-disabled look the way a plain button would.
+                    Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                    object? expectedBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
+                    object? expectedBorderBrush = w.TryFindResource("CardStrokeColorDefaultBrush");
+                    Assert.Equal(expectedBackground, headerBorder.Background);
+                    Assert.Equal(expectedBorderBrush, headerBorder.BorderBrush);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
@@ -410,19 +452,25 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
-                w.Show();
-                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                // WinUI parity: the header row itself never tints; only the 32x32 chevron
-                // plate does, and it rests at SubtleFillColorTransparentBrush.
-                Border chevronPlate = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "ChevronPlate"), exactMatch: false);
-                Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                    // WinUI parity: the header row itself never tints; only the 32x32 chevron
+                    // plate does, and it rests at SubtleFillColorTransparentBrush.
+                    Border chevronPlate = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "ChevronPlate"), exactMatch: false);
+                    Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
 
-                object? expectedRestPlate = w.TryFindResource("SubtleFillColorTransparentBrush");
-                object? expectedHeaderBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
-                Assert.Equal(expectedRestPlate, chevronPlate.Background);
-                Assert.Equal(expectedHeaderBackground, headerBorder.Background);
-                w.Close();
+                    object? expectedRestPlate = w.TryFindResource("SubtleFillColorTransparentBrush");
+                    object? expectedHeaderBackground = w.TryFindResource("CardBackgroundFillColorDefaultBrush");
+                    Assert.Equal(expectedRestPlate, chevronPlate.Background);
+                    Assert.Equal(expectedHeaderBackground, headerBorder.Background);
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 
