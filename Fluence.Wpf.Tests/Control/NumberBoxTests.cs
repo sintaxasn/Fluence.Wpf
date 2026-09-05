@@ -452,5 +452,37 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        [Fact]
+        public Task NumberBox_DefaultStyle_LoadsPartsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.NumberBox numberBox = new() { Width = 160, Value = 3 };
+                try
+                {
+                    window.Content = numberBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = numberBox.ApplyTemplate();
+                    Assert.NotNull(numberBox.Template.FindName("PART_TextBox", numberBox));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_Value_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.NumberBox box = new() { Value = 42.5 };
+                Assert.Equal(42.5, box.Value, 0.001);
+            });
+        }
     }
 }

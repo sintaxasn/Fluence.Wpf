@@ -113,5 +113,30 @@ namespace Fluence.Wpf.Tests.Control
                 w.Close();
             });
         }
+
+        [Fact]
+        public Task Slider_Template_HasTrackAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Slider slider = new() { Width = 220, Minimum = 0, Maximum = 100, Value = 30 };
+
+                try
+                {
+                    window.Content = slider;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.NotNull(slider.Template.FindName("PART_Track", slider));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

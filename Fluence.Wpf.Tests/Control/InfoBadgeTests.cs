@@ -207,5 +207,37 @@ namespace Fluence.Wpf.Tests.Control
                 w.Close();
             });
         }
+
+        [Fact]
+        public Task InfoBadge_Value_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                InfoBadge badge = new() { Value = 9 };
+                Assert.Equal(9, badge.Value);
+            });
+        }
+
+        [Fact]
+        public Task InfoBadge_Template_AppliesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBadge badge = new() { Value = 2, Width = 32, Height = 32 };
+                try
+                {
+                    window.Content = badge;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = badge.ApplyTemplate();
+                    Assert.NotNull(badge.Template);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

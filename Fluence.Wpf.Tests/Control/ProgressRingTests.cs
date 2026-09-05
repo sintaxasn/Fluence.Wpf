@@ -781,5 +781,82 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.Equal(expectedPercents[i], animation.KeyFrames[i].KeyTime.Percent, 0.001);
             }
         }
+
+        [Fact]
+        public Task ProgressRing_Determinate_UpdatesArcAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                ProgressRing ring = new()
+                {
+                    IsIndeterminate = false,
+                    Width = 48,
+                    Height = 48,
+                    Value = 50,
+                    Minimum = 0,
+                    Maximum = 100,
+                    IsActive = true,
+                };
+
+                try
+                {
+                    window.Content = ring;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = ring.ApplyTemplate();
+                    Path arcPath = Assert.IsType<Path>(ring.Template.FindName("PART_DeterminateArc", ring));
+                    Assert.NotNull(arcPath.Data);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ProgressRing_Indeterminate_CaterpillarArcBecomesVisibleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+                ProgressRing ring = new()
+                {
+                    IsIndeterminate = true,
+                    Width = 48,
+                    Height = 48,
+                    IsActive = true,
+                };
+
+                try
+                {
+                    window.Content = ring;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = ring.ApplyTemplate();
+                    Path indeterminateArc = Assert.IsType<Path>(ring.Template.FindName("PART_IndeterminateArc", ring));
+                    Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
+
+                    bool arcDataReady = await WaitUntilAsync(window.Dispatcher, 1000, delegate
+                    {
+                        return indeterminateArc.Data is not null;
+                    }).ConfigureAwait(true);
+                    Assert.True(arcDataReady,
+                        "PART_IndeterminateArc should have non-null Data for the caterpillar geometry.");
+
+                    FrameworkElement? dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
+                    Assert.Null(dotHost);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

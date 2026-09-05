@@ -28,17 +28,19 @@
 
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation.Peers;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using Fluence.Wpf.Automation;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
-    public sealed class HyperlinkButtonTests : IAsyncLifetime
+    /// <summary>
+    /// Fluent <see cref="Controls.DropDownButton"/> control: the flyout popup template part,
+    /// CloseFlyout tearing down an open popup and unchecking the button, and the flyout
+    /// presenter stretching to fit left-aligned flyout content.
+    /// </summary>
+    public sealed class DropDownButtonTests : IAsyncLifetime
     {
         public ValueTask InitializeAsync()
         {
@@ -51,85 +53,19 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task HyperlinkButton_Peer_IsHyperlinkButtonAutomationPeerAsync()
+        public Task DropDownButton_Template_HasFlyoutPresenterNameAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Window window = new();
-
+                Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
                 {
-                    Controls.HyperlinkButton button = new() { Content = "Visit site" };
-                    window.Content = button;
-                    window.Width = 240;
-                    window.Height = 120;
-                    window.Show();
-                    _ = button.ApplyTemplate();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-
-                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    _ = Assert.IsType<HyperlinkButtonAutomationPeer>(peer, exactMatch: false);
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
-            });
-        }
-
-        [Fact]
-        public Task HyperlinkButton_Peer_ReportsHyperlinkControlTypeAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Window window = new();
-
-                try
-                {
-                    Controls.HyperlinkButton button = new() { Content = "Visit site" };
-                    window.Content = button;
-                    window.Width = 240;
-                    window.Height = 120;
-                    window.Show();
-                    _ = button.ApplyTemplate();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-
-                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
-                    Assert.Equal(
-                        AutomationControlType.Hyperlink,
-                        peer.GetAutomationControlType());
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
-            });
-        }
-
-        [Fact]
-        public Task HyperlinkButton_DefaultForeground_IsAccentAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                Window window = new();
-                Controls.HyperlinkButton button = new()
-                {
-                    Content = "Link",
-                    Width = 120,
-                };
-
-                try
-                {
-                    window.Content = button;
+                    window.Content = btn;
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentTextFillColorPrimaryBrush"]);
-                    _ = Assert.IsType<SolidColorBrush>(button.Foreground, exactMatch: false);
-                    Assert.Equal(accentBrush.Color, ((SolidColorBrush)button.Foreground).Color);
+                    _ = btn.ApplyTemplate();
+                    Assert.NotNull(btn.Template.FindName("PART_Popup", btn));
                 }
                 finally
                 {
@@ -139,30 +75,59 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task HyperlinkButton_Click_WithNavigateUri_DoesNotThrowAsync()
+        public Task DropDownButton_CloseFlyout_ClosesOpenPopupAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Window window = new();
-                Controls.HyperlinkButton button = new()
-                {
-                    Content = "Link",
-                    Width = 120,
-                };
-
+                Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
                 {
-                    window.Content = button;
+                    window.Content = btn;
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
+                    _ = btn.ApplyTemplate();
 
-                    button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    Popup popup = Assert.IsType<Popup>(btn.Template.FindName("PART_Popup", btn));
+                    btn.IsChecked = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(popup.IsOpen, "Checking the button should open the dropdown popup.");
+
+                    // The application close path after handling a click on arbitrary flyout
+                    // content (WinUI parity: plain flyouts never dismiss themselves).
+                    btn.CloseFlyout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Assert.True(button.IsLoaded,
-                        "HyperlinkButton should remain loaded after click dispatch.");
-                    Assert.Null(button.NavigateUri);
+                    Assert.False(popup.IsOpen, "CloseFlyout should close the dropdown popup.");
+                    Assert.False(btn.IsChecked is true, "CloseFlyout should uncheck the button.");
+
+                    // Closing an already-closed flyout is a no-op.
+                    btn.CloseFlyout();
+                    Assert.False(popup.IsOpen);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task DropDownButton_FlyoutPresenter_StretchesForLeftAlignedItemsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.DropDownButton btn = new() { Content = "Open", Width = 160, Flyout = new StackPanel() };
+                try
+                {
+                    window.Content = btn;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = btn.ApplyTemplate();
+
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(btn.Template.FindName("FlyoutContentPresenter", btn));
+                    Assert.Equal(HorizontalAlignment.Stretch, presenter.HorizontalAlignment);
                 }
                 finally
                 {

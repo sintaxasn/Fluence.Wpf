@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -114,6 +115,20 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.Null(indicator.RenderTransform as TranslateTransform);
                 Assert.Equal(16.0, indicator.ActualHeight, 0.5);
                 w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ListBox_GetContainerForItemOverride_ReturnsFluentListBoxItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ListBox list = new();
+                MethodInfo m = Assert.IsType<MethodInfo>(typeof(Controls.ListBox).GetMethod(
+                    "GetContainerForItemOverride",
+                    BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+                object? container = m.Invoke(list, []);
+                _ = Assert.IsType<Controls.ListBoxItem>(container, exactMatch: false);
             });
         }
     }

@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -331,6 +332,193 @@ namespace Fluence.Wpf.Tests.Control
                 lv.IsItemSelectable = true;
                 Assert.True(lv.IsItemSelectable);
                 Assert.False(lv.ItemAnimationsEnabled);
+            });
+        }
+
+        [Fact]
+        public Task ListView_ItemAnimationsEnabled_DefaultTrueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ListView listView = new();
+
+                Assert.True(listView.ItemAnimationsEnabled);
+            });
+        }
+
+        [Fact]
+        public Task ListView_HoverHighlightEnabled_DefaultTrueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ListView listView = new();
+
+                Assert.True(listView.HoverHighlightEnabled);
+            });
+        }
+
+        [Fact]
+        public Task ListViewItem_DefaultChrome_UsesWinUiReferenceValuesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.ListView listView = new()
+                {
+                    Width = 260,
+                    Height = 120,
+                };
+                _ = listView.Items.Add("Item 1");
+
+                try
+                {
+                    window.Content = listView;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
+
+                    Assert.Equal(new Thickness(12, 0, 12, 0), item.Padding);
+                    Assert.Equal(HorizontalAlignment.Left, item.HorizontalContentAlignment);
+                    Assert.Equal(40.0, item.MinHeight);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ListViewItem_SelectionIndicator_UsesWinUiCornerRadiusAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.ListView listView = new()
+                {
+                    Width = 260,
+                    Height = 120,
+                };
+                _ = listView.Items.Add("Item 1");
+
+                try
+                {
+                    window.Content = listView;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
+
+                    _ = item.ApplyTemplate();
+                    Border selectionIndicator = Assert.IsType<Border>(item.Template.FindName("SelectionIndicator", item));
+
+                    // WI-3 C20: canonical ListViewItemSelectionIndicatorCornerRadius = 1.5
+                    Assert.Equal(new CornerRadius(1.5), selectionIndicator.CornerRadius);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ListViewItem_SelectedState_UsesWinUiSelectedBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                Window window = new()
+                {
+                    Left = -20000,
+                    Top = -20000,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    ShowInTaskbar = false,
+                };
+                Controls.ListView listView = new()
+                {
+                    Width = 260,
+                    Height = 120,
+                    SelectionMode = SelectionMode.Single,
+                };
+                _ = listView.Items.Add("Item 1");
+
+                try
+                {
+                    window.Content = listView;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    listView.SelectedIndex = 0;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ListViewItem item = Assert.IsType<ListViewItem>(listView.ItemContainerGenerator.ContainerFromIndex(0));
+
+                    _ = item.ApplyTemplate();
+                    Border selectedOverlay = Assert.IsType<Border>(item.Template.FindName("SelectedOverlay", item));
+                    Border selectionIndicator = Assert.IsType<Border>(item.Template.FindName("SelectionIndicator", item));
+                    SolidColorBrush expectedSelectedBrush = Assert.IsType<SolidColorBrush>(application.Resources["SubtleFillColorSecondaryBrush"]);
+                    SolidColorBrush expectedIndicatorBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorDefaultBrush"]);
+
+                    _ = Assert.IsType<SolidColorBrush>(selectedOverlay.Background, exactMatch: false);
+                    _ = Assert.IsType<SolidColorBrush>(selectionIndicator.Background, exactMatch: false);
+                    Assert.Equal(expectedSelectedBrush.Color, ((SolidColorBrush)selectedOverlay.Background).Color);
+                    Assert.Equal(expectedIndicatorBrush.Color, ((SolidColorBrush)selectionIndicator.Background).Color);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Stage3_ListView_EmptyContent_DefaultNullAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ListView list = new();
+                Assert.Null(list.EmptyContent);
+            });
+        }
+
+        [Fact]
+        public Task Stage3_ListView_EmptyContent_VisibleWhenNoItemsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.ListView list = new()
+                {
+                    Width = 200,
+                    Height = 100,
+                    EmptyContent = new TextBlock { Text = "Empty" },
+                };
+
+                try
+                {
+                    window.Content = list;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.False(list.HasItems);
+                    Assert.Contains(FindVisualChildren<TextBlock>(list), static tb => string.Equals(tb.Text, "Empty", StringComparison.Ordinal));
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
     }
