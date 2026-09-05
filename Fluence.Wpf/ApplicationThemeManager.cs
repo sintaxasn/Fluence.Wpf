@@ -50,7 +50,7 @@ namespace Fluence.Wpf
         /// <summary>
         /// Gets the currently requested backdrop type.
         /// </summary>
-        public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Auto;
+        public static WindowBackdropType CurrentBackdrop { get; private set; } = WindowBackdropType.Auto;
 
         /// <summary>
         /// Gets the concrete theme (Light, Dark, or HighContrast) that was resolved and applied during
@@ -109,7 +109,7 @@ namespace Fluence.Wpf
         /// assignments still happen and the next call retries the publish.
         /// </para>
         /// </remarks>
-        public static void Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)
+        public static void Apply(ApplicationTheme theme, WindowBackdropType backdrop = WindowBackdropType.Auto, bool updateAccent = true)
         {
             if (_isApplying)
             {
@@ -166,7 +166,7 @@ namespace Fluence.Wpf
         internal static void ResetForTesting()
         {
             CurrentTheme = ApplicationTheme.Auto;
-            CurrentBackdrop = BackdropType.Auto;
+            CurrentBackdrop = WindowBackdropType.Auto;
             _isApplying = false;
             FluenceThemeEngine.ResetForTesting();
         }

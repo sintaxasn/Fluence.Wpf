@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <param name="backdrop">Backdrop to use for all themes.</param>
         /// <param name="updateAccent">Whether to update the accent color for each theme.</param>
         internal static void ApplyStandardThemeCycle(
-            BackdropType backdrop = BackdropType.None,
+            WindowBackdropType backdrop = WindowBackdropType.None,
             bool updateAccent = true)
         {
             ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);

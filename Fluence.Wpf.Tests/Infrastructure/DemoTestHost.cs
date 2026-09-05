@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
             return WpfTestSta.RunOnStaAsync(action);
         }
 
-        internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)
+        internal static Application EnsureDemoTheme(WindowBackdropType backdrop = WindowBackdropType.None)
         {
             return TestApp.EnsureDemoTheme(backdrop);
         }

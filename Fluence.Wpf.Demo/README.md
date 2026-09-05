@@ -18,7 +18,7 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug
 ## The 60-second mental model
 
 1. **`App.xaml.cs` -> `OnStartup`** turns the theme engine on *before* any window exists:
-   `ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica)` then
+   `ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica)` then
    `ApplicationAccentColorManager.ApplySystemAccent()`. This publishes all the brushes the
    controls bind to. Then it merges the gallery's own `Resources/DemoSharedStyles.xaml` and
    shows `MainWindow`.

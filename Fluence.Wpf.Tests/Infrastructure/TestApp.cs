@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <param name="backdrop">The backdrop to apply with it.</param>
         internal static Application EnsureLibraryTheme(
             ApplicationTheme theme = ApplicationTheme.Light,
-            BackdropType backdrop = BackdropType.None)
+            WindowBackdropType backdrop = WindowBackdropType.None)
         {
             Application application = WpfTestSta.EnsureApplication();
             Reset(application);
@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// depends on.
         /// </summary>
         /// <param name="backdrop">The backdrop to apply with the Light theme.</param>
-        internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)
+        internal static Application EnsureDemoTheme(WindowBackdropType backdrop = WindowBackdropType.None)
         {
             Application application = EnsureLibraryTheme(ApplicationTheme.Light, backdrop);
             ApplicationAccentColorManager.ApplySystemAccent();

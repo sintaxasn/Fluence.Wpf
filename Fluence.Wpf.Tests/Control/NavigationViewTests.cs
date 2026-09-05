@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests.Control
                 // pages (e.g. GalleryHomePage.xaml, GalleryPageScrollViewerStyle) are styled from
                 // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml, not the library theme.
                 _ = TestApp.EnsureDemoTheme();
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.Mica, updateAccent: true);
 
                 Demo.MainWindow mw = new()
                 {
@@ -881,7 +881,7 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.True(application.Resources.MergedDictionaries.Count > 0);
                     Color lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color darkBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
@@ -1488,7 +1488,7 @@ topMode: false,
 
                     for (int i = 0; i < themes.Length; i++)
                     {
-                        ApplicationThemeManager.Apply(themes[i], BackdropType.None, updateAccent: true);
+                        ApplicationThemeManager.Apply(themes[i], WindowBackdropType.None, updateAccent: true);
                         WpfTestSta.DrainDispatcher(window.Dispatcher);
                         nav.UpdateLayout();
 
@@ -2190,7 +2190,7 @@ topMode: false,
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"));
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None, updateAccent: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(nav.ContentBackground);
                     Assert.NotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"));

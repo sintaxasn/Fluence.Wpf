@@ -44,10 +44,10 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 app.Resources.MergedDictionaries.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
-                ThemeTestHelpers.ApplyStandardThemeCycle(BackdropType.None, updateAccent: true);
+                ThemeTestHelpers.ApplyStandardThemeCycle(WindowBackdropType.None, updateAccent: true);
                 ThemeTestHelpers.AssertKeyThemeBrushesResolve(app);
             });
         }
@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 Application.Current.Resources.MergedDictionaries.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
 
                 Window window = new() { Width = 200, Height = 120 };
                 try

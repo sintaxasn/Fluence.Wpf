@@ -123,7 +123,7 @@ no Fluent brushes.
 ```powershell
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Auto,
-    [Fluence.Wpf.BackdropType]::Mica,
+    [Fluence.Wpf.WindowBackdropType]::Mica,
     $true)
 [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
 ```
@@ -196,25 +196,25 @@ Static methods on .NET types are called with `[Namespace.ClassName]::MethodName(
 # Follow the Windows light/dark setting (default for scripts)
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Auto,
-    [Fluence.Wpf.BackdropType]::Mica,
+    [Fluence.Wpf.WindowBackdropType]::Mica,
     $true)
 
 # Force light
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Light,
-    [Fluence.Wpf.BackdropType]::Mica,
+    [Fluence.Wpf.WindowBackdropType]::Mica,
     $true)
 
 # Force dark
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::Dark,
-    [Fluence.Wpf.BackdropType]::Mica,
+    [Fluence.Wpf.WindowBackdropType]::Mica,
     $true)
 
 # High contrast
 [Fluence.Wpf.ApplicationThemeManager]::Apply(
     [Fluence.Wpf.ApplicationTheme]::HighContrast,
-    [Fluence.Wpf.BackdropType]::None,
+    [Fluence.Wpf.WindowBackdropType]::None,
     $true)
 ```
 
@@ -230,7 +230,7 @@ theme of a running window. All `DynamicResource` bindings update immediately.
 | `Dark`         | Forces dark theme                             |
 | `HighContrast` | Forces high contrast mode                     |
 
-### BackdropType enum values
+### WindowBackdropType enum values
 
 | Value     | Behavior                                                                          |
 | --------- | --------------------------------------------------------------------------------- |
@@ -307,7 +307,7 @@ Use `ui:FluenceWindow` as the root element instead of the standard WPF `Window`.
 
 | Property                     | Type           | Default | Notes                                         |
 | ---------------------------- | -------------- | ------- | --------------------------------------------- |
-| `SystemBackdropType`         | `BackdropType` | `Auto`  | Sets the DWM system material                  |
+| `SystemBackdropType`         | `WindowBackdropType` | `Auto`  | Sets the DWM system material                  |
 | `ExtendsContentIntoTitleBar` | `bool`         | `false` | When `true`, content fills the title bar area |
 | `TitleBar`                   | content slot   | -       | Custom content placed in the title bar        |
 | `TitleBarHeight`             | `double`       | -       | Override the title bar height                 |
@@ -325,7 +325,7 @@ $script:tick = 0
 $cycleButton.add_Click({
     $script:tick++
     $name = $backdrops[$script:tick % $backdrops.Count]
-    $window.SystemBackdropType = [Enum]::Parse([Fluence.Wpf.BackdropType], $name)
+    $window.SystemBackdropType = [Enum]::Parse([Fluence.Wpf.WindowBackdropType], $name)
     $backdropLabel.Text = "Backdrop: $name"
 })
 ```
@@ -402,7 +402,7 @@ $script:tick = 0
 $cycleButton.add_Click({
     $script:tick++
     $name = $backdrops[$script:tick % $backdrops.Count]
-    $window.SystemBackdropType = [Enum]::Parse([Fluence.Wpf.BackdropType], $name)
+    $window.SystemBackdropType = [Enum]::Parse([Fluence.Wpf.WindowBackdropType], $name)
 })
 ```
 
@@ -422,7 +422,7 @@ $themeCombo.add_SelectionChanged({
         3       { [Fluence.Wpf.ApplicationTheme]::HighContrast }
         default { [Fluence.Wpf.ApplicationTheme]::Auto }
     }
-    [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.BackdropType]::Mica, $true)
+    [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.WindowBackdropType]::Mica, $true)
 })
 ```
 
