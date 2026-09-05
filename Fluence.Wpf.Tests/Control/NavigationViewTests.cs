@@ -64,12 +64,11 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         /// <summary>
-        /// Returns the StackPanel that hosts a NavigationView's realized items, shared by
-        /// <see cref="NavigationViewTests"/> and <see cref="NavigationViewTopModeTests"/>.
+        /// Returns the StackPanel that hosts a NavigationView's realized items.
         /// </summary>
         /// <param name="nav">The navigation view to inspect.</param>
         /// <returns>The items host panel, or <see langword="null"/> when not yet realized.</returns>
-        internal static System.Windows.Controls.StackPanel? GetNavigationViewItemsHostPanel(NavigationView nav)
+        private static System.Windows.Controls.StackPanel? GetNavigationViewItemsHostPanel(NavigationView nav)
         {
             ItemsPresenter? presenter = FindVisualChild<ItemsPresenter>(nav);
             if (presenter is null)

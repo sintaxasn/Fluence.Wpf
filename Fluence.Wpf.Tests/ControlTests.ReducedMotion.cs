@@ -36,6 +36,7 @@ using System.Windows.Shapes;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.ContentDialogTestHost;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
@@ -525,15 +526,6 @@ namespace Fluence.Wpf.Tests
         private static RotateTransform? GetIndeterminateRotateTransform(Controls.ProgressRing ring)
         {
             return ring.Template?.FindName("PART_IndeterminateRotate", ring) as RotateTransform;
-        }
-
-        private static Window CreateShownContentDialogOwner()
-        {
-            Window window = new() { Width = 640, Height = 480, Content = new Grid() };
-            window.Show();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            window.UpdateLayout();
-            return window;
         }
     }
 }
