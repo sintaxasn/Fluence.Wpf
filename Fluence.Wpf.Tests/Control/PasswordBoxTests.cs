@@ -540,7 +540,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
                 _ = TestApp.EnsureLibraryTheme();
 
                 PasswordBox passwordBox = new()

@@ -27,19 +27,21 @@
  */
 
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Xunit;
 
 namespace Fluence.Wpf.Tests.Infrastructure
 {
     /// <summary>
-    /// The single application and theme reset for the suite. Every test class that touches
-    /// <see cref="Application"/>, application resources, or a <see cref="Window"/> starts from
-    /// one of these two entry points, so no test inherits state from the test before it.
+    /// The single application and theme reset for the suite. New test classes, and every class
+    /// under <c language="text">Control/</c>, <c language="text">Control/Rules/</c> and
+    /// <c language="text">Gallery/Pages/</c>, start from one of these two entry points through
+    /// <c language="csharp">IAsyncLifetime</c> or <c language="csharp">LightThemeFixture</c>. A
+    /// small set of <c language="text">Theming/</c> and <c language="text">Windowing/</c>
+    /// classes, plus a few <c language="text">Gallery/</c> classes, predate this rule and call
+    /// these methods directly from the test body instead; see AGENTS.md section 6 for the list.
     /// </summary>
     internal static class TestApp
     {
@@ -88,21 +90,6 @@ namespace Fluence.Wpf.Tests.Infrastructure
         internal static void AddDemoSharedStyles(Application application)
         {
             application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
-        }
-
-        /// <summary>
-        /// Returns the merged Themes/Generic.xaml dictionary, slot [2] of the three-slot
-        /// layout described in AGENTS.md section 3, and asserts that the layout is intact. A demo
-        /// application has a fourth slot on top; slot [2] is still Generic.
-        /// </summary>
-        /// <param name="application">The application whose merged dictionaries to read.</param>
-        internal static ResourceDictionary GenericDictionary(Application application)
-        {
-            Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
-            Assert.True(
-                dictionaries.Count >= 3,
-                $"Expected at least the three theme slots, found {dictionaries.Count}.");
-            return dictionaries[2];
         }
 
         private static void Reset(Application application)
