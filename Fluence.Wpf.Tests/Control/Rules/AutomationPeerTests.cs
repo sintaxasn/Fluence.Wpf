@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -289,6 +290,44 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 {
                     CloseWindowAndDrain(window);
                 }
+            });
+        }
+
+        /// <summary>
+        /// TitleBar is the shell surface of every Fluence app and reported as a bare
+        /// FrameworkElement to a screen reader until it has a peer of its own.
+        /// </summary>
+        [Fact]
+        public Task TitleBar_AutomationPeer_ReportsTitleBarControlTypeAndTitleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TitleBar titleBar = new() { Title = "Fluence Gallery" };
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(titleBar), exactMatch: false);
+
+                _ = Assert.IsType<TitleBarAutomationPeer>(peer, exactMatch: false);
+                Assert.Equal("TitleBar", peer.GetClassName(), StringComparer.Ordinal);
+                Assert.Equal(AutomationControlType.TitleBar, peer.GetAutomationControlType());
+                Assert.Equal("Fluence Gallery", peer.GetName(), StringComparer.Ordinal);
+            });
+        }
+
+        /// <summary>
+        /// An explicit AutomationProperties.Name wins over the Title, matching WinUI's own
+        /// TitleBarAutomationPeer.
+        /// </summary>
+        [Fact]
+        public Task TitleBar_AutomationPeer_PrefersExplicitAutomationNameAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TitleBar titleBar = new() { Title = "Fluence Gallery" };
+                AutomationProperties.SetName(titleBar, "Application title bar");
+
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(titleBar), exactMatch: false);
+                Assert.Equal("Application title bar", peer.GetName(), StringComparer.Ordinal);
             });
         }
     }
