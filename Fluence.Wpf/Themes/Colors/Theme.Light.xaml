@@ -8,9 +8,6 @@
          SolidBackgroundFillColorBase; see FluenceWindow.GetFallbackBackgroundColor.  -->
     <Color x:Key="ApplicationBackgroundColor">#FFF3F3F3</Color>
 
-    <!--  Keyboard Focus  -->
-    <Color x:Key="KeyboardFocusBorderColor">#BE000000</Color>
-
     <!--  Text Fill Colors  -->
     <Color x:Key="TextFillColorPrimary">#E4000000</Color>
     <Color x:Key="TextFillColorSecondary">#9E000000</Color>
@@ -56,7 +53,6 @@
     <!--  Control Stroke Colors  -->
     <Color x:Key="ControlStrokeColorDefault">#0F000000</Color>
     <Color x:Key="ControlStrokeColorSecondary">#29000000</Color>
-    <Color x:Key="ControlStrokeColorTertiary">#9E000000</Color>
     <Color x:Key="ControlStrokeColorOnAccentDefault">#14FFFFFF</Color>
     <Color x:Key="ControlStrokeColorOnAccentSecondary">#66000000</Color>
     <Color x:Key="ControlStrokeColorOnAccentTertiary">#37000000</Color>
@@ -124,7 +120,6 @@
 
     <!--  System Fill Colors  -->
     <Color x:Key="SystemFillColorAttention">#FF0078D4</Color>
-    <Color x:Key="SystemFillColorInformational">#FF8A8A8A</Color>
     <Color x:Key="SystemFillColorSuccess">#FF0F7B0F</Color>
     <Color x:Key="SystemFillColorCaution">#FF9D5D00</Color>
     <Color x:Key="SystemFillColorCritical">#FFC42B1C</Color>
@@ -137,16 +132,6 @@
     <Color x:Key="SystemFillColorNeutralBackground">#06000000</Color>
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FFF7F7F7</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FFF3F3F3</Color>
-
-    <!--  Window Chrome - Close Button  -->
-    <!--  These are the canonical Fluent close-button reds (#C42B1C / #B4271C).  -->
-    <!--  Unlike SystemFillColorCritical they are identical in Light and Dark;  -->
-    <!--  using tokens here lets High Contrast override via the resource system.  -->
-    <Color x:Key="WindowCloseFillColorHover">#FFC42B1C</Color>
-    <Color x:Key="WindowCloseFillColorPressed">#FFB4271C</Color>
-    <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
-    <Color x:Key="WindowCloseForegroundPressed">#FFFFFFFF</Color>
-
 
     <!--  Accent Fill Colors  -->
     <Color x:Key="AccentFillColorDisabled">#37000000</Color>

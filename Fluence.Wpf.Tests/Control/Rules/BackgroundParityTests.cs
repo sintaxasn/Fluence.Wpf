@@ -330,7 +330,6 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     "LayerOnMicaBaseAltFillColorTransparentBrush",
                     "AcrylicBackgroundFillColorDefaultBrush",
                     "AcrylicBackgroundFillColorBaseBrush",
-                    "SystemFillColorInformationalBrush",
                     "SystemColorWindowTextColorBrush",
                     "SystemColorWindowColorBrush",
                     "SystemColorButtonFaceColorBrush",

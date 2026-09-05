@@ -358,9 +358,8 @@ namespace Fluence.Wpf.Theming
             Color controlLight = SystemColors.ControlLightColor;
             Color transparent = Colors.Transparent;
 
-            // Application background / keyboard focus
+            // Application background
             dict["ApplicationBackgroundBrush"] = Solid(window);
-            dict["KeyboardFocusBorderColorBrush"] = Solid(highlight);
 
             // Text fill
             dict["TextFillColorPrimaryBrush"] = Solid(windowText);
@@ -410,7 +409,6 @@ namespace Fluence.Wpf.Theming
             // Control stroke
             dict["ControlStrokeColorDefaultBrush"] = Solid(controlDark);
             dict["ControlStrokeColorSecondaryBrush"] = Solid(controlDark);
-            dict["ControlStrokeColorTertiaryBrush"] = Solid(controlText);
             dict["ControlStrokeColorOnAccentDefaultBrush"] = Solid(highlightText);
             dict["ControlStrokeColorOnAccentSecondaryBrush"] = Solid(highlightText);
             dict["ControlStrokeColorOnAccentTertiaryBrush"] = Solid(highlightText);
@@ -479,7 +477,6 @@ namespace Fluence.Wpf.Theming
 
             // System fill (SystemFillColorAttention skipped by Build in HC; brush -> Highlight)
             dict["SystemFillColorAttentionBrush"] = Solid(highlight);
-            dict["SystemFillColorInformationalBrush"] = Solid(windowText);
             dict["SystemFillColorSuccessBrush"] = Solid(windowText);
             dict["SystemFillColorCautionBrush"] = Solid(windowText);
             dict["SystemFillColorCriticalBrush"] = Solid(windowText);
@@ -497,15 +494,9 @@ namespace Fluence.Wpf.Theming
             // binds the WindowCloseButton* keys via DynamicResource, so those are the ones that must
             // be overridden here; the theme-independent brand red seeded by
             // BaseColorTables.AddSharedColors would otherwise fail contrast in High Contrast.
-            // WindowCloseFillColor*/WindowCloseForeground* (below) are legacy keys nothing currently
-            // consumes; kept for parity with existing golden snapshots and tests.
             dict["WindowCloseButtonBackgroundPointerOverBrush"] = Solid(highlight);
             dict["WindowCloseButtonBackgroundPressedBrush"] = Solid(highlight);
             dict["WindowCloseButtonForegroundPointerOverBrush"] = Solid(highlightText);
-            dict["WindowCloseFillColorHoverBrush"] = Solid(highlight);
-            dict["WindowCloseFillColorPressedBrush"] = Solid(highlight);
-            dict["WindowCloseForegroundHoverBrush"] = Solid(highlightText);
-            dict["WindowCloseForegroundPressedBrush"] = Solid(highlightText);
 
             // NavigationView (and ListView/ListBox/TreeView) selection indicator binds to the
             // live Highlight color in HC (WinUI TreeView_themeresources.xaml:115's

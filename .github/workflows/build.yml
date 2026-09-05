@@ -85,7 +85,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $expected = @{ 'net472' = 1189; 'net10' = 1190 }
+          $expected = @{ 'net472' = 1192; 'net10' = 1193 }
           $failed = $false
           foreach ($tfm in $expected.Keys) {
             $total = 0

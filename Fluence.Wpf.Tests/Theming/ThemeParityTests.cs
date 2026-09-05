@@ -59,7 +59,6 @@ namespace Fluence.Wpf.Tests.Theming
         {
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
-            "KeyboardFocusBorderColorBrush",
             "LayerOnAccentAcrylicFillColorDefaultBrush",
             "NavigationViewSelectionIndicatorBrush",
             "SystemFillColorAttentionBackgroundBrush",
@@ -68,8 +67,6 @@ namespace Fluence.Wpf.Tests.Theming
             "TextControlElevationBorderFocusedBrush",
             "WindowCloseButtonBackgroundPointerOverBrush",
             "WindowCloseButtonBackgroundPressedBrush",
-            "WindowCloseFillColorHoverBrush",
-            "WindowCloseFillColorPressedBrush",
         };
 
         /// <summary>
