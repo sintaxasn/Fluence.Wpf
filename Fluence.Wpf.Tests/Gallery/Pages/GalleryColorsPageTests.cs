@@ -42,6 +42,9 @@ using Xunit;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryColorsPage"/>.
+    /// </summary>
     public sealed class GalleryColorsPageTests : IAsyncLifetime
     {
         private static readonly string[] SectionNames =
@@ -54,31 +57,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             "High Contrast",
         ];
 
-        private Window? _host;
-        private GalleryColorsPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryColorsPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         // This test needs the real shell NavigationView to reach the Colors page by route, so
@@ -109,11 +95,9 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryColorsPage_ExposesGalleryPageHeaderWithColorsTitleAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return DemoTestHost.RunDemoPageTestAsync(static () => new GalleryColorsPage(), static window =>
             {
-                GalleryColorsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
-
-                GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page).FirstOrDefault(), exactMatch: false);
+                GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(window).FirstOrDefault(), exactMatch: false);
                 Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
                 Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
                     "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
@@ -235,7 +219,6 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     DemoTestHost.CloseWindow(window);
                 }
             });

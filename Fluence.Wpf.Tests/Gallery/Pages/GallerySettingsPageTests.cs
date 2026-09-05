@@ -40,33 +40,19 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualGeometry;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GallerySettingsPage"/>.
+    /// </summary>
     public sealed class GallerySettingsPageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GallerySettingsPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GallerySettingsPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         // This test needs the real shell NavigationView to track an externally applied theme
@@ -203,79 +189,89 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControlsAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Window window = _host ?? throw new InvalidOperationException("Host window was not initialized.");
-                GallerySettingsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GallerySettingsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    Border appThemeCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "AppThemeSettingsCard"), exactMatch: false);
+                    Border backdropCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "BackdropSettingsCard"), exactMatch: false);
+                    Border colorsCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "ColorsSettingsCard"), exactMatch: false);
+                    ComboBox backdrop = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "BackdropComboBox"), exactMatch: false);
+                    UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(page, "AccentSwatchRow"), exactMatch: false);
+                    ComboBox minimize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MinimizeVisibilityCombo"), exactMatch: false);
+                    ComboBox maximize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MaximizeVisibilityCombo"), exactMatch: false);
+                    ComboBox close = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "CloseVisibilityCombo"), exactMatch: false);
+                    FrameworkElement showIcon = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "ShowWindowIconToggle"), exactMatch: false);
+                    FrameworkElement showTitle = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "ShowWindowTitleToggle"), exactMatch: false);
 
-                Border appThemeCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "AppThemeSettingsCard"), exactMatch: false);
-                Border backdropCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "BackdropSettingsCard"), exactMatch: false);
-                Border colorsCard = Assert.IsType<Border>(DemoTestHost.FindByName<Border>(page, "ColorsSettingsCard"), exactMatch: false);
-                ComboBox backdrop = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "BackdropComboBox"), exactMatch: false);
-                UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(page, "AccentSwatchRow"), exactMatch: false);
-                ComboBox minimize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MinimizeVisibilityCombo"), exactMatch: false);
-                ComboBox maximize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MaximizeVisibilityCombo"), exactMatch: false);
-                ComboBox close = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "CloseVisibilityCombo"), exactMatch: false);
-                FrameworkElement showIcon = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "ShowWindowIconToggle"), exactMatch: false);
-                FrameworkElement showTitle = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "ShowWindowTitleToggle"), exactMatch: false);
-
-                Assert.True(appThemeCard.ActualWidth > 700.0, "Settings cards should stretch across the content column.");
-                Assert.Equal(appThemeCard.ActualWidth, backdropCard.ActualWidth, 1.0);
-                Assert.Equal(backdropCard.ActualWidth, colorsCard.ActualWidth, 1.0);
-                Assert.Equal(7, accentRow.Children.Count);
-                Assert.Equal(GetVisualY((FrameworkElement)accentRow.Children[0], window), GetVisualY((FrameworkElement)accentRow.Children[6], window), 1.0);
-                Assert.True(GetVisualX(backdrop, window) > GetVisualX(appThemeCard, window) + 500.0,
-                    "The Backdrop combo box should stay docked to the right side of its settings card.");
-                Assert.True(GetVisualY(maximize, window) > GetVisualY(minimize, window),
-                    "Caption button customization should use separate settings rows.");
-                Assert.True(GetVisualY(close, window) > GetVisualY(maximize, window),
-                    "Close button customization should appear below Maximize.");
-                Assert.NotNull(showIcon);
-                Assert.NotNull(showTitle);
+                    Assert.True(appThemeCard.ActualWidth > 700.0, "Settings cards should stretch across the content column.");
+                    Assert.Equal(appThemeCard.ActualWidth, backdropCard.ActualWidth, 1.0);
+                    Assert.Equal(backdropCard.ActualWidth, colorsCard.ActualWidth, 1.0);
+                    Assert.Equal(7, accentRow.Children.Count);
+                    Assert.Equal(GetVisualY((FrameworkElement)accentRow.Children[0], window), GetVisualY((FrameworkElement)accentRow.Children[6], window), 1.0);
+                    Assert.True(GetVisualX(backdrop, window) > GetVisualX(appThemeCard, window) + 500.0,
+                        "The Backdrop combo box should stay docked to the right side of its settings card.");
+                    Assert.True(GetVisualY(maximize, window) > GetVisualY(minimize, window),
+                        "Caption button customization should use separate settings rows.");
+                    Assert.True(GetVisualY(close, window) > GetVisualY(maximize, window),
+                        "Close button customization should appear below Maximize.");
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 
+        // This test narrows the shared window's width to force the page's compact layout, so
+        // it builds its own instance rather than mutating the one the class shares.
         [Fact]
         public Task GallerySettingsPage_CompactsControlsAtNarrowWidthsAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Window window = _host ?? throw new InvalidOperationException("Host window was not initialized.");
-                GallerySettingsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GallerySettingsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    window.Width = 560;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                window.Width = 560;
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                window.UpdateLayout();
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    ComboBox appTheme = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "AppThemeComboBox"), exactMatch: false);
+                    ComboBox minimize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MinimizeVisibilityCombo"), exactMatch: false);
+                    StackPanel accentPanel = Assert.IsType<StackPanel>(DemoTestHost.FindByName<StackPanel>(page, "AccentPickerPanel"), exactMatch: false);
+                    UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(page, "AccentSwatchRow"), exactMatch: false);
+                    FrameworkElement systemAccent = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "SystemAccentButton"), exactMatch: false);
+                    StackPanel repositoryActions = Assert.IsType<StackPanel>(DemoTestHost.FindByName<StackPanel>(page, "RepositoryActionsPanel"), exactMatch: false);
+                    FrameworkElement copyRepository = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "CopyRepositoryButton"), exactMatch: false);
 
-                ComboBox appTheme = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "AppThemeComboBox"), exactMatch: false);
-                ComboBox minimize = Assert.IsType<ComboBox>(DemoTestHost.FindByName<ComboBox>(page, "MinimizeVisibilityCombo"), exactMatch: false);
-                StackPanel accentPanel = Assert.IsType<StackPanel>(DemoTestHost.FindByName<StackPanel>(page, "AccentPickerPanel"), exactMatch: false);
-                UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(page, "AccentSwatchRow"), exactMatch: false);
-                FrameworkElement systemAccent = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "SystemAccentButton"), exactMatch: false);
-                StackPanel repositoryActions = Assert.IsType<StackPanel>(DemoTestHost.FindByName<StackPanel>(page, "RepositoryActionsPanel"), exactMatch: false);
-                FrameworkElement copyRepository = Assert.IsType<FrameworkElement>(DemoTestHost.FindByName<FrameworkElement>(page, "CopyRepositoryButton"), exactMatch: false);
-
-                Assert.Equal(180.0, appTheme.Width, 0.001);
-                Assert.Equal(140.0, minimize.Width, 0.001);
-                Assert.Equal(Orientation.Vertical, accentPanel.Orientation);
-                Assert.Equal(4, accentRow.Columns);
-                Assert.Equal(2, accentRow.Rows);
-                Assert.Equal(new Thickness(0, 0, 0, 8), accentRow.Margin);
-                Assert.Equal(112.0, systemAccent.MinWidth, 0.001);
-                Assert.Equal(Orientation.Vertical, repositoryActions.Orientation);
-                Assert.Equal(new Thickness(0, 0, 0, 8), copyRepository.Margin);
+                    Assert.Equal(180.0, appTheme.Width, 0.001);
+                    Assert.Equal(140.0, minimize.Width, 0.001);
+                    Assert.Equal(Orientation.Vertical, accentPanel.Orientation);
+                    Assert.Equal(4, accentRow.Columns);
+                    Assert.Equal(2, accentRow.Rows);
+                    Assert.Equal(new Thickness(0, 0, 0, 8), accentRow.Margin);
+                    Assert.Equal(112.0, systemAccent.MinWidth, 0.001);
+                    Assert.Equal(Orientation.Vertical, repositoryActions.Orientation);
+                    Assert.Equal(new Thickness(0, 0, 0, 8), copyRepository.Margin);
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 
         [Fact]
         public Task GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColorsAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return DemoTestHost.RunDemoPageTestAsync(static () => new GallerySettingsPage(), static window =>
             {
-                GallerySettingsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
-
-                UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(page, "AccentSwatchRow"), exactMatch: false);
+                UniformGrid accentRow = Assert.IsType<UniformGrid>(DemoTestHost.FindByName<UniformGrid>(window, "AccentSwatchRow"), exactMatch: false);
 
                 string[] expected =
                 [

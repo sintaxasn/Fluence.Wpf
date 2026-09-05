@@ -37,38 +37,24 @@ using System.Windows.Threading;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherDelayWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryStatusPage"/>.
+    /// </summary>
     public sealed class GalleryStatusPageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GalleryStatusPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryStatusPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         // This test drives the page's NumberBox, so it builds its own instance rather
@@ -142,30 +128,37 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryStatusPage_SourceMatchesLiveStepAndRingValuesAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                GalleryStatusPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GalleryStatusPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    DemoSampleControl stepSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(static control => control.XamlSource.Contains("ProgressBarSteps", StringComparison.Ordinal)), exactMatch: false);
+                    DemoSampleControl ringSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(static control => control.XamlSource.Contains("ProgressRings", StringComparison.Ordinal)), exactMatch: false);
 
-                DemoSampleControl stepSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
-                    .FirstOrDefault(static control => control.XamlSource.Contains("ProgressBarSteps", StringComparison.Ordinal)), exactMatch: false);
-                DemoSampleControl ringSample = Assert.IsType<DemoSampleControl>(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
-                    .FirstOrDefault(static control => control.XamlSource.Contains("ProgressRings", StringComparison.Ordinal)), exactMatch: false);
+                    Assert.Contains("Steps=\"10\"", stepSample.XamlSource, StringComparison.Ordinal);
+                    Assert.Contains("Text=\"Step 1 of 10\"", stepSample.XamlSource, StringComparison.Ordinal);
+                    Assert.Equal(-1, stepSample.XamlSource.IndexOf("Steps=\"5\"", StringComparison.Ordinal));
 
-                Assert.Contains("Steps=\"10\"", stepSample.XamlSource, StringComparison.Ordinal);
-                Assert.Contains("Text=\"Step 1 of 10\"", stepSample.XamlSource, StringComparison.Ordinal);
-                Assert.Equal(-1, stepSample.XamlSource.IndexOf("Steps=\"5\"", StringComparison.Ordinal));
+                    int pausedRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"PausedProgressRing\"", StringComparison.Ordinal);
+                    int errorRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"ErrorProgressRing\"", StringComparison.Ordinal);
+                    Assert.True(pausedRingIndex >= 0, "ProgressRing source should include PausedProgressRing.");
+                    Assert.True(errorRingIndex > pausedRingIndex, "ProgressRing source should place ErrorProgressRing after PausedProgressRing.");
+                    string pausedRingSource = ringSample.XamlSource[pausedRingIndex..errorRingIndex];
 
-                int pausedRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"PausedProgressRing\"", StringComparison.Ordinal);
-                int errorRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"ErrorProgressRing\"", StringComparison.Ordinal);
-                Assert.True(pausedRingIndex >= 0, "ProgressRing source should include PausedProgressRing.");
-                Assert.True(errorRingIndex > pausedRingIndex, "ProgressRing source should place ErrorProgressRing after PausedProgressRing.");
-                string pausedRingSource = ringSample.XamlSource[pausedRingIndex..errorRingIndex];
-
-                Assert.Contains("IsIndeterminate=\"False\"", pausedRingSource, StringComparison.Ordinal);
-                Assert.Contains("ProgressState=\"{x:Static fluence:ProgressRingState.Paused}\"", pausedRingSource, StringComparison.Ordinal);
-                Assert.Contains("Value=\"80\"", pausedRingSource, StringComparison.Ordinal);
-                Assert.Contains("Value=\"80\"", ringSample.XamlSource, StringComparison.Ordinal);
-                Assert.Equal(-1, ringSample.XamlSource.IndexOf("Value=\"70\"", StringComparison.Ordinal));
+                    Assert.Contains("IsIndeterminate=\"False\"", pausedRingSource, StringComparison.Ordinal);
+                    Assert.Contains("ProgressState=\"{x:Static fluence:ProgressRingState.Paused}\"", pausedRingSource, StringComparison.Ordinal);
+                    Assert.Contains("Value=\"80\"", pausedRingSource, StringComparison.Ordinal);
+                    Assert.Contains("Value=\"80\"", ringSample.XamlSource, StringComparison.Ordinal);
+                    Assert.Equal(-1, ringSample.XamlSource.IndexOf("Value=\"70\"", StringComparison.Ordinal));
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 
@@ -189,17 +182,17 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Controls.Button nextButton = Assert.IsType<Controls.Button>(FindStepButton(page, "Next"), exactMatch: false);
 
                     backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 340).ConfigureAwait(true);
 
                     await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 1, forward: true).ConfigureAwait(true);
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 340).ConfigureAwait(true);
                     await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 2, forward: true).ConfigureAwait(true);
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 340).ConfigureAwait(true);
 
                     progressBar.CurrentStep = 9;
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 340).ConfigureAwait(true);
                     await AssertStepClickStartsAwayFromTargetAsync(nextButton, progressBar, fill, track, window.Dispatcher, 10, forward: true).ConfigureAwait(true);
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 340).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 340).ConfigureAwait(true);
                     await AssertStepClickStartsAwayFromTargetAsync(backButton, progressBar, fill, track, window.Dispatcher, 9, forward: false).ConfigureAwait(true);
                 }
                 finally
@@ -267,7 +260,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             bool forward)
         {
             button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, button));
-            await WaitForAnimationAndDrainAsync(dispatcher, 40).ConfigureAwait(true);
+            await WaitForAnimationAndDrainByDelayAsync(dispatcher, 40).ConfigureAwait(true);
 
             Assert.Equal(expectedStep, progressBar.CurrentStep);
             double targetWidth = track.ActualWidth * expectedStep / progressBar.Steps;

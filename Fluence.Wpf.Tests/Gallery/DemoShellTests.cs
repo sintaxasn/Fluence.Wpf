@@ -43,7 +43,7 @@ using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherDelayWaits;
 using static Fluence.Wpf.Tests.Infrastructure.FluentButtonQueries;
 using static Fluence.Wpf.Tests.Infrastructure.VisualGeometry;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
@@ -52,8 +52,9 @@ namespace Fluence.Wpf.Tests.Gallery
 {
     /// <summary>
     /// The demo gallery shell (<see cref="MainWindow"/>): navigation between pages, the
-    /// Settings page's theme, accent, and backdrop controls, caption button defaults, and the
-    /// Buttons page's icon-rendering samples.
+    /// Settings page's theme, accent, and backdrop controls, and caption button defaults, plus
+    /// every gallery page that has not been split into its own test class (Buttons, Inputs,
+    /// Selection, Trees, Layout, Data, Data binding, Forms) and a handful of cross-page tests.
     /// </summary>
     public sealed class DemoShellTests : IAsyncLifetime
     {
@@ -1770,7 +1771,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         "Clicking the shell pane toggle should collapse the Left pane.");
                     Assert.Equal(2, navigationStyle.SelectedIndex);
 
-                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 220).ConfigureAwait(true);
+                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 220).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 

@@ -41,50 +41,43 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryIconsPage"/>.
+    /// </summary>
     public sealed class GalleryIconsPageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GalleryIconsPage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryIconsPage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         [Fact]
         public Task GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGalleryAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                GalleryIconsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GalleryIconsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    List<TextBlock> titles = [.. FindVisualChildren<TextBlock>(page)
+                        .Where(static text => string.Equals(text.Text, "Iconography", StringComparison.Ordinal))];
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(page, "IconSearchBox"), exactMatch: false);
 
-                List<TextBlock> titles = [.. FindVisualChildren<TextBlock>(page)
-                    .Where(static text => string.Equals(text.Text, "Iconography", StringComparison.Ordinal))];
-                Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(page, "IconSearchBox"), exactMatch: false);
-
-                _ = Assert.Single(titles);
-                Assert.Equal("Search icons by name, code, or tags", search.PlaceholderText, StringComparer.Ordinal);
-                Assert.Equal(420.0, search.Width, 0.1);
-                Assert.Empty(FindVisualChildren<DemoSampleControl>(page));
+                    _ = Assert.Single(titles);
+                    Assert.Equal("Search icons by name, code, or tags", search.PlaceholderText, StringComparer.Ordinal);
+                    Assert.Equal(420.0, search.Width, 0.1);
+                    Assert.Empty(FindVisualChildren<DemoSampleControl>(page));
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 

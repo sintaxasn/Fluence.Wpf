@@ -36,72 +36,64 @@ using Xunit;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
+    /// <summary>
+    /// Covers <see cref="GalleryHomePage"/>.
+    /// </summary>
     public sealed class GalleryHomePageTests : IAsyncLifetime
     {
-        private Window? _host;
-        private GalleryHomePage? _page;
-
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                _ = TestApp.EnsureDemoTheme();
-                _page = new GalleryHomePage();
-                _host = DemoTestHost.CreateHostWindow(_page);
-            }));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
         }
 
         public ValueTask DisposeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
-            {
-                if (_host is not null)
-                {
-                    DemoTestHost.CloseWindow(_host);
-                    _host = null;
-                }
-
-                _page = null;
-            }));
+            return default;
         }
 
         [Fact]
         public Task GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Window window = _host ?? throw new InvalidOperationException("Host window was not initialized.");
-                GalleryHomePage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+                GalleryHomePage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    System.Windows.Controls.Image image = Assert.IsType<System.Windows.Controls.Image>(DemoTestHost.FindByName<System.Windows.Controls.Image>(page, "BrandHeroImage"), exactMatch: false);
 
-                System.Windows.Controls.Image image = Assert.IsType<System.Windows.Controls.Image>(DemoTestHost.FindByName<System.Windows.Controls.Image>(page, "BrandHeroImage"), exactMatch: false);
+                    DrawingImage light = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderLightDrawingImage"));
+                    DrawingImage dark = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderDarkDrawingImage"));
 
-                DrawingImage light = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderLightDrawingImage"));
-                DrawingImage dark = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderDarkDrawingImage"));
+                    // The hero shows the lockup drawn for the active theme and swaps on
+                    // theme changes via the page's ThemeDictionary (no code-behind).
+                    Assert.Same(light, image.Source);
 
-                // The hero shows the lockup drawn for the active theme and swaps on
-                // theme changes via the page's ThemeDictionary (no code-behind).
-                Assert.Same(light, image.Source);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(dark, image.Source);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                window.UpdateLayout();
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                Assert.Same(dark, image.Source);
+                    // High contrast has no fixed polarity, so the page picks whichever
+                    // variant reads against the live system window color.
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(ReferenceEquals(image.Source, light) || ReferenceEquals(image.Source, dark),
+                        "High contrast should show one of the two header lockups.");
 
-                // High contrast has no fixed polarity, so the page picks whichever
-                // variant reads against the live system window color.
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                window.UpdateLayout();
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                Assert.True(ReferenceEquals(image.Source, light) || ReferenceEquals(image.Source, dark),
-                    "High contrast should show one of the two header lockups.");
-
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                window.UpdateLayout();
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                Assert.Same(light, image.Source);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(light, image.Source);
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
         }
 
