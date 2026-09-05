@@ -32,10 +32,24 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
-    public class ControlRenderingTests
+    /// <summary>
+    /// A themed control's <c language="csharp">UseLayoutRounding</c> setter must keep crisp,
+    /// non-blurry edges, and must survive a theme switch.
+    /// </summary>
+    public sealed class CrispRenderingTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         private static void AssertCrispRenderingSetters(FrameworkElement element)
         {
             Assert.True(element.UseLayoutRounding, "UseLayoutRounding should be true from default style.");
@@ -46,8 +60,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Button button = new();
                 _ = new Window { Content = button };
                 _ = button.ApplyTemplate();
@@ -60,8 +72,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 TextBox textBox = new();
                 _ = new Window { Content = textBox };
                 _ = textBox.ApplyTemplate();
@@ -74,9 +84,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);

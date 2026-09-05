@@ -31,28 +31,72 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
     /// <summary>
-    /// Task-A2 tests: automation peer SetValue implementations reject writes to a
+    /// Task-A2 and Task-A3 tests: automation peer SetValue implementations reject writes to a
     /// disabled control by throwing <see cref="ElementNotEnabledException"/>, matching
     /// the UIA IValueProvider/IRangeValueProvider contract already honored by
-    /// <see cref="Automation.RatingControlAutomationPeer"/>.
+    /// <see cref="RatingControlAutomationPeer"/>; <see cref="DropDownButtonAutomationPeer"/>
+    /// reports the correct UIA control type; and <see cref="NumberBox"/> routes value changes to
+    /// its automation peer so UIA clients (Narrator) observe the current value instead of a stale
+    /// one.
     /// </summary>
-    public partial class ControlTests
+    public sealed class AutomationPeerTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        // Spy automation peer that records whether NumberBox routed a Value change through
+        // RaiseValueChanged, so the OnValueChanged wiring can be verified without standing up a
+        // real UIA client listener.
+        private sealed class NumberBoxValueChangedSpyPeer(NumberBox owner) : NumberBoxAutomationPeer(owner)
+        {
+            public int RaiseValueChangedCallCount { get; private set; }
+
+            public double LastOldValue { get; private set; }
+
+            public double LastNewValue { get; private set; }
+
+            internal override void RaiseValueChanged(double oldValue, double newValue)
+            {
+                RaiseValueChangedCallCount++;
+                LastOldValue = oldValue;
+                LastNewValue = newValue;
+                base.RaiseValueChanged(oldValue, newValue);
+            }
+        }
+
+        // Installs the spy peer above in place of the real NumberBoxAutomationPeer.
+        private sealed class NumberBoxWithSpyPeer : NumberBox
+        {
+            public NumberBoxValueChangedSpyPeer? SpyPeer { get; private set; }
+
+            protected override AutomationPeer OnCreateAutomationPeer()
+            {
+                SpyPeer = new NumberBoxValueChangedSpyPeer(this);
+                return SpyPeer;
+            }
+        }
+
         [Fact]
         public Task NumberBox_Disabled_RangeValueProvider_SetValue_ThrowsElementNotEnabledExceptionAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -87,8 +131,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -124,8 +166,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -160,8 +200,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -184,6 +222,73 @@ namespace Fluence.Wpf.Tests
 
                     Assert.False(valueProvider.IsReadOnly,
                         "A disabled AutoSuggestBox has no read-only mode; disabled state is conveyed by IsEnabled, not IsReadOnly.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DropDownButton_AutomationPeer_ReportsButtonControlTypeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    DropDownButton dropDownButton = new() { Content = "Open", Width = 120, Height = 32 };
+                    window.Content = dropDownButton;
+                    window.Width = 200;
+                    window.Height = 80;
+                    window.Show();
+                    _ = dropDownButton.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dropDownButton);
+                    Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_ValueChanged_RaisesAutomationPeerValueChangedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NumberBoxWithSpyPeer numberBox = new()
+                    {
+                        Minimum = 0,
+                        Maximum = 100,
+                        Value = 10,
+                        Width = 200,
+                        Height = 32,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 300;
+                    window.Height = 100;
+                    window.Show();
+                    _ = numberBox.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
+                    _ = Assert.IsType<NumberBoxValueChangedSpyPeer>(peer, exactMatch: false);
+
+                    numberBox.Value = 42;
+
+                    Assert.Equal(1, numberBox.SpyPeer!.RaiseValueChangedCallCount);
+                    Assert.Equal(10d, numberBox.SpyPeer.LastOldValue);
+                    Assert.Equal(42d, numberBox.SpyPeer.LastNewValue);
                 }
                 finally
                 {
