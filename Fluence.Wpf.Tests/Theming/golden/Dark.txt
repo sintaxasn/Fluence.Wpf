@@ -24,6 +24,7 @@ AcrylicBackgroundFillColorDefault|#FF2C2C2C|#00000000
 AcrylicBackgroundFillColorDefaultBrush|#00000000|#FF2C2C2C
 ApplicationBackgroundBrush|#00000000|#FF202020
 ApplicationBackgroundColor|#FF202020|#00000000
+ApplicationPageBackgroundThemeBrush|#00000000|#FF202020
 CardBackgroundFillColorDefault|#0DFFFFFF|#00000000
 CardBackgroundFillColorDefaultBrush|#00000000|#0DFFFFFF
 CardBackgroundFillColorSecondary|#08FFFFFF|#00000000

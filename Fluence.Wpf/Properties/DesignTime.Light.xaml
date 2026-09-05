@@ -135,6 +135,7 @@
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorBaseBrush" Color="#FFEEEEEE" />
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorDefaultBrush" Color="#FFF9F9F9" />
     <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#FFF3F3F3" />
+    <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#FFF3F3F3" />
     <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="#80F6F6F6" />
     <SolidColorBrush x:Key="CardBackgroundFillColorTertiaryBrush" Color="#FFFFFFFF" />
