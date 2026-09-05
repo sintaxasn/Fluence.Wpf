@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests.Theming
     /// (see <see cref="RegistryHelper.TryGetAccentPalette"/>); the generator only runs
     /// when that blob is unavailable or when the caller supplies a custom color.
     /// </summary>
-    public class AccentTests : IAsyncLifetime
+    public sealed class AccentTests : IAsyncLifetime
     {
         public ValueTask InitializeAsync()
         {
@@ -57,7 +57,6 @@ namespace Fluence.Wpf.Tests.Theming
 
         public ValueTask DisposeAsync()
         {
-            GC.SuppressFinalize(this);
             return default;
         }
 
