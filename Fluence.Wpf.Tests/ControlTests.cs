@@ -84,18 +84,6 @@ namespace Fluence.Wpf.Tests
             application.Resources.Clear();
         }
 
-        private static StackPanel? GetNavigationViewItemsHostPanel(Controls.NavigationView nav)
-        {
-            ItemsPresenter? presenter = FindVisualChild<ItemsPresenter>(nav);
-            if (presenter is null)
-            {
-                return null;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(presenter);
-            return childCount < 1 ? null : VisualTreeHelper.GetChild(presenter, 0) as StackPanel;
-        }
-
         [Fact]
         public Task FontIcon_DefaultFontFamily_IsSegoeFluentAsync()
         {
