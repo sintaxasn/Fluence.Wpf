@@ -48,16 +48,11 @@ namespace Fluence.Wpf.Tests.Control
     /// <see cref="PasswordBox"/>. The control under test is the native WPF password box. The library styles
     /// and decorates it rather than subclassing it, because the type is sealed.
     /// </summary>
-    public sealed class PasswordBoxTests : IAsyncLifetime
+    public sealed class PasswordBoxTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public PasswordBoxTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]
@@ -455,7 +450,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
                 try
@@ -483,7 +477,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
                 try

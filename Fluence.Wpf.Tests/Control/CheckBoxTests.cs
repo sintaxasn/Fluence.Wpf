@@ -39,16 +39,11 @@ namespace Fluence.Wpf.Tests.Control
     /// Fluent <see cref="CheckBox"/> control: Description surfaces as
     /// AutomationProperties.HelpText.
     /// </summary>
-    public sealed class CheckBoxTests : IAsyncLifetime
+    public sealed class CheckBoxTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public CheckBoxTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

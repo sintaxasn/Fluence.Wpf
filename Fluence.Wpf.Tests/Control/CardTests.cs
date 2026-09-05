@@ -45,16 +45,11 @@ namespace Fluence.Wpf.Tests.Control
     /// and other flat variants have none either), automation peer and clickability.
     /// Authority: WinUI 3 card elevation pattern (LayerFillColorDefaultBrush elevation context).
     /// </summary>
-    public sealed class CardTests : IAsyncLifetime
+    public sealed class CardTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public CardTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

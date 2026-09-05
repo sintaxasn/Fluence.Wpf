@@ -688,20 +688,13 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Application app = WpfTestSta.EnsureApplication();
 
-                try
-                {
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
 
-                    // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the high
-                    // contrast table, so the track has to come from the live system window color or the
-                    // white on black variants render an invisible rail.
-                    SolidColorBrush track = Assert.IsType<SolidColorBrush>(app.TryFindResource("ScrollBarTrackFillBrush"), exactMatch: false);
-                    Assert.Equal(SystemColors.WindowColor, track.Color);
-                }
-                finally
-                {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                }
+                // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the high
+                // contrast table, so the track has to come from the live system window color or the
+                // white on black variants render an invisible rail.
+                SolidColorBrush track = Assert.IsType<SolidColorBrush>(app.TryFindResource("ScrollBarTrackFillBrush"), exactMatch: false);
+                Assert.Equal(SystemColors.WindowColor, track.Color);
             });
         }
 

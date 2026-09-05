@@ -42,16 +42,11 @@ namespace Fluence.Wpf.Tests.Control
     /// Fluent <see cref="Slider"/> control: thumb scale animations.
     /// WinUI canonical: hover 1.167, pressed 0.86, ControlFastOutSlowIn easing.
     /// </summary>
-    public sealed class SliderTests : IAsyncLifetime
+    public sealed class SliderTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public SliderTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------
@@ -119,7 +114,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
                 Slider slider = new() { Width = 220, Minimum = 0, Maximum = 100, Value = 30 };
 

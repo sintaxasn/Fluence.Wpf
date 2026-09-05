@@ -46,16 +46,11 @@ namespace Fluence.Wpf.Tests.Control
     /// pair: default property values, container generation, add/close button template parts and
     /// events, and scroll-button visibility when tabs overflow the strip.
     /// </summary>
-    public sealed class TabViewTests : IAsyncLifetime
+    public sealed class TabViewTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public TabViewTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---- TabViewItem defaults ----

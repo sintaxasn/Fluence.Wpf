@@ -38,16 +38,11 @@ namespace Fluence.Wpf.Tests.Control
     /// <see cref="Controls.TextBlockExtensions"/>: the Typography attached property applies the
     /// matching WinUI type-ramp style, including its font size, to a plain <see cref="TextBlock"/>.
     /// </summary>
-    public sealed class TextBlockExtensionsTests : IAsyncLifetime
+    public sealed class TextBlockExtensionsTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public TextBlockExtensionsTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

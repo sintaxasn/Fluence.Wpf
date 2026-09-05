@@ -40,16 +40,11 @@ namespace Fluence.Wpf.Tests.Control
     /// CloseFlyout tearing down an open popup and unchecking the button, and the flyout
     /// presenter stretching to fit left-aligned flyout content.
     /// </summary>
-    public sealed class DropDownButtonTests : IAsyncLifetime
+    public sealed class DropDownButtonTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public DropDownButtonTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

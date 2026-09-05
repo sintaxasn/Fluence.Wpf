@@ -43,16 +43,11 @@ namespace Fluence.Wpf.Tests.Control
     /// in-tree ListViewItem indicator: canonical 3x16 accent bar, CornerRadius 1.5, vertically
     /// centered, translate slide-in animation).
     /// </summary>
-    public sealed class ListBoxTests : IAsyncLifetime
+    public sealed class ListBoxTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public ListBoxTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]
