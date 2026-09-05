@@ -406,14 +406,17 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         /// <remarks>
         /// Escape pressed inside the open tip dismisses it, mirroring the WinUI keyboard
-        /// contract. The close runs through the <see cref="IsOpen"/> pipeline so
-        /// <see cref="Closed"/> is raised as usual.
+        /// contract, which treats Escape as a light dismiss. The close runs through the
+        /// <see cref="IsOpen"/> pipeline so <see cref="Closed"/> is raised as usual, and the
+        /// reason is staged so it reports <see cref="TeachingTipCloseReason.LightDismiss"/>
+        /// rather than the default <see cref="TeachingTipCloseReason.Programmatic"/>.
         /// </remarks>
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnPreviewKeyDown(e);
             if (!e.Handled && e.Key is Key.Escape && IsOpen)
             {
+                _pendingCloseReason = TeachingTipCloseReason.LightDismiss;
                 SetCurrentValue(IsOpenProperty, value: false);
                 e.Handled = true;
             }
