@@ -35,10 +35,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -349,22 +349,6 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
-        }
-
-        // Pump the dispatcher for `milliseconds` so any in-flight storyboard
-        // reaches its HoldEnd state before the test samples layout values.
-        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
-        {
-            DispatcherFrame frame = new();
-            DispatcherTimer timer = new(
-                TimeSpan.FromMilliseconds(milliseconds),
-                DispatcherPriority.Normal,
-                delegate { frame.Continue = false; },
-                dispatcher);
-            timer.Start();
-            Dispatcher.PushFrame(frame);
-            timer.Stop();
-            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
         }
 
         private static ScaleTransform GetToggleSwitchThumbScale(ToggleSwitch toggleSwitch)

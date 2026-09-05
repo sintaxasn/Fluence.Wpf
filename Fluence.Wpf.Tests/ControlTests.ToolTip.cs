@@ -31,6 +31,7 @@ using System.Windows;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 
 namespace Fluence.Wpf.Tests
 {
