@@ -39,7 +39,7 @@ using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Gallery
 {
     public sealed class DemoSamplePageWiringTests
     {
