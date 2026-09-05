@@ -38,55 +38,111 @@ against the working tree. Corrections to the audit are marked **[correction]**.
 Fluence.Wpf.Tests/
   Infrastructure/   WpfTestSta.cs, TestApp.cs, VisualTree.cs, BrushAssert.cs,
                     ThemeTestHelpers.cs, DemoTestHost.cs, SlopwatchSuppressAttribute.cs
-  Controls/         <Control>Tests.cs, one per control
-  Controls/Shared/  IconForegroundTests.cs, FocusVisualTests.cs, ReducedMotionTests.cs,
+  Control/          <Control>Tests.cs, one per control
+  Control/Rules/   IconForegroundTests.cs, FocusVisualTests.cs, ReducedMotionTests.cs,
                     BackgroundParityTests.cs, AccessibilityNameTests.cs, AutomationPeerTests.cs,
                     FluentStrokeTests.cs, PopupCornerRadiusTests.cs
   Theming/          existing files plus ThemeManagerTests, ThemeMetricsTests, ThemeMarkupTests,
                     DictionaryStabilityTests, TypographyResourceContractTests, AccentTests
   Windowing/        WindowPolicyTests.cs, FluenceWindowTests.cs, TitleBarTests.cs,
                     CaptionButtonTests.cs, NativeMethodsTests.cs, SnapLayoutHelperTests.cs
-  Demo/             DemoShellTests.cs, DemoSampleContractTests.cs, Pages/Gallery<Page>Tests.cs
+  Gallery/          DemoShellTests.cs, DemoSampleContractTests.cs, Pages/Gallery<Page>Tests.cs
   Tools/            GalleryScreenshotHarness.cs
 ```
 
-Two adjustments to the folder set in the brief, both forced by evidence.
+Four adjustments to the folder set in the brief, all forced by evidence. Every folder name is also a
+namespace segment (section 2.2), so each one is chosen not to shadow a name the tests already use.
 
 **`Windowing/` not `Window/`.** A folder named `Window` invites a namespace segment named `Window`,
 which shadows `System.Windows.Window` inside every file in it. The tests declare local windows as
 `Window w = new()` in hundreds of places.
 
-**`Tools/` as a sixth folder.** `GalleryScreenshotHarness.cs` is not a test. It writes files that are
-committed to `docs/screenshots/`. Isolating it makes the opt-in gate auditable at a glance.
+**`Control/` not `Controls/`.** A namespace segment `Controls` shadows `Fluence.Wpf.Controls` at the
+1208 sites that write the `Controls.ProgressBar` shorthand. The singular form collides with no
+namespace. It does shadow the type `System.Windows.Controls.Control` at nine sites, which section
+2.2 lists and qualifies.
 
-`Controls/Shared/` exists because eight files assert a rule across many controls at once and have no
+**`Gallery/` not `Demo/`.** A namespace segment `Demo` shadows `Fluence.Wpf.Demo` at the
+`Demo.MainWindow` and `Demo.Mvvm.MainWindow` shorthand sites in `GalleryScreenshotHarness.cs` and
+`ControlTests.NavigationView.cs`. `Gallery` is what the demo application is, and it collides with
+nothing.
+
+**`Tools/` as a seventh folder.** `GalleryScreenshotHarness.cs` is not a test. It writes files that
+are committed to `docs/screenshots/`. Isolating it makes the opt-in gate auditable at a glance.
+
+`Control/Rules/` exists because eight files assert a rule across many controls at once and have no
 single `<Control>Tests.cs` home. `ControlTests.PeerSetValueGuards.cs` and
 `ControlTests.PeerValueChanged.cs` merge into `AutomationPeerTests.cs`.
 
 ### 2.2 Namespaces
 
-**Decision: all test files keep the flat namespace `Fluence.Wpf.Tests`. Folders are organisational
-only. The five existing files under `Theming/` are moved from `Fluence.Wpf.Tests.Theming` to the flat
-namespace in the same phase.**
+**Decision: every test file declares the namespace that matches its folder. Folder names are chosen
+so that no namespace segment shadows a name the tests already use.**
 
-Reason: the tests reference library types by the shorthand `Controls.ProgressBar`, which resolves
-through the enclosing `Fluence.Wpf` namespace. There are 1208 such references. A namespace
-`Fluence.Wpf.Tests.Controls` would shadow `Fluence.Wpf.Controls` at every one of them. Flat
-namespaces make that impossible, keep `--filter-class` arguments short, and make the section 8 name
-diff a pure method-name comparison.
+This is a measured outcome, not a preference. The flat namespace the earlier draft of this section
+chose does not compile: moving one file into `Infrastructure/` with `namespace Fluence.Wpf.Tests`
+left in place fails on both TFMs with `IDE0130: Namespace "Fluence.Wpf.Tests" does not match folder
+structure, expected "Fluence.Wpf.Tests.Infrastructure"`. `.editorconfig:32` sets
+`dotnet_analyzer_diagnostic.category-Style.severity = error`, which escalates IDE0130 repo-wide, and
+`.editorconfig` may not be edited.
 
-Risk: IDE0130 (namespace does not match folder) is not configured in `.editorconfig`, and
-`AnalysisLevel=latest-all` plus `EnforceCodeStyleInBuild=true` could surface it. Phase 0 probes this
-with a single file move. If IDE0130 fires, the fallback is folder-matching namespaces with
-non-colliding folder names: `Infrastructure`, `ControlSuites`, `Theming`, `Windowing`, `Demo`,
-`Tools`, and a `using Fluence.Wpf.Controls;` added where the shorthand is used.
+| Folder | Namespace |
+| ------ | --------- |
+| `Fluence.Wpf.Tests/` root, which only files awaiting a move still occupy | `Fluence.Wpf.Tests` |
+| `Infrastructure/` | `Fluence.Wpf.Tests.Infrastructure` |
+| `Control/` | `Fluence.Wpf.Tests.Control` |
+| `Control/Rules/` | `Fluence.Wpf.Tests.Control.Rules` |
+| `Theming/` | `Fluence.Wpf.Tests.Theming` |
+| `Windowing/` | `Fluence.Wpf.Tests.Windowing` |
+| `Gallery/` | `Fluence.Wpf.Tests.Gallery` |
+| `Gallery/Pages/` | `Fluence.Wpf.Tests.Gallery.Pages` |
+| `Tools/` | `Fluence.Wpf.Tests.Tools` |
+
+**The folder-naming rule.** A folder name must not equal the last segment of any `Fluence.Wpf.*`
+namespace the tests reference by shorthand. Those namespaces are `Fluence.Wpf.Controls`,
+`Fluence.Wpf.Demo`, `Fluence.Wpf.Helpers`, `Fluence.Wpf.Native`, `Fluence.Wpf.Markup`,
+`Fluence.Wpf.Automation` and `Fluence.Wpf.Theming`, so the forbidden folder names are `Controls`,
+`Demo`, `Helpers`, `Native`, `Markup` and `Automation`. `Theming` is the accepted exception: five
+files already sit under `Theming/` in `Fluence.Wpf.Tests.Theming` today and compile, because no test
+reaches for a `Theming.X` shorthand.
+
+Why the rule bites. A test writes `Controls.ProgressBar` at 1208 sites and lets the enclosing
+`Fluence.Wpf` namespace resolve it; inside a namespace `Fluence.Wpf.Tests.Controls` the name
+`Controls` binds to the test namespace instead, and every one of those sites fails to compile. The
+same argument retires `Demo/`: `GalleryScreenshotHarness.cs` and `ControlTests.NavigationView.cs`
+write `Demo.MainWindow` and `Demo.Mvvm.MainWindow`, which a `Fluence.Wpf.Tests.Demo` namespace would
+capture. `Control/` and `Gallery/` are the singular and descriptive forms, and they collide with
+nothing.
+
+**One residual shadow, handled explicitly.** `Control` is also a type name,
+`System.Windows.Controls.Control`, and inside any namespace nested under `Fluence.Wpf.Tests` the
+bare name `Control` now binds to the `Fluence.Wpf.Tests.Control` namespace. Nine sites in six files
+use the bare type and are written out as `System.Windows.Controls.Control` when their file moves:
+`ControlTests.DemoParity.cs:316`, `ControlTests.IconForeground.cs:599`,
+`ControlTests.NavigationView.cs:1565`, `FluenceWindowHardenTests.cs:908` and `:930`,
+`GalleryScreenshotHarness.cs:197`, and `TextRenderingPolicyTests.cs:320`, `:343` and `:357`. No
+other folder name in the table shadows anything: `Gallery`, `Infrastructure`, `Pages`, `Shared`,
+`Tools` and `Windowing` appear in this tree only inside comments and string literals.
+
+**How the helpers are reached.** Files in `Infrastructure/` are consumed with
+`using Fluence.Wpf.Tests.Infrastructure;`, plus
+`using static Fluence.Wpf.Tests.Infrastructure.VisualTree;` and
+`using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;` where the walkers and the brush
+assertions are called unqualified, exactly as before. `WpfTestSta` alone is named in 94 of the
+project's files, so that one `using` reaches nearly every file in the suite. Cross-folder references
+are otherwise rare, and each one is named in the task that creates it. A name in `Gallery/Pages/`
+resolves a name in `Gallery/` through the enclosing namespace with no `using` at all, which is what
+lets a page class call `DemoShellTests.CreateShownMainWindow()`.
+
+`--filter-class` arguments grow a folder segment. The section 8 name diff is unaffected, because it
+keys on the method name alone.
 
 The test project uses SDK globbing with no `<Compile>` items, so folder moves need no project-file
 edit.
 
 ### 2.3 From partial to sealed classes
 
-Each `ControlTests.<X>.cs` becomes `Controls/<X>Tests.cs` holding `public sealed class <X>Tests`.
+Each `ControlTests.<X>.cs` becomes `Control/<X>Tests.cs` holding `public sealed class <X>Tests`.
 The class body is the file's existing members with three changes: the private helper copies are
 deleted, a `using static` line brings the shared helpers into scope unqualified so call sites do not
 change, and per-test setup moves to `IAsyncLifetime`. The stragglers listed in the audit's mapping
@@ -114,7 +170,8 @@ than duplicating tree walks.
 `VisualTree.FindVisualChildren` forwards to `WpfTestSta.FindVisualDescendants`. `DemoTestHost`
 already forwards its own walker to `WpfTestSta.FindLogicalAndVisualDescendants` and keeps doing so.
 Names are unchanged from the current private copies so the call-site diff stays mechanical: each
-file gains `using static Fluence.Wpf.Tests.VisualTree;` and loses its private copy.
+file gains `using Fluence.Wpf.Tests.Infrastructure;` and
+`using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`, and loses its private copy.
 
 ### 2.5 Method naming
 
@@ -161,7 +218,7 @@ behaviour `DemoTestHost.EnsureDemoTheme` already has, so `DemoTestHost.EnsureDem
 one-line forward to `TestApp.EnsureDemoTheme` and `DemoTestHost.AddDemoSharedStyles` is removed.
 
 Demo tests request the demo dictionary by calling `EnsureDemoTheme`. Nothing else calls it. Any test
-outside `Demo/` that needs it must say so at its own call site with a comment naming the demo style
+outside `Gallery/` that needs it must say so at its own call site with a comment naming the demo style
 it depends on.
 
 The `dictionaries[^1]` idiom disappears. Callers that need the Generic dictionary use
@@ -237,12 +294,12 @@ diff unreadable, and they save no wall clock. They are recorded as a follow-up.
 | `AccentPaletteRegenerationExperiment.cs` | Delete | Dead experiment. Its own doc comment at line 102 records the answer, dated 2026-05-23. Mutates the user's system accent. |
 | `AccentRampScoreboard.cs` | Delete the code, keep the fixtures | The scoring harness compares four candidate ramp algorithms and cannot fail. The eight captured OS ramp fixtures are real measurements and are worth keeping, so they move into a comment block in `Theming/AccentTests.cs`. |
 | `ImmersiveColorSetProbe.cs` | Delete | Dead probe. Answer recorded in its doc comment at line 72. |
-| `GalleryScreenshotHarness.cs` | Move to `Tools/`, content unchanged | `git mv` cannot alter the three `[Fact(SkipUnless = nameof(ScreenshotCaptureEnabled))]` attributes or the class-level `[Trait("Category", "Screenshots")]`. Verified by asserting the run still reports 3 `NotExecuted`. |
-| `DemoTestHost.cs` | Move to `Infrastructure/`, two members change | `EnsureDemoTheme` forwards to `TestApp.EnsureDemoTheme`; `AddDemoSharedStyles` is removed. The window helpers and repo file readers are unchanged. |
-| `WpfTestSta.cs` | Move to `Infrastructure/`, content unchanged | It is the canonical STA fixture named in AGENTS.md section 6. Changing it during a layout refactor would make every failure ambiguous. |
-| `ThemeTestHelpers.cs` | Move to `Infrastructure/`, content unchanged | `ApplyStandardThemeCycle` has 19 call sites and `AssertKeyThemeBrushesResolve` has 2. Both stay. |
-| `ThemeTestHelpersTests.cs` | Move to `Theming/`, content unchanged | Two tests that cover a helper. They belong beside the theming tests, not at the project root. |
-| `SlopwatchSuppressAttribute.cs` | Move to `Infrastructure/`, content unchanged | One use, at `Theming/DesignTimeResourceTests.cs:117`. |
+| `GalleryScreenshotHarness.cs` | Move to `Tools/`; only the namespace line, one added `using Fluence.Wpf.Tests.Infrastructure;` and the qualified `System.Windows.Controls.Control` at line 197 change | Nothing touches the three `[Fact(SkipUnless = nameof(ScreenshotCaptureEnabled))]` attributes or the class-level `[Trait("Category", "Screenshots")]`. Verified by asserting the run still reports 3 `NotExecuted`. |
+| `DemoTestHost.cs` | Move to `Infrastructure/`, namespace changes, two members change | `EnsureDemoTheme` forwards to `TestApp.EnsureDemoTheme`; `AddDemoSharedStyles` is removed. The window helpers and repo file readers are unchanged. |
+| `WpfTestSta.cs` | Move to `Infrastructure/`, only the namespace line changes | It is the canonical STA fixture named in AGENTS.md section 6. Changing its members during a layout refactor would make every failure ambiguous. Its 93 consumers gain `using Fluence.Wpf.Tests.Infrastructure;`. |
+| `ThemeTestHelpers.cs` | Move to `Infrastructure/`, only the namespace line changes | `ApplyStandardThemeCycle` has 19 call sites and `AssertKeyThemeBrushesResolve` has 2. Both stay. |
+| `ThemeTestHelpersTests.cs` | Move to `Theming/`, namespace becomes `Fluence.Wpf.Tests.Theming` | Two tests that cover a helper. They belong beside the theming tests, not at the project root. |
+| `SlopwatchSuppressAttribute.cs` | Move to `Infrastructure/`, only the namespace line changes | One use, at `Theming/DesignTimeResourceTests.cs:117`, which gains the `using`. |
 | `Theming/DesignTimeResourceWriter.cs` | Stays where it is | Already correctly placed. |
 | `Fluence.Wpf.Tests/README.md` | Rewrite in the final phase | Section 9. |
 
@@ -257,15 +314,15 @@ on the runner thread, so every fixture that touches WPF must route through `WpfT
 
 **Shareable, via `IClassFixture<LightThemeFixture>`.** A class qualifies if no test in it applies a
 theme, changes the accent, or toggles `MotionHelper.OverrideIsMotionEnabled`. Those classes pay one
-reset and one Light apply per class instead of one per test. Most `Controls/` classes qualify.
+reset and one Light apply per class instead of one per test. Most `Control/` classes qualify.
 
-**Shareable, via one host window per class.** The `Demo/Pages/Gallery<Page>Tests.cs` classes build
+**Shareable, via one host window per class.** The `Gallery/Pages/Gallery<Page>Tests.cs` classes build
 their page once in `InitializeAsync` and reuse it, because their assertions read layout and brushes
 rather than mutating the tree. Where a page test does mutate (the Status page NumberBox drive), that
 test rebuilds the page itself.
 
 **Not shareable.** Any class that applies a theme, mutates the accent intent, toggles reduced motion,
-or drives input keeps per-test `IAsyncLifetime`. That is all of `Theming/`, `Controls/Shared/
+or drives input keeps per-test `IAsyncLifetime`. That is all of `Theming/`, `Control/Rules/
 ReducedMotionTests.cs`, and the interaction-heavy control classes (ContentDialog, DatePicker,
 TimePicker, ColorPicker, CommandBarFlyout, TeachingTip, PipsPager).
 
@@ -289,18 +346,21 @@ with both reproductions.
 class list, so their union is provably the whole assembly and a newly added class lands in lane B
 automatically rather than going unrun.
 
-Lane A is the heavy set. After consolidation the current split on `ControlTests` no longer exists, so
-the list is the seven costliest classes: `DemoShellTests`, `DemoSampleContractTests`,
-`NavigationViewTests`, `ProgressBarTests`, `ContentDialogTests`, `ColorPickerTests`,
-`TimePickerTests`.
+Lane A is the heavy set. After consolidation the current split on `ControlTests` no longer exists,
+so the list is the seven costliest classes, each named with the folder-matching namespace of section
+2.2: `Fluence.Wpf.Tests.Gallery.DemoShellTests`,
+`Fluence.Wpf.Tests.Gallery.DemoSampleContractTests`,
+`Fluence.Wpf.Tests.Control.NavigationViewTests`, `Fluence.Wpf.Tests.Control.ProgressBarTests`,
+`Fluence.Wpf.Tests.Control.ContentDialogTests`, `Fluence.Wpf.Tests.Control.ColorPickerTests`,
+`Fluence.Wpf.Tests.Control.TimePickerTests`.
 
 ```pwsh
 Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe ^
-  --filter-class Fluence.Wpf.Tests.DemoShellTests ... (seven) ^
+  --filter-class Fluence.Wpf.Tests.Gallery.DemoShellTests ... (seven) ^
   --report-xunit-trx --results-directory <dir> --no-ansi --progress off
 
 Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe ^
-  --filter-not-class Fluence.Wpf.Tests.DemoShellTests ... (the same seven) ^
+  --filter-not-class Fluence.Wpf.Tests.Gallery.DemoShellTests ... (the same seven) ^
   --report-xunit-trx --results-directory <dir> --no-ansi --progress off
 ```
 
@@ -319,11 +379,11 @@ against the expected number for that phase.
 
 | Phase | Content | Expected net10 cases | Verification |
 | ----- | ------- | -------------------: | ------------ |
-| 0 | Capture the `--list-tests` baseline per TFM. Move one file into `Infrastructure/` keeping the flat namespace. | 1188 | Build clean, format clean. Decides the section 2.2 namespace question. |
+| 0 | Capture the `--list-tests` baseline per TFM. Move one file into `Infrastructure/` with the matching namespace `Fluence.Wpf.Tests.Infrastructure`, adding the `using` its consumers need. | 1188 | Build clean, format clean. Confirms the section 2.2 namespace decision on the real tree. |
 | 1 | Add `Infrastructure/TestApp.cs`, `VisualTree.cs`, `BrushAssert.cs`. Delete the seven merge copies and the private walkers. Add `using static` per file. No file moves, no class changes. | 1188 | Name diff empty. |
 | 2 | Switch the 61 former demo-styles callers to `EnsureLibraryTheme`. Land alone. | 1188 | Name diff empty. Any new failure is listed in the commit message with its cause. |
-| 3 | Retire the partial. One commit per control family: `ControlTests.<X>.cs` becomes `Controls/<X>Tests.cs`, `sealed`, with `IAsyncLifetime`. `ControlTests.cs` is emptied last. | 1188 | Name diff empty, class map reviewed. |
-| 4 | `git mv` the remaining files into `Theming/`, `Windowing/`, `Demo/`, `Tools/`. Content unchanged except namespace flattening under `Theming/`. One folder per commit. | 1188 | Name diff empty. Screenshot skips still 3. |
+| 3 | Retire the partial. One commit per control family: `ControlTests.<X>.cs` becomes `Control/<X>Tests.cs`, `sealed`, in `Fluence.Wpf.Tests.Control`, with `IAsyncLifetime`. `ControlTests.cs` is emptied last. | 1188 | Name diff empty, class map reviewed. |
+| 4 | `git mv` the remaining files into `Theming/`, `Windowing/`, `Gallery/`, `Tools/`. Content unchanged except each file's namespace line, the `using Fluence.Wpf.Tests.Infrastructure;` it then needs, and the qualified `System.Windows.Controls.Control`. One folder per commit. | 1188 | Name diff empty. Screenshot skips still 3. |
 | 5 | The 18 deletions and the two theory folds. One commit. `CHANGELOG.md` entry in the same commit. | 1170 | Name diff equals exactly the allowlist in section 8. |
 | 6 | `LightThemeFixture` and the per-page host windows. | 1170 | Name diff empty. Wall clock measured. |
 | 7 | Docs, `KNOWN_ISSUES.md`, CI workflow. | 1170 | Full two-lane pass on both TFMs. |
@@ -343,8 +403,10 @@ Before phase 0 and after each phase, per TFM:
 Fluence.Wpf.Tests\bin\Debug\<tfm>\Fluence.Wpf.Tests.exe --list-tests --no-ansi > <phase>.<tfm>.txt
 ```
 
-The diff key is the **method name alone**, not the fully qualified name. Classes are merged, renamed
-and renamespaced by this work, so fully qualified names change by design; method names do not.
+The diff key is the **method name alone**, not the fully qualified name. Classes are merged,
+renamed, and given folder-matching namespaces by this work, so fully qualified names change by
+design; method names do not. Class renames therefore stay allowed at every phase, and only a changed
+method-name multiset can fail one.
 Extract them with a sort and a suffix strip, and compare the multisets.
 
 Two artefacts are committed under `Fluence.Wpf.Tests/Baselines/` (text files only, so the SDK compile glob ignores them): the baseline list per TFM, and an allowlist of
@@ -366,7 +428,7 @@ names that are not unique, and by listing those pairs in the allowlist header.
 
 | File | Change |
 | ---- | ------ |
-| `AGENTS.md` section 6 | Replace the `MergeGenericDictionary(Application.Current.Resources)` step with `TestApp.EnsureLibraryTheme()` and the demo opt-in. Describe the folder layout and the flat namespace. Replace the `ControlTests.FluentStroke.cs` reference-pattern pointer with `Controls/Shared/FluentStrokeTests.cs`. Add the two-lane invocation and the net472 abort. |
+| `AGENTS.md` section 6 | Replace the `MergeGenericDictionary(Application.Current.Resources)` step with `TestApp.EnsureLibraryTheme()` and the demo opt-in. Describe the folder layout and the folder-matching namespaces. Replace the `ControlTests.FluentStroke.cs` reference-pattern pointer with `Control/Rules/FluentStrokeTests.cs`. Add the two-lane invocation and the net472 abort. |
 | `AGENTS.md` section 6, parallelization bullet | **[correction]** It states `[assembly: CollectionBehavior(DisableTestParallelization = true)]`. The file actually carries `[assembly: Parallelization(Mode = ParallelMode.None)]` at `Properties/AssemblyInfo.cs:32`. Fix the text. |
 | `AGENTS.md` section 9 | Update the "relying on a previous test's theme state" pitfall: the fix is now the class `IAsyncLifetime`, not a call in the test body. |
 | `AGENTS.md` section 13.2 | If `demo-sample-page/SPEC.md` names test file paths, update them. |
@@ -386,11 +448,11 @@ names that are not unique, and by listing those pairs in the allowlist header.
 | ---- | ---------- |
 | Splitting the partial breaks 140 helper call sites at once. | Phase 1 lifts every shared helper first, with names unchanged and `using static` at each call site, so phase 3 is a pure class-shape change. |
 | Dropping demo styles from library tests surfaces new failures in 61 files. | Phase 2 lands alone. Each failure is triaged as either a real library brush shadowed by a demo style, which is a bug worth having found, or a test that genuinely needs the demo dictionary, which moves to `EnsureDemoTheme` with a comment. Both outcomes are listed in the commit message. |
-| A flat namespace trips IDE0130 under `latest-all`. | Phase 0 probes it with one file before any bulk move. The fallback folder names and the extra `using` are specified in section 2.2, so neither branch is open. |
+| IDE0130 rejected the flat namespace, so every folder name became a namespace segment. | Recorded outcome, not an open risk. The phase 0 probe moved `WpfTestSta.cs` into `Infrastructure/` with the namespace left flat, and both TFMs failed with IDE0130, which `.editorconfig:32` escalates to an error. Section 2.2 now specifies folder-matching namespaces plus a folder-naming rule that keeps the `Controls.X` and `Demo.X` shorthands resolving, and it qualifies the nine bare `Control` sites the `Control/` folder would otherwise shadow. |
 | Deleting a test that happened to seed global state for a later test. | Section 3.3 makes every stateful class reset in `InitializeAsync`, and that lands in phases 1 to 3, before the phase 5 deletions. |
 | net472 lanes hide a regression because the whole assembly never runs. | The two lanes are exact complements, so their union is the whole assembly, and CI sums and checks the case counts. |
 | Screenshot harness starts running and overwrites committed PNGs. | The move is `git mv` only. Every phase asserts the run still reports 3 `NotExecuted`. |
 | Case-count drift goes unnoticed across seven phases. | Section 8 runs the name diff at every phase against a committed allowlist, not just at the end. |
 | The TimePicker net472 flake is read as a consolidation regression. | It is recorded in `KNOWN_ISSUES.md` in phase 7 and named in every phase report. |
-| The demo project stays a test dependency, so `Demo/` is not an isolation boundary. | Accepted. A library-only lane would need a second assembly and a second `InternalsVisibleTo`, which is a non-goal. |
+| The demo project stays a test dependency, so `Gallery/` is not an isolation boundary. | Accepted. A library-only lane would need a second assembly and a second `InternalsVisibleTo`, which is a non-goal. |
 | Fixture sharing in phase 6 introduces cross-test bleed. | A class qualifies for `LightThemeFixture` only if no test in it applies a theme, changes the accent, or toggles reduced motion. The qualifying list is reviewed per class, and phase 6 is reverted wholesale if the name diff or counts move. |

@@ -830,10 +830,10 @@ Capture is opt-in: the `GalleryScreenshotHarness` tests skip unless the `FLUENCE
 
 ```powershell
 $env:FLUENCE_CAPTURE_SCREENSHOTS = '1'
-dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --filter-trait "Category=Screenshots"
+Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness --no-ansi --progress off
 ```
 
-The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. It cannot capture DWM Mica / Acrylic, which compose outside WPF, so the screenshots show WPF control and shell surfaces only. `FluenceWindowTitleBarTests` verifies `FluenceWindow` caption styling.
+The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. It cannot capture DWM Mica / Acrylic, which compose outside WPF, so the screenshots show WPF control and shell surfaces only. `Windowing/TitleBarTests.cs` verifies `FluenceWindow` caption styling.
 
 Marketing images live under `docs/images/` (for example `docs/images/Banner.png`). Capture control screenshots at 100% and 150% scaling and record the reference OS build, theme, and accent when adding them.
 
@@ -843,4 +843,4 @@ The xunit.v3 suite exercises templates, theme stability, and control behavior on
 
 - A default-style / template smoke test that confirms the control applies the expected template.
 - A theme-cycle pass if the control leans on `DynamicResource` (`ThemeTestHelpers.ApplyStandardThemeCycle`).
-- Interaction or state assertions where the control exposes behavior (see `ControlTests.NavigationView.cs` and `ControlTests.FluentStroke.cs`).
+- Interaction or state assertions where the control exposes behavior (see `Control/NavigationViewTests.cs` and `Control/Rules/FluentStrokeTests.cs`).

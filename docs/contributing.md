@@ -3,10 +3,12 @@
 ```powershell
 dotnet restore Fluence.Wpf.sln
 dotnet build Fluence.Wpf.sln
-dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
+Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 ```
 
-WPF tests share a single STA dispatcher (`WpfTestSta`), and the assembly carries `[assembly: CollectionBehavior(DisableTestParallelization = true)]` (with `xunit.runner.json` disabling runner parallelism) to avoid cross-thread resource issues.
+The suite runs on Microsoft Testing Platform, so run the built executable rather than `dotnet test`. On `net472` run it as two complementary lanes; see AGENTS.md section 6 and `KNOWN_ISSUES.md` for why a single-process whole-assembly run there aborts.
+
+WPF tests share a single STA dispatcher (`WpfTestSta`), and the assembly carries `[assembly: Parallelization(Mode = ParallelMode.None)]` (with `xunit.runner.json` disabling runner parallelism) to avoid cross-thread resource issues.
 
 ## Language and style
 
@@ -23,12 +25,14 @@ WPF tests share a single STA dispatcher (`WpfTestSta`), and the assembly carries
 
 ## Tests
 
-- Drop new test files alongside existing ones (`ControlTests.<Area>.cs`) as partial extensions of `public partial class ControlTests` so they share the `RunOnStaThread`, `EnsureApplication`, `MergeGenericDictionary`, and `FindVisualChild*` helpers.
+- One sealed class per subject, in the folder that owns the concern: `Control/<Control>Tests.cs` for a control, `Control/Rules/` for a rule asserted across many controls, `Theming/`, `Windowing/`, `Gallery/` and `Gallery/Pages/` for those concerns, `Infrastructure/` for helpers, `Tools/` for the screenshot harness. Each folder is a namespace segment, so a file under `Control/` declares `namespace Fluence.Wpf.Tests.Control`; IDE0130 is an error, so this is not optional. Do not add a folder whose name matches the last segment of a `Fluence.Wpf.*` namespace the tests use by shorthand.
+- Let the class own the reset: implement `IAsyncLifetime` and call `TestApp.EnsureLibraryTheme()` from `InitializeAsync` through `WpfTestSta.RunOnStaAsync`. Take `IClassFixture<LightThemeFixture>` instead if no test in the class applies a theme, changes the accent, or toggles reduced motion. `TestApp.EnsureDemoTheme()` is the explicit demo opt-in and belongs in `Gallery/`.
+- Use the shared helpers rather than a private copy: `VisualTree` (with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`), `BrushAssert`, `ThemeTestHelpers`, `DemoTestHost`.
 - When adding a new public control, include at minimum:
-  - A default-style / template smoke test.
+  - A default-style and template smoke test.
   - A theme-cycle test if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
-  - Interaction or state assertions for any public event / read-only DP the control exposes.
-- `ControlTests.FluentStroke.cs` is the reference pattern for small template/behavior probes: apply the generic dictionary, show a minimal `Window`, `ApplyTemplate`, assert template parts and resolved brushes, then drain and close.
+  - Interaction or state assertions for any public event or read-only DP the control exposes.
+- `Control/Rules/FluentStrokeTests.cs` is the reference pattern for small template and behavior probes: show a minimal `Window`, `ApplyTemplate`, assert template parts and resolved brushes, then drain and close.
 
 ## Pull requests
 
