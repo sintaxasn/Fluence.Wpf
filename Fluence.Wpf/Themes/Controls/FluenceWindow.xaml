@@ -147,7 +147,7 @@
                         paints no rounded root of its own. With the default rounding the corner pixels
                         measure identical with or without a template radius (DWM scales its radius with
                         DPI), so a template radius only ever differs from DWM where DWM draws square
-                        corners, on Windows 10 and under CornerPreference.DoNotRound, and there it would
+                        corners, on Windows 10 and under WindowCornerPreference.DoNotRound, and there it would
                         paint a rounded outline on a square window.
                     -->
                     <Border

@@ -156,9 +156,9 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty CornerStyleProperty =
             DependencyProperty.Register(
                 "CornerStyle",
-                typeof(CornerPreference),
+                typeof(WindowCornerPreference),
                 typeof(FluenceWindow),
-                new PropertyMetadata(CornerPreference.Round, OnCornerStyleChanged));
+                new PropertyMetadata(WindowCornerPreference.Round, OnCornerStyleChanged));
 
         /// <summary>
         /// Identifies the <see cref="MarginMaximized"/> dependency property.
@@ -316,9 +316,9 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the preferred window corner rounding policy for DWM.
         /// </summary>
-        public CornerPreference CornerStyle
+        public WindowCornerPreference CornerStyle
         {
-            get => (CornerPreference)GetValue(CornerStyleProperty);
+            get => (WindowCornerPreference)GetValue(CornerStyleProperty);
             set => SetValue(CornerStyleProperty, value);
         }
 

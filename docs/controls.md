@@ -90,7 +90,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.FluenceWindow.html">FluenceWindow</a>
   <a href="../../api/Fluence.Wpf.Controls.TitleBar.html">TitleBar</a>
   <a href="../../api/Fluence.Wpf.WindowBackdropType.html">WindowBackdropType</a>
-  <a href="../../api/Fluence.Wpf.CornerPreference.html">CornerPreference</a>
+  <a href="../../api/Fluence.Wpf.WindowCornerPreference.html">WindowCornerPreference</a>
 </div>
 
 Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, `TitleBarHeight`, caption-button visibility properties, and title-bar events for back and pane-toggle requests.
