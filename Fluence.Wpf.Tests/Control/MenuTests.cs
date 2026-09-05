@@ -33,25 +33,28 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-5B.1 tests: Fluent Menu style.
+    /// Tests for the Fluent Menu style.
     /// </summary>
-    public partial class ControlTests
+    public sealed class MenuTests : IAsyncLifetime
     {
-        // ---------------------------------------------------------------------------
-        // WI-5B.1  Menu
-        // ---------------------------------------------------------------------------
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
 
         [Fact]
         public Task Menu_StyleApplies_BackgroundIsTransparentAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Menu menu = new();
                 _ = menu.Items.Add(new MenuItem { Header = "File" });
                 Window w = new() { Content = menu, Width = 400, Height = 100 };
@@ -72,9 +75,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Menu menu = new();
                 _ = menu.Items.Add(new MenuItem { Header = "Edit" });
                 Window w = new() { Content = menu, Width = 400, Height = 100 };
@@ -93,9 +93,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Menu menu = new();
                 MenuItem item1 = new() { Header = "File" };
                 MenuItem item2 = new() { Header = "Edit" };
@@ -117,9 +114,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Menu menu = new();
                 _ = menu.Items.Add(new MenuItem { Header = "View" });
                 Window w = new() { Content = menu, Width = 400, Height = 100 };
