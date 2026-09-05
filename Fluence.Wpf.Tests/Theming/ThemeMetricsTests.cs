@@ -32,7 +32,7 @@ using System.Windows.Media.Effects;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Theming
 {
     /// <summary>
     /// Step 3.0 stability tests: CornerRadius tokens, FlyoutShadowEffect, and
