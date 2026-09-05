@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Xunit;
 
 namespace Fluence.Wpf.Tests.Infrastructure
@@ -72,6 +73,42 @@ namespace Fluence.Wpf.Tests.Infrastructure
             window.Content = null;
             window.Close();
             WpfTestSta.DrainDispatcher(window.Dispatcher);
+        }
+
+        /// <summary>
+        /// Builds <paramref name="createPage"/>, hosts it in a fresh <see cref="Window"/>, shows
+        /// and lays it out, runs <paramref name="verify"/> against the window, then closes it.
+        /// The demo theme is not applied here: every caller's own test class already applies it
+        /// once through its <see cref="IAsyncLifetime.InitializeAsync"/>, so an inner call
+        /// here would only reapply it a second time per test.
+        /// </summary>
+        /// <param name="createPage">Creates the page under test.</param>
+        /// <param name="verify">Asserts against the shown, laid-out host window.</param>
+        internal static Task RunDemoPageTestAsync(Func<UserControl> createPage, Action<Window> verify)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                UserControl page = createPage();
+                Window window = new()
+                {
+                    Width = 900,
+                    Height = 700,
+                    Content = page,
+                };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    verify(window);
+                }
+                finally
+                {
+                    VisualTree.CloseWindowAndDrain(window);
+                }
+            });
         }
 
         internal static T? FindByName<T>(DependencyObject? root, string name)
