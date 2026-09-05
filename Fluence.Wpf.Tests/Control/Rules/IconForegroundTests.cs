@@ -103,7 +103,6 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 finally
                 {
                     window.Close();
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 }
             });
         }
@@ -136,7 +135,6 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 finally
                 {
                     window.Close();
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 }
             });
         }
@@ -579,7 +577,6 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 finally
                 {
                     compactWindow.Close();
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 }
             });
         }

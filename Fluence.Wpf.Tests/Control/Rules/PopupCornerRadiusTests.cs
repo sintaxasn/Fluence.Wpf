@@ -38,16 +38,11 @@ namespace Fluence.Wpf.Tests.Control.Rules
     /// WI-3 A5-A6 tests: ComboBox and DropDownButton popup border CornerRadius
     /// tracks <c language="xaml">OverlayCornerRadius</c> (8px) via DynamicResource.
     /// </summary>
-    public sealed class PopupCornerRadiusTests : IAsyncLifetime
+    public sealed class PopupCornerRadiusTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public PopupCornerRadiusTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // ---------------------------------------------------------------------------

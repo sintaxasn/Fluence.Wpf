@@ -41,16 +41,11 @@ namespace Fluence.Wpf.Tests.Windowing
     // which does not render a vector and would distort a non-square source. These tests pin both
     // halves of the contract: the default resolves to a real square BitmapSource, and a
     // consumer-assigned Icon overrides that default instead of being clobbered by it.
-    public sealed class WindowIconTests : IAsyncLifetime
+    public sealed class WindowIconTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public WindowIconTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

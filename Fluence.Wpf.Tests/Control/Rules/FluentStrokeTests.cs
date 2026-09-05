@@ -44,16 +44,11 @@ namespace Fluence.Wpf.Tests.Control.Rules
     /// check-in glyph animation and stroke weight, Card click semantics, and NavigationView
     /// content-border corner radius and stroke placement.
     /// </summary>
-    public sealed class FluentStrokeTests : IAsyncLifetime
+    public sealed class FluentStrokeTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public FluentStrokeTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // Lightweight subclass that exposes the protected mouse button overrides so we
