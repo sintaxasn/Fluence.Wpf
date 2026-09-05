@@ -27,21 +27,39 @@
  */
 
 using System;
+using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Fluence.Wpf.Controls;
+using System.Windows.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public class ComboBoxTests
+    /// <summary>
+    /// Fluent <see cref="Controls.ComboBox"/> control: dropdown placement, hover
+    /// brush, popup corner tracking, auto-select and FocusedStates VSM.
+    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusedStates / EditableFocusedStates groups).
+    /// </summary>
+    public sealed class ComboBoxTests : IAsyncLifetime
     {
-        private static Task RunWithComboBoxAsync(Action<ComboBox> testBody)
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        private static Task RunWithComboBoxAsync(Action<Controls.ComboBox> testBody)
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                ComboBox comboBox = new();
+                Controls.ComboBox comboBox = new();
                 testBody(comboBox);
             });
         }
@@ -171,13 +189,10 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new();
                 try
                 {
-                    ComboBox comboBox = new();
+                    Controls.ComboBox comboBox = new();
                     _ = comboBox.Items.Add("Alpha");
                     _ = comboBox.Items.Add("Beta");
 
@@ -189,10 +204,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     _ = comboBox.ApplyTemplate();
 
-                    System.Windows.Controls.Border dropdownBorder = Assert.IsType<System.Windows.Controls.Border>(
+                    Border dropdownBorder = Assert.IsType<Border>(
                         comboBox.Template.FindName("PART_DropdownBorder", comboBox), exactMatch: false);
 
-                    System.Windows.Controls.Border noiseOverlay = Assert.IsType<System.Windows.Controls.Border>(
+                    Border noiseOverlay = Assert.IsType<Border>(
                         comboBox.Template.FindName("NoiseOverlay", comboBox), exactMatch: false);
 
                     // Default (downward-opening) state: both borders share the same radius,
@@ -274,5 +289,149 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion Auto-select first item
+
+        #region WI-3 C18  ComboBox FocusedStates VSM
+
+        [Fact]
+        public Task ComboBox_FocusedStates_GroupExistsInTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("One");
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // VSM groups are attached to the root Grid of the template
+                Grid root = Assert.IsType<Grid>(FindVisualChild<Grid>(cb), exactMatch: false);
+                IList groups = VisualStateManager.GetVisualStateGroups(root);
+                bool hasFocusedStates = groups
+                    .Cast<VisualStateGroup>()
+                    .Any(static g => string.Equals(g.Name, "FocusedStates", StringComparison.Ordinal));
+                Assert.True(hasFocusedStates,
+                    "ComboBox template root must have a FocusedStates VSM group per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_EditableFocusedStates_GroupExistsInTemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("One");
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Grid root = Assert.IsType<Grid>(FindVisualChild<Grid>(cb), exactMatch: false);
+                IList groups = VisualStateManager.GetVisualStateGroups(root);
+                bool hasEditableFocusedStates = groups
+                    .Cast<VisualStateGroup>()
+                    .Any(static g => string.Equals(g.Name, "EditableFocusedStates", StringComparison.Ordinal));
+                Assert.True(hasEditableFocusedStates,
+                    "ComboBox template root must have an EditableFocusedStates VSM group per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_FocusedState_DoesNotShowFocusAccentLineAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("Alpha");
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                bool transitioned = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
+                Assert.True(transitioned, "GoToState('Focused') must return true.");
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border accentLine = Assert.IsType<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
+                Assert.Equal(0.0, accentLine.Opacity, 0.01);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_UnfocusedState_FocusAccentLineIsHiddenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("Beta");
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // Focused first, then Unfocused
+                _ = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                bool transitioned = VisualStateManager.GoToState(cb, "Unfocused", useTransitions: false);
+                Assert.True(transitioned, "GoToState('Unfocused') must return true.");
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border accentLine = Assert.IsType<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"), exactMatch: false);
+                Assert.Equal(0.0, accentLine.Opacity, 0.01);
+                Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_InitialTemplate_DoesNotShowFocusAccentLineAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("Alpha");
+                cb.SelectedIndex = 0;
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border accentLine = Assert.IsType<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
+                Assert.Equal(0.0, accentLine.Opacity, 0.01);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_ThemeCycle_FocusedStateKeepsAccentLineHiddenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox cb = new();
+                _ = cb.Items.Add("Gamma");
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ThemeTestHelpers.ApplyStandardThemeCycle();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+                _ = cb.ApplyTemplate();
+                w.UpdateLayout();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                bool transitioned = VisualStateManager.GoToState(cb, "Focused", useTransitions: false);
+                Assert.True(transitioned, "GoToState('Focused') must return true after theme cycle.");
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border accentLine = Assert.IsType<Border>(FindVisualChildByName<Border>(cb, "FocusAccentLine"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, accentLine.Visibility);
+                Assert.Equal(0.0, accentLine.Opacity, 0.01);
+                w.Close();
+            });
+        }
+
+        #endregion WI-3 C18  ComboBox FocusedStates VSM
     }
 }

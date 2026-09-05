@@ -41,21 +41,30 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Covers the Fluent chrome that <see cref="Controls.PasswordBoxExtensions"/> puts on the sealed
     /// <see cref="PasswordBox"/>. The control under test is the native WPF password box. The library styles
     /// and decorates it rather than subclassing it, because the type is sealed.
     /// </summary>
-    public partial class ControlTests
+    public sealed class PasswordBoxTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task PasswordBox_ImplicitFluentStyle_AppliesToNativeControlAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -80,7 +89,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -105,7 +113,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -132,7 +139,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -168,7 +174,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -198,7 +203,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -245,7 +249,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -287,7 +290,6 @@ namespace Fluence.Wpf.Tests
             // Contract: press-and-hold = transient reveal; release = hide immediately.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -340,7 +342,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -381,7 +382,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -416,7 +416,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -456,7 +455,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
@@ -485,7 +483,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                 Window window = new();
 
@@ -515,7 +512,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
