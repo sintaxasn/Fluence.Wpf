@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
             {
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
 
                     CheckBox checkBox = new();
                     _ = new Window { Content = checkBox };

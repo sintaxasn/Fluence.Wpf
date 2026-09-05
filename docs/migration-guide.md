@@ -16,8 +16,7 @@
     ```csharp
     Fluence.Wpf.ApplicationThemeManager.Apply(
         Fluence.Wpf.ApplicationTheme.Auto,
-        Fluence.Wpf.BackdropType.Mica,
-        updateAccent: true);
+        Fluence.Wpf.BackdropType.Mica);
     Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
     ```
 

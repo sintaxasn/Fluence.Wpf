@@ -42,7 +42,7 @@ namespace Fluence.Wpf
     /// </remarks>
     /// <example>
     /// <code language="csharp">
-    /// ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica, updateAccent: true);
+    /// ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
     /// ApplicationAccentColorManager.ApplySystemAccent();
     /// </code>
     /// </example>

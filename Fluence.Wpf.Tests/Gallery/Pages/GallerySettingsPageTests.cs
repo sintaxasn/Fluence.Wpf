@@ -322,7 +322,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     ApplicationAccentColorManager.ApplyApplicationAccent();
                     DemoTestHost.CloseWindow(window);
                 }

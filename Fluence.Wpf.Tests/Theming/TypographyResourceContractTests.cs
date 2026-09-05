@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 application.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 try
                 {
@@ -80,7 +80,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 application.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 try
                 {
