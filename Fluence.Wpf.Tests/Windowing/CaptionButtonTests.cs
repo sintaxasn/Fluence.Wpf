@@ -46,16 +46,11 @@ namespace Fluence.Wpf.Tests.Windowing
     // drop caption clicks). These tests pin both slots: the XAML binding
     // (Button.Command reference-equals the expected SystemCommand) and the
     // runtime effect (WindowState transition / Closing event).
-    public sealed class CaptionButtonTests : IAsyncLifetime
+    public sealed class CaptionButtonTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public CaptionButtonTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         private static async Task<FluenceWindow> CreateAndShowOffScreenFluenceWindowAsync()

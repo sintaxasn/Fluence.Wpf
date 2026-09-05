@@ -42,16 +42,11 @@ namespace Fluence.Wpf.Tests.Control.Rules
     /// Cross-control automation name coverage: glyph-only buttons in pickers,
     /// spinners, and chrome must expose an accessible name for Narrator.
     /// </summary>
-    public sealed class AccessibilityNameTests : IAsyncLifetime
+    public sealed class AccessibilityNameTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public AccessibilityNameTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         [Fact]

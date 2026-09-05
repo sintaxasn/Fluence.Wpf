@@ -48,16 +48,11 @@ namespace Fluence.Wpf.Tests.Control.Rules
     /// its automation peer so UIA clients (Narrator) observe the current value instead of a stale
     /// one.
     /// </summary>
-    public sealed class AutomationPeerTests : IAsyncLifetime
+    public sealed class AutomationPeerTests : IClassFixture<LightThemeFixture>
     {
-        public ValueTask InitializeAsync()
+        public AutomationPeerTests(LightThemeFixture fixture)
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+            _ = fixture;
         }
 
         // Spy automation peer that records whether NumberBox routed a Value change through
