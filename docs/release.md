@@ -16,7 +16,7 @@ Run from the repository root:
 ```powershell
 dotnet restore Fluence.Wpf.sln
 dotnet build Fluence.Wpf.sln -c Debug
-dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
+Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 ```
 
 When demo source samples change, also build the gallery:

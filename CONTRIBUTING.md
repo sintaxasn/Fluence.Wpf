@@ -11,9 +11,10 @@ This file is the short version.
 ```powershell
 dotnet restore Fluence.Wpf.sln
 dotnet build   Fluence.Wpf.sln -c Debug
-dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net472 --no-build
-dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build
+Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 ```
+
+The suite runs on Microsoft Testing Platform, so run the built executable rather than `dotnet test` (the SDK 10 VSTest bridge is gone). On `net472`, a single-process whole-assembly run aborts non-deterministically, so run it as two complementary lanes instead; see AGENTS.md section 6 and `KNOWN_ISSUES.md`.
 
 Both target frameworks (`net472` and `net10.0-windows10.0.26100.0`) must build and test green. The library builds with `TreatWarningsAsErrors=true`, `WarningLevel=9999`, and `AnalysisLevel=latest-all`: fix warnings at the root cause, do not suppress them. `string.IsNullOrEmpty()` is banned (use `string.IsNullOrWhiteSpace()`); public API needs `///` XML docs or the build fails.
 
@@ -43,7 +44,7 @@ Every visual or behavioral decision must be grounded, in this order (see [AGENTS
 
 ## Tests
 
-- New test files are partial extensions of `public partial class ControlTests` (e.g. `ControlTests.<Area>.cs`) and share `RunOnStaThread`, `EnsureApplication`, `MergeGenericDictionary`, and `FindVisualChild*`.
+- One sealed class per subject, in the folder that owns the concern (`Control/<Control>Tests.cs`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/`). The class owns the reset through `IAsyncLifetime` calling `TestApp.EnsureLibraryTheme()`, or `IClassFixture<LightThemeFixture>` when no test mutates theme state. See AGENTS.md section 6 for the full layout and the shared `VisualTree` / `BrushAssert` helpers.
 - Cover at minimum: default style applies, key template parts resolve, critical DP/state transitions, and one theme cycle (`ThemeTestHelpers.ApplyStandardThemeCycle`) for theme-sensitive controls.
 - The HEAD-of-branch test count is the floor. Add tests; do not weaken the baseline. If a test is legitimately obsoleted, remove the whole file in the same change and record the rationale in `CHANGELOG.md`.
 
