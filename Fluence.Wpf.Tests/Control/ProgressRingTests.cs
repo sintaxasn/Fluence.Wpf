@@ -39,6 +39,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.TemplatePartTransforms;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -739,11 +740,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             MethodInfo method = Assert.IsType<MethodInfo>(typeof(ProgressRing).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic), exactMatch: false);
             return Assert.IsType<T>(method.Invoke(null, parameters: null), exactMatch: false);
-        }
-
-        private static RotateTransform? GetIndeterminateRotateTransform(ProgressRing ring)
-        {
-            return ring.Template?.FindName("PART_IndeterminateRotate", ring) as RotateTransform;
         }
 
         private static DependencyProperty GetPrivateDependencyProperty(string fieldName)

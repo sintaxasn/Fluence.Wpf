@@ -32,14 +32,24 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
     /// <summary>
     /// WI-3 A5-A6 tests: ComboBox and DropDownButton popup border CornerRadius
     /// tracks <c language="xaml">OverlayCornerRadius</c> (8px) via DynamicResource.
     /// </summary>
-    public partial class ControlTests
+    public sealed class PopupCornerRadiusTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 A5  ComboBox popup CornerRadius
         // ---------------------------------------------------------------------------
@@ -50,7 +60,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
 
@@ -69,9 +78,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 ComboBox cb = new();
                 Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
@@ -92,7 +98,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
 
@@ -111,9 +116,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 DropDownButton ddb = new();
                 Window w = new() { Content = ddb, Width = 200, Height = 100 };
                 w.Show();

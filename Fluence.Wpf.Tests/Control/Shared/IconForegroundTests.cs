@@ -38,22 +38,31 @@ using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
     /// <summary>
     /// A control's user-supplied Icon must render in the same color as that control's text,
     /// through theme switches and visual states, unless the consumer sets an explicit
     /// Foreground on the icon element (a local value must still win).
     /// </summary>
-    public partial class ControlTests
+    public sealed class IconForegroundTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task Button_FontIconIcon_MatchesTextForeground_AcrossStatesAndThemesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Controls.Button button = new()
@@ -104,9 +113,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Button button = new()
                 {
                     Appearance = ControlAppearance.Accent,
@@ -141,7 +147,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.HyperlinkButton link = new()
                 {
@@ -180,7 +185,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.NavigationViewItem item = new()
                 {
@@ -226,7 +230,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TabViewItem iconTab = new()
                 {
@@ -275,7 +278,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.MenuItem menuItem = new()
                 {
@@ -317,7 +319,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.InfoBar custom = new()
                 {
@@ -378,7 +379,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Card card = new()
                 {
@@ -420,9 +420,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ComboBox combo = new()
                 {
                     Icon = new Controls.FontIcon { Glyph = "\uE724" },
@@ -463,7 +460,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TextBox textBox = new()
                 {
@@ -506,7 +502,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 // Secondary / overflow style: icon column + label column side by side.

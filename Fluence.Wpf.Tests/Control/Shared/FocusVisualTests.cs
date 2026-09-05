@@ -34,7 +34,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
     /// <summary>
     /// WI-3 A1-A4 tests: per-control focus visual style dedup.
@@ -42,8 +42,18 @@ namespace Fluence.Wpf.Tests
     /// shared <c language="xaml">DefaultControlFocusVisualStyle</c> resource rather than
     /// per-control duplicates.
     /// </summary>
-    public partial class ControlTests
+    public sealed class FocusVisualTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 A1-A4  Focus visual dedup
         // ---------------------------------------------------------------------------
@@ -57,7 +67,6 @@ namespace Fluence.Wpf.Tests
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    _ = TestApp.EnsureLibraryTheme();
                     ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
 
                     Style style = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
@@ -71,7 +80,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 // These per-control duplicate keys must no longer exist now that
                 // all four controls reference DefaultControlFocusVisualStyle.
@@ -88,7 +96,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -108,7 +115,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -128,7 +134,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -148,7 +153,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultControlFocusVisualStyle"));
 
@@ -168,7 +172,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style sharedStyle = Assert.IsType<Style>(app.TryFindResource("DefaultCollectionFocusVisualStyle"));
 
@@ -200,9 +203,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 System.Windows.Controls.TabControl tabControl = new()
                 {
                     Width = 320,
@@ -262,9 +262,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 TabViewItem first = new() { Header = "First", Content = new System.Windows.Controls.TextBlock { Text = "One" } };
                 TabViewItem second = new() { Header = "Second", Content = new System.Windows.Controls.TextBlock { Text = "Two" } };
                 TabView tabView = new()
@@ -342,9 +339,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 NavigationViewItem first = new() { Content = "Home" };
                 NavigationViewItem second = new() { Content = "Colors" };
                 NavigationView nav = new()

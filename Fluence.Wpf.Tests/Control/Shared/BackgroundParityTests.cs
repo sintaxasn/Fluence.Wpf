@@ -41,18 +41,30 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Cross-control background and fill parity: WinUI role keys must be used for every
+    /// selection-control off-state, progress/scroll track, and demo-shell surface, and the
+    /// gallery source scripts and XAML must stay on the canonical bootstrap and allowlist.
+    /// </summary>
+    public sealed class BackgroundParityTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task SelectionControls_OffStateBackgrounds_UseWinUiAltFillRolesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.CheckBox checkBox = new() { Content = "Check" };
                 Controls.RadioButton radioButton = new() { Content = "Radio" };
                 Controls.ToggleSwitch toggleSwitch = new() { OffContent = "Off", OnContent = "On" };
@@ -118,9 +130,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
@@ -156,7 +165,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar scrollBar = new()
                 {
@@ -197,8 +205,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-
                 // Demo opt-in: DemoSampleControl.xaml reads DemoSampleCardPadding and other
                 // thickness resources from Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml,
                 // which do not exist in the library theme.
@@ -273,7 +279,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 // This test merges Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml itself, on
                 // top of the library baseline, to prove the demo dictionary does not shadow the
@@ -296,7 +301,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 // This test merges Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml itself, on
                 // top of the library baseline, to prove GetNativeDemoSurfaceBrushKeys still
@@ -323,7 +327,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] keys =
                 [

@@ -36,18 +36,29 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Cross-control automation name coverage: glyph-only buttons in pickers,
+    /// spinners, and chrome must expose an accessible name for Narrator.
+    /// </summary>
+    public sealed class AccessibilityNameTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task GlyphButtons_InPickersAndSpinners_HaveAutomationNamesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.NumberBox numberBox = new()
                 {
                     SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
@@ -86,9 +97,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.FluenceWindow window = new();
 
                 try
@@ -122,9 +130,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // QueryIcon must be non-null so the template trigger does not clear the icon
                 // slot; the button is only wired into the visual tree while QueryIcon is set.
                 Controls.AutoSuggestBox autoSuggestBox = new()
@@ -159,9 +164,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.DatePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
 
@@ -198,9 +200,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TimePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
 
@@ -237,9 +236,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // --- InfoBar PART_CloseButton ---
                 Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
                 Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
@@ -305,9 +301,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // TabViewItem is a ContentControl subclass; it can be templated standalone
                 // without a parent TabView. IsClosable defaults to true so PART_CloseButton
                 // is rendered (not collapsed by the IsClosable=False trigger).
@@ -345,9 +338,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // Default pane mode (Left) instantiates the template block that hosts both buttons.
                 Controls.NavigationView nav = new() { Width = 320, Height = 240 };
                 Window navWindow = new() { Content = nav, Width = 400, Height = 300 };
@@ -385,9 +375,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.NavigationView nav = new()
                 {
                     PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
@@ -422,9 +409,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.FontIcon icon = new() { Glyph = "" };
                 AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(icon), exactMatch: false);
 
@@ -451,8 +435,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try

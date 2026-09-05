@@ -38,16 +38,18 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.ContentDialogTestHost;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.TemplatePartTransforms;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control.Shared
 {
     /// <summary>
     /// Reduced-motion tests: when <see cref="MotionHelper.IsMotionEnabled"/> is false (the
     /// Windows "Show animations in Windows" accessibility setting is off), code-driven
     /// animations must not start and controls must jump straight to their final visual state.
-    /// Every test forces the gate through <see cref="MotionHelper.OverrideIsMotionEnabled"/>
-    /// and resets it to null in a finally block.
+    /// Every test forces the gate through <see cref="MotionHelper.OverrideIsMotionEnabled"/>;
+    /// <see cref="DisposeAsync"/> resets it to null so an escaping exception cannot poison a
+    /// later animation test.
     /// <para>
     /// The one deliberate exception is the indeterminate <see cref="Controls.ProgressBar"/>: its
     /// motion is the only thing that communicates "work is still happening", so it is treated as
@@ -55,8 +57,22 @@ namespace Fluence.Wpf.Tests
     /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync"/>.
     /// </para>
     /// </summary>
-    public partial class ControlTests
+    public sealed class ReducedMotionTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MotionHelper.OverrideIsMotionEnabled = null;
+                _ = TestApp.EnsureLibraryTheme();
+            }));
+        }
+
         /// <summary>
         /// An indeterminate ProgressBar must keep animating even with motion disabled.
         /// <para>
@@ -81,8 +97,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ProgressBar bar = new()
@@ -109,7 +123,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -120,8 +133,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ProgressRing ring = new()
@@ -148,7 +159,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -159,8 +169,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.FontIcon icon = new()
@@ -181,7 +189,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -192,8 +199,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ToggleSwitch ts = new();
@@ -213,7 +218,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -224,8 +228,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.Expander expander = new()
@@ -258,7 +260,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -269,8 +270,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -309,7 +308,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     window.Close();
                 }
             });
@@ -320,8 +318,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -359,7 +355,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     window.Close();
                 }
             });
@@ -370,8 +365,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = CreateShownContentDialogOwner();
@@ -406,7 +399,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     dialog.Hide();
                     window.Close();
                 }
@@ -418,8 +410,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -450,7 +440,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     window.Close();
                 }
             });
@@ -461,8 +450,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = true;
 
                 Controls.ToggleSwitch ts = new();
@@ -482,7 +469,6 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    MotionHelper.OverrideIsMotionEnabled = null;
                     w.Close();
                 }
             });
@@ -500,32 +486,14 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                try
-                {
-                    MotionHelper.OverrideIsMotionEnabled = true;
-                    Assert.True(MotionHelper.IsMotionEnabled,
-                        "An override of true must enable motion whatever the OS animation setting and render tier report.");
+                MotionHelper.OverrideIsMotionEnabled = true;
+                Assert.True(MotionHelper.IsMotionEnabled,
+                    "An override of true must enable motion whatever the OS animation setting and render tier report.");
 
-                    MotionHelper.OverrideIsMotionEnabled = false;
-                    Assert.False(MotionHelper.IsMotionEnabled,
-                        "An override of false must disable motion whatever the OS animation setting and render tier report.");
-                }
-                finally
-                {
-                    MotionHelper.OverrideIsMotionEnabled = null;
-                }
+                MotionHelper.OverrideIsMotionEnabled = false;
+                Assert.False(MotionHelper.IsMotionEnabled,
+                    "An override of false must disable motion whatever the OS animation setting and render tier report.");
             });
-        }
-
-        private static TranslateTransform GetToggleSwitchKnobTranslate(Controls.ToggleSwitch toggleSwitch)
-        {
-            FrameworkElement knob = Assert.IsType<FrameworkElement>(FindVisualChildByName<FrameworkElement>(toggleSwitch, "SwitchKnob"), exactMatch: false);
-            return Assert.IsType<TranslateTransform>(knob.RenderTransform);
-        }
-
-        private static RotateTransform? GetIndeterminateRotateTransform(Controls.ProgressRing ring)
-        {
-            return ring.Template?.FindName("PART_IndeterminateRotate", ring) as RotateTransform;
         }
     }
 }

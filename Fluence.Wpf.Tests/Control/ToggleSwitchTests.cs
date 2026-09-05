@@ -39,6 +39,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.TemplatePartTransforms;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -355,12 +356,6 @@ namespace Fluence.Wpf.Tests.Control
         {
             Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(toggleSwitch, "SwitchThumb"), exactMatch: false);
             return Assert.IsType<ScaleTransform>(thumb.RenderTransform);
-        }
-
-        private static TranslateTransform GetToggleSwitchKnobTranslate(ToggleSwitch toggleSwitch)
-        {
-            FrameworkElement knob = Assert.IsType<FrameworkElement>(FindVisualChildByName<FrameworkElement>(toggleSwitch, "SwitchKnob"), exactMatch: false);
-            return Assert.IsType<TranslateTransform>(knob.RenderTransform);
         }
     }
 }
