@@ -132,7 +132,6 @@ namespace Fluence.Wpf.Demo.Pages
                 [
                     new("Control stroke default", "Default control outline.", "ControlStrokeColorDefaultBrush"),
                     new("Control stroke secondary", "Secondary control outline.", "ControlStrokeColorSecondaryBrush"),
-                    new("Control stroke tertiary", "Tertiary control outline.", "ControlStrokeColorTertiaryBrush"),
                     new("On accent default", "Stroke over accent fill.", "ControlStrokeColorOnAccentDefaultBrush"),
                     new("On accent secondary", "Secondary stroke over accent fill.", "ControlStrokeColorOnAccentSecondaryBrush"),
                     new("On accent tertiary", "Tertiary stroke over accent fill.", "ControlStrokeColorOnAccentTertiaryBrush"),
@@ -186,7 +185,6 @@ namespace Fluence.Wpf.Demo.Pages
                 "SystemFillColorSuccessBrush",
                 [
                     new("Attention", "Attention foreground.", "SystemFillColorAttentionBrush"),
-                    new("Informational", "Informational foreground.", "SystemFillColorInformationalBrush"),
                     new("Success", "Success foreground.", "SystemFillColorSuccessBrush"),
                     new("Caution", "Caution foreground.", "SystemFillColorCautionBrush"),
                     new("Critical", "Critical foreground.", "SystemFillColorCriticalBrush"),
