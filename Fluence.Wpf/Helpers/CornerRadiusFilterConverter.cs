@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Helpers
     /// adjoining tiers (for example the Expander header and content borders) can be derived from
     /// the control's own <c language="csharp">BorderThickness</c> rather than a hardcoded literal.
     /// </remarks>
-    public sealed class CornerRadiusFilterConverter : IValueConverter
+    internal sealed class CornerRadiusFilterConverter : IValueConverter
     {
         /// <summary>
         /// Gets or sets which edge of the value is kept; the opposite edge is zeroed.
