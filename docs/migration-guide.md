@@ -101,5 +101,5 @@ After migrating a page or shell surface, run the gallery and check Light, Dark, 
 
 ```powershell
 dotnet build Fluence.Wpf.sln -c Debug
-dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
+Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 ```

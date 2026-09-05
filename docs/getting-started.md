@@ -87,7 +87,7 @@ Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 
 ## Verify locally
 
-- Run tests: `dotnet test Fluence.Wpf.sln`
+- Run tests: `Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots"` (built executable, not `dotnet test`; see CONTRIBUTING.md for the `net472` two-lane invocation)
 - Run the gallery: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj`
 - Run the MVVM demo: `dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj`
 

@@ -1,6 +1,6 @@
 ﻿---
 name: new-control
-design-time and demo entries, an xUnit test partial using the STA harness, and the docs/CHANGELOG updates.
+design-time and demo entries, an xUnit test class using the STA harness, and the docs/CHANGELOG updates.
 disable-model-invocation: true
 ---
 
@@ -52,6 +52,6 @@ Resolve every visual or behavioural decision through AGENTS.md section 4: in-tre
 ## Verify before reporting done
 
 - `dotnet build Fluence.Wpf.sln -c Debug`: zero errors, zero warnings (TreatWarningsAsErrors) on both TFMs.
-- `dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build` first (fast), then `-f net472 --no-build`. Both green; net count up by the tests you added.
+- `Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off` first (fast), then the `net472` two lanes from AGENTS.md section 6. Both green; net count up by the tests you added.
 - All `.cs` and `.xaml` saved UTF-8 with BOM, LF line endings.
 - Stage changes, show diffs, and wait for the user's explicit commit instruction.

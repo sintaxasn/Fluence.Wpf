@@ -103,8 +103,10 @@ Prerequisites: [.NET SDK](https://dotnet.microsoft.com/download) (includes MSBui
 ```powershell
 dotnet restore Fluence.Wpf.sln
 dotnet build Fluence.Wpf.sln -c Release
-dotnet test Fluence.Wpf.sln -c Release
+Fluence.Wpf.Tests\bin\Release\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 ```
+
+The suite runs on Microsoft Testing Platform: run the built executable, not `dotnet test`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the `net472` two-lane invocation.
 
 ## Running the Demos
 
