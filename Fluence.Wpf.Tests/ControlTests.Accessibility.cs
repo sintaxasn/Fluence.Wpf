@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.NumberBox numberBox = new()
                 {
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.FluenceWindow window = new();
 
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // QueryIcon must be non-null so the template trigger does not clear the icon
                 // slot; the button is only wired into the visual tree while QueryIcon is set.
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.DatePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
@@ -199,7 +199,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TimePicker picker = new() { Width = 220 };
                 Window window = new() { Content = picker, Width = 300, Height = 120 };
@@ -238,7 +238,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // --- InfoBar PART_CloseButton ---
                 Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // TabViewItem is a ContentControl subclass; it can be templated standalone
                 // without a parent TabView. IsClosable defaults to true so PART_CloseButton
@@ -346,7 +346,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // Default pane mode (Left) instantiates the template block that hosts both buttons.
                 Controls.NavigationView nav = new() { Width = 320, Height = 240 };
@@ -386,7 +386,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.NavigationView nav = new()
                 {
@@ -423,7 +423,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.FontIcon icon = new() { Glyph = "" };
                 AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(icon), exactMatch: false);
@@ -452,7 +452,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try

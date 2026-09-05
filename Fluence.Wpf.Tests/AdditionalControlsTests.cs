@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.NumberBox numberBox = new() { Width = 160, Value = 3 };
                 try
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.Expander ex = new() { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
                 try
@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
@@ -170,7 +170,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.DropDownButton btn = new() { Content = "Open", Width = 160, Flyout = new StackPanel() };
                 try
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.SplitButton btn = new() { Content = "Export", Width = 180, Flyout = new StackPanel() };
                 try
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
                 Controls.InfoBadge badge = new() { Value = 2, Width = 32, Height = 32 };
                 try

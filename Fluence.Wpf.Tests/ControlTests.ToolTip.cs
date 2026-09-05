@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 object brush = Assert.IsType<object>(app.TryFindResource("SolidBackgroundFillColorTertiaryBrush"), exactMatch: false);
             });
@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 object brush = Assert.IsType<object>(app.TryFindResource("SurfaceStrokeColorFlyoutBrush"), exactMatch: false);
             });
@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // Default style is keyed to the Fluence ToolTip type.
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(ToolTip)));
@@ -98,7 +98,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = new() { Width = 300, Height = 200 };
                 Button target = new() { Content = "Hover me" };
@@ -142,7 +142,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 // The WPF tooltip pipeline resolves its host popup animation through this
                 // system resource key, and the theme overrides it so the template
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 string[] brushKeys = ["SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush"];
 

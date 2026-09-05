@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("One");
@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("One");
@@ -104,7 +104,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Alpha");
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Beta");
@@ -157,7 +157,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Alpha");
@@ -180,7 +180,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ComboBox cb = new();
                 _ = cb.Items.Add("Gamma");

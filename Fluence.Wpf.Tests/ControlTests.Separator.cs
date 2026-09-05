@@ -52,7 +52,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
@@ -89,7 +89,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
@@ -110,7 +110,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };

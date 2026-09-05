@@ -80,7 +80,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ProgressBar bar = new()
@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ProgressRing ring = new()
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.FontIcon icon = new()
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.ToggleSwitch ts = new();
@@ -223,7 +223,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Controls.Expander expander = new()
@@ -268,7 +268,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -319,7 +319,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -369,7 +369,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = CreateShownContentDialogOwner();
@@ -417,7 +417,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = false;
 
                 Window window = new() { Width = 400, Height = 300 };
@@ -460,7 +460,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 MotionHelper.OverrideIsMotionEnabled = true;
 
                 Controls.ToggleSwitch ts = new();

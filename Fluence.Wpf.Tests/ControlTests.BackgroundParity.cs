@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.CheckBox checkBox = new() { Content = "Check" };
                 Controls.RadioButton radioButton = new() { Content = "Radio" };
@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ProgressBar progressBar = new()
                 {
@@ -156,7 +156,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar scrollBar = new()
                 {
@@ -198,6 +198,10 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
+
+                // Demo opt-in: DemoSampleControl.xaml reads DemoSampleCardPadding and other
+                // thickness resources from Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml,
+                // which do not exist in the library theme.
                 _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
@@ -270,6 +274,11 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
+
+                // Demo opt-in: this test asserts that merging
+                // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml does not shadow the native
+                // CardBackgroundFillColorDefault library role, so it must merge that dictionary
+                // to exercise the interaction it is guarding against.
                 _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
@@ -289,6 +298,11 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
+
+                // Demo opt-in: GetNativeDemoSurfaceBrushKeys asserts native library brushes
+                // still resolve to non-demo colors after merging
+                // Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml, so the demo dictionary
+                // must be merged for this test to exercise anything.
                 _ = TestApp.EnsureDemoTheme();
                 MergeDemoSharedStyles(application);
 
@@ -311,8 +325,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
-                MergeDemoSharedStyles(application);
+                _ = TestApp.EnsureLibraryTheme();
 
                 string[] keys =
                 [

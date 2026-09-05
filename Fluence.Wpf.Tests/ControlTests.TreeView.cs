@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeView tv = new();
                 _ = tv.Items.Add(new Controls.TreeViewItem { Header = "Node 1" });
@@ -78,7 +78,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Node A" };
                 _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Node A" };
                 _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Leaf" };
                 Controls.TreeView tv = new();
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Node A" };
                 _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
@@ -178,7 +178,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Node A" };
                 Controls.TreeView tv = new();
@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Parent" };
                 _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child" });
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeView tv = new();
                 _ = tv.Items.Add(new Controls.TreeViewItem { Header = "Node 1" });
@@ -293,7 +293,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TreeViewItem item = new() { Header = "Node A" };
                 _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child" });

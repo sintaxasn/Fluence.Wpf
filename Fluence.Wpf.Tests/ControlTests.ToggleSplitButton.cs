@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 Controls.ToggleSplitButton button = createButton();
                 Window window = new();

@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 Button button = new();
                 _ = new Window { Content = button };
                 _ = button.ApplyTemplate();
@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
                 TextBox textBox = new();
                 _ = new Window { Content = textBox };
                 _ = textBox.ApplyTemplate();
@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static delegate
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureDemoTheme();
+                _ = TestApp.EnsureLibraryTheme();
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
