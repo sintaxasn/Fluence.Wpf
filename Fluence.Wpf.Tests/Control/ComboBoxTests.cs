@@ -31,9 +31,14 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -433,5 +438,296 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         #endregion WI-3 C18  ComboBox FocusedStates VSM
+
+        [Fact]
+        public Task Stage3_ComboBox_PlaceholderText_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox combo = new() { PlaceholderText = "Pick one" };
+                Assert.Equal("Pick one", combo.PlaceholderText, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_SelectionChange_UpdatesDisplayedContentAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+                combo.SelectedIndex = 0;
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(combo.Template.FindName("contentPresenter", combo));
+                    Assert.Equal("Alpha", presenter.Content as string, StringComparer.Ordinal);
+
+                    combo.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal("Beta", presenter.Content as string, StringComparer.Ordinal);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_ItemTemplate_HasHoverOverlayAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    combo.IsDropDownOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(0));
+                    _ = item.ApplyTemplate();
+
+                    Assert.NotNull(item.Template.FindName("OuterBorder", item));
+                    Assert.NotNull(item.Template.FindName("SelectionIndicator", item));
+
+                    combo.IsDropDownOpen = false;
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
+                    TranslateTransform translate =
+                        Assert.IsType<TranslateTransform>(border.RenderTransform);
+                    Panel dropdownRoot = Assert.IsType<Panel>(combo.Template.FindName("PART_DropdownRoot", combo), exactMatch: false);
+
+                    // The fade runs on the dropdown root, not on the surface border alone, so
+                    // the opaque elevation caster behind the surface fades with it instead of
+                    // painting a blank plate at full strength on the first frame of the open.
+                    Assert.Equal(0.0, dropdownRoot.Opacity, 0.001);
+
+                    // The code-driven reveal (moved out of the template MultiTriggers) must
+                    // settle at the rest position with its Stop-fill clocks released.
+                    for (int open = 0; open < 2; open++)
+                    {
+                        combo.IsDropDownOpen = true;
+                        Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                                () => Math.Abs(translate.Y) < 0.001 && dropdownRoot.Opacity >= 1.0 &&
+                                    !translate.HasAnimatedProperties && !dropdownRoot.HasAnimatedProperties).ConfigureAwait(true),
+                            string.Format(
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                "Open {0}: the dropdown reveal must settle at Y=0, full opacity, and release its clocks.",
+                                open));
+
+                        combo.IsDropDownOpen = false;
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                        // Closing re-hides the root so the next open cannot composite a frame at
+                        // rest before the reveal seeds its start pose.
+                        Assert.True(dropdownRoot.Opacity < 0.001,
+                            string.Format(
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                "Open {0}: closing the dropdown must return the root to hidden.",
+                                open));
+                    }
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_NoSelection_ShowsPlaceholderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    PlaceholderText = "Choose...",
+                    SelectedIndex = -1,
+                };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TextBlock placeholder = Assert.IsType<TextBlock>(combo.Template.FindName("PlaceholderTextBlock", combo));
+                    Assert.Equal(Visibility.Visible, placeholder.Visibility);
+
+                    combo.SelectedIndex = 0;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(Visibility.Collapsed, placeholder.Visibility);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_ToggleButton_OpensDropDownAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    PlaceholderText = "Pick one",
+                };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = combo.ApplyTemplate();
+                    ToggleButton toggle = Assert.IsType<ToggleButton>(combo.Template.FindName("ToggleButton", combo), exactMatch: false);
+                    Popup popup = Assert.IsType<Popup>(combo.Template.FindName("PART_Popup", combo));
+
+                    ToggleButtonAutomationPeer peer = new(toggle);
+                    IToggleProvider toggleProvider = Assert.IsType<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle), exactMatch: false);
+
+                    toggleProvider.Toggle();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(combo.IsDropDownOpen, "ComboBox toggle should open the drop-down.");
+                    Assert.True(popup.IsOpen, "ComboBox popup should open when the toggle is clicked.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_ToggleButton_UsesReleaseClickModeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    PlaceholderText = "Pick one",
+                };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = combo.ApplyTemplate();
+                    ToggleButton toggle = Assert.IsType<ToggleButton>(combo.Template.FindName("ToggleButton", combo), exactMatch: false);
+
+                    Assert.Equal(ClickMode.Release, toggle.ClickMode);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_DropDownSelection_UpdatesSelectedIndexAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    PlaceholderText = "Pick one",
+                };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    combo.IsDropDownOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(1));
+
+                    item.IsSelected = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(1, combo.SelectedIndex);
+                    Assert.Equal("Beta", combo.SelectedText, StringComparer.Ordinal);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

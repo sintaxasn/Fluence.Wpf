@@ -612,5 +612,41 @@ namespace Fluence.Wpf.Tests.Control
                 w.Close();
             });
         }
+
+        [Fact]
+        public Task Stage3_ProgressBar_ProgressMode_DefaultIsStandardAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ProgressBar bar = new();
+                Assert.Equal(ProgressBarMode.Standard, bar.ProgressMode);
+            });
+        }
+
+        [Fact]
+        public Task Stage3_ProgressBar_Template_HasTrackAndFillAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.ProgressBar bar = new() { Width = 200, Height = 8, Value = 40, Maximum = 100 };
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.NotNull(bar.Template.FindName("PART_Track", bar));
+                    Assert.NotNull(bar.Template.FindName("PART_Fill", bar));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

@@ -28,10 +28,14 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
@@ -108,6 +112,117 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.True(
                     string.IsNullOrWhiteSpace(helpText),
                     $"Null RadioButton.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
+            });
+        }
+
+        [Fact]
+        public Task RadioButton_Checked_HasAccentFillAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                Window window = new();
+                RadioButton radio = new()
+                {
+                    Content = "Test",
+                    IsChecked = true,
+                };
+
+                try
+                {
+                    window.Content = radio;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = radio.ApplyTemplate();
+                    Ellipse checkedEllipse = Assert.IsType<Ellipse>(radio.Template.FindName("CheckedEllipse", radio));
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorDefaultBrush"]);
+
+                    Assert.Equal(1.0, checkedEllipse.Opacity);
+                    _ = Assert.IsType<SolidColorBrush>(checkedEllipse.Fill, exactMatch: false);
+                    Assert.Equal(accentBrush.Color, ((SolidColorBrush)checkedEllipse.Fill).Color);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task RadioButton_ContentAlignment_CentersTextWithIndicatorAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                RadioButton radio = new()
+                {
+                    Content = "Standard",
+                    Width = 240,
+                    Height = 40,
+                };
+
+                try
+                {
+                    window.Content = radio;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = radio.ApplyTemplate();
+                    System.Windows.Controls.Grid indicatorHost = Assert.IsType<System.Windows.Controls.Grid>(FindVisualChildByName<System.Windows.Controls.Grid>(radio, "IndicatorHost"), exactMatch: false);
+                    System.Windows.Controls.ContentPresenter contentPresenter = Assert.IsType<System.Windows.Controls.ContentPresenter>(FindVisualChildByName<System.Windows.Controls.ContentPresenter>(radio, "ContentPresenter"), exactMatch: false);
+
+                    Assert.Equal(VerticalAlignment.Center, radio.VerticalContentAlignment);
+                    Assert.Equal(VerticalAlignment.Center, indicatorHost.VerticalAlignment);
+                    Assert.Equal(new Thickness(0), indicatorHost.Margin);
+                    Assert.Equal(VerticalAlignment.Center, contentPresenter.VerticalAlignment);
+                    Assert.Equal(new Thickness(8, 0, 0, 0), contentPresenter.Margin);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task RadioButton_GroupExclusivity_UnchecksOthersAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                System.Windows.Controls.StackPanel panel = new();
+                RadioButton radio1 = new() { Content = "A", GroupName = "TestGroup", IsChecked = true };
+                RadioButton radio2 = new() { Content = "B", GroupName = "TestGroup" };
+                RadioButton radio3 = new() { Content = "C", GroupName = "TestGroup" };
+                _ = panel.Children.Add(radio1);
+                _ = panel.Children.Add(radio2);
+                _ = panel.Children.Add(radio3);
+
+                try
+                {
+                    window.Content = panel;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(radio1.IsChecked is true);
+
+                    radio2.IsChecked = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(false, radio1.IsChecked);
+                    Assert.Equal(true, radio2.IsChecked);
+                    Assert.Equal(false, radio3.IsChecked);
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
     }

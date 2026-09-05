@@ -40,6 +40,7 @@ using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.FluentButtonQueries;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
@@ -953,16 +954,6 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         private static Controls.RadioButton? FindRadioButtonByContent(DependencyObject root, string content)
         {
             return FindVisualChildren<Controls.RadioButton>(root).FirstOrDefault(radioButton => string.Equals(radioButton.Content as string, content, StringComparison.Ordinal));
-        }
-
-        // FindFluentButtonByContent is also defined in the base ControlTests.cs, which still
-        // owns the MainWindow_* tests until Task 18 moves them into Gallery/DemoShellTests.cs.
-        // Task 18 is expected to reconcile the two copies once that second destination exists,
-        // per the controller amendment's rule against copying a helper more than one
-        // destination needs.
-        private static Controls.Button? FindFluentButtonByContent(DependencyObject root, string content)
-        {
-            return FindVisualChildren<Controls.Button>(root).FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
         }
     }
 }

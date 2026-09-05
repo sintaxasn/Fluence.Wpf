@@ -29,6 +29,8 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using Fluence.Wpf.Automation;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -100,6 +102,71 @@ namespace Fluence.Wpf.Tests.Control
                 finally
                 {
                     CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task HyperlinkButton_DefaultForeground_IsAccentAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.HyperlinkButton button = new()
+                {
+                    Content = "Link",
+                    Width = 120,
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentTextFillColorPrimaryBrush"]);
+                    _ = Assert.IsType<SolidColorBrush>(button.Foreground, exactMatch: false);
+                    Assert.Equal(accentBrush.Color, ((SolidColorBrush)button.Foreground).Color);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task HyperlinkButton_Click_WithNavigateUri_DoesNotThrowAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.HyperlinkButton button = new()
+                {
+                    Content = "Link",
+                    Width = 120,
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(button.IsLoaded,
+                        "HyperlinkButton should remain loaded after click dispatch.");
+                    Assert.Null(button.NavigateUri);
+                }
+                finally
+                {
+                    window.Close();
                 }
             });
         }

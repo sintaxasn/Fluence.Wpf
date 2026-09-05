@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -356,6 +357,76 @@ namespace Fluence.Wpf.Tests.Control
         {
             Ellipse thumb = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(toggleSwitch, "SwitchThumb"), exactMatch: false);
             return Assert.IsType<ScaleTransform>(thumb.RenderTransform);
+        }
+
+        [Fact]
+        public Task ToggleSwitch_OnOffContent_SwapsOnCheckAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                ToggleSwitch toggle = new()
+                {
+                    OnContent = "On",
+                    OffContent = "Off",
+                    IsChecked = false,
+                };
+
+                try
+                {
+                    window.Content = toggle;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = toggle.ApplyTemplate();
+                    FrameworkElement offPresenter = Assert.IsType<FrameworkElement>(toggle.Template.FindName("OffContentPresenter", toggle), exactMatch: false);
+                    FrameworkElement onPresenter = Assert.IsType<FrameworkElement>(toggle.Template.FindName("OnContentPresenter", toggle), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, offPresenter.Visibility);
+                    Assert.Equal(Visibility.Collapsed, onPresenter.Visibility);
+
+                    toggle.IsChecked = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(Visibility.Collapsed, offPresenter.Visibility);
+                    Assert.Equal(Visibility.Visible, onPresenter.Visibility);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ToggleSwitch_IsChecked_TogglesOnClickAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                ToggleSwitch toggle = new() { IsChecked = false };
+
+                try
+                {
+                    window.Content = toggle;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(false, toggle.IsChecked);
+
+                    IToggleProvider toggleProvider = (ToggleButtonAutomationPeer)new(toggle);
+                    toggleProvider.Toggle();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(true, toggle.IsChecked);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
         }
     }
 }

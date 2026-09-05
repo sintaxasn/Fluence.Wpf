@@ -430,5 +430,37 @@ namespace Fluence.Wpf.Tests.Control
                 w.Close();
             });
         }
+
+        [Fact]
+        public Task Expander_CornerRadius_DefaultAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.Expander ex = new();
+                Assert.Equal(new CornerRadius(4), ex.CornerRadius);
+            });
+        }
+
+        [Fact]
+        public Task Expander_Template_AppliesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.Expander ex = new() { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
+                try
+                {
+                    window.Content = ex;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = ex.ApplyTemplate();
+                    Assert.NotNull(ex.Template);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

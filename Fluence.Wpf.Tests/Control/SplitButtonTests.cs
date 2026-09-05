@@ -427,6 +427,30 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        [Fact]
+        public Task SplitButton_FlyoutPresenter_StretchesForLeftAlignedItemsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                SplitButton btn = new() { Content = "Export", Width = 180, Flyout = new System.Windows.Controls.StackPanel() };
+                try
+                {
+                    window.Content = btn;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = btn.ApplyTemplate();
+
+                    System.Windows.Controls.ContentPresenter presenter = Assert.IsType<System.Windows.Controls.ContentPresenter>(btn.Template.FindName("FlyoutContentPresenter", btn));
+                    Assert.Equal(HorizontalAlignment.Stretch, presenter.HorizontalAlignment);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
         private sealed class RelayCommand(Action<object?> execute) : ICommand
         {
             private readonly Action<object?> _execute = execute;

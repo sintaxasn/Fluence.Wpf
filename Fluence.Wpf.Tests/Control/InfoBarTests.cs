@@ -31,6 +31,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -298,6 +300,120 @@ namespace Fluence.Wpf.Tests.Control
                 })
                 {
                     _ = Assert.IsType<Brush>(Application.Current.TryFindResource(key), exactMatch: false);
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_ErrorSeverity_HasExpectedBackgroundAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    Severity = InfoBarSeverity.Error,
+                    Title = "Error",
+                    Message = "Something went wrong.",
+                    IsOpen = true,
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Brush expectedBrush = Assert.IsType<Brush>(application.Resources["SystemFillColorCriticalBackgroundBrush"], exactMatch: false);
+
+                    _ = infoBar.ApplyTemplate();
+                    System.Windows.Controls.Border rootBorder = Assert.IsType<System.Windows.Controls.Border>(infoBar.Template.FindName("RootBorder", infoBar));
+                    Assert.NotNull(rootBorder.Background);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_CloseButton_SetsIsOpenFalseAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Closable",
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = infoBar.ApplyTemplate();
+                    System.Windows.Controls.Button closeButton = Assert.IsType<System.Windows.Controls.Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
+
+                    ButtonAutomationPeer peer = new(closeButton);
+                    IInvokeProvider invokeProvider = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+
+                    invokeProvider.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.False(infoBar.IsOpen, "Clicking the close button should set IsOpen to false.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_ClosingCancel_PreventsCloseAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Cancelable",
+                };
+
+                infoBar.Closing += static (sender, args) => args.Cancel = true;
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = infoBar.ApplyTemplate();
+                    System.Windows.Controls.Button closeButton = Assert.IsType<System.Windows.Controls.Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
+
+                    ButtonAutomationPeer peer = new(closeButton);
+                    IInvokeProvider invokeProvider = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+
+                    invokeProvider.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(infoBar.IsOpen, "Canceling the Closing event should keep IsOpen true.");
+                }
+                finally
+                {
+                    window.Close();
                 }
             });
         }

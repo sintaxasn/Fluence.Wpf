@@ -379,5 +379,192 @@ namespace Fluence.Wpf.Tests.Control
                 w.Close();
             });
         }
+
+        [Fact]
+        public Task TextBox_PlaceholderText_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox textBox = new();
+                const string placeholder = "Enter text here...";
+
+                textBox.PlaceholderText = placeholder;
+
+                Assert.Equal(placeholder, textBox.PlaceholderText, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task TextBox_ClearButtonEnabled_DefaultTrueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox textBox = new();
+
+                Assert.True(textBox.ClearButtonEnabled);
+            });
+        }
+
+        [Fact]
+        public Task TextBox_DefaultChrome_UsesWinUiReferenceValuesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.TextBox textBox = new()
+                {
+                    Width = 260,
+                };
+
+                try
+                {
+                    window.Content = textBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border mainBorder = Assert.IsType<Border>(textBox.Template.FindName("MainBorder", textBox));
+                    Button clearButton = Assert.IsType<Button>(textBox.Template.FindName("PART_ClearButton", textBox));
+
+                    Assert.Equal(new Thickness(10, 5, 6, 6), textBox.Padding);
+                    Assert.Equal(32.0, textBox.MinHeight);
+                    _ = Assert.IsType<LinearGradientBrush>(mainBorder.BorderBrush, exactMatch: false);
+                    Assert.Equal(30.0, clearButton.Width, 0.1);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_FocusState_ShowsAccentLineUnderneathAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.TextBox textBox = new()
+                {
+                    Width = 260,
+                    Text = "Focused",
+                };
+
+                try
+                {
+                    window.Content = textBox;
+                    window.Show();
+                    _ = textBox.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border accentLine = Assert.IsType<Border>(textBox.Template.FindName("FocusAccentLine", textBox));
+
+                    Assert.Equal(1.0, accentLine.Opacity);
+                    Assert.Equal(2.0, accentLine.Height);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_TextViewAlignsWithPlaceholder_WhenIconIsShownAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.TextBox textBox = new()
+                {
+                    Width = 260,
+                    PlaceholderText = "With icon",
+                    Icon = new Controls.FontIcon
+                    {
+                        Glyph = "\uE721",
+                        IconFontSize = 14,
+                    },
+                };
+
+                try
+                {
+                    window.Content = textBox;
+                    window.Show();
+                    _ = textBox.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FrameworkElement placeholder = Assert.IsType<FrameworkElement>(textBox.Template.FindName("PlaceholderTextBlock", textBox), exactMatch: false);
+                    FrameworkElement textView = Assert.IsType<FrameworkElement>(FindVisualChildByTypeName(textBox, "TextBoxView"), exactMatch: false);
+
+                    double placeholderX = placeholder.TransformToAncestor(window).Transform(new Point(0, 0)).X;
+                    double textViewX = textView.TransformToAncestor(window).Transform(new Point(0, 0)).X;
+
+                    // UseLayoutRounding snaps the placeholder and the ScrollViewer content chain to whole
+                    // device pixels independently, so at fractional DPI scales (e.g. 175%) the two can land
+                    // one device pixel apart. Alignment is therefore asserted to the nearest device pixel.
+                    double oneDevicePixelInDips = 1.0 / VisualTreeHelper.GetDpi(textBox).DpiScaleX;
+                    Assert.Equal(placeholderX, textViewX, oneDevicePixelInDips + 0.01);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Stage3_TextBox_ValidationState_DefaultNoneAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new();
+                Assert.Equal(ValidationState.None, tb.ValidationState);
+            });
+        }
+
+        [Fact]
+        public Task Stage3_TextBox_HelperText_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new() { HelperText = "Hint" };
+                Assert.Equal("Hint", tb.HelperText, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public Task Stage3_TextBox_CharacterCounter_ShowsWithMaxLengthAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.TextBox textBox = new()
+                {
+                    Width = 260,
+                    MaxLength = 40,
+                    Text = "Hi",
+                };
+
+                try
+                {
+                    window.Content = textBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TextBlock counter = Assert.IsType<TextBlock>(textBox.Template.FindName("PART_CharacterCounter", textBox));
+                    Assert.Equal("2/40", counter.Text, StringComparer.Ordinal);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

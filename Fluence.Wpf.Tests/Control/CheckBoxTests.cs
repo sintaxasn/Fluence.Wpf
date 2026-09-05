@@ -110,5 +110,15 @@ namespace Fluence.Wpf.Tests.Control
                     $"Null CheckBox.Description must clear AutomationProperties.HelpText. Actual: '{helpText}'.");
             });
         }
+
+        [Fact]
+        public Task Stage3_CheckBox_Content_RoundtripsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                CheckBox cb = new() { Content = "Test" };
+                Assert.Equal("Test", cb.Content as string, StringComparer.Ordinal);
+            });
+        }
     }
 }

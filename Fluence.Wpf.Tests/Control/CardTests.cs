@@ -487,5 +487,25 @@ namespace Fluence.Wpf.Tests.Control
                     "A non-clickable Card must not be in the tab order.");
             });
         }
+
+        [Fact]
+        public Task Stage3_Card_DefaultVariant_IsDefaultAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Card card = new();
+                Assert.Equal(CardVariant.Default, card.Variant);
+            });
+        }
+
+        [Fact]
+        public Task Stage3_Card_IsClickable_ExposesIsPressedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Card card = new() { IsClickable = true };
+                Assert.False(card.IsPressed);
+            });
+        }
     }
 }

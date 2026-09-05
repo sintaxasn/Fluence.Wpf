@@ -28,12 +28,14 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.FluentButtonQueries;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -281,6 +283,241 @@ namespace Fluence.Wpf.Tests.Control
             Assert.False(
                 xaml.Contains("Value=\"Transparent\"", StringComparison.Ordinal),
                 "Button template should use theme resources rather than literal transparent brush values.");
+        }
+
+        [Fact]
+        public Task Button_DefaultAppearance_IsStandardAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.Button button = new();
+
+                Assert.Equal(ControlAppearance.Standard, button.Appearance);
+            });
+        }
+
+        [Fact]
+        public Task Button_AccentAppearance_CanBeSetAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.Button button = new()
+                {
+                    Appearance = ControlAppearance.Accent,
+                };
+
+                Assert.Equal(ControlAppearance.Accent, button.Appearance);
+            });
+        }
+
+        [Fact]
+        public Task Button_AccentAppearance_UsesAccentBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                Window window = new();
+                Controls.Button button = new()
+                {
+                    Width = 140,
+                    Content = "Accent",
+                    Appearance = ControlAppearance.Accent,
+                    IsHitTestVisible = false,
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
+                    SolidColorBrush accentBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorDefaultBrush"]);
+
+                    _ = Assert.IsType<SolidColorBrush>(restFill.Background, exactMatch: false);
+                    Assert.Equal(accentBrush.Color, ((SolidColorBrush)restFill.Background).Color);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Button_LeftIconContentGroup_RemainsCenteredAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.Button button = new()
+                {
+                    Width = 180,
+                    Content = "With Icon",
+                    Icon = new Controls.FontIcon
+                    {
+                        Glyph = "\uE710",
+                        IconFontSize = 14,
+                    },
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    AssertContentGroupIsCentered(window, button, "With Icon", "\uE710");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Button_RightIconContentGroup_RemainsCenteredAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.Button button = new()
+                {
+                    Width = 180,
+                    Content = "Icon Right",
+                    IconPlacement = ElementPlacement.Right,
+                    Icon = new Controls.FontIcon
+                    {
+                        Glyph = "\uE72A",
+                        IconFontSize = 14,
+                    },
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    AssertContentGroupIsCentered(window, button, "Icon Right", "\uE72A");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Button_LeftIcon_RendersGlyphAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.Button button = new()
+                {
+                    Width = 180,
+                    Content = "With Icon",
+                    Icon = new Controls.FontIcon
+                    {
+                        Glyph = "\uE710",
+                        IconFontSize = 14,
+                    },
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TextBlock glyphTextBlock = Assert.IsType<TextBlock>(FindVisualChildren<TextBlock>(button).FirstOrDefault(static textBlock => string.Equals(textBlock.Text, "\uE710", StringComparison.Ordinal)));
+                    Assert.True(glyphTextBlock.IsVisible, "Left-placed button icons should be visible, not just present in the tree.");
+                    Assert.True(glyphTextBlock.ActualWidth > 0, "Left-placed button icons should occupy layout space.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Button_AccentAppearance_UsesDistinctWinUiStateBrushesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                Window window = new();
+                Controls.Button button = new()
+                {
+                    Width = 140,
+                    Content = "Accent",
+                    Appearance = ControlAppearance.Accent,
+                    IsHitTestVisible = false,
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border restFill = Assert.IsType<Border>(button.Template.FindName("RestFill", button));
+                    Border outerBorder = Assert.IsType<Border>(button.Template.FindName("OuterBorder", button));
+                    SolidColorBrush accentDefaultBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorDefaultBrush"]);
+                    LinearGradientBrush accentBorderBrush = Assert.IsType<LinearGradientBrush>(application.Resources["AccentControlElevationBorderBrush"]);
+                    SolidColorBrush accentSecondaryBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorSecondaryBrush"]);
+                    SolidColorBrush accentTertiaryBrush = Assert.IsType<SolidColorBrush>(application.Resources["AccentFillColorTertiaryBrush"]);
+                    FontFamily fluentFontFamily = Assert.IsType<FontFamily>(application.Resources["FluentFontFamily"]);
+                    TextBlock contentText = Assert.IsType<TextBlock>(FindVisualChildren<TextBlock>(button).FirstOrDefault(static tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal)));
+
+                    _ = Assert.IsType<SolidColorBrush>(restFill.Background, exactMatch: false);
+                    _ = Assert.IsType<LinearGradientBrush>(outerBorder.BorderBrush, exactMatch: false);
+                    Assert.Equal(accentDefaultBrush.Color, ((SolidColorBrush)restFill.Background).Color);
+                    Assert.Equal(accentBorderBrush.GradientStops.Count, ((LinearGradientBrush)outerBorder.BorderBrush).GradientStops.Count);
+                    Assert.Null(outerBorder.Effect);
+                    Assert.Equal(fluentFontFamily.Source, button.FontFamily.Source, StringComparer.Ordinal);
+                    Assert.Equal(fluentFontFamily.Source, contentText.FontFamily.Source, StringComparer.Ordinal);
+                    Assert.NotEqual(accentDefaultBrush.Color, accentSecondaryBrush.Color);
+                    Assert.NotEqual(accentDefaultBrush.Color, accentTertiaryBrush.Color);
+                    Assert.True(accentSecondaryBrush.Color.A < accentDefaultBrush.Color.A, "Accent pointer-over brush should be visually distinct from default.");
+                    Assert.True(accentTertiaryBrush.Color.A < accentSecondaryBrush.Color.A, "Accent pressed brush should progress further than pointer-over.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        private static void AssertContentGroupIsCentered(Window window, Controls.Button button, string content, string glyph)
+        {
+            TextBlock glyphTextBlock = Assert.IsType<TextBlock>(FindButtonGlyphTextBlock(button, glyph), exactMatch: false);
+            ContentPresenter textPresenter = Assert.IsType<ContentPresenter>(FindVisualChildren<ContentPresenter>(button).FirstOrDefault(presenter => string.Equals(presenter.Content as string, content, StringComparison.Ordinal)), exactMatch: false);
+
+            Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
+            double buttonCenter = buttonOrigin.X + (button.ActualWidth / 2.0);
+
+            Point glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
+            Point contentOrigin = textPresenter.TransformToAncestor(window).Transform(new Point(0, 0));
+            double groupLeft = Math.Min(glyphOrigin.X, contentOrigin.X);
+            double groupRight = Math.Max(glyphOrigin.X + glyphTextBlock.ActualWidth, contentOrigin.X + textPresenter.ActualWidth);
+            double groupCenter = groupLeft + ((groupRight - groupLeft) / 2.0);
+
+            Assert.Equal(buttonCenter, groupCenter, 1.0);
         }
 
         private static void AssertDisabledAccentButtonUsesDarkTokens()
