@@ -40,13 +40,23 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 A10 tests: InfoBadge DisplayKindStates VSM group.
+    /// Fluent <see cref="InfoBadge"/> control: DisplayKindStates VSM group.
     /// </summary>
-    public partial class ControlTests
+    public sealed class InfoBadgeTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 A10  InfoBadge DisplayKindStates VSM group
         // ---------------------------------------------------------------------------
@@ -56,9 +66,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
@@ -86,9 +93,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // Default: Value=-1, no IconSource → Dot state.
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
@@ -109,9 +113,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
@@ -130,9 +131,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBadge badge = new() { Value = 12 };
                 Window w = new() { Content = badge, Width = 100, Height = 80 };
                 try
@@ -166,9 +164,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBadge badge = new();
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
@@ -198,7 +193,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 // WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is
                 // TextOnAccentFillColorPrimaryBrush, matching the accent-derived default

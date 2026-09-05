@@ -29,22 +29,34 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// Tests for the WinUI-style <see cref="Controls.PipsPager"/>.
+    /// Fluent <see cref="Controls.PipsPager"/> control.
     /// </summary>
-    public partial class ControlTests
+    public sealed class PipsPagerTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         private static System.Windows.Controls.Primitives.ToggleButton? GetPipAt(System.Windows.Controls.StackPanel host, int offset)
         {
             return offset >= 0 && offset < host.Children.Count
@@ -58,7 +70,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.PipsPager)));
 
@@ -96,9 +107,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
 
@@ -133,9 +141,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
 
@@ -190,9 +195,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new()
                 {
@@ -247,9 +249,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -295,9 +294,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
                 System.Windows.Controls.StackPanel content = new();
@@ -347,9 +343,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -390,9 +383,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -441,9 +431,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -485,9 +472,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -537,9 +521,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
                 Assert.Equal(0, pager.SelectedPageIndex);
 
@@ -575,9 +556,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
 
                 // The chevron FontIcons are button content, so they only enter the visual tree
@@ -624,9 +602,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 3 };
 
@@ -670,9 +645,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 5 };
 
@@ -723,7 +695,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] brushKeys =
                 [
@@ -753,7 +724,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new()
@@ -828,9 +798,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
 
@@ -899,9 +866,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 200 };
                 Controls.PipsPager pager = new() { NumberOfPages = 3 };
                 AutomationProperties.SetName(pager, "Gallery pager");
@@ -924,6 +888,51 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        // Pump the dispatcher for `milliseconds` so any in-flight storyboard
+        // reaches its HoldEnd state before the test samples layout values.
+        private static async Task WaitForAnimationAndDrainAsync(Dispatcher dispatcher, int milliseconds)
+        {
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+        }
+
+        private static async Task<bool> WaitUntilAsync(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+            do
+            {
+                await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                if (condition())
+                {
+                    return true;
+                }
+
+                DispatcherFrame frame = new();
+                DispatcherTimer timer = new(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
+
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            return condition();
         }
     }
 }

@@ -37,13 +37,24 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 B14 tests: InfoBar SeverityLevels VSM group + GoToState wiring.
+    /// Fluent <see cref="InfoBar"/> control: SeverityLevels VSM group, GoToState wiring and
+    /// the severity glyph/brush lookups.
     /// </summary>
-    public partial class ControlTests
+    public sealed class InfoBarTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 B14  InfoBar SeverityLevels VSM group
         // ---------------------------------------------------------------------------
@@ -53,9 +64,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBar bar = new() { IsOpen = true, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
@@ -72,7 +80,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 // WinUI parity (InfoBar.xaml:108-109 upstream): no SeverityLevels VSM opacity
                 // pulse and no 3px indicator bar. The severity read is the two-layer glyph -
@@ -90,7 +97,7 @@ namespace Fluence.Wpf.Tests
                 SolidColorBrush expectedIconForeground = Assert.IsType<SolidColorBrush>(app.TryFindResource("TextFillColorInverseBrush"));
                 Assert.Equal(expectedIconBackground.Color, ((SolidColorBrush)iconBackground.Foreground).Color);
                 Assert.Equal(expectedIconForeground.Color, ((SolidColorBrush)standardIcon.Foreground).Color);
-                Assert.Equal("", standardIcon.Text, StringComparer.Ordinal);
+                Assert.Equal("\uF13C", standardIcon.Text, StringComparer.Ordinal);
                 w.Close();
             });
         }
@@ -101,7 +108,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 InfoBar bar = new() { IsOpen = true, Title = "Closable" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
@@ -149,7 +155,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
@@ -171,7 +176,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
@@ -203,7 +207,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Test" };
                 Window w = new() { Content = bar, Width = 400, Height = 100 };
@@ -229,9 +232,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBar bar = new() { Title = "Saved", IsOpen = true };
                 Window window = new() { Content = bar };
                 window.Show();
@@ -248,9 +248,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 InfoBar bar = new()
                 {
                     IsOpen = true,
@@ -271,6 +268,37 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(Visibility.Visible, presenter.Visibility);
 
                 w.Close();
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Severity glyph and brush key lookups
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public void InfoBar_GetSeverityGlyph_MatchesTemplateGlyphs()
+        {
+            // WinUI parity: InfoBar*IconGlyph codes (InfoBar_themeresources.xaml) for the glyph
+            // drawn on top of the IconBackground circle, not the old standalone-icon codes.
+            Assert.Equal("\uF13F", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
+            Assert.Equal("\uF13E", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
+            Assert.Equal("\uF13C", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
+            Assert.Equal("\uF13D", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
+        }
+
+        [Fact]
+        public Task InfoBar_GetSeverityBrushKey_ResolvesToThemeBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                foreach (string key in new[]
+                {
+                    InfoBar.GetSeverityBrushKey(InfoBarSeverity.Informational), InfoBar.GetSeverityBrushKey(InfoBarSeverity.Success),
+                    InfoBar.GetSeverityBrushKey(InfoBarSeverity.Warning), InfoBar.GetSeverityBrushKey(InfoBarSeverity.Error),
+                })
+                {
+                    _ = Assert.IsType<Brush>(Application.Current.TryFindResource(key), exactMatch: false);
+                }
             });
         }
     }

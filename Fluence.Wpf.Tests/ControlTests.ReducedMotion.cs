@@ -520,5 +520,10 @@ namespace Fluence.Wpf.Tests
             FrameworkElement knob = Assert.IsType<FrameworkElement>(FindVisualChildByName<FrameworkElement>(toggleSwitch, "SwitchKnob"), exactMatch: false);
             return Assert.IsType<TranslateTransform>(knob.RenderTransform);
         }
+
+        private static RotateTransform? GetIndeterminateRotateTransform(Controls.ProgressRing ring)
+        {
+            return ring.Template?.FindName("PART_IndeterminateRotate", ring) as RotateTransform;
+        }
     }
 }
