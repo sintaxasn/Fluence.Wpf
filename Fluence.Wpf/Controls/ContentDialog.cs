@@ -397,7 +397,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs after the dialog has been added to the owner window's adorner layer.
         /// </summary>
-        public event EventHandler? Opened;
+        public event EventHandler<ContentDialogOpenedEventArgs>? Opened;
 
         /// <summary>
         /// Occurs after the dialog has been removed from the owner window's adorner layer.
@@ -490,7 +490,7 @@ namespace Fluence.Wpf.Controls
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveInitialFocus));
 
             BeginOpenAnimation();
-            Opened?.Invoke(this, EventArgs.Empty);
+            Opened?.Invoke(this, new ContentDialogOpenedEventArgs());
             return completionSource.Task;
         }
 
