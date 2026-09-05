@@ -50,15 +50,15 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A numeric input control with optional spin buttons and min/max clamping.
     /// </summary>
-    [TemplatePart(Name = PartTextBox, Type = typeof(System.Windows.Controls.TextBox))]
-    [TemplatePart(Name = PartUpButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
-    [TemplatePart(Name = PartDownButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
+    [TemplatePart(Name = PART_TextBox, Type = typeof(System.Windows.Controls.TextBox))]
+    [TemplatePart(Name = PART_UpButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
+    [TemplatePart(Name = PART_DownButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
     public class NumberBox : Control
     {
         // Template part names. These must match the names used in the default control template.
-        private const string PartTextBox = "PART_TextBox";
-        private const string PartUpButton = "PART_UpButton";
-        private const string PartDownButton = "PART_DownButton";
+        private const string PART_TextBox = "PART_TextBox";
+        private const string PART_UpButton = "PART_UpButton";
+        private const string PART_DownButton = "PART_DownButton";
 
         /// <summary>
         /// Initializes static members of the NumberBox class and overrides the default style metadata.
@@ -380,9 +380,9 @@ namespace Fluence.Wpf.Controls
             }
             _partUpButton?.Click -= OnPartUpButtonClick;
             _partDownButton?.Click -= OnPartDownButtonClick;
-            _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
-            _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
-            _partDownButton = GetTemplateChild(PartDownButton) as System.Windows.Controls.Primitives.RepeatButton;
+            _partTextBox = GetTemplateChild(PART_TextBox) as System.Windows.Controls.TextBox;
+            _partUpButton = GetTemplateChild(PART_UpButton) as System.Windows.Controls.Primitives.RepeatButton;
+            _partDownButton = GetTemplateChild(PART_DownButton) as System.Windows.Controls.Primitives.RepeatButton;
             if (_partTextBox is not null)
             {
                 _partTextBox.KeyDown += OnPartTextBoxKeyDown;

@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ScrollViewer? topScrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer);
+                    ScrollViewer? topScrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PART_PaneItemsScrollViewer);
                     Assert.Null(topScrollViewer);
 
                     ContentPresenter iconPresenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "IconPresenter"), exactMatch: false);
@@ -405,7 +405,7 @@ namespace Fluence.Wpf.Tests.Control
                     Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"), exactMatch: false);
                     Assert.Equal(ControlAppearance.Subtle, overflowButton.Appearance);
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
-                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost), exactMatch: false);
+                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PART_TopItemsHost), exactMatch: false);
                     double visibleItemsRight = double.MinValue;
                     foreach (object item in nav.Items)
                     {
@@ -528,7 +528,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, "PART_TopOverflowButton"), exactMatch: false);
-                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost), exactMatch: false);
+                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PART_TopItemsHost), exactMatch: false);
                     Assert.Equal(Visibility.Visible, overflowButton.Visibility);
                     Assert.Equal(Visibility.Collapsed, trees.Visibility);
 
@@ -582,7 +582,7 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PartTopOverflowButton), exactMatch: false);
+                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PART_TopOverflowButton), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
                     Assert.Equal(Visibility.Visible, first.Visibility);
 
@@ -650,7 +650,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(Visibility.Visible, third.Visibility);
-                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PartTopOverflowButton), exactMatch: false);
+                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PART_TopOverflowButton), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
                 }
                 finally
@@ -688,7 +688,7 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost), exactMatch: false);
+                    Grid topItemsHost = Assert.IsType<Grid>(FindVisualChildByName<Grid>(nav, NavigationView.PART_TopItemsHost), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, third.Visibility);
 
                     // The strip measures each item at its natural width (the explicit 80 plus the

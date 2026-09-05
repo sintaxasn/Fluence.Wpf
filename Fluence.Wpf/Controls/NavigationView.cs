@@ -50,16 +50,16 @@ namespace Fluence.Wpf.Controls
     /// A navigation control with a collapsible pane and content area, similar to WinUI NavigationView.
     /// Uses a single shared selection indicator that animates between items.
     /// </summary>
-    [TemplatePart(Name = PartBackButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplatePart(Name = PartContentPresenter, Type = typeof(ContentPresenter))]
-    [TemplatePart(Name = PartPaneItemsScrollViewer, Type = typeof(ScrollViewer))]
-    [TemplatePart(Name = PartPaneToggleButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplatePart(Name = PartSelectionIndicator, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = PartFooterItemsHost, Type = typeof(ItemsControl))]
-    [TemplatePart(Name = PartFooterSelectionIndicator, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PART_BackButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_ContentPresenter, Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = PART_PaneItemsScrollViewer, Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = PART_PaneToggleButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_SelectionIndicator, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PART_FooterItemsHost, Type = typeof(ItemsControl))]
+    [TemplatePart(Name = PART_FooterSelectionIndicator, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PartPaneColumn, Type = typeof(ColumnDefinition))]
-    [TemplatePart(Name = PartTopItemsHost, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = PartTopOverflowButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_TopItemsHost, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PART_TopOverflowButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonVisible")]
     [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonCollapsed")]
     public class NavigationView : Selector
@@ -67,47 +67,47 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Name of the back button template part.
         /// </summary>
-        internal const string PartBackButton = "PART_BackButton";
+        internal const string PART_BackButton = "PART_BackButton";
 
         /// <summary>
         /// Name of the main content presenter template part.
         /// </summary>
-        internal const string PartContentPresenter = "PART_ContentPresenter";
+        internal const string PART_ContentPresenter = "PART_ContentPresenter";
 
         /// <summary>
         /// Name of the scroll viewer that hosts pane items.
         /// </summary>
-        internal const string PartPaneItemsScrollViewer = "PART_PaneItemsScrollViewer";
+        internal const string PART_PaneItemsScrollViewer = "PART_PaneItemsScrollViewer";
 
         /// <summary>
         /// Name of the pane collapse/expand toggle button.
         /// </summary>
-        internal const string PartPaneToggleButton = "PART_PaneToggleButton";
+        internal const string PART_PaneToggleButton = "PART_PaneToggleButton";
 
         /// <summary>
         /// Name of the shared selection indicator element.
         /// </summary>
-        internal const string PartSelectionIndicator = "PART_SelectionIndicator";
+        internal const string PART_SelectionIndicator = "PART_SelectionIndicator";
 
         /// <summary>
         /// Name of the items host that renders <see cref="FooterMenuItems"/>.
         /// </summary>
-        internal const string PartFooterItemsHost = "PART_FooterItemsHost";
+        internal const string PART_FooterItemsHost = "PART_FooterItemsHost";
 
         /// <summary>
         /// Name of the selection indicator element for the footer items region.
         /// </summary>
-        internal const string PartFooterSelectionIndicator = "PART_FooterSelectionIndicator";
+        internal const string PART_FooterSelectionIndicator = "PART_FooterSelectionIndicator";
 
         /// <summary>
         /// Name of the top pane items host template part.
         /// </summary>
-        internal const string PartTopItemsHost = "PART_TopItemsHost";
+        internal const string PART_TopItemsHost = "PART_TopItemsHost";
 
         /// <summary>
         /// Name of the top pane overflow button template part.
         /// </summary>
-        internal const string PartTopOverflowButton = "PART_TopOverflowButton";
+        internal const string PART_TopOverflowButton = "PART_TopOverflowButton";
 
         private const string PartPaneColumn = "PaneColumn";
         private const double PaneClosedWidth = 48.0;
@@ -487,12 +487,12 @@ defaultValue: null,
             _topOverflowButton?.Click -= OnTopOverflowButtonClick;
             StopPaneColumnAnimation();
             base.OnApplyTemplate();
-            _backButton = GetTemplateChild(PartBackButton) as System.Windows.Controls.Button;
+            _backButton = GetTemplateChild(PART_BackButton) as System.Windows.Controls.Button;
             _backButton?.Click += OnBackButtonClick;
-            _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
+            _paneToggleButton = GetTemplateChild(PART_PaneToggleButton) as System.Windows.Controls.Button;
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
-            _topItemsHost = GetTemplateChild(PartTopItemsHost) as FrameworkElement;
-            if (GetTemplateChild(PartTopOverflowButton) is System.Windows.Controls.Button topOverflowButton)
+            _topItemsHost = GetTemplateChild(PART_TopItemsHost) as FrameworkElement;
+            if (GetTemplateChild(PART_TopOverflowButton) is System.Windows.Controls.Button topOverflowButton)
             {
                 _topOverflowButton = topOverflowButton;
                 _topOverflowButton.Click += OnTopOverflowButtonClick;
@@ -503,9 +503,9 @@ defaultValue: null,
             }
 
             _paneColumn = GetTemplateChild(PartPaneColumn) as ColumnDefinition;
-            _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
+            _selectionIndicator = GetTemplateChild(PART_SelectionIndicator) as FrameworkElement;
             _indicatorHost = _selectionIndicator is not null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
-            _footerSelectionIndicator = GetTemplateChild(PartFooterSelectionIndicator) as FrameworkElement;
+            _footerSelectionIndicator = GetTemplateChild(PART_FooterSelectionIndicator) as FrameworkElement;
 
             // The footer indicator host must be an ancestor of the footer items so that
             // CalculateIndicatorPosition's TransformToAncestor succeeds. In Left/LeftCompact the
@@ -514,7 +514,7 @@ defaultValue: null,
             // origin, so its coordinate space matches the Grid's). Resolving the host from the items
             // host's parent therefore works for every pane mode, where using the indicator's immediate
             // parent (the Canvas in Top mode) is not an ancestor of the items and the transform fails.
-            FrameworkElement? footerItemsHost = GetTemplateChild(PartFooterItemsHost) as FrameworkElement;
+            FrameworkElement? footerItemsHost = GetTemplateChild(PART_FooterItemsHost) as FrameworkElement;
             _footerIndicatorHost = (footerItemsHost is not null ? VisualTreeHelper.GetParent(footerItemsHost) as FrameworkElement : null)
                 ?? (_footerSelectionIndicator is not null ? VisualTreeHelper.GetParent(_footerSelectionIndicator) as FrameworkElement : null);
             foreach (NavigationViewItem entry in FooterMenuItems.OfType<NavigationViewItem>())

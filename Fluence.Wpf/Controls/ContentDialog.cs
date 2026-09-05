@@ -56,6 +56,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_PrimaryButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_SecondaryButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_DialogOverlayHost, Type = typeof(Panel))]
     public class ContentDialog : ContentControl
     {
         // Template part names.
@@ -66,7 +67,7 @@ namespace Fluence.Wpf.Controls
         // Name of the optional full-window overlay host panel a window template may expose
         // (FluenceWindow does) so the dialog can dim and block the entire window, title bar
         // included, instead of only the content adorner layer.
-        private const string DialogOverlayHostPart = "PART_DialogOverlayHost";
+        private const string PART_DialogOverlayHost = "PART_DialogOverlayHost";
 
         /// <summary>
         /// Initializes static members of the ContentDialog class and overrides the default
@@ -433,7 +434,7 @@ namespace Fluence.Wpf.Controls
             // entire window (including title-bar content such as a search box). Fall back to the
             // content adorner layer for plain windows, whose client area carries no extra chrome.
             Panel? overlayHost =
-                (owner as Control)?.Template?.FindName(DialogOverlayHostPart, owner) as Panel;
+                (owner as Control)?.Template?.FindName(PART_DialogOverlayHost, owner) as Panel;
 
             UIElement? adornedContent = null;
             AdornerLayer? adornerLayer = null;
