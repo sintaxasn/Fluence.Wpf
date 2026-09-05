@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                MainWindow window = DemoShellTests.CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     window.NavigateTo("settings");
@@ -101,7 +101,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                MainWindow window = DemoShellTests.CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -142,7 +142,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                MainWindow window = DemoShellTests.CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);

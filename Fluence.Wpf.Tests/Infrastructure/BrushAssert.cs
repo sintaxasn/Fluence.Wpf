@@ -48,11 +48,8 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <c language="xaml">ControlStrongStrokeColorDefaultBrush</c>.</param>
         internal static void AssertBrushColor(Brush? actual, string expectedResourceKey)
         {
-            SolidColorBrush actualBrush = Assert.IsType<SolidColorBrush>(actual);
-            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(
-                Application.Current?.TryFindResource(expectedResourceKey));
-
-            Assert.Equal(expected.Color, actualBrush.Color);
+            Color expected = SolidColor(Application.Current?.TryFindResource(expectedResourceKey) as Brush);
+            Assert.Equal(expected, SolidColor(actual));
         }
 
         /// <summary>
@@ -64,8 +61,19 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <param name="resourceKey">The canonical WinUI-style brush key.</param>
         internal static Color ResolvedColor(Application application, string resourceKey)
         {
-            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(resourceKey));
-            return brush.Color;
+            return SolidColor(application.TryFindResource(resourceKey) as Brush);
+        }
+
+        /// <summary>
+        /// Returns the colour of <paramref name="brush"/>, failing the test if it is not a
+        /// <see cref="SolidColorBrush"/>. The suite reads brush colours far more often than brush
+        /// instances, because the theme engine rebuilds every brush on each apply.
+        /// </summary>
+        /// <param name="brush">The brush to read, typically straight off an element under test or
+        /// out of a resource lookup.</param>
+        internal static Color SolidColor(Brush? brush)
+        {
+            return Assert.IsType<SolidColorBrush>(brush).Color;
         }
     }
 }

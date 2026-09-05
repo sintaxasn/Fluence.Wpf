@@ -33,6 +33,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Fluence.Wpf.Demo;
 using Xunit;
 
 namespace Fluence.Wpf.Tests.Infrastructure
@@ -60,6 +61,30 @@ namespace Fluence.Wpf.Tests.Infrastructure
                 WindowStartupLocation = WindowStartupLocation.Manual,
                 ShowInTaskbar = false,
                 Content = content,
+            };
+            window.Show();
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
+            window.UpdateLayout();
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
+            return window;
+        }
+
+        /// <summary>
+        /// Creates, shows and lays out a <see cref="MainWindow"/> off-screen. The page classes
+        /// under <c language="cs">Gallery.Pages</c> reach this as
+        /// <c language="cs">DemoTestHost.CreateShownMainWindow()</c> on the rare test that
+        /// needs the real shell rather than its own page in isolation.
+        /// </summary>
+        internal static MainWindow CreateShownMainWindow()
+        {
+            MainWindow window = new()
+            {
+                Left = -20000,
+                Top = -20000,
+                Width = 1200,
+                Height = 900,
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                ShowInTaskbar = false,
             };
             window.Show();
             WpfTestSta.DrainDispatcher(window.Dispatcher);

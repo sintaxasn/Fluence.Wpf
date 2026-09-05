@@ -190,17 +190,10 @@ namespace Fluence.Wpf.Tests.Windowing
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPointerOverBrush", Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C));
-                AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPressedBrush", Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C));
-                AssertCloseButtonBrush(app, "WindowCloseButtonForegroundPointerOverBrush", Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF));
+                Assert.Equal(Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C), BrushAssert.ResolvedColor(app, "WindowCloseButtonBackgroundPointerOverBrush"));
+                Assert.Equal(Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C), BrushAssert.ResolvedColor(app, "WindowCloseButtonBackgroundPressedBrush"));
+                Assert.Equal(Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF), BrushAssert.ResolvedColor(app, "WindowCloseButtonForegroundPointerOverBrush"));
             });
-        }
-
-        private static void AssertCloseButtonBrush(Application app, string key, Color expected)
-        {
-            object? resource = app.TryFindResource(key);
-            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(resource, exactMatch: false);
-            Assert.Equal(expected, brush.Color);
         }
 
         [Fact]
