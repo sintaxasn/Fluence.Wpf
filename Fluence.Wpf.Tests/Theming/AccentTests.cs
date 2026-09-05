@@ -36,18 +36,37 @@ using Xunit;
 
 // Captured Windows accent ramps, measured 2026-05-23 from the OS palette on this
 // hardware. Kept as data after AccentRampScoreboard was deleted: the scoring
-// harness compared four candidate algorithms and could not fail, but these eight
-// measurements are real and are the reference any future ramp change is judged
-// against.
+// harness compared four candidate algorithms and could not fail, but these
+// twenty-one measurements are real and are the reference any future ramp change
+// is judged against. The deleted class's own docstring claimed 8 distinct
+// accents, but its Fixtures array actually held all twenty-one rows below.
 //
 // Windows Blue   #0078D4: requested #0078D4, actual #0078D4, L3 #99EBFF, L2 #4CC2FF, L1 #0091F8, D1 #0067C0, D2 #003E92, D3 #001A68
 // Mango          #CA5010: requested #CA5010, actual #CA5010, L3 #F5C07C, L2 #F09346, L1 #E46012, D1 #B6440E, D2 #872808, D3 #5C0E03
 // Mint           #00B7C3: requested #00B7C3, actual #00B7C3, L3 #69FCFF, L2 #29F7FF, L1 #00D5E1, D1 #009FAA, D2 #006770, D3 #00343B
 // Plum           #881798: requested #881798, actual #881798, L3 #EFACF2, L2 #D95BE6, L1 #AB1DBE, D1 #7B148B, D2 #5B0C6D, D3 #3F0451
+// OS corrected #A4262C -> #C94947 (likely contrast guardrail)
 // Brick OS=>     #C94947: requested #A4262C, actual #C94947, L3 #F5BDB2, L2 #E89B93, L1 #D2605C, D1 #AF3533, D2 #852524, D3 #590D0D
 // Liddy Green    #498205: requested #498205, actual #498205, L3 #C1F96C, L2 #99F618, L1 #61A907, D1 #3E7204, D2 #254B03, D3 #0D2801
+// OS corrected #1A8870 -> #17866E (minor)
 // Teal  OS=>     #17866E: requested #1A8870, actual #17866E, L3 #90ECDF, L2 #59E2CB, L1 #1DAB8F, D1 #126D56, D2 #0C4E37, D3 #042A14
 // MS Red         #E81123: requested #E81123, actual #E81123, L3 #FB9D8B, L2 #F46762, L1 #EF2733, D1 #D20E1E, D2 #9E0912, D3 #6F0306
+// Grey           #808080: requested #808080, actual #808080, L3 #808080, L2 #808080, L1 #808080, D1 #7F7F7F, D2 #7F7F7F, D3 #7F7F7F
+//
+// Capture session 2026-05-23 19:45:34 - 12 boundary + algorithm + brand probes.
+// All 12 inputs were OS-corrected; "Actual" reflects what Windows actually applied.
+// Sat Red    OS=>#D9371E: requested #B30000, actual #D9371E, L3 #F8B087, L2 #EF8C68, L1 #E24D2F, D1 #BA2B17, D2 #931C0F, D3 #650A05
+// Brick-sim  OS=>#C84A42: requested #A02525, actual #C84A42, L3 #F5BEAD, L2 #E89C8E, L1 #D16157, D1 #AB3932, D2 #842521, D3 #580D0C
+// Bright Red OS=>#E7242F: requested #FF4040, actual #E7242F, L3 #FBA496, L2 #F57E78, L1 #EB3D43, D1 #CC1620, D2 #9D1117, D3 #6C0608
+// Deep Pur   OS=>#9555D3: requested #400080, actual #9555D3, L3 #ECC7F7, L2 #D2A6ED, L1 #A66BDA, D1 #7433C5, D2 #4F2796, D3 #230F68
+// VDark Red  OS=>#621C1C: requested #5A1A1A, actual #621C1C, L3 #A63030, L2 #8A2828, L1 #762222, D1 #4F1616, D2 #3B1111, D3 #1F0909
+// Gold/Amber OS=>#9B7000: requested #D9A520, actual #9B7000, L3 #FFEC4E, L2 #FFDB1A, L1 #BE8E00, D1 #845700, D2 #663800, D3 #441400
+// SeaGreen   OS=>#008A4B: requested #3CB371, actual #008A4B, L3 #71FFB5, L2 #2EFF97, L1 #00B762, D1 #00723B, D2 #005326, D3 #002F0E
+// Steel Blue OS=>#3F7CAD: requested #4682B4, actual #3F7CAD, L3 #B4E7F0, L2 #92C8DD, L1 #5192BF, D1 #316292, D2 #20426F, D3 #0B1C47
+// Med Purple OS=>#8563CD: requested #9370DB, actual #8563CD, L3 #E9D2F6, L2 #CCB1EA, L1 #9979D5, D1 #613DC0, D2 #412E90, D3 #181262
+// Corp Navy  OS=>#5D6EC8: requested #1A3D8F, actual #5D6EC8, L3 #D6DEF5, L2 #B2BDE8, L1 #7584D1, D1 #3E4EB7, D2 #2E3689, D3 #11145F
+// Corp Burg  OS=>#CF414E: requested #9B0028, actual #CF414E, L3 #F6B7B9, L2 #EB959A, L1 #D75863, D1 #B52E39, D2 #8A2127, D3 #5D0C0E
+// Corp Frst  OS=>#007F50: requested #00754A, actual #007F50, L3 #00D687, L2 #00B270, L1 #009960, D1 #006640, D2 #004C30, D3 #002819
 
 namespace Fluence.Wpf.Tests.Theming
 {
