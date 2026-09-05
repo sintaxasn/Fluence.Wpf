@@ -3,6 +3,7 @@
 The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
+- Colors (theme token catalog: text, fill, stroke, background, system and accent swatches)
 - Icons (WinUI Gallery-style Iconography catalog: search, virtualized tile grid, copyable glyph details)
 - Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
@@ -80,38 +81,23 @@ variable or a template part as the WPF class needs the WPF class, not the Fluenc
 
 ## Control API
 
-Each area below lists the public API types it uses; API links point to `/api/` on the documentation site.
+Each area below lists the public API types it uses. There is no hosted API reference yet; the XML documentation the build emits as `Fluence.Wpf.xml` is the reference until the site described in [the roadmap](roadmap.md) exists.
 
 ### Window and Shell
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.FluenceWindow.html">FluenceWindow</a>
-  <a href="../../api/Fluence.Wpf.Controls.TitleBar.html">TitleBar</a>
-  <a href="../../api/Fluence.Wpf.WindowBackdropType.html">WindowBackdropType</a>
-  <a href="../../api/Fluence.Wpf.WindowCornerPreference.html">WindowCornerPreference</a>
-</div>
+`FluenceWindow`, `TitleBar`, `WindowBackdropType`, `WindowCornerPreference`
 
-Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, `TitleBarHeight`, caption-button visibility properties, and title-bar events for back and pane-toggle requests.
+Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, `TitleBarHeight`, and the caption-button visibility properties. The back and pane-toggle requests are events on `TitleBar` itself, `BackRequested` and `PaneToggleRequested`, not on the window.
 
-`FluenceWindow.DefaultIcon` is a public static `BitmapSource` that exposes the rasterized Fluence brand icon. Every `FluenceWindow` defaults its `Icon` property to this value so the brand mark appears in the title bar and taskbar without any caller setup; a consumer can also apply `DefaultIcon` to its own non-`FluenceWindow` windows. A consumer-assigned `Icon` overrides the default. The value is `null` if the brand resource is unavailable (for example in a headless or session-0 process).
+`FluenceWindow.DefaultIcon` is a public static `ImageSource?` that exposes the rasterized Fluence brand icon. Every `FluenceWindow` defaults its `Icon` property to this value so the brand mark appears in the title bar and taskbar without any caller setup; a consumer can also apply `DefaultIcon` to its own non-`FluenceWindow` windows. A consumer-assigned `Icon` overrides the default. The value is `null` if the brand resource is unavailable (for example in a headless or session-0 process).
 
 ### Basic Actions
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.Button.html">Button</a>
-  <a href="../../api/Fluence.Wpf.Controls.HyperlinkButton.html">HyperlinkButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.DropDownButton.html">DropDownButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.SplitButton.html">SplitButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.ToggleSplitButton.html">ToggleSplitButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.RepeatButton.html">RepeatButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.ToggleButton.html">ToggleButton</a>
-  <a href="../../api/Fluence.Wpf.ControlAppearance.html">ControlAppearance</a>
-  <a href="../../api/Fluence.Wpf.ToggleSplitButtonIsCheckedChangedEventArgs.html">ToggleSplitButtonIsCheckedChangedEventArgs</a>
-</div>
+`Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `RepeatButton`, `ToggleButton`, `ControlAppearance`, `ToggleSplitButtonIsCheckedChangedEventArgs`
 
 The action controls keep standard WPF command, content, and click patterns. Use `Appearance="Accent"` for the primary action on a page, and standard or subtle styling for lower-emphasis commands.
 
@@ -125,12 +111,7 @@ The `Flyout` on `DropDownButton`, `SplitButton`, and `ToggleSplitButton` hosts a
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.CheckBox.html">CheckBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.RadioButton.html">RadioButton</a>
-  <a href="../../api/Fluence.Wpf.Controls.ToggleSwitch.html">ToggleSwitch</a>
-  <a href="../../api/Fluence.Wpf.Controls.RatingControl.html">RatingControl</a>
-</div>
+`CheckBox`, `RadioButton`, `ToggleSwitch`, `RatingControl`
 
 Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection). `RatingControl` adds value-based selection for simple scoring UI. `CheckBox` defaults to `HorizontalAlignment="Left"` and `MinWidth="120"` per WinUI's `DefaultCheckBoxStyle`: `HorizontalAlignment="Left"` stops the control and its focus visual stretching to the parent's width, and `MinWidth="120"` sets a 120 dp floor so short-labelled checkboxes keep a comfortable hit target, so short-labelled demo checkboxes (Selection page) now occupy 120 dp.
 
@@ -138,20 +119,7 @@ Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selec
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.ComboBox.html">ComboBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.Slider.html">Slider</a>
-  <a href="../../api/Fluence.Wpf.Controls.NumberBox.html">NumberBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.TextBox.html">TextBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.PasswordBoxExtensions.html">PasswordBoxExtensions</a>
-  <a href="../../api/Fluence.Wpf.Controls.AutoSuggestBox.html">AutoSuggestBox</a>
-  <a href="../../api/Fluence.Wpf.SpinButtonPlacementMode.html">SpinButtonPlacementMode</a>
-  <a href="../../api/Fluence.Wpf.NumberBoxValueChangedEventArgs.html">NumberBoxValueChangedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.AutoSuggestBoxTextChangedEventArgs.html">AutoSuggestBoxTextChangedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.AutoSuggestBoxSuggestionChosenEventArgs.html">AutoSuggestBoxSuggestionChosenEventArgs</a>
-  <a href="../../api/Fluence.Wpf.AutoSuggestBoxQuerySubmittedEventArgs.html">AutoSuggestBoxQuerySubmittedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.AutoSuggestionBoxTextChangeReason.html">AutoSuggestionBoxTextChangeReason</a>
-</div>
+`ComboBox`, `Slider`, `NumberBox`, `TextBox`, `PasswordBoxExtensions`, `AutoSuggestBox`, `SpinButtonPlacementMode`, `NumberBoxValueChangedEventArgs`, `AutoSuggestBoxTextChangedEventArgs`, `AutoSuggestBoxSuggestionChosenEventArgs`, `AutoSuggestBoxQuerySubmittedEventArgs`, `AutoSuggestionBoxTextChangeReason`
 
 Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
 
@@ -159,19 +127,7 @@ Input controls keep standard WPF editing, selection, command, and binding behavi
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.TextBox.html">TextBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.PasswordBoxExtensions.html">PasswordBoxExtensions</a>
-  <a href="../../api/Fluence.Wpf.Controls.ComboBox.html">ComboBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.Button.html">Button</a>
-  <a href="../../api/Fluence.Wpf.Controls.DatePicker.html">DatePicker</a>
-  <a href="../../api/Fluence.Wpf.Controls.TimePicker.html">TimePicker</a>
-  <a href="../../api/Fluence.Wpf.Controls.ColorPicker.html">ColorPicker</a>
-  <a href="../../api/Fluence.Wpf.ValidationState.html">ValidationState</a>
-  <a href="../../api/Fluence.Wpf.DatePickerSelectedValueChangedEventArgs.html">DatePickerSelectedValueChangedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.TimePickerSelectedValueChangedEventArgs.html">TimePickerSelectedValueChangedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.ColorPickerColorChangedEventArgs.html">ColorPickerColorChangedEventArgs</a>
-</div>
+`TextBox`, `PasswordBoxExtensions`, `ComboBox`, `Button`, `DatePicker`, `TimePicker`, `ColorPicker`, `ValidationState`, `DatePickerSelectedValueChangedEventArgs`, `TimePickerSelectedValueChangedEventArgs`, `ColorPickerColorChangedEventArgs`
 
 The form page combines input controls with card surfaces, status text, validation states, and primary actions. Start here for sign-in, checkout, and settings forms. `DatePicker`, `TimePicker`, and `ColorPicker` add flyout-based date, time, and color selection for form fields.
 
@@ -179,16 +135,7 @@ The form page combines input controls with card surfaces, status text, validatio
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.Card.html">Card</a>
-  <a href="../../api/Fluence.Wpf.Controls.ListBox.html">ListBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.ListBoxItem.html">ListBoxItem</a>
-  <a href="../../api/Fluence.Wpf.Controls.ListView.html">ListView</a>
-  <a href="../../api/Fluence.Wpf.Controls.PersonPicture.html">PersonPicture</a>
-  <a href="../../api/Fluence.Wpf.Controls.Image.html">Image</a>
-  <a href="../../api/Fluence.Wpf.CardVariant.html">CardVariant</a>
-  <a href="../../api/Fluence.Wpf.ListViewState.html">ListViewState</a>
-</div>
+`Card`, `ListBox`, `ListBoxItem`, `ListView`, `PersonPicture`, `Image`, `CardVariant`, `ListViewState`
 
 Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs. `Image` frames a picture with a theme-aware 1px stroke and a rounded-corner clip driven by `CornerRadius`, while `Source` and `Stretch` behave like the stock WPF image element.
 
@@ -196,13 +143,7 @@ Collection controls keep WPF item-source and template behavior. `Card` adds head
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.ListView.html">ListView</a>
-  <a href="../../api/Fluence.Wpf.Controls.ListBox.html">ListBox</a>
-  <a href="../../api/Fluence.Wpf.Controls.TreeView.html">TreeView</a>
-  <a href="../../api/Fluence.Wpf.Controls.Card.html">Card</a>
-  <a href="../../api/Fluence.Wpf.ListViewState.html">ListViewState</a>
-</div>
+`ListView`, `ListBox`, `TreeView`, `Card`, `ListViewState`
 
 The data-binding page shows standard WPF `ItemsSource`, `SelectedItem`, `SelectedItems`, item-template, and command-binding patterns with Fluence controls. The control API is WPF-native; view models need no Fluence-specific base classes.
 
@@ -210,9 +151,7 @@ The data-binding page shows standard WPF `ItemsSource`, `SelectedItem`, `Selecte
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.FontIcon.html">FontIcon</a>
-</div>
+`FontIcon`
 
 `FontIcon` renders Segoe Fluent Symbols glyphs and adds icon-size, foreground, and alignment properties. It works inside buttons, navigation items, tab headers, cards, and standalone icon lists.
 
@@ -220,11 +159,7 @@ Key API:
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.TextBlock.html">TextBlock</a>
-  <a href="../../api/Fluence.Wpf.Controls.TextBlockExtensions.html">TextBlockExtensions</a>
-  <a href="../../api/Fluence.Wpf.FluentTypography.html">FluentTypography</a>
-</div>
+`TextBlock`, `TextBlockExtensions`, `FluentTypography`
 
 `TextBlockExtensions.Typography` maps text to the Fluent type ramp, so app text and control templates share the same typography tokens.
 
@@ -232,21 +167,7 @@ Key API:
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.NavigationView.html">NavigationView</a>
-  <a href="../../api/Fluence.Wpf.Controls.NavigationViewItem.html">NavigationViewItem</a>
-  <a href="../../api/Fluence.Wpf.Controls.NavigationViewItemHeader.html">NavigationViewItemHeader</a>
-  <a href="../../api/Fluence.Wpf.Controls.NavigationViewItemSeparator.html">NavigationViewItemSeparator</a>
-  <a href="../../api/Fluence.Wpf.NavigationViewPaneDisplayMode.html">NavigationViewPaneDisplayMode</a>
-  <a href="../../api/Fluence.Wpf.NavigationViewBackRequestedEventArgs.html">NavigationViewBackRequestedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.NavigationViewItemInvokedEventArgs.html">NavigationViewItemInvokedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.Controls.BreadcrumbBar.html">BreadcrumbBar</a>
-  <a href="../../api/Fluence.Wpf.Controls.BreadcrumbBarItem.html">BreadcrumbBarItem</a>
-  <a href="../../api/Fluence.Wpf.BreadcrumbBarItemClickedEventArgs.html">BreadcrumbBarItemClickedEventArgs</a>
-  <a href="../../api/Fluence.Wpf.Controls.PipsPager.html">PipsPager</a>
-  <a href="../../api/Fluence.Wpf.PipsPagerButtonVisibility.html">PipsPagerButtonVisibility</a>
-  <a href="../../api/Fluence.Wpf.PipsPagerSelectedIndexChangedEventArgs.html">PipsPagerSelectedIndexChangedEventArgs</a>
-</div>
+`NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `NavigationViewPaneDisplayMode`, `NavigationViewBackRequestedEventArgs`, `NavigationViewItemInvokedEventArgs`, `BreadcrumbBar`, `BreadcrumbBarItem`, `BreadcrumbBarItemClickedEventArgs`, `PipsPager`, `PipsPagerButtonVisibility`, `PipsPagerSelectedIndexChangedEventArgs`
 
 `NavigationView` owns pane layout, selection, back-button state, top overflow, and item invocation events. Application route history remains app-owned.
 
@@ -270,13 +191,7 @@ Key API:
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.TabView.html">TabView</a>
-  <a href="../../api/Fluence.Wpf.Controls.TabViewItem.html">TabViewItem</a>
-  <a href="../../api/Fluence.Wpf.TabViewWidthMode.html">TabViewWidthMode</a>
-  <a href="../../api/Fluence.Wpf.TabViewCloseButtonOverlayMode.html">TabViewCloseButtonOverlayMode</a>
-  <a href="../../api/Fluence.Wpf.TabViewTabCloseRequestedEventArgs.html">TabViewTabCloseRequestedEventArgs</a>
-</div>
+`TabView`, `TabViewItem`, `TabViewWidthMode`, `TabViewCloseButtonOverlayMode`, `TabViewTabCloseRequestedEventArgs`
 
 `TabView` adds add-tab, close-request, width-mode, and close-button overlay APIs. Standard `TabControl` and `TabItem` pick up Fluent styling through the merged control templates.
 
@@ -284,17 +199,7 @@ Key API:
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.Border.html">Border</a>
-  <a href="../../api/Fluence.Wpf.Controls.StackPanel.html">StackPanel</a>
-  <a href="../../api/Fluence.Wpf.Controls.DockPanel.html">DockPanel</a>
-  <a href="../../api/Fluence.Wpf.Controls.Expander.html">Expander</a>
-  <a href="../../api/Fluence.Wpf.Controls.Separator.html">Separator</a>
-  <a href="../../api/Fluence.Wpf.Controls.SmoothScrollViewer.html">SmoothScrollViewer</a>
-  <a href="../../api/Fluence.Wpf.Controls.ScrollBarExtensions.html">ScrollBarExtensions</a>
-  <a href="../../api/Fluence.Wpf.ScrollingIndicatorMode.html">ScrollingIndicatorMode</a>
-  <a href="../../api/Fluence.Wpf.BorderVariant.html">BorderVariant</a>
-</div>
+`Border`, `StackPanel`, `DockPanel`, `Expander`, `Separator`, `SmoothScrollViewer`, `ScrollBarExtensions`, `ScrollingIndicatorMode`, `BorderVariant`
 
 Layout primitives preserve WPF layout behavior. `SmoothScrollViewer` is the scroll host used throughout the demo gallery.
 
@@ -308,25 +213,7 @@ The `ScrollViewerStyle` resource is keyed, not implicit, so a plain `ScrollViewe
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.Menu.html">Menu</a>
-  <a href="../../api/Fluence.Wpf.Controls.MenuItem.html">MenuItem</a>
-  <a href="../../api/Fluence.Wpf.Controls.ContextMenu.html">ContextMenu</a>
-  <a href="../../api/Fluence.Wpf.Controls.ToolTip.html">ToolTip</a>
-  <a href="../../api/Fluence.Wpf.Controls.FlyoutBase.html">FlyoutBase</a>
-  <a href="../../api/Fluence.Wpf.Controls.Flyout.html">Flyout</a>
-  <a href="../../api/Fluence.Wpf.Controls.FlyoutPresenter.html">FlyoutPresenter</a>
-  <a href="../../api/Fluence.Wpf.Controls.ContentDialog.html">ContentDialog</a>
-  <a href="../../api/Fluence.Wpf.Controls.TeachingTip.html">TeachingTip</a>
-  <a href="../../api/Fluence.Wpf.FlyoutPlacementMode.html">FlyoutPlacementMode</a>
-  <a href="../../api/Fluence.Wpf.TeachingTipPlacementMode.html">TeachingTipPlacementMode</a>
-  <a href="../../api/Fluence.Wpf.Controls.CommandBarFlyout.html">CommandBarFlyout</a>
-  <a href="../../api/Fluence.Wpf.Controls.CommandBarFlyoutPresenter.html">CommandBarFlyoutPresenter</a>
-  <a href="../../api/Fluence.Wpf.Controls.AppBarButton.html">AppBarButton</a>
-  <a href="../../api/Fluence.Wpf.ContentDialogResult.html">ContentDialogResult</a>
-  <a href="../../api/Fluence.Wpf.ContentDialogButton.html">ContentDialogButton</a>
-  <a href="../../api/Fluence.Wpf.ContentDialogButtonClickEventArgs.html">ContentDialogButtonClickEventArgs</a>
-</div>
+`Menu`, `MenuItem`, `ContextMenu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `ContentDialog`, `TeachingTip`, `FlyoutPlacementMode`, `TeachingTipPlacementMode`, `CommandBarFlyout`, `CommandBarFlyoutPresenter`, `AppBarButton`, `ContentDialogResult`, `ContentDialogButton`, `ContentDialogButtonClickEventArgs`
 
 Menu and popup controls use WinUI-style flyout visuals. Command text, separators, nested menu items, context menus, and tooltips all follow the same visual contract. `Flyout` hosts arbitrary content in a light-dismiss popup, `ContentDialog` raises a modal prompt with up to three command buttons, and `TeachingTip` anchors a coaching callout to a target element.
 
@@ -334,11 +221,7 @@ Menu and popup controls use WinUI-style flyout visuals. Command text, separators
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.TreeView.html">TreeView</a>
-  <a href="../../api/Fluence.Wpf.Controls.TreeViewItem.html">TreeViewItem</a>
-  <a href="../../api/Fluence.Wpf.TreeViewSelectionMode.html">TreeViewSelectionMode</a>
-</div>
+`TreeView`, `TreeViewItem`, `TreeViewSelectionMode`
 
 `TreeView` supports single and multiple selection modes, a live `SelectedItems` list, expandable hierarchy, and tri-state item selection through `TreeViewItem.IsSelectionChecked`.
 
@@ -346,17 +229,7 @@ Key API:
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Controls.InfoBar.html">InfoBar</a>
-  <a href="../../api/Fluence.Wpf.Controls.InfoBadge.html">InfoBadge</a>
-  <a href="../../api/Fluence.Wpf.Controls.ProgressBar.html">ProgressBar</a>
-  <a href="../../api/Fluence.Wpf.Controls.ProgressRing.html">ProgressRing</a>
-  <a href="../../api/Fluence.Wpf.Controls.RatingControl.html">RatingControl</a>
-  <a href="../../api/Fluence.Wpf.InfoBarSeverity.html">InfoBarSeverity</a>
-  <a href="../../api/Fluence.Wpf.InfoBadgeStyle.html">InfoBadgeStyle</a>
-  <a href="../../api/Fluence.Wpf.ProgressBarMode.html">ProgressBarMode</a>
-  <a href="../../api/Fluence.Wpf.ProgressRingState.html">ProgressRingState</a>
-</div>
+`InfoBar`, `InfoBadge`, `ProgressBar`, `ProgressRing`, `RatingControl`, `InfoBarSeverity`, `InfoBadgeStyle`, `ProgressBarMode`, `ProgressRingState`
 
 Status controls cover severity, closable state, determinate and indeterminate progress, paused and error states, and count or attention badge styling.
 
@@ -371,17 +244,7 @@ Both helpers stay in sync with the `InfoBar` control template; use them instead 
 
 Key API:
 
-<div class="fluence-api-list">
-  <a href="../../api/Fluence.Wpf.Automation.html">Automation namespace</a>
-  <a href="../../api/Fluence.Wpf.Automation.NavigationViewAutomationPeer.html">NavigationViewAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.ToggleSwitchAutomationPeer.html">ToggleSwitchAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.InfoBarAutomationPeer.html">InfoBarAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.RatingControlAutomationPeer.html">RatingControlAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.PersonPictureAutomationPeer.html">PersonPictureAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.ImageAutomationPeer.html">ImageAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.HyperlinkButtonAutomationPeer.html">HyperlinkButtonAutomationPeer</a>
-  <a href="../../api/Fluence.Wpf.Automation.CardAutomationPeer.html">CardAutomationPeer</a>
-</div>
+`Automation namespace`, `NavigationViewAutomationPeer`, `ToggleSwitchAutomationPeer`, `InfoBarAutomationPeer`, `RatingControlAutomationPeer`, `PersonPictureAutomationPeer`, `ImageAutomationPeer`, `HyperlinkButtonAutomationPeer`, `CardAutomationPeer`
 
 Accessibility coverage includes focus visuals, high-contrast resources, automation peers, keyboard navigation, and right-to-left layout.
 
@@ -835,7 +698,7 @@ Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --
 
 The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. It cannot capture DWM Mica / Acrylic, which compose outside WPF, so the screenshots show WPF control and shell surfaces only. `Windowing/TitleBarTests.cs` verifies `FluenceWindow` caption styling.
 
-Marketing images live under `docs/images/` (for example `docs/images/Banner.png`). Capture control screenshots at 100% and 150% scaling and record the reference OS build, theme, and accent when adding them.
+Marketing images live under [`assets/`](../assets), for example [`assets/Fluence_OGImage.png`](../assets/Fluence_OGImage.png). Capture control screenshots at 100% and 150% scaling and record the reference OS build, theme, and accent when adding them.
 
 ## Tests
 
