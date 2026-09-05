@@ -954,5 +954,65 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        /// <summary>
+        /// Closed must report the outcome that completed the ShowAsync task: Primary for the
+        /// primary button, Secondary for the secondary button, and None for the close button and
+        /// for a programmatic Hide, which is WinUI's light dismiss equivalent for this control.
+        /// </summary>
+        /// <param name="buttonPart">The template part to click, or null to call Hide.</param>
+        /// <param name="expected">The ContentDialogResult the handler must observe.</param>
+        [Theory]
+        [InlineData("PART_PrimaryButton", ContentDialogResult.Primary)]
+        [InlineData("PART_SecondaryButton", ContentDialogResult.Secondary)]
+        [InlineData("PART_CloseButton", ContentDialogResult.None)]
+        [InlineData(null, ContentDialogResult.None)]
+        public Task Closed_EachClosePath_ReportsMatchingResultAsync(string? buttonPart, ContentDialogResult expected)
+        {
+            return WpfTestSta.RunOnStaAsync(async () =>
+            {
+                Window window = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Confirm",
+                    Content = "Body",
+                    PrimaryButtonText = "OK",
+                    SecondaryButtonText = "Maybe",
+                    CloseButtonText = "Cancel",
+                };
+
+                try
+                {
+                    ContentDialogClosedEventArgs? received = null;
+                    dialog.Closed += (_, e) => received = e;
+
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_CloseButton") is not null).ConfigureAwait(true),
+                        "The dialog template must apply before a button can be clicked.");
+
+                    if (buttonPart is null)
+                    {
+                        dialog.Hide();
+                    }
+                    else
+                    {
+                        ButtonBase button = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(dialog, buttonPart), exactMatch: false);
+                        button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    }
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => task.IsCompleted).ConfigureAwait(true),
+                        "Closing the dialog must complete the pending ShowAsync task.");
+                    Assert.NotNull(received);
+                    Assert.Equal(expected, received.Result);
+                    Assert.Equal(expected, await task.ConfigureAwait(true));
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
     }
 }

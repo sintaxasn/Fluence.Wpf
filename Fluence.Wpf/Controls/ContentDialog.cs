@@ -402,7 +402,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs after the dialog has been removed from the owner window's adorner layer.
         /// </summary>
-        public event EventHandler? Closed;
+        public event EventHandler<ContentDialogClosedEventArgs>? Closed;
 
         /// <summary>
         /// Shows the dialog modally over the active window (or the application main window)
@@ -1040,7 +1040,7 @@ namespace Fluence.Wpf.Controls
             }
 
             _ = completionSource.TrySetResult(result);
-            Closed?.Invoke(this, EventArgs.Empty);
+            Closed?.Invoke(this, new ContentDialogClosedEventArgs(result));
         }
 
         /// <summary>
