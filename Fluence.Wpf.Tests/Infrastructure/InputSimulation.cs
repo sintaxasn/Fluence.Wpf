@@ -27,15 +27,17 @@
  */
 
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Xunit;
 
 namespace Fluence.Wpf.Tests.Infrastructure
 {
     /// <summary>
-    /// The one simulated-key-event raiser for the suite. Every test class brings this into scope
-    /// with a using static Fluence.Wpf.Tests.Infrastructure.InputSimulation directive so the call
-    /// sites read exactly as they did when each partial carried its own private copy.
+    /// The one simulated-key-event raiser and simulated-click raiser for the suite. Every test
+    /// class brings these into scope with a using static
+    /// Fluence.Wpf.Tests.Infrastructure.InputSimulation directive so the call sites read exactly
+    /// as they did when each partial carried its own private copy.
     /// </summary>
     internal static class InputSimulation
     {
@@ -46,6 +48,11 @@ namespace Fluence.Wpf.Tests.Infrastructure
             {
                 RoutedEvent = routedEvent,
             });
+        }
+
+        internal static void RaiseButtonClick(ButtonBase button)
+        {
+            button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
     }
 }

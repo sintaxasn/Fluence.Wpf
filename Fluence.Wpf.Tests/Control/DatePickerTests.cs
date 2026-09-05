@@ -43,8 +43,9 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.InputSimulation;
+using static Fluence.Wpf.Tests.Infrastructure.LoopingSelectorTestSupport;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.DatePicker"/> control: default style
@@ -52,15 +53,24 @@ namespace Fluence.Wpf.Tests
     /// commit semantics, day-count adjustment, automation peer naming, and surface brush
     /// theming.
     /// </summary>
-    public partial class ControlTests
+    public sealed class DatePickerTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task DatePicker_DefaultStyle_AppliesTemplatePartsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.DatePicker)));
 
@@ -101,9 +111,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new() { PlaceholderText = "Pick a date" };
 
@@ -156,9 +163,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -217,9 +221,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -277,9 +278,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -332,9 +330,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -385,9 +380,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new() { PlaceholderText = "Pick a date" };
 
@@ -422,9 +414,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new()
                 {
@@ -467,9 +456,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -521,9 +507,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -573,7 +556,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
@@ -593,9 +575,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 CultureInfo originalCulture = CultureInfo.CurrentCulture;
                 Window window = new() { Width = 500, Height = 400 };
 
@@ -656,9 +635,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.DatePicker picker = new();
 
@@ -716,11 +692,6 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
-        }
-
-        private static void RaiseButtonClick(ButtonBase button)
-        {
-            button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
     }
 }

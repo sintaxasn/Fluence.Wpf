@@ -40,8 +40,9 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.InputSimulation;
+using static Fluence.Wpf.Tests.Infrastructure.LoopingSelectorTestSupport;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.TimePicker"/> control: default style
@@ -50,8 +51,18 @@ namespace Fluence.Wpf.Tests
     /// accept/cancel commit semantics including the 12 AM / 12 PM hour mapping,
     /// property coercion, automation peer naming, and surface brush theming.
     /// </summary>
-    public partial class ControlTests
+    public sealed class TimePickerTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         /// <summary>
         /// Mirrors the control's designator fallback: the culture AM designator, or the
         /// invariant "AM" when the culture (notably several .NET Framework NLS locales)
@@ -81,7 +92,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.TimePicker)));
 
@@ -122,9 +132,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
 
                 // ClockIdentifier is pinned because this test asserts 12-hour display
@@ -187,9 +194,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
 
                 // ClockIdentifier is pinned because this test asserts the 12-hour column
@@ -254,9 +258,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
                 {
@@ -312,9 +313,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TimePicker picker = new();
 
                 // The default is regional: 24-hour when the culture short time pattern uses
@@ -345,9 +343,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
 
                 // ClockIdentifier is pinned because this test asserts the 12-hour AM/PM
@@ -425,9 +420,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new();
 
@@ -480,9 +472,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { PlaceholderText = "Pick a time" };
 
@@ -517,9 +506,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // Simulate the .NET Framework NLS locales (de-DE, fr-FR, sv-SE, it-IT) that
                 // report empty AM/PM designators; restore the thread culture in finally.
                 CultureInfo originalCulture = CultureInfo.CurrentCulture;
@@ -576,9 +562,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new()
                 {
@@ -622,9 +605,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };
 
@@ -676,9 +656,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };
 
@@ -727,9 +704,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
 
                 // 24-hour clock pinned so the normalized hour value is asserted directly.
@@ -775,9 +749,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 500, Height = 400 };
                 Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };
 
@@ -834,7 +805,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
