@@ -26,27 +26,283 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
-    public partial class ControlTests
+    /// <summary>
+    /// Tests for the WinUI-style <see cref="Controls.TreeView"/> / <see cref="Controls.TreeViewItem"/>
+    /// pair: default style, template parts, expander visibility and glyph, selection background,
+    /// hover trigger scoping, theme cycling, and the Single/Multiple/None selection modes.
+    /// Authority: WinUI 3 TreeView_themeresources.xaml + TreeViewItem.xaml.
+    /// </summary>
+    public sealed class TreeViewTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        [Fact]
+        public Task TreeView_DefaultStyle_AppliesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(new Controls.TreeViewItem { Header = "Node 1" });
+                _ = tv.Items.Add(new Controls.TreeViewItem { Header = "Node 2" });
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // Template applied → ScrollViewer present
+                ScrollViewer sv = Assert.IsType<ScrollViewer>(FindVisualChild<ScrollViewer>(tv), exactMatch: false);
+                _ = Assert.IsType<Controls.SmoothScrollViewer>(sv, exactMatch: false);
+                Assert.Same(app.TryFindResource("ScrollViewerStyle"), sv.Style);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_TemplateParts_PresentAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ContentPresenter cp = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(item, "PART_Header"), exactMatch: false);
+
+                ItemsPresenter itemsPresenter = Assert.IsType<ItemsPresenter>(FindVisualChildByName<ItemsPresenter>(item, "ItemsHost"), exactMatch: false);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_Expander_VisibleWhenHasChildrenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // The ToggleButton expander must be Visible when HasItems is true
+                ToggleButton expander = Assert.IsType<ToggleButton>(FindVisualChildByName<ToggleButton>(item, "Expander"), exactMatch: false);
+                Assert.Equal(Visibility.Visible, expander.Visibility);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_Expander_CollapsedWhenNoChildrenAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Leaf" };
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ToggleButton expander = Assert.IsType<ToggleButton>(FindVisualChildByName<ToggleButton>(item, "Expander"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, expander.Visibility);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_IsExpanded_MakesChildrenVisibleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child 1" });
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // Initially collapsed
+                ItemsPresenter itemsHost = Assert.IsType<ItemsPresenter>(FindVisualChildByName<ItemsPresenter>(item, "ItemsHost"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, itemsHost.Visibility);
+
+                // Expand
+                item.IsExpanded = true;
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Assert.Equal(Visibility.Visible, itemsHost.Visibility);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_SelectedState_ChangesBackgroundAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+
+                Controls.TreeViewItem item = new() { Header = "Node A" };
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                Border itemBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(item, "ItemBorder"), exactMatch: false);
+
+                // Background must be transparent (or null) in normal state
+                Brush normalBg = itemBorder.Background;
+
+                // Select the item
+                item.IsSelected = true;
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                SolidColorBrush selectedBg = Assert.IsType<SolidColorBrush>(itemBorder.Background);
+                SolidColorBrush expectedBrush = Assert.IsType<SolidColorBrush>(app.TryFindResource("SubtleFillColorSecondaryBrush"));
+                Assert.Equal(expectedBrush.Color, selectedBg.Color);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_HoverTriggers_AreScopedToHeaderBorderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Parent" };
+                _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child" });
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ControlTemplate itemTemplate = Assert.IsType<ControlTemplate>(item.Template, exactMatch: false);
+                bool hasHeaderHoverTrigger = false;
+                bool hasAncestorHoverTrigger = false;
+
+                foreach (TriggerBase triggerBase in itemTemplate.Triggers)
+                {
+                    if (triggerBase is Trigger trigger && trigger.Property == UIElement.IsMouseOverProperty)
+                    {
+                        if (trigger.SourceName.Equals("ItemBorder", StringComparison.Ordinal))
+                        {
+                            hasHeaderHoverTrigger = true;
+                        }
+                        else
+                        {
+                            hasAncestorHoverTrigger = true;
+                        }
+                    }
+
+                    if (triggerBase is MultiTrigger multiTrigger)
+                    {
+                        foreach (Condition condition in multiTrigger.Conditions.Where(static condition => condition.Property == UIElement.IsMouseOverProperty))
+                        {
+                            if (condition.SourceName.Equals("ItemBorder", StringComparison.Ordinal))
+                            {
+                                hasHeaderHoverTrigger = true;
+                            }
+                            else
+                            {
+                                hasAncestorHoverTrigger = true;
+                            }
+                        }
+                    }
+                }
+
+                Assert.True(hasHeaderHoverTrigger,
+                    "TreeViewItem hover visuals should be scoped to the header border.");
+                Assert.False(hasAncestorHoverTrigger,
+                    "TreeViewItem hover visuals should not listen to the whole item, because child hover would light parents.");
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeView_ThemeCycle_StyleRemainsAppliedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(new Controls.TreeViewItem { Header = "Node 1" });
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ThemeTestHelpers.ApplyStandardThemeCycle();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ScrollViewer sv = Assert.IsType<ScrollViewer>(FindVisualChild<ScrollViewer>(tv), exactMatch: false);
+                _ = Assert.IsType<Controls.SmoothScrollViewer>(sv, exactMatch: false);
+
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TreeViewItem_ChevronGlyph_PresentInExpanderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new Controls.TreeViewItem { Header = "Child" });
+                Controls.TreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                ToggleButton expander = Assert.IsType<ToggleButton>(FindVisualChildByName<ToggleButton>(item, "Expander"), exactMatch: false);
+                TextBlock chevron = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(expander, "ChevronGlyph"), exactMatch: false);
+                Assert.Equal("\uE76C", chevron.Text, StringComparer.Ordinal);
+
+                w.Close();
+            });
+        }
+
         [Fact]
         public Task TreeView_DefaultSelectionModeIsSingleWithLiveSelectedItemsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TreeView treeView = new();
 
                 Assert.Equal(TreeViewSelectionMode.Single, treeView.SelectionMode);
@@ -60,8 +316,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -81,7 +335,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.CheckBox firstCheckBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(first, "SelectionCheckBox"), exactMatch: false);
+                    CheckBox firstCheckBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(first, "SelectionCheckBox"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, firstCheckBox.Visibility);
                     Assert.True(firstCheckBox.IsThreeState,
                         "Multiple-selection TreeViewItem checkbox should support indeterminate parent state.");
@@ -113,8 +367,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -170,8 +422,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -196,7 +446,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.CheckBox checkBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
+                    CheckBox checkBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, checkBox.Visibility);
                     Assert.Equal(false, item.IsSelectionChecked);
                     Assert.Empty(treeView.SelectedItems);
@@ -213,8 +463,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try
@@ -232,7 +480,7 @@ namespace Fluence.Wpf.Tests
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.CheckBox checkBox = Assert.IsType<System.Windows.Controls.CheckBox>(FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
+                    CheckBox checkBox = Assert.IsType<CheckBox>(FindVisualChildByName<CheckBox>(item, "SelectionCheckBox"), exactMatch: false);
 
                     // A content-less checkbox living in TreeViewItem's Auto-width selection
                     // column must not inherit the WinUI DefaultCheckBoxStyle MinWidth of 120
@@ -253,8 +501,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
                 Window window = new();
 
                 try

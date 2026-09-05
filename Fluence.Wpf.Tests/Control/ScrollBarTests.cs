@@ -40,7 +40,7 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI 3 parity uplift of the ScrollBar and ScrollViewer templates.
@@ -49,8 +49,18 @@ namespace Fluence.Wpf.Tests
     /// <see cref="Controls.ScrollBarExtensions"/>, the two by two scroll viewer layout with its corner
     /// separator, and the disabled and high contrast brush swaps.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ScrollBarTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         /// <summary>
         /// WinUI ScrollBarSize. The rail is this wide in every state; only the thumb resizes.
         /// </summary>
@@ -182,7 +192,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollViewer sv = new()
                 {
@@ -239,7 +248,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 SolidColorBrush background = new(Colors.Magenta);
                 background.Freeze();
@@ -282,7 +290,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
                 Window window = new() { Width = 60, Height = 300, Content = sb };
@@ -315,7 +322,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
                 Window window = new() { Width = 60, Height = 300, Content = sb };
@@ -351,7 +357,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Horizontal);
                 Window window = new() { Width = 300, Height = 60, Content = sb };
@@ -383,7 +388,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
                 Window window = new() { Width = 60, Height = 300, Content = sb };
@@ -420,7 +424,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
 
@@ -464,7 +467,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
 
@@ -516,7 +518,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
 
@@ -561,7 +562,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollViewer sv = new()
                 {
@@ -621,7 +621,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ScrollBar sb = CreateStyledScrollBar(app, Orientation.Vertical);
                 Window window = new() { Width = 60, Height = 300, Content = sb };
@@ -657,7 +656,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] keys =
                 [
@@ -689,7 +687,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 try
                 {
@@ -718,7 +715,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style expected = Assert.IsType<Style>(app.TryFindResource("ScrollViewerStyle"), exactMatch: false);
 
