@@ -147,9 +147,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
                     Border backdrop = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "AccentFillBackdrop"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), SolidColor(restFill.Background));
                     Assert.Equal(1.0, backdrop.Opacity);
-                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"), Assert.IsType<SolidColorBrush>(toggleButton.Foreground).Color);
+                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"), SolidColor(toggleButton.Foreground));
                 });
         }
 
@@ -171,9 +171,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(probe, "RestFill"), exactMatch: false);
                     Border outerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(probe, "OuterBorder"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "AccentFillColorTertiaryBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
-                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorSecondaryBrush"), Assert.IsType<SolidColorBrush>(probe.Foreground).Color);
-                    Assert.Equal(ResolvedColor(application, "ControlFillColorTransparentBrush"), Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush).Color);
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorTertiaryBrush"), SolidColor(restFill.Background));
+                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorSecondaryBrush"), SolidColor(probe.Foreground));
+                    Assert.Equal(ResolvedColor(application, "ControlFillColorTransparentBrush"), SolidColor(outerBorder.BorderBrush));
                 });
         }
 
@@ -193,9 +193,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
                     Border backdrop = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "AccentFillBackdrop"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "ControlFillColorDefaultBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "ControlFillColorDefaultBrush"), SolidColor(restFill.Background));
                     Assert.Equal(0.0, backdrop.Opacity);
-                    Assert.Equal(ResolvedColor(application, "TextFillColorPrimaryBrush"), Assert.IsType<SolidColorBrush>(toggleButton.Foreground).Color);
+                    Assert.Equal(ResolvedColor(application, "TextFillColorPrimaryBrush"), SolidColor(toggleButton.Foreground));
                 });
         }
 
@@ -218,9 +218,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(probe, "RestFill"), exactMatch: false);
                     Border outerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(probe, "OuterBorder"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "ControlFillColorTertiaryBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
-                    Assert.Equal(ResolvedColor(application, "TextFillColorSecondaryBrush"), Assert.IsType<SolidColorBrush>(probe.Foreground).Color);
-                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorDefaultBrush"), Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush).Color);
+                    Assert.Equal(ResolvedColor(application, "ControlFillColorTertiaryBrush"), SolidColor(restFill.Background));
+                    Assert.Equal(ResolvedColor(application, "TextFillColorSecondaryBrush"), SolidColor(probe.Foreground));
+                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorDefaultBrush"), SolidColor(outerBorder.BorderBrush));
                 });
         }
 
@@ -240,9 +240,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
                     Border outerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "OuterBorder"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "ControlFillColorDisabledBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
-                    Assert.Equal(ResolvedColor(application, "TextFillColorDisabledBrush"), Assert.IsType<SolidColorBrush>(toggleButton.Foreground).Color);
-                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorDefaultBrush"), Assert.IsType<SolidColorBrush>(outerBorder.BorderBrush).Color);
+                    Assert.Equal(ResolvedColor(application, "ControlFillColorDisabledBrush"), SolidColor(restFill.Background));
+                    Assert.Equal(ResolvedColor(application, "TextFillColorDisabledBrush"), SolidColor(toggleButton.Foreground));
+                    Assert.Equal(ResolvedColor(application, "ControlStrokeColorDefaultBrush"), SolidColor(outerBorder.BorderBrush));
                 });
         }
 
@@ -261,9 +261,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
 
                     Border outerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "OuterBorder"), exactMatch: false);
-                    Assert.Equal(ResolvedColor(application, "AccentFillColorDisabledBrush"), Assert.IsType<SolidColorBrush>(outerBorder.Background).Color);
-                    Assert.Equal(Colors.Transparent, Assert.IsType<SolidColorBrush>(restFill.Background).Color);
-                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorDisabledBrush"), Assert.IsType<SolidColorBrush>(toggleButton.Foreground).Color);
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorDisabledBrush"), SolidColor(outerBorder.Background));
+                    Assert.Equal(Colors.Transparent, SolidColor(restFill.Background));
+                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorDisabledBrush"), SolidColor(toggleButton.Foreground));
                 });
         }
 
@@ -283,9 +283,9 @@ namespace Fluence.Wpf.Tests.Control
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
                     Border backdrop = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "AccentFillBackdrop"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), SolidColor(restFill.Background));
                     Assert.Equal(1.0, backdrop.Opacity);
-                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"), Assert.IsType<SolidColorBrush>(toggleButton.Foreground).Color);
+                    Assert.Equal(ResolvedColor(application, "TextOnAccentFillColorPrimaryBrush"), SolidColor(toggleButton.Foreground));
                 });
         }
 
@@ -342,7 +342,7 @@ namespace Fluence.Wpf.Tests.Control
 
                     Border restFill = Assert.IsType<Border>(FindVisualChildByName<Border>(toggleButton, "RestFill"), exactMatch: false);
 
-                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), Assert.IsType<SolidColorBrush>(restFill.Background).Color);
+                    Assert.Equal(ResolvedColor(application, "AccentFillColorDefaultBrush"), SolidColor(restFill.Background));
                     ThemeTestHelpers.AssertKeyThemeBrushesResolve(application);
                 });
         }

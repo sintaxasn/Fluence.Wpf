@@ -1053,7 +1053,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     foreach (DemoPageExpectation expectation in PageExpectations)
@@ -1081,7 +1081,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     object content = Assert.IsType<object>(GetSelectedPageContent(window), exactMatch: false);
@@ -1145,7 +1145,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1182,7 +1182,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.TitleBar shellTitleBar = Assert.IsType<Controls.TitleBar>(DemoTestHost.FindByName<Controls.TitleBar>(window, "ShellTitleBar"), exactMatch: false);
@@ -1316,7 +1316,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
@@ -1340,7 +1340,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1385,7 +1385,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1442,7 +1442,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1488,7 +1488,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1522,7 +1522,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1580,7 +1580,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1612,7 +1612,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1649,7 +1649,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1685,7 +1685,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     window.Width = 698;
@@ -1732,7 +1732,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(async static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1798,7 +1798,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1836,7 +1836,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1879,7 +1879,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1922,7 +1922,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
@@ -1976,7 +1976,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
@@ -2012,7 +2012,7 @@ namespace Fluence.Wpf.Tests.Gallery
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     foreach (DemoPageExpectation expectation in PageExpectations)
@@ -2062,30 +2062,6 @@ namespace Fluence.Wpf.Tests.Gallery
             {
                 Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
             }
-        }
-
-        /// <summary>
-        /// Creates, shows and lays out a <see cref="MainWindow"/> off-screen. The page classes
-        /// under <c language="cs">Gallery.Pages</c> reach this as
-        /// <c language="cs">DemoShellTests.CreateShownMainWindow()</c> on the rare test that
-        /// needs the real shell rather than its own page in isolation.
-        /// </summary>
-        internal static MainWindow CreateShownMainWindow()
-        {
-            MainWindow window = new()
-            {
-                Left = -20000,
-                Top = -20000,
-                Width = 1200,
-                Height = 900,
-                WindowStartupLocation = WindowStartupLocation.Manual,
-                ShowInTaskbar = false,
-            };
-            window.Show();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            window.UpdateLayout();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            return window;
         }
 
         private static object GetSelectedPageContent(MainWindow window)

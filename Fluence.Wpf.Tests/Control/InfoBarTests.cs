@@ -218,13 +218,13 @@ namespace Fluence.Wpf.Tests.Control
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 System.Windows.Controls.TextBlock iconBackground = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "IconBackground"), exactMatch: false);
-                Color colorBefore = Assert.IsType<SolidColorBrush>(iconBackground.Foreground).Color;
+                Color colorBefore = BrushAssert.SolidColor(iconBackground.Foreground);
 
                 bar.Severity = InfoBarSeverity.Error;
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorCriticalBrush"));
-                Color colorAfter = Assert.IsType<SolidColorBrush>(iconBackground.Foreground).Color;
+                Color colorAfter = BrushAssert.SolidColor(iconBackground.Foreground);
                 Assert.Equal(expected.Color, colorAfter);
                 Assert.NotEqual(colorBefore, colorAfter);
                 w.Close();

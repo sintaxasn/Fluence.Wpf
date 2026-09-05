@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                MainWindow window = DemoShellTests.CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     window.NavigateTo("colors");
