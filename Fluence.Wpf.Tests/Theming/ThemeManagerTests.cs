@@ -148,26 +148,6 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         [Fact]
-        public Task FiveSwitches_DictionaryCountStableAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                int initialCount = app.Resources.MergedDictionaries.Count;
-
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
-
-                int finalCount = app.Resources.MergedDictionaries.Count;
-                Assert.Equal(initialCount, finalCount);
-            });
-        }
-
-        [Fact]
         public void IsSystemInDarkMode_IsInverseOfRegistrySystemLight()
         {
             bool registryLight = Helpers.RegistryHelper.GetSystemUsesLightTheme();

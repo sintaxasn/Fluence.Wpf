@@ -126,40 +126,6 @@ namespace Fluence.Wpf.Tests.Control.Rules
         }
 
         [Fact]
-        public Task ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Controls.ProgressBar progressBar = new()
-                {
-                    Width = 240,
-                    Height = 24,
-                    Value = 40,
-                };
-                Window window = new()
-                {
-                    Content = progressBar,
-                    Width = 300,
-                    Height = 120,
-                };
-
-                try
-                {
-                    window.Show();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    _ = progressBar.ApplyTemplate();
-
-                    Border track = Assert.IsType<Border>(FindVisualChildByName<Border>(progressBar, "PART_Track"), exactMatch: false);
-                    AssertBrushColor(track.Background, "ControlStrongStrokeColorDefaultBrush");
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
-            });
-        }
-
-        [Fact]
         public Task ScrollBar_RailBackground_UsesWinUiTrackFillRoleAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

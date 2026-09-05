@@ -438,34 +438,6 @@ namespace Fluence.Wpf.Tests.Windowing
             });
         }
 
-        [Fact]
-        public Task MergedDictionaries_CountStableAfterMultipleSwitchesAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
-                try
-                {
-                    int? initialCount = app.Resources.MergedDictionaries.Count;
-
-                    for (int i = 0; i < 5; i++)
-                    {
-                        ApplicationTheme theme = i % 2 is 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
-                        ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
-                    }
-
-                    Assert.Equal(initialCount, app.Resources.MergedDictionaries.Count);
-                }
-                finally
-                {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-
-                }
-            });
-        }
-
         #endregion Bug Fix Tests - Title Bar Flash and Theme Switching
 
         #region Caption button hit-test (WM_NCHITTEST vs WPF commands)

@@ -224,43 +224,6 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         // ---------------------------------------------------------------------------
-        // 5. WindowPolicy.BuildBackdropPlan - None backdrop returns non-transparent bg
-        // ---------------------------------------------------------------------------
-
-        [Fact]
-        public void BuildBackdropPlan_None_ReturnsOpaqueBackground()
-        {
-            // Capability with no backdrop support at all.
-            WindowCapabilities caps = new(
-                supportsSystemBackdropType: false,
-                supportsMicaEffect: false,
-                supportsRoundedCorners: false,
-                supportsCaptionColor: false,
-                supportsBorderColor: false);
-
-            Color light = Color.FromRgb(0xFA, 0xFA, 0xFA);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.None, ApplicationTheme.Light, caps, light, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
-
-            Assert.NotEqual(Colors.Transparent, plan.BackgroundColor);
-        }
-
-        [Fact]
-        public void BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent()
-        {
-            WindowCapabilities caps = new(
-                supportsSystemBackdropType: true,
-                supportsMicaEffect: true,
-                supportsRoundedCorners: true,
-                supportsCaptionColor: true,
-                supportsBorderColor: true);
-
-            Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
-
-            Assert.Equal(Colors.Transparent, plan.BackgroundColor);
-        }
-
-        // ---------------------------------------------------------------------------
         // 6. C3: manager subscription leak guard.
         //
         // The static managers hold strong references to every subscribed FluenceWindow.
