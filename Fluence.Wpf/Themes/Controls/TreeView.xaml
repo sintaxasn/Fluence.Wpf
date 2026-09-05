@@ -136,7 +136,7 @@
                                     follows the WinUI TableView row indicator (controls/dev/TableView/
                                     TableView.xaml): CornerRadius 1.5 with a 2,0,0,0 inset from the left
                                     edge. TreeView keeps its own TreeViewItem.xaml-sourced radius rather
-                                    than the TableView one. The fill is NavigationViewSelectionIndicatorBrush,
+                                    than the TableView one. The fill is NavigationViewSelectionIndicatorForeground,
                                     shared with the NavigationView and ListView/ListBox pills
                                     (SpecialBrushes.cs), not TreeViewItemSelectionIndicatorForeground's
                                     raw accent binding.
@@ -147,7 +147,7 @@
                                     Height="16"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    Background="{DynamicResource NavigationViewSelectionIndicatorBrush}"
+                                    Background="{DynamicResource NavigationViewSelectionIndicatorForeground}"
                                     CornerRadius="2"
                                     IsHitTestVisible="False"
                                     Opacity="0" />

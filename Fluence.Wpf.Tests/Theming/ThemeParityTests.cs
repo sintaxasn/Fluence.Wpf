@@ -60,7 +60,7 @@ namespace Fluence.Wpf.Tests.Theming
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
             "LayerOnAccentAcrylicFillColorDefaultBrush",
-            "NavigationViewSelectionIndicatorBrush",
+            "NavigationViewSelectionIndicatorForeground",
             "SystemFillColorAttentionBackgroundBrush",
             "SystemFillColorAttentionBrush",
             "SystemFillColorSolidAttentionBackgroundBrush",
