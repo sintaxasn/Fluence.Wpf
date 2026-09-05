@@ -29,21 +29,34 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Media;
+using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 C21 tests: Card elevation shadow - Default variant has distinct drop shadow;
-    /// Subtle (and other flat variants) have no shadow.
+    /// Fluent <see cref="Card"/> control: elevation shadow (Default variant has none; Subtle
+    /// and other flat variants have none either), automation peer and clickability.
     /// Authority: WinUI 3 card elevation pattern (LayerFillColorDefaultBrush elevation context).
     /// </summary>
-    public partial class ControlTests
+    public sealed class CardTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 C21  Card elevation shadow
         // ---------------------------------------------------------------------------
@@ -53,9 +66,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
@@ -75,7 +85,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -100,9 +109,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Card card = new() { Variant = CardVariant.Subtle, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
@@ -120,9 +126,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Card card = new() { Variant = CardVariant.Outlined, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
@@ -140,9 +143,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Card card = new() { Variant = CardVariant.Filled, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
@@ -161,7 +161,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -194,7 +193,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Card card = new() { Variant = CardVariant.Default, IsClickable = true, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -218,7 +216,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Card card = new() { Variant = CardVariant.Outlined, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -245,7 +242,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Card card = new() { Variant = CardVariant.Default, IsEnabled = false, Width = 200, Height = 100 };
                 Window w = new() { Content = card, Width = 300, Height = 200 };
@@ -259,6 +255,236 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(expectedBackground, outerBorder.Background);
                 Assert.Equal(expectedStroke, outerBorder.BorderBrush);
                 w.Close();
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Clickable Card - automation peer
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task ClickableCard_AutomationPeer_IsCardAutomationPeerAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = true,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    _ = Assert.IsType<CardAutomationPeer>(peer, exactMatch: false);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ClickableCard_AutomationControlType_IsButtonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = true,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ClickableCard_GetPattern_Invoke_ReturnsInvokeProviderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = true,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    object pattern = Assert.IsType<object>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+                    _ = Assert.IsType<IInvokeProvider>(pattern, exactMatch: false);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ClickableCard_InvokePattern_RaisesClickEventAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = true,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    bool clickRaised = false;
+                    card.Click += (_, _) => clickRaised = true;
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    IInvokeProvider invokeProvider = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+                    invokeProvider.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(clickRaised,
+                        "IInvokeProvider.Invoke() must raise the Card Click routed event.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ClickableCard_IsTabStop_IsTrueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Card card = new() { IsClickable = true };
+                Assert.True(card.IsTabStop,
+                    "A clickable Card must be IsTabStop=true so keyboard users can reach it.");
+                Assert.True(card.Focusable,
+                    "A clickable Card must be Focusable=true.");
+            });
+        }
+
+        [Fact]
+        public Task NonClickableCard_AutomationControlType_IsNotButtonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = false,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    Assert.NotEqual(AutomationControlType.Button, peer.GetAutomationControlType());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NonClickableCard_GetPattern_Invoke_ReturnsNullAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Card card = new()
+                    {
+                        IsClickable = false,
+                        Width = 200,
+                        Height = 100,
+                    };
+                    window.Content = card;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    _ = card.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(card);
+                    object? pattern = peer.GetPattern(PatternInterface.Invoke);
+                    Assert.Null(pattern);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NonClickableCard_IsTabStop_IsFalseAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Card card = new() { IsClickable = false };
+                Assert.False(card.IsTabStop,
+                    "A non-clickable Card must not be in the tab order.");
             });
         }
     }

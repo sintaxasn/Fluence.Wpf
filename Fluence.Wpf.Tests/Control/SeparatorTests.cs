@@ -34,26 +34,29 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// Gap-audit tests: Fluent <see cref="Controls.Separator"/> control.
+    /// Fluent <see cref="Controls.Separator"/> control.
     /// Authority: .NET 10 WPF PresentationFramework.Fluent/Styles/Separator.xaml.
     /// </summary>
-    public partial class ControlTests
+    public sealed class SeparatorTests : IAsyncLifetime
     {
-        // ---------------------------------------------------------------------------
-        // Separator
-        // ---------------------------------------------------------------------------
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
 
         [Fact]
         public Task Separator_DefaultStyle_AppliesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
@@ -70,9 +73,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
@@ -89,7 +89,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
@@ -109,9 +108,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Separator sep = new();
                 Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();

@@ -27,22 +27,35 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 B13 tests: Expander chevron rotation easing (ControlFastOutSlowIn / SplineDoubleKeyFrame).
+    /// Fluent <see cref="Controls.Expander"/> control: chevron rotation easing
+    /// (ControlFastOutSlowIn / SplineDoubleKeyFrame) and content slide.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ExpanderTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 B13  Expander chevron rotation easing
         // ---------------------------------------------------------------------------
@@ -52,9 +65,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Content" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -71,9 +81,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -95,9 +102,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -114,9 +118,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -140,9 +141,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
                 try
@@ -172,9 +170,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
                 try
@@ -211,9 +206,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
                 try
@@ -251,9 +243,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
                 Window w = new() { Content = expander, Width = 300, Height = 300 };
                 try
@@ -293,9 +282,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(async static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new()
                 {
                     Header = "Test",
@@ -344,9 +330,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new()
                 {
                     Header = "Test",
@@ -377,9 +360,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new()
                 {
                     Header = "Test",
@@ -411,9 +391,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body", IsEnabled = false };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -437,9 +414,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Expander expander = new() { Header = "Test", Content = "Body" };
                 Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
@@ -456,6 +430,35 @@ namespace Fluence.Wpf.Tests
                 Assert.Equal(expectedHeaderBackground, headerBorder.Background);
                 w.Close();
             });
+        }
+
+        private static async Task<bool> WaitUntilAsync(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+            do
+            {
+                await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                if (condition())
+                {
+                    return true;
+                }
+
+                DispatcherFrame frame = new();
+                DispatcherTimer timer = new(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested);
+
+            await dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.ApplicationIdle, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+            return condition();
         }
     }
 }
