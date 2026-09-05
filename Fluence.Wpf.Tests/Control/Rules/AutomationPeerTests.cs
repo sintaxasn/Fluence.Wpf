@@ -356,5 +356,36 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 Assert.Equal(expectedName, peer.GetName(), StringComparer.Ordinal);
             });
         }
+
+        /// <summary>
+        /// FlyoutPresenter is the container every flyout renders into, so one peer gives the
+        /// whole family a control type instead of a bare FrameworkElement.
+        /// </summary>
+        [Fact]
+        public Task FlyoutPresenter_AutomationPeer_ReportsGroupControlTypeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FlyoutPresenter presenter = new() { Content = "Body" };
+                Window window = new() { Content = presenter, Width = 200, Height = 200 };
+                window.Show();
+                _ = presenter.ApplyTemplate();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                try
+                {
+                    AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                        UIElementAutomationPeer.CreatePeerForElement(presenter), exactMatch: false);
+
+                    _ = Assert.IsType<FlyoutPresenterAutomationPeer>(peer, exactMatch: false);
+                    Assert.Equal("FlyoutPresenter", peer.GetClassName(), StringComparer.Ordinal);
+                    Assert.Equal(AutomationControlType.Group, peer.GetAutomationControlType());
+                    Assert.True(peer.IsControlElement(), "A flyout container must stay in the control view.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
     }
 }
