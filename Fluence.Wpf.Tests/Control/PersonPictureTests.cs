@@ -38,14 +38,24 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-6 tests: Fluent <see cref="PersonPicture"/>.
+    /// Fluent <see cref="PersonPicture"/> control.
     /// Authority: WinUI 3 PersonPicture.xaml + PersonPicture_themeresources.xaml.
     /// </summary>
-    public partial class ControlTests
+    public sealed class PersonPictureTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-6  PersonPicture
         // ---------------------------------------------------------------------------
@@ -55,9 +65,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new();
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -74,9 +81,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new();
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -97,9 +101,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // No DisplayName, no Initials, no ProfilePicture
                 PersonPicture pp = new();
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
@@ -119,9 +120,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "John Doe" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -138,9 +136,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "John Doe", Initials = "XY" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -157,9 +152,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { IsGroup = true };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -176,9 +168,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { BadgeNumber = 3 };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -198,9 +187,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { Width = 48, Height = 48, BadgeNumber = 150 };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -237,9 +223,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { BadgeNumber = 0 };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -256,9 +239,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new();
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -275,9 +255,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "Alice Smith" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -296,9 +273,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -316,9 +290,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -336,9 +307,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
@@ -356,9 +324,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 // No DisplayName, but Initials set explicitly.
                 PersonPicture pp = new() { Initials = "AL" };
                 Window w = new() { Content = pp, Width = 200, Height = 200 };
@@ -377,9 +342,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
                 AutomationProperties.SetName(pp, "Profile picture for Ada");
                 Window w = new() { Content = pp, Width = 200, Height = 200 };

@@ -37,15 +37,25 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// Phase 2 tests: Fluent <see cref="Controls.Image"/>.
+    /// Fluent <see cref="Controls.Image"/> control.
     /// Authority: in-tree precedent (PersonPicture stroke tokens, FontIcon non-interactive shape);
     /// WinUI 3 ships no styled Image control.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ImageTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // Phase 2  Image
         // ---------------------------------------------------------------------------
@@ -71,9 +81,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
                 w.Show();
@@ -91,9 +98,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 BitmapSource probe = CreateProbeBitmap();
                 Controls.Image image = new() { Source = probe, Stretch = Stretch.UniformToFill };
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -112,9 +116,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new() { Source = CreateProbeBitmap(), CornerRadius = new CornerRadius(8) };
                 Window w = new() { Content = image, Width = 200, Height = 200 };
                 w.Show();
@@ -140,9 +141,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new() { Source = CreateProbeBitmap() };
                 Window w = new() { Content = image, Width = 200, Height = 200 };
                 w.Show();
@@ -161,9 +159,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
                 w.Show();
@@ -188,9 +183,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new();
                 Window w = new() { Content = image, Width = 200, Height = 200 };
                 w.Show();
@@ -215,9 +207,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.Image image = new();
                 AutomationProperties.SetName(image, "Company logo");
                 Window w = new() { Content = image, Width = 200, Height = 200 };
@@ -245,9 +234,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 System.Windows.Controls.TextBlock label = new() { Text = "Product photo" };
                 Controls.Image image = new();
                 AutomationProperties.SetLabeledBy(image, label);
