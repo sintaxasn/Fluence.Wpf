@@ -37,21 +37,30 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.Flyout"/> / <see cref="Controls.FlyoutBase"/> /
     /// <see cref="Controls.FlyoutPresenter"/> family.
     /// </summary>
-    public partial class ControlTests
+    public sealed class FlyoutTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task FlyoutPresenter_DefaultStyle_AppliesFluentSurfaceAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(Controls.FlyoutPresenter)));
 
@@ -89,9 +98,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Flyout body" };
@@ -148,9 +154,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Closable" };
@@ -194,9 +197,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Sticky" };
@@ -237,9 +237,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "First" };
@@ -275,9 +272,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button owner = new() { Content = "Owner" };
                 Controls.Flyout flyout = new() { Content = "Attached" };
@@ -310,9 +304,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Placed" };
@@ -368,9 +359,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Directional" };
@@ -451,9 +439,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 Button target = new() { Content = "Anchor" };
                 Controls.Flyout flyout = new() { Content = "Dismiss me" };
@@ -499,9 +484,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 400, Height = 300 };
                 object viewModel = new();
                 Button target = new() { Content = "Anchor", DataContext = viewModel };
@@ -543,7 +525,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] brushKeys = ["SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush"];
 

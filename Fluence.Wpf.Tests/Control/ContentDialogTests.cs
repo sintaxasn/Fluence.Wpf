@@ -39,17 +39,28 @@ using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.InputSimulation;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.ContentDialog"/> modal dialog:
     /// default style and template parts, adorner-hosted smoke overlay, ShowAsync task
     /// completion, Escape/close handling, click cancellation, and smoke brush theming.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ContentDialogTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         private static Window CreateShownContentDialogOwner()
         {
             Window window = new() { Width = 640, Height = 480, Content = new Grid() };
@@ -70,22 +81,12 @@ namespace Fluence.Wpf.Tests
             return layer?.GetAdorners(root);
         }
 
-        private static void RaiseKeyEvent(UIElement target, Key key, RoutedEvent routedEvent)
-        {
-            PresentationSource source = Assert.IsType<PresentationSource>(PresentationSource.FromVisual(target), exactMatch: false);
-            target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, key)
-            {
-                RoutedEvent = routedEvent,
-            });
-        }
-
         [Fact]
         public Task ContentDialog_DefaultStyle_AppliesAndTemplatePartsFoundAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.ContentDialog defaults = new();
                 Assert.Equal(string.Empty, defaults.PrimaryButtonText, StringComparer.Ordinal);
@@ -147,9 +148,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Grid host = new();
                 Controls.ContentDialog dialog = new()
                 {
@@ -196,9 +194,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 TextBox body = new() { AcceptsReturn = true, MinLines = 3 };
                 Controls.ContentDialog dialog = new()
@@ -247,9 +242,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -296,9 +288,6 @@ namespace Fluence.Wpf.Tests
             Task<ContentDialogResult>? dialogTask = null;
             await WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -337,9 +326,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -389,9 +375,6 @@ namespace Fluence.Wpf.Tests
             int closedCount = 0;
             await WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -435,9 +418,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -486,9 +466,6 @@ namespace Fluence.Wpf.Tests
             Task<ContentDialogResult>? dialogTask = null;
             await WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -540,9 +517,6 @@ namespace Fluence.Wpf.Tests
             Task<ContentDialogResult>? dialogTask = null;
             await WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -587,9 +561,6 @@ namespace Fluence.Wpf.Tests
             Task<ContentDialogResult>? dialogTask = null;
             await WpfTestSta.RunOnStaAsync(async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -638,9 +609,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
                 {
@@ -685,7 +653,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
 
@@ -701,9 +668,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Button behind = new() { Content = "Behind" };
                 Window window = new() { Width = 640, Height = 480, Content = behind };
 
@@ -770,9 +734,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 TextBox behind = new() { Text = "Behind" };
                 Window window = new() { Width = 640, Height = 480, Content = behind };
 
@@ -843,7 +804,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Window window = CreateShownContentDialogOwner();
                 Controls.ContentDialog dialog = new()
@@ -886,9 +846,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.FluenceWindow window = new()
                 {
                     Width = 640,
@@ -934,9 +891,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ContentDialog dialog = new() { Title = "Confirm" };
 
                 // A modal dialog is not a real HWND, so nothing prompts Narrator to read it on
@@ -952,9 +906,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.ContentDialog dialog = new() { Title = "Delete file?" };
                 Window window = new() { Width = 320, Height = 240, Content = dialog };
 

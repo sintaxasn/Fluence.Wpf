@@ -526,5 +526,14 @@ namespace Fluence.Wpf.Tests
         {
             return ring.Template?.FindName("PART_IndeterminateRotate", ring) as RotateTransform;
         }
+
+        private static Window CreateShownContentDialogOwner()
+        {
+            Window window = new() { Width = 640, Height = 480, Content = new Grid() };
+            window.Show();
+            WpfTestSta.DrainDispatcher(window.Dispatcher);
+            window.UpdateLayout();
+            return window;
+        }
     }
 }

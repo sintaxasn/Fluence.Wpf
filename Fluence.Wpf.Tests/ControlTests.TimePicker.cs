@@ -39,6 +39,7 @@ using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.InputSimulation;
 
 namespace Fluence.Wpf.Tests
 {

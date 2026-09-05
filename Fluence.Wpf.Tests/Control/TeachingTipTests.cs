@@ -41,22 +41,31 @@ using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
     /// Tests for the WinUI-style <see cref="Controls.TeachingTip"/> control: default style and
     /// template parts, popup hosting, placement and beak resolution, light dismiss mapping,
     /// footer button behavior, and surface brush theming.
     /// </summary>
-    public partial class ControlTests
+    public sealed class TeachingTipTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         [Fact]
         public Task TeachingTip_DefaultStyle_AppliesAndTemplatePartsFoundAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TeachingTip defaults = new();
                 Assert.Equal(string.Empty, defaults.Title, StringComparer.Ordinal);
@@ -119,9 +128,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Grid host = new();
                 Controls.TeachingTip tip = new()
@@ -165,9 +171,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Border host = new();
                 Controls.TeachingTip tip = new()
@@ -203,9 +206,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -274,9 +274,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -321,9 +318,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -365,9 +359,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -416,9 +407,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 TeachingTipRecordingCommand command = new();
@@ -468,9 +456,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480, Content = new Grid() };
                 Controls.TeachingTip tip = new()
                 {
@@ -522,9 +507,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -595,9 +577,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -658,9 +637,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -712,9 +688,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
                 Controls.TeachingTip tip = new()
@@ -765,9 +738,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480 };
                 Button target = new() { Content = "Anchor" };
 
@@ -830,9 +800,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Window window = new() { Width = 640, Height = 480, Content = new Grid() };
                 Controls.TeachingTip tip = new()
                 {
@@ -882,7 +849,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] brushKeys =
                 [

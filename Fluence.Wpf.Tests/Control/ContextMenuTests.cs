@@ -34,15 +34,25 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-5A.2 tests for Fluent <see cref="ContextMenu"/> and <see cref="MenuItem"/>.
+    /// Tests for Fluent <see cref="ContextMenu"/> and <see cref="MenuItem"/>.
     /// </summary>
-    public partial class ControlTests
+    public sealed class ContextMenuTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
-        // WI-5A.2 ContextMenu
+        // ContextMenu
         // ---------------------------------------------------------------------------
 
         [Fact]
@@ -51,7 +61,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(ContextMenu)));
             });
@@ -63,7 +72,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Assert.NotNull(app.TryFindResource("SolidBackgroundFillColorTertiaryBrush"));
                 Assert.NotNull(app.TryFindResource("SurfaceStrokeColorFlyoutBrush"));
@@ -76,7 +84,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(ContextMenu)));
 
@@ -116,7 +123,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Style style = Assert.IsType<Style>(app.TryFindResource(typeof(MenuItem)));
             });
@@ -128,7 +134,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Assert.NotNull(app.TryFindResource("SubtleFillColorSecondaryBrush"));
                 Assert.NotNull(app.TryFindResource("SubtleFillColorTertiaryBrush"));
@@ -141,7 +146,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 MenuItem mi = new()
                 {
@@ -162,7 +166,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 string[] keys =
                 [
