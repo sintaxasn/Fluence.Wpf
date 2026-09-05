@@ -37,15 +37,25 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
-namespace Fluence.Wpf.Tests
+namespace Fluence.Wpf.Tests.Control
 {
     /// <summary>
-    /// WI-3 C19 tests: TextBox PlaceholderText uses TextFillColorTertiaryBrush;
-    /// PasswordBox PlaceholderText uses TextFillColorTertiaryBrush.
+    /// Fluent <see cref="Controls.TextBox"/> control: PlaceholderText brush, validation line
+    /// and HelpText automation behavior.
     /// Authority: WinUI 3 TextBox_themeresources.xaml (TextBoxPlaceholderTextForeground → TextFillColorTertiaryBrush).
     /// </summary>
-    public partial class ControlTests
+    public sealed class TextBoxTests : IAsyncLifetime
     {
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 C19  TextBox + PasswordBox PlaceholderText brush fix
         // ---------------------------------------------------------------------------
@@ -56,7 +66,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true };
                 Window w = new() { Content = tb, Width = 300, Height = 60 };
@@ -83,7 +92,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true, IsEnabled = false };
                 Window w = new() { Content = tb, Width = 300, Height = 60 };
@@ -110,7 +118,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TextBox tb = new() { PlaceholderText = "Hint", PlaceholderEnabled = true };
                 Window w = new() { Content = tb, Width = 300, Height = 60 };
@@ -138,7 +145,6 @@ namespace Fluence.Wpf.Tests
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
 
                 Controls.TextBox tb = new()
                 {
@@ -171,9 +177,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
@@ -205,9 +208,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
@@ -232,9 +232,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
@@ -263,9 +260,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
@@ -290,9 +284,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
@@ -340,9 +331,6 @@ namespace Fluence.Wpf.Tests
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application app = WpfTestSta.EnsureApplication();
-                _ = TestApp.EnsureLibraryTheme();
-
                 Controls.TextBox tb = new()
                 {
                     Width = 240,
