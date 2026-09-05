@@ -491,24 +491,24 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Maps a <see cref="CornerPreference"/> value to the corresponding
+        /// Maps a <see cref="WindowCornerPreference"/> value to the corresponding
         /// <c language="csharp">DWMWCP_*</c> constant for <c language="csharp">DWMWA_WINDOW_CORNER_PREFERENCE</c>.
         /// </summary>
         /// <remarks>
-        /// <see cref="CornerPreference.Default"/> and <see cref="CornerPreference.Round"/> both
+        /// <see cref="WindowCornerPreference.Default"/> and <see cref="WindowCornerPreference.Round"/> both
         /// map to DWMWCP_ROUND because <c language="csharp">Default</c> in the
         /// Fluence library means "the library default," which is rounded on Windows 11.
         /// </remarks>
         /// <param name="preference">The requested corner style.</param>
         /// <returns>The <c language="csharp">DWMWCP_*</c> constant to write via
         /// <c language="csharp">DWMWA_WINDOW_CORNER_PREFERENCE</c>.</returns>
-        internal static DWM_WINDOW_CORNER_PREFERENCE GetCornerPreference(CornerPreference preference)
+        internal static DWM_WINDOW_CORNER_PREFERENCE GetCornerPreference(WindowCornerPreference preference)
         {
             return preference switch
             {
-                CornerPreference.DoNotRound => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
-                CornerPreference.RoundSmall => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
-                CornerPreference.Default or CornerPreference.Round => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
+                WindowCornerPreference.DoNotRound => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
+                WindowCornerPreference.RoundSmall => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
+                WindowCornerPreference.Default or WindowCornerPreference.Round => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
                 _ => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
             };
         }

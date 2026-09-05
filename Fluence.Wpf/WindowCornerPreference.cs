@@ -29,9 +29,11 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Controls.FluenceWindow"/>.
+    /// Rounded corner preference for a top-level window (DWM), used with
+    /// <see cref="Controls.FluenceWindow.CornerStyle"/>. The name follows the .NET 10 WPF Fluent
+    /// theme, this library's authority for window chrome.
     /// </summary>
-    public enum CornerPreference
+    public enum WindowCornerPreference
     {
         /// <summary>
         /// OS default rounding.
