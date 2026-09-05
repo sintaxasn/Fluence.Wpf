@@ -35,16 +35,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Fluence.Wpf.Controls;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
-    public sealed class DemoColorsPageTests
+    public sealed class GalleryColorsPageTests : IAsyncLifetime
     {
         private static readonly string[] SectionNames =
         [
@@ -56,13 +54,41 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             "High Contrast",
         ];
 
+        private Window? _host;
+        private GalleryColorsPage? _page;
+
+        public ValueTask InitializeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
+            {
+                _ = TestApp.EnsureDemoTheme();
+                _page = new GalleryColorsPage();
+                _host = DemoTestHost.CreateHostWindow(_page);
+            }));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
+            {
+                if (_host is not null)
+                {
+                    DemoTestHost.CloseWindow(_host);
+                    _host = null;
+                }
+
+                _page = null;
+            }));
+        }
+
+        // This test needs the real shell NavigationView to reach the Colors page by route, so
+        // it builds its own MainWindow rather than the page the class shares.
         [Fact]
         public Task GalleryColorsPage_NavigationRoute_LoadsConcretePageAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static delegate
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                _ = EnsureDemoTheme();
-                MainWindow window = CreateShownMainWindow();
+                MainWindow window = DemoShellTests.CreateShownMainWindow();
                 try
                 {
                     window.NavigateTo("colors");
@@ -70,7 +96,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    NavigationView navigationView = Assert.IsType<NavigationView>(DemoTestHost.FindByName<NavigationView>(window, "DemoNav"), exactMatch: false);
+                    Controls.NavigationView navigationView = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
                     _ = Assert.IsType<GalleryColorsPage>(navigationView.Content, exactMatch: false);
                 }
                 finally
@@ -83,36 +109,30 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryColorsPage_ExposesGalleryPageHeaderWithColorsTitleAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static delegate
+            return WpfTestSta.RunOnStaAsync(() =>
             {
-                _ = EnsureDemoTheme();
-                GalleryColorsPage page = new();
-                Window window = CreateHostWindow(page);
-                try
-                {
-                    GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page).FirstOrDefault(), exactMatch: false);
-                    Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
-                    Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
-                        "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
+                GalleryColorsPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+
+                GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page).FirstOrDefault(), exactMatch: false);
+                Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
+                Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
+                    "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
             });
         }
 
+        // This test drives the page's color-section tabs, so it builds its own instance rather
+        // than mutating the one the class shares.
         [Fact]
         public Task GalleryColorsPage_UsesWinUiGalleryColorStructureAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static delegate
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = EnsureDemoTheme();
+                Application application = WpfTestSta.EnsureApplication();
                 GalleryColorsPage page = new();
-                Window window = CreateHostWindow(page);
+                Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    SmoothScrollViewer scrollViewer = Assert.IsType<SmoothScrollViewer>(DemoTestHost.FindVisualChildren<SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
+                    Controls.SmoothScrollViewer scrollViewer = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
 
                     TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
                     Assert.Equal(SectionNames.Length, colorTabs.Items.Count);
@@ -123,7 +143,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         Assert.Equal(SectionNames[i], tabItem.Header as string, StringComparer.Ordinal);
                     }
 
-                    List<string> exampleTitles = [.. DemoTestHost.FindVisualChildren<System.Windows.Controls.TextBlock>(page)
+                    List<string> exampleTitles = [.. DemoTestHost.FindVisualChildren<TextBlock>(page)
                         .Where(static text => string.Equals(text.Tag as string, "ColorExampleTitle", StringComparison.Ordinal))
                         .Select(static text => text.Text)];
                     Assert.Equal(["Text", "Accent Text", "Text On Accent"], exampleTitles, StringComparer.Ordinal);
@@ -146,7 +166,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         Color surfaceColor = Assert.IsType<SolidColorBrush>(application.TryFindResource("SolidBackgroundFillColorBaseBrush"), exactMatch: false).Color;
                         foreach (UniformGrid row in rows)
                         {
-                            System.Windows.Controls.Border surface = Assert.IsType<System.Windows.Controls.Border>(row.Parent, exactMatch: false);
+                            Border surface = Assert.IsType<Border>(row.Parent, exactMatch: false);
                             Assert.Equal(surfaceColor, Assert.IsType<SolidColorBrush>(surface.Background, exactMatch: false).Color);
                             Assert.Equal(new Thickness(1), surface.BorderThickness);
                         }
@@ -172,19 +192,21 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 }
                 finally
                 {
-                    CloseWindowAndDrain(window);
+                    DemoTestHost.CloseWindow(window);
                 }
             });
         }
 
+        // This test drives the page's color-section tabs and cycles the app theme, so it
+        // builds its own instance rather than mutating the one the class shares.
         [Fact]
         public Task GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemesAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static delegate
+            return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Application application = EnsureDemoTheme();
+                Application application = WpfTestSta.EnsureApplication();
                 GalleryColorsPage page = new();
-                Window window = CreateHostWindow(page);
+                Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
                     SortedSet<string> resourceKeys = CollectColorTokenResourceKeys(page, window.Dispatcher);
@@ -213,7 +235,8 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 }
                 finally
                 {
-                    CloseWindowAndDrain(window);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    DemoTestHost.CloseWindow(window);
                 }
             });
         }
@@ -271,66 +294,6 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             WpfTestSta.DrainDispatcher(dispatcher);
             colorTabs.UpdateLayout();
             WpfTestSta.DrainDispatcher(dispatcher);
-        }
-
-        private static Application EnsureDemoTheme()
-        {
-            Application application = WpfTestSta.EnsureApplication() ?? throw new InvalidOperationException("WPF application was not created.");
-            foreach (Window window in (Window[])[.. application.Windows.Cast<Window>()])
-            {
-                window.Content = null;
-                window.Close();
-            }
-
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-            ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-            ResourceDictionary demoShared = new()
-            {
-                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
-            };
-            application.Resources.MergedDictionaries.Add(demoShared);
-            return application;
-        }
-
-        private static MainWindow CreateShownMainWindow()
-        {
-            MainWindow window = new()
-            {
-                Left = -20000,
-                Top = -20000,
-                Width = 1200,
-                Height = 900,
-                WindowStartupLocation = WindowStartupLocation.Manual,
-                ShowInTaskbar = false,
-            };
-            window.Show();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            window.UpdateLayout();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            return window;
-        }
-
-        private static Window CreateHostWindow(UIElement content)
-        {
-            Window window = new()
-            {
-                Left = -20000,
-                Top = -20000,
-                Width = 1040,
-                Height = 720,
-                WindowStartupLocation = WindowStartupLocation.Manual,
-                ShowInTaskbar = false,
-                Content = content,
-            };
-            window.Show();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            window.UpdateLayout();
-            WpfTestSta.DrainDispatcher(window.Dispatcher);
-            return window;
         }
     }
 }
