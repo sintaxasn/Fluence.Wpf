@@ -160,19 +160,16 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: fluence-wpf-nupkg
-          path: nupkg/*.nupkg
+          path: |
+            nupkg/*.nupkg
+            nupkg/*.snupkg
           retention-days: 30
-
-      # Publishing remains a manual release decision until the NuGet API key
-      # and first public version are intentionally configured.
-      # - name: Publish to NuGet (tagged releases only)
-      #   if: startsWith(github.ref, 'refs/tags/v')
-      #   run: dotnet nuget push nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
   # Version tags (v*) run the full build/test/pack gates above and then publish a
   # GitHub release with the per-TFM library binaries, the demo, and the NuGet
-  # package attached. Tags containing '-pre' are marked as prereleases. Write
-  # permission is scoped to this job only; the build job stays read-only.
+  # package attached, and push the package to nuget.org. Tags carrying a
+  # SemVer prerelease identifier are marked as prereleases. Write permission is
+  # scoped to this job only; the build job stays read-only.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
@@ -181,6 +178,29 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout the tag
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      # Runs before anything is published. A v1.0.0 tag on a tree still at
+      # 0.8.19-preview would otherwise publish a mislabeled package to nuget.org,
+      # which can only be unlisted, never replaced.
+      - name: Verify the tag matches the tree version
+        run: |
+          $version = (dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFramework=net472 -nologo).Trim()
+          $expected = "v$version"
+          if ('${{ github.ref_name }}' -ne $expected) {
+            Write-Error "Tag ${{ github.ref_name }} does not match the tree version, which is $expected. Bump VersionPrefix and VersionSuffix in Directory.Build.props, or delete the tag and re-tag the right commit."
+            exit 1
+          }
+          Write-Host "Tag ${{ github.ref_name }} matches the tree version $version."
+
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
@@ -194,15 +214,47 @@ jobs:
           Compress-Archive -Path artifacts/fluence-wpf-release-dotnet10/* -DestinationPath "dist/Fluence.Wpf-${{ github.ref_name }}-net10.0-windows.zip"
           Compress-Archive -Path artifacts/fluence-wpf-demo/* -DestinationPath "dist/Fluence.Wpf.Demo-${{ github.ref_name }}-net472.zip"
           Copy-Item artifacts/fluence-wpf-nupkg/*.nupkg dist/
+          Copy-Item artifacts/fluence-wpf-nupkg/*.snupkg dist/
+
+      # The release notes are the CHANGELOG section for this version, not
+      # commit-generated prose. A missing section fails the job: shipping a
+      # release with no notes is worse than not shipping it.
+      - name: Slice the changelog for this version
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          $lines = Get-Content CHANGELOG.md
+          $start = -1
+          for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match ('^##\s+\[' + [regex]::Escape($version) + '\]')) { $start = $i; break }
+          }
+          if ($start -lt 0) {
+            Write-Error "CHANGELOG.md has no '## [$version]' section. Add one before tagging."
+            exit 1
+          }
+          $end = $lines.Count
+          for ($i = $start + 1; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^##\s+\[') { $end = $i; break }
+          }
+          $slice = $lines[($start + 1)..($end - 1)]
+          Set-Content -Path release-notes.md -Value $slice -Encoding utf8NoBOM
+          Write-Host "Release notes:"
+          Get-Content release-notes.md
 
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # --repo makes gh operate without a local checkout (this job never checks
-          # out the tree; it only downloads the build artifacts).
           $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
           $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
-          $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--generate-notes')
-          if ('${{ github.ref_name }}'.Contains('-pre')) { $ghArgs += '--prerelease' }
+          $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md')
+          # Any SemVer prerelease identifier (-rc.1, -preview, -beta) marks a prerelease.
+          if ('${{ github.ref_name }}'.Contains('-')) { $ghArgs += '--prerelease' }
           gh @ghArgs
+
+      # Last, so a failure in the release creation does not leave a package on
+      # nuget.org that cannot be replaced. --skip-duplicate makes a re-run of the
+      # same tag a no-op rather than a failure.
+      - name: Publish to NuGet
+        run: |
+          dotnet nuget push dist/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push dist/*.snupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
