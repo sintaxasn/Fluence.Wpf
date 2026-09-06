@@ -1196,6 +1196,12 @@
   Fluence.Wpf.Tests.Control.Rules.PopupCornerRadiusTests.ComboBox_DropdownCornerRadius_ValueIs8Async
   Fluence.Wpf.Tests.Control.Rules.PopupCornerRadiusTests.DropDownButton_DropdownCornerRadius_DefaultEqualsOverlayCornerRadiusAsync
   Fluence.Wpf.Tests.Control.Rules.PopupCornerRadiusTests.DropDownButton_DropdownCornerRadius_ValueIs8Async
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.FlyoutPresenter_TemplateRoot_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.FlyoutPresenter_ShadowCaster_CarriesTheFlyoutShadowEffectAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.FlyoutPresenter_DesiredSize_ExceedsThePlateByTwiceTheGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.ToolTip_TemplateRoot_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TeachingTip_TipRoot_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.CommandBarFlyoutPresenter_TemplateRoot_ReservesTheShadowGutterAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotationAsync
@@ -1208,5 +1214,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1208 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 210ms
+Test discovery summary: found 1214 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 198ms

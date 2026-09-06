@@ -744,9 +744,12 @@ namespace Fluence.Wpf.Controls
         /// <returns>An array of custom popup placements.</returns>
         private static CustomPopupPlacement[] GetBottomRightPlacements(Size popupSize, Size targetSize, Point offset)
         {
+            // popupSize includes the presenter's 16px shadow gutter on all four sides, so add it back
+            // on both axes to keep the plate's bottom-right corner docked where it was.
+            const double shadowGutter = 16.0;
             Point bottomRight = new(
-                targetSize.Width - popupSize.Width + offset.X,
-                targetSize.Height - popupSize.Height + offset.Y);
+                targetSize.Width - popupSize.Width + offset.X + shadowGutter,
+                targetSize.Height - popupSize.Height + offset.Y + shadowGutter);
             return [new CustomPopupPlacement(bottomRight, PopupPrimaryAxis.Horizontal)];
         }
 

@@ -15,8 +15,13 @@
         OverlayCornerRadius, shared with ContextMenu.xaml / ToolTip.xaml.
         Elevation is cast by an empty ShadowCaster sibling painted behind the surface, carrying
         FlyoutShadowEffect. WPF drops ClearType for every text run under an Effect, which is why the
-        effect is not on the surface itself, and no layout gutter is needed because PopupRoot already
-        sizes a popup window about 15 px larger per side than its child.
+        effect is not on the surface itself. The template root carries a 16px transparent gutter
+        because WPF sizes a popup HWND to exactly its child's layout size, with no reserved space at
+        all: without the gutter the effect is clipped away and survives only in the four rounded
+        corner notches, where it reads as a dark square plate behind a rounded card. 16px covers the
+        effect's full bleed (BlurRadius 18 gives 9px sideways and up, plus ShadowDepth 4 downward).
+        FlyoutBase.ShadowGutter subtracts the same 16px from every placement candidate so the plate
+        lands where it did before. Keep the two numbers in step.
     -->
     <Style TargetType="{x:Type controls:FlyoutPresenter}">
         <Setter Property="Background" Value="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}" />
@@ -34,7 +39,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FlyoutPresenter}">
-                    <Grid>
+                    <Grid Margin="16">
                         <Border
                             x:Name="ShadowCaster"
                             Background="{TemplateBinding Background}"

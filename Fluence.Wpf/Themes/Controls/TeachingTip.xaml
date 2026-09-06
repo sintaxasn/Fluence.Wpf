@@ -28,8 +28,9 @@
         alternate X (WinUI TeachingTipTitleStackPanelMarginWithHeaderCloseButton).
         Elevation is cast by an empty ShadowCaster sibling painted behind the surface, carrying
         FlyoutShadowEffect. WPF drops ClearType for every text run under an Effect, which is why the
-        effect is not on the surface itself, and no layout gutter is needed because PopupRoot already
-        sizes a popup window about 15 px larger per side than its child.
+        effect is not on the surface itself, and the template root carries a 16px transparent
+        gutter, because WPF sizes a popup HWND to exactly its child's layout size and the effect
+        would otherwise be clipped to the plate.
     -->
 
     <!--
@@ -87,7 +88,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TeachingTip}">
-                    <Grid x:Name="TipRoot" UseLayoutRounding="True">
+                    <Grid x:Name="TipRoot" Margin="16" UseLayoutRounding="True">
                         <Grid.RenderTransform>
                             <TranslateTransform x:Name="TipTranslate" />
                         </Grid.RenderTransform>
@@ -103,8 +104,10 @@
                         </Grid.ColumnDefinitions>
                         <!--
                             Elevation caster: an empty sibling in the same cell, painted behind the
-                            surface so the effect never covers the tip text. No layout gutter is
-                            needed, PopupRoot already reserves about 15 px per side for popup shadows.
+                            surface so the effect never covers the tip text. The template root
+                            carries a 16px transparent gutter, because WPF sizes a popup HWND to
+                            exactly its child's layout size and the effect would otherwise be
+                            clipped to the plate.
                         -->
                         <Border
                             x:Name="ShadowCaster"

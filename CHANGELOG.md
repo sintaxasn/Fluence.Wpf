@@ -8,6 +8,13 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Fixed
+
+- Flyout, ToolTip, TeachingTip and CommandBarFlyout now cast a real drop shadow. WPF sizes a popup
+  window to exactly its child's layout size, so the shadow effect was clipped away and survived only in
+  the rounded corner notches, where it read as a dark square plate behind a rounded card. Each presenter
+  now reserves a 16 px transparent gutter and each popup subtracts the same 16 px from its placement.
+
 ## [1.0.0] - 2026-09-05
 
 This is the first stable release. The public CLR surface and the public XAML resource key set are frozen from here: minor releases are additive only, and removals or signature changes wait for a major release. `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so both are build failures rather than review misses. Every breaking change below is written up in [docs/migration-guide.md](https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/migration-guide.md).

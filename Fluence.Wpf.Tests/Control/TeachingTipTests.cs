@@ -235,7 +235,9 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
                     CustomPopupPlacementCallback callback = Assert.IsType<CustomPopupPlacementCallback>(popup.CustomPopupPlacementCallback);
                     CustomPopupPlacement[] placements = callback(new Size(100, 40), new Size(60, 20), default);
-                    Assert.Equal(new Point(-20, 20), placements[0].Point);
+                    // The popup size includes the 16px shadow gutter (FlyoutBase.ShadowGutter), so
+                    // the placement pulls the candidate back by the same amount.
+                    Assert.Equal(new Point(-20, 4), placements[0].Point);
                     Assert.True(popup.StaysOpen, "Light dismiss is disabled by default, so the popup must stay open.");
 
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => FindVisualChildren<TextBlock>(tip)
@@ -477,7 +479,9 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
                     CustomPopupPlacementCallback callback = Assert.IsType<CustomPopupPlacementCallback>(popup.CustomPopupPlacementCallback);
                     CustomPopupPlacement[] placements = callback(new Size(100, 40), new Size(600, 400), default);
-                    Assert.Equal(new Point(500, 360), placements[0].Point);
+                    // The popup size includes the presenter's 16px shadow gutter, so the untargeted
+                    // dock adds it back on both axes to keep the plate's corner where it was.
+                    Assert.Equal(new Point(516, 376), placements[0].Point);
                     Assert.Same(window.Content, popup.PlacementTarget);
                     Assert.Equal(TeachingTipPlacementMode.Center, tip.ActualPlacement);
 
@@ -541,7 +545,10 @@ namespace Fluence.Wpf.Tests.Control
                     tip.PreferredPlacement = TeachingTipPlacementMode.Top;
                     Assert.Equal(TeachingTipPlacementMode.Top, tip.ActualPlacement);
                     CustomPopupPlacementCallback callback = Assert.IsType<CustomPopupPlacementCallback>(popup.CustomPopupPlacementCallback);
-                    Assert.Equal(new Point(-20, -40), callback(popupSize, targetSize, default)[0].Point);
+                    // Points now include the 16px shadow gutter subtraction (FlyoutBase.ShadowGutter):
+                    // the popup grew by the gutter on every side, so placement pulls each candidate
+                    // back by the same amount to keep the plate centered on the target edge.
+                    Assert.Equal(new Point(-20, -24), callback(popupSize, targetSize, default)[0].Point);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Path bottomBeak = Assert.IsType<Path>(tip.Template.FindName("BottomBeak", tip));
                     Path topBeak = Assert.IsType<Path>(tip.Template.FindName("TopBeak", tip));
@@ -549,20 +556,20 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(Visibility.Collapsed, topBeak.Visibility);
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Left;
-                    Assert.Equal(new Point(-100, -10), callback(popupSize, targetSize, default)[0].Point);
+                    Assert.Equal(new Point(-84, -10), callback(popupSize, targetSize, default)[0].Point);
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Right;
-                    Assert.Equal(new Point(60, -10), callback(popupSize, targetSize, default)[0].Point);
+                    Assert.Equal(new Point(44, -10), callback(popupSize, targetSize, default)[0].Point);
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Bottom;
-                    Assert.Equal(new Point(-20, 20), callback(popupSize, targetSize, default)[0].Point);
+                    Assert.Equal(new Point(-20, 4), callback(popupSize, targetSize, default)[0].Point);
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Center;
                     Assert.Equal(PlacementMode.Center, popup.Placement);
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Auto;
                     Assert.Equal(PlacementMode.Custom, popup.Placement);
-                    Assert.Equal(new Point(-20, 20), callback(popupSize, targetSize, default)[0].Point);
+                    Assert.Equal(new Point(-20, 4), callback(popupSize, targetSize, default)[0].Point);
                 }
                 finally
                 {

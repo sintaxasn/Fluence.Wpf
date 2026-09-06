@@ -339,12 +339,15 @@ namespace Fluence.Wpf.Tests.Control
                     // default Top placement centers the popup horizontally above the target.
                     Size popupSize = new(100, 40);
                     Size targetSize = new(60, 20);
+                    // Points now include the 16px shadow gutter subtraction (FlyoutBase.ShadowGutter):
+                    // the popup grew by the gutter on every side, so placement pulls each candidate
+                    // back by the same amount to keep the plate where it was before the gutter.
                     CustomPopupPlacement[] topPlacements = callback(popupSize, targetSize, default);
-                    Assert.Equal(new Point(-20, -40), topPlacements[0].Point);
+                    Assert.Equal(new Point(-20, -24), topPlacements[0].Point);
 
                     flyout.Placement = FlyoutPlacementMode.Bottom;
                     CustomPopupPlacement[] bottomPlacements = callback(popupSize, targetSize, default);
-                    Assert.Equal(new Point(-20, 20), bottomPlacements[0].Point);
+                    Assert.Equal(new Point(-20, 4), bottomPlacements[0].Point);
                 }
                 finally
                 {
@@ -407,31 +410,33 @@ namespace Fluence.Wpf.Tests.Control
         public void FlyoutBase_GetEdgeCenteredPlacements_CentersOnFacingEdge()
         {
             // Pure placement math: a 100x40 popup against a 60x20 target. Points are relative
-            // to the target's top-left corner.
+            // to the target's top-left corner. popupSize includes the 16px shadow gutter
+            // (FlyoutBase.ShadowGutter) on every side, so each candidate is pulled back by the
+            // same amount to keep the plate centered on the target edge rather than the popup.
             Size popupSize = new(100, 40);
             Size targetSize = new(60, 20);
 
             CustomPopupPlacement[] top = Controls.FlyoutBase.GetEdgeCenteredPlacements(
                 PlacementMode.Top, popupSize, targetSize, default);
-            Assert.Equal(new Point(-20, -40), top[0].Point);
-            Assert.Equal(new Point(-20, 20), top[1].Point);
+            Assert.Equal(new Point(-20, -24), top[0].Point);
+            Assert.Equal(new Point(-20, 4), top[1].Point);
 
             CustomPopupPlacement[] bottom = Controls.FlyoutBase.GetEdgeCenteredPlacements(
                 PlacementMode.Bottom, popupSize, targetSize, default);
-            Assert.Equal(new Point(-20, 20), bottom[0].Point);
-            Assert.Equal(new Point(-20, -40), bottom[1].Point);
+            Assert.Equal(new Point(-20, 4), bottom[0].Point);
+            Assert.Equal(new Point(-20, -24), bottom[1].Point);
 
             CustomPopupPlacement[] left = Controls.FlyoutBase.GetEdgeCenteredPlacements(
                 PlacementMode.Left, popupSize, targetSize, default);
-            Assert.Equal(new Point(-100, -10), left[0].Point);
+            Assert.Equal(new Point(-84, -10), left[0].Point);
 
             CustomPopupPlacement[] right = Controls.FlyoutBase.GetEdgeCenteredPlacements(
                 PlacementMode.Right, popupSize, targetSize, default);
-            Assert.Equal(new Point(60, -10), right[0].Point);
+            Assert.Equal(new Point(44, -10), right[0].Point);
 
             CustomPopupPlacement[] offsetBottom = Controls.FlyoutBase.GetEdgeCenteredPlacements(
                 PlacementMode.Bottom, popupSize, targetSize, new Point(5, 7));
-            Assert.Equal(new Point(-15, 27), offsetBottom[0].Point);
+            Assert.Equal(new Point(-15, 11), offsetBottom[0].Point);
         }
 
         [Fact]

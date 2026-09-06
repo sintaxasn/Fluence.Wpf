@@ -270,6 +270,15 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// The transparent margin every flyout presenter template reserves on all four sides so its
+        /// ShadowCaster's DropShadowEffect has somewhere to render. WPF sizes a popup HWND to exactly
+        /// its child's layout size, so without the gutter the effect is clipped to the plate and only
+        /// the rounded corner notches survive. Placement subtracts it again so the plate lands where
+        /// it did before. Keep in step with the Margin in the presenter templates.
+        /// </summary>
+        private const double ShadowGutter = 16.0;
+
+        /// <summary>
         /// Computes the custom popup placements that center a popup on the facing edge of its
         /// placement target, matching WinUI flyout positioning: horizontal centering for
         /// <see cref="PlacementMode.Top"/> / <see cref="PlacementMode.Bottom"/> and vertical
@@ -289,12 +298,17 @@ namespace Fluence.Wpf.Controls
             Size targetSize,
             Point offset)
         {
-            double centeredX = ((targetSize.Width - popupSize.Width) / 2.0) + offset.X;
-            double centeredY = ((targetSize.Height - popupSize.Height) / 2.0) + offset.Y;
-            CustomPopupPlacement above = new(new Point(centeredX, -popupSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
-            CustomPopupPlacement below = new(new Point(centeredX, targetSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
-            CustomPopupPlacement leftOf = new(new Point(-popupSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
-            CustomPopupPlacement rightOf = new(new Point(targetSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
+            // popupSize includes the gutter on all four sides, so the plate is inset by ShadowGutter
+            // inside it. Center on the plate rather than on the popup, and pull every candidate back
+            // by the gutter on the axis it docks to.
+            double plateWidth = popupSize.Width - (2 * ShadowGutter);
+            double plateHeight = popupSize.Height - (2 * ShadowGutter);
+            double centeredX = ((targetSize.Width - plateWidth) / 2.0) + offset.X - ShadowGutter;
+            double centeredY = ((targetSize.Height - plateHeight) / 2.0) + offset.Y - ShadowGutter;
+            CustomPopupPlacement above = new(new Point(centeredX, -popupSize.Height + offset.Y + ShadowGutter), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement below = new(new Point(centeredX, targetSize.Height + offset.Y - ShadowGutter), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement leftOf = new(new Point(-popupSize.Width + offset.X + ShadowGutter, centeredY), PopupPrimaryAxis.Vertical);
+            CustomPopupPlacement rightOf = new(new Point(targetSize.Width + offset.X - ShadowGutter, centeredY), PopupPrimaryAxis.Vertical);
             return side is PlacementMode.Top
                 ? [above, below]
                 : side is PlacementMode.Left
