@@ -16,14 +16,9 @@
 
 Every task's requirements implicitly include this section.
 
-### Owner-edited files: do not touch
+### Staging discipline
 
-Two files carry the owner's live uncommitted edits:
-
-- `Fluence.Wpf/Themes/Colors/Theme.Dark.xaml`
-- `Fluence.Wpf/Themes/Controls/ScrollBar.xaml`
-
-**Never edit, stage, stash, revert or check out either file.** Reading them is fine. No task in this plan needs to change them. If a build or a test appears to require a change there, stop and report instead. `git add` by name only, never `git add -A` or `git add .`, so neither file can be swept into a commit.
+The tree is clean at the start of the plan; the owner's uncommitted experiments in `Theme.Dark.xaml` and `ScrollBar.xaml` were discarded by the owner before execution, so both files may be edited like any other. `git add` by name only, never `git add -A` or `git add .`, so nothing unrelated is swept into a commit.
 
 ### Branch and git preamble
 
@@ -37,7 +32,7 @@ git status --short
 
 - The branch must print `fix/gallery-visual-defects`. If it prints anything else, stop and report.
 - Verify the `git log --oneline -1` subject matches the previous task's commit before doing any work. If it does not, stop and report.
-- `git status --short` must show exactly the two owner-edited files as ` M`. If it shows more, stop and report.
+- `git status --short` must print nothing. If it shows anything, stop and report.
 - No `git -C`, no compound shell lines mentioning git, no loops around git, no variables inside git commands. One plain invocation per command.
 - Never push. Never `git stash`. Never rewrite history. Never `git checkout --` a file.
 - Commits are the owner's: no `Co-Authored-By`, no `Claude-Session`, no trailer of any kind. Imperative subject line ending with a period, body wrapped at 80 columns explaining what and why and citing the WinUI reference, no em or en dashes.
@@ -144,10 +139,8 @@ pwsh -NoProfile .claude/hooks/post-tool-util.ps1 -CheckAll
 `dotnet build` must report `0 Warning(s)` and `0 Error(s)`. The `-NoProfile` on the text policy gate
 matters: it hangs without it.
 
-**Known pre-existing gate failure on this branch.** At `6394606` the text policy gate already fails with
-one issue: `docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md must be UTF-8 with BOM`.
-The file's first byte is `0x23`, not `0xEF`. Task 1 fixes it by prepending the BOM and stages it with the
-rest of that commit. From Task 2 onward the gate must report zero issues; anything else is yours.
+The text policy gate reports zero issues at the plan's starting commit (the design note's missing BOM
+was fixed in the plan correction commit). Any issue it reports during a task is that task's to fix.
 
 That gate scans tracked files only, so byte-check any new file yourself; the first three bytes must be
 `EF BB BF`:
@@ -205,8 +198,6 @@ than its child" is false and must be corrected wherever it is touched.
   `Fluence.Wpf.Tests/Baselines/baseline.net472.methods.txt`
 - Modify: `.github/workflows/build.yml:88`
 - Modify: `CHANGELOG.md`
-- Modify: `docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md` (prepend the missing
-  UTF-8 BOM; see Step 11)
 
 **Interfaces:**
 - Produces: `private const double FlyoutBase.ShadowGutter = 16.0`, the single source of truth for the
@@ -623,22 +614,7 @@ Add under `## [Unreleased]` in `CHANGELOG.md`:
   now reserves a 16 px transparent gutter and each popup subtracts the same 16 px from its placement.
 ```
 
-- [ ] **Step 11: Fix the pre-existing spec file BOM**
-
-The text policy gate fails at branch HEAD because
-`docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md` was committed without a BOM. Fix it
-here so every later task starts from a clean gate:
-
-```
-pwsh -NoProfile -Command "$p = 'docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md'; $t = [System.IO.File]::ReadAllText($p); [System.IO.File]::WriteAllText($p, $t, (New-Object System.Text.UTF8Encoding $true))"
-pwsh -NoProfile -Command "[System.IO.File]::ReadAllBytes('docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md')[0..2]"
-```
-
-The byte check must print `239 187 191`, and `git diff --stat` on that file must show one changed line
-at most, not a whole-file rewrite. If it shows a whole-file diff the line endings were also converted;
-redo it preserving LF.
-
-- [ ] **Step 12: Closing gate**
+- [ ] **Step 11: Closing gate**
 
 ```
 dotnet build Fluence.Wpf.sln -c Debug
@@ -649,10 +625,9 @@ pwsh -NoProfile -Command "[System.IO.File]::ReadAllBytes('Fluence.Wpf.Tests/Cont
 
 The byte check must print `239 187 191`, and the text policy gate must now report zero issues.
 
-- [ ] **Step 13: Commit**
+- [ ] **Step 12: Commit**
 
 ```
-git add docs/superpowers/specs/2026-09-06-gallery-visual-defects-design.md
 git add Fluence.Wpf/Themes/Controls/FlyoutPresenter.xaml
 git add Fluence.Wpf/Themes/Controls/ToolTip.xaml
 git add Fluence.Wpf/Themes/Controls/TeachingTip.xaml
@@ -669,8 +644,7 @@ git add CHANGELOG.md
 git status --short
 ```
 
-`git status --short` must show only those files as staged plus the two owner-edited files as unstaged.
-Then commit with subject:
+`git status --short` must show only those files as staged and nothing unstaged. Then commit with subject:
 
 ```
 Give popup presenters a shadow gutter so elevation renders.
@@ -684,9 +658,7 @@ notches, which is the dark square plate the owner saw and also why there was no 
 CommandBarFlyout light halo was the same defect, its `ControlStrokeColorDefaultBrush` border being
 exactly what WinUI specifies at `CommandBarFlyout_themeresources.xaml:7`; WinUI expresses the same
 elevation as a `ThemeShadow` at `CommandBarFlyout_themeresources.xaml:109` with `Translation="0,0,32"`
-at `:1063`, which the existing `FlyoutShadowEffect` already translates faithfully. Close the body with
-one sentence noting that the design note committed in `6394606` was missing its UTF-8 BOM and is fixed
-here so the text policy gate is clean for the rest of the branch.
+at `:1063`, which the existing `FlyoutShadowEffect` already translates faithfully.
 
 ---
 

@@ -1,4 +1,4 @@
-# Gallery visual defects against WinUI parity
+﻿# Gallery visual defects against WinUI parity
 
 Owner-reported defects from a Dark and Light theme pass over the gallery on 2026-09-06, with the
 WinUI 3 Gallery 2.9.3 as the reference. The owner supplied screenshots; they are described here in
