@@ -12,8 +12,6 @@
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>
-    <VersionPrefix>0.8.19</VersionPrefix>
-    <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sintaxasn/Fluence.Wpf</RepositoryUrl>
@@ -21,6 +19,8 @@
     <PackageTags>wpf;fluent;fluent-design;windows11;controls;theme</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Fluence_Icon_Light_128.png</PackageIcon>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +42,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWin32">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
