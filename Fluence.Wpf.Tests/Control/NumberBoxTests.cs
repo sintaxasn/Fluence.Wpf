@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Tests.Control
                     {
                         Value = 5,
                         SmallChange = 1,
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests.Control
                     {
                         Value = 5,
                         SmallChange = 1,
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests.Control
                     Controls.NumberBox numberBox = new()
                     {
                         Value = 0,
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;
@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     Controls.NumberBox numberBox = new()
                     {
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;
@@ -224,7 +224,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     Controls.NumberBox numberBox = new()
                     {
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;
@@ -260,7 +260,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     Controls.NumberBox numberBox = new()
                     {
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Compact,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
                         Width = 180,
                     };
                     window.Content = numberBox;
@@ -346,7 +346,7 @@ namespace Fluence.Wpf.Tests.Control
                         Maximum = 5,
                         Value = 5,
                         SmallChange = 1,
-                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                         Width = 160,
                     };
                     window.Content = numberBox;

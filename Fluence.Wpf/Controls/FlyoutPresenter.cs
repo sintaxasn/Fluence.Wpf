@@ -28,10 +28,12 @@
 
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Fluence.Wpf.Automation;
 using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Controls
@@ -98,6 +100,12 @@ namespace Fluence.Wpf.Controls
         public FlyoutPresenter()
         {
             Loaded += OnLoaded;
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new FlyoutPresenterAutomationPeer(this);
         }
 
         /// <summary>

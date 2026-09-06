@@ -79,11 +79,11 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Controls.Button themeToggle = Assert.IsType<Controls.Button>(DemoTestHost.FindByName<Controls.Button>(header, "ThemeToggleButton"), exactMatch: false);
                     Assert.True(themeToggle.IsEnabled, "The theme toggle should be enabled while the resolved theme is Light.");
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.False(themeToggle.IsEnabled, "The theme toggle should be disabled and inert while the resolved theme is HighContrast.");
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.True(themeToggle.IsEnabled, "The theme toggle should re-enable once the resolved theme leaves HighContrast.");
                 }
@@ -159,8 +159,8 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 {
                     // Mirror GallerySettingsPage.BackdropComboBox_SelectionChanged: set the shell's
                     // backdrop DP and apply it through the theme manager together.
-                    window.SystemBackdropType = BackdropType.Acrylic;
-                    ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, BackdropType.Acrylic);
+                    window.SystemBackdropType = WindowBackdropType.Acrylic;
+                    ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, WindowBackdropType.Acrylic);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     window.NavigateTo("buttons");
@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.Equal(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme);
-                    Assert.Equal(BackdropType.Acrylic, ApplicationThemeManager.CurrentBackdrop);
+                    Assert.Equal(WindowBackdropType.Acrylic, ApplicationThemeManager.CurrentBackdrop);
                 }
                 finally
                 {

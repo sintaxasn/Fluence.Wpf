@@ -6,13 +6,13 @@ See [docs/winui-parity.md](winui-parity.md) for a token-by-token and template-by
 
 `Application.Current.Resources.MergedDictionaries` uses a **stable 3-slot layout** after the first `ApplicationThemeManager.Apply`:
 
-| Index | Content                            | On theme or accent change                                    |
-| ----- | ---------------------------------- | ------------------------------------------------------------ |
-| 0     | Computed colors and brushes        | **Replaced** with a freshly built dictionary on every change |
-| 1     | Typography (`Typography.xaml`)     | Loaded once; never replaced                                  |
-| 2     | Control templates (`Generic.xaml`) | Loaded once; never replaced                                  |
+| Index | Content | On theme or accent change |
+| ----- | ------- | ------------------------- |
+| 0 | Computed colors and brushes | **Replaced** with a freshly built dictionary on every change |
+| 1 | Typography (`Typography.xaml`) | Loaded once; never replaced |
+| 2 | Control templates (`Generic.xaml`) | Loaded once; never replaced |
 
-Slot 0 holds every canonical Color token and its frozen `SolidColorBrush` twin. It is built entirely in C# by `FluenceThemeEngine` each time `Apply` is called; replacing it causes all `DynamicResource` bindings to re-resolve with no promotion step. `Brushes.xaml` and `Accent.xaml` no longer exist; brushes are produced by `BrushFactory` (auto Color-to-Brush twins) and `SpecialBrushes` (gradient elevation borders, High Contrast SystemColors overrides, and brush-only exceptions). The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read by C# at build time; they contain no brushes.
+Slot 0 holds every canonical Color token and its frozen `SolidColorBrush` twin. It is built entirely in C# by `FluenceThemeEngine` each time `Apply` is called; replacing it causes all `DynamicResource` bindings to re-resolve with no promotion step. `Brushes.xaml` and `Accent.xaml` no longer exist; brushes are produced by `BrushFactory` (auto Color-to-Brush twins) and `SpecialBrushes` (gradient elevation borders, High Contrast SystemColors overrides, and brush-only exceptions). The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read at runtime by `BaseColorTables` inside `ColorMap.Build`; they contain no brushes.
 
 Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this). Seeding the slots again, which happens when an application clears `Application.Resources` and applies a theme afresh, removes the dictionaries Fluence published before: `Typography.xaml` and `Generic.xaml` by their pack URI, and the computed dictionary by a marker key it carries, since a dictionary built in code has no `Source` to match on. This matters because WPF resolves merged dictionaries last-wins: a computed dictionary left behind past slot 0 would answer lookups that the freshly published one owns.
 
@@ -36,6 +36,30 @@ Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys you will ref
 - **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors`, so you can preview or bind Windows high contrast roles without hard-coding platform resources.
 
 Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example `ControlStrongStrokeColorDefaultBrush` - produced by `BrushFactory`. Reference the brush keys from XAML, not the raw color keys.
+
+### Published families the list above does not spell out
+
+- **System fill roles**: `SystemFillColorSuccess`, `SystemFillColorCaution`, `SystemFillColorCritical`, `SystemFillColorAttention`, `SystemFillColorNeutral`, `SystemFillColorSolidNeutral`, and their `*Background` and `SolidAttentionBackground` companions. These are the `InfoBar` severity roles and the status colours a consumer should reuse rather than hard-coding.
+- **Background, layer and card, beyond Default**: `SolidBackgroundFillColorSecondary` / `Tertiary` / `Quarternary` / `Quinary` / `Senary`, `LayerFillColorAlt`, `CardBackgroundFillColorSecondary` / `Tertiary`, and the `ControlOnImageFillColor*` family. WinUI spells the fourth member `Quarternary`; so does Fluence, deliberately.
+- **Motion**: `ControlFasterAnimationDuration` (83 ms), `ControlFastAnimationDuration` (167 ms), `ControlNormalAnimationDuration` (250 ms), and the easing curve `ControlFastOutSlowInKeySpline` (`0,0,0,1`). `ControlPressAnimationDuration` (100 ms) and `ControlSlowAnimationDuration` (333 ms) are **Fluence only**: they extend the WinUI naming pattern, so they read like WinUI keys and are not.
+- **Corner radii**: `ControlCornerRadius` (4), `OverlayCornerRadius` (8), and `PopupCornerRadius`, which is WPF only because WinUI has no `Popup` of this shape.
+- **Typography styles**: `CaptionTextBlockStyle`, `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, `BodyLargeTextBlockStyle`, `SubtitleTextBlockStyle`, `TitleTextBlockStyle`, `TitleLargeTextBlockStyle`, `DisplayTextBlockStyle`, and the family `ContentControlThemeFontFamily`. `FluentFontFamily` is a supported alias of that family and ships for the life of 1.x; prefer the WinUI name in new code.
+- **Window chrome**: `TitleBarActiveColor`, `TitleBarInactiveColor` and `WindowBorderColor`, with their `*Brush` twins. WinUI's own 47-key `TitleBar*` family describes the layout of its `TitleBar` control, not the colour of a window frame, so these are WPF-specific and have no WinUI counterpart.
+- **Accent ramp**: `SystemAccentColor` plus `SystemAccentColorLight1` to `Light3` and `Dark1` to `Dark3` are the Windows ramp, the values WinRT supplies to a WinUI app and a WPF app has to materialise itself. `SystemAccentColorPrimary`, `Secondary` and `Tertiary` are a different, theme-resolved family that comes from the .NET WPF Fluent theme: the `Primary` Color resolves to `Dark1` in Light and `Light2` in Dark (`Fluence.Wpf/Theming/ColorMap.cs:73`), so it is the one to bind for accent text and fills that must stay legible in both themes. Its brush twin is not the same value: `SystemAccentColorPrimaryBrush` publishes `Dark2` in Light and `Dark3` in Dark, and `SpecialBrushes.Add` applies the same kind of Color-to-brush divergence to `SystemAccentColorSecondaryBrush` and `SystemAccentColorTertiaryBrush` (`Fluence.Wpf/Theming/SpecialBrushes.cs:61-68`, under the comment "Divergent accent brushes whose Color twin differs from the brush value"). Both families ship.
+- **Fluence-only plate**: `AccentFillBackdrop`, the opaque plate painted under a sub-1.0-alpha accent fill so the translucent fill composites over a known ground rather than over the DWM backdrop, and `TeachingTipTopHighlight`, the 1 px top highlight WinUI's teaching tip draws.
+- **Aliases**: `ApplicationPageBackgroundThemeBrush` is WinUI's name for the brush `ApplicationBackgroundBrush` publishes; both ship as the same frozen instance and both are supported for the life of 1.x. `ApplicationBackgroundColor` is the Color behind them.
+
+One divergence to know about: `AccentFillColorSecondary` and `AccentFillColorTertiary` bake their alpha into the Color (`0xE6` and `0xCC`) where WinUI puts `Opacity` on a brush over the full accent colour. Over an opaque ground the two are identical. Over a translucent one they are not, because WPF composites brush `Opacity` at full precision while a premultiplied-alpha layer over Mica goes through the DWM alpha path measured in [KNOWN_ISSUES.md](../KNOWN_ISSUES.md).
+
+## What is supported, and what is not
+
+`Themes/Generic.xaml` merges 51 dictionaries into `Application.Resources`, so every `x:Key` under `Themes/Controls/**` and `Themes/Icons/**` is technically resolvable from an application. **Those keys are not public API.** They are template internals: styles, control templates, storyboards, geometries and glyph resources that exist to build one control, and they may be renamed, retargeted or removed in any release, including a patch. Do not bind them, do not override them, and do not rely on their values.
+
+Two exceptions are supported and are meant to be reused: `DefaultControlFocusVisualStyle` and `DefaultCollectionFocusVisualStyle`, the focus visuals every Fluence control and collection item applies.
+
+What is supported is everything published into the computed dictionary at slot `[0]`, which is every canonical Color token and its `*Brush` twin plus the special brushes, together with the keys in `Themes/Typography/Typography.xaml`. `Fluence.Wpf.Tests/Theming/golden/PublicKeys.txt` is the frozen inventory of that set, and `ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync` fails the build on an unrecorded addition or removal, which is the XAML counterpart of `PublicApiAnalyzers` on the CLR surface.
+
+There are no per-control override keys. WinUI publishes roughly 3,100 of them, for example `ButtonBackgroundPointerOver` and `CheckBoxCheckBackgroundFillChecked`; Fluence publishes none, because its templates bind the global palette directly. The consequence is concrete: **restyling one control means replacing that control's template**, not setting a key. Per-control override keys are additive and are on the roadmap.
 
 ## Elevation
 
@@ -118,12 +142,12 @@ Caveats:
 
 ## Backdrop (`FluenceWindow`)
 
-`BackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
+`WindowBackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
 
 Which backdrops work depends on OS support, and unsupported combinations fall back silently per the `WindowPolicy` resolution rules.
 
 | Requested | Windows 11 22H2+ (build 22621) | Windows 11 21H2 (22000 to 22620) | Windows 10 17063+ | Windows 10 below 17063 |
-| --- | --- | --- | --- | --- |
+| --------- | ------------------------------ | -------------------------------- | ----------------- | ---------------------- |
 | `Auto`, `Mica` | Mica (`DWMSBT_MAINWINDOW`) | Mica (legacy `DWMWA_MICA_EFFECT`) | None | None |
 | `Acrylic` | Acrylic (`DWMSBT_TRANSIENTWINDOW`) | Mica | Legacy acrylic | None |
 | `Tabbed` | Tabbed (`DWMSBT_TABBEDWINDOW`) | Mica | None | None |
@@ -154,4 +178,4 @@ These files are a serialized snapshot of the engine output, kept honest by a uni
 
 ## Testing
 
-The test suite runs a full theme cycle (Light → Dark → High Contrast → Light → Auto) and asserts that critical brushes resolve at each step. See `ThemeTestHelpers.ApplyStandardThemeCycle` and `AssertKeyThemeBrushesResolve` in `Fluence.Wpf.Tests`. The `ControlStrongStrokeColor*` contract is covered by `Control/Rules/FluentStrokeTests.cs`.
+The test suite runs a full theme cycle, Light then Dark then High Contrast then Light, and asserts that critical brushes resolve at each step. See `ThemeTestHelpers.ApplyStandardThemeCycle` and `AssertKeyThemeBrushesResolve` in `Fluence.Wpf.Tests`. The `ControlStrongStrokeColor*` contract is covered by `Fluence.Wpf.Tests/Control/Rules/FluentStrokeTests.cs`.

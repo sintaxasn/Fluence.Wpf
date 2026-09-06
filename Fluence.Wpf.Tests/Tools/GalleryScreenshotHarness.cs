@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Tests.Tools
             application.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
             if (includeDemoSharedStyles)
             {
                 application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Tests.Tools
 
             if (window is Controls.FluenceWindow fluenceWindow)
             {
-                fluenceWindow.SystemBackdropType = BackdropType.None;
+                fluenceWindow.SystemBackdropType = WindowBackdropType.None;
             }
         }
 
@@ -206,7 +206,7 @@ namespace Fluence.Wpf.Tests.Tools
         {
             window.Show();
             WpfTestSta.DrainDispatcher(window.Dispatcher);
-            ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
             WpfTestSta.DrainDispatcher(window.Dispatcher);
             PumpDispatcher(window.Dispatcher, AnimationSettleDelay);
             window.UpdateLayout();
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Tests.Tools
                 }
 
                 window.NavigateTo(route);
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
                 PumpDispatcher(window.Dispatcher, AnimationSettleDelay);
                 window.UpdateLayout();
@@ -284,7 +284,7 @@ namespace Fluence.Wpf.Tests.Tools
             finally
             {
                 window?.Close();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
             }
         }
 
@@ -356,7 +356,7 @@ namespace Fluence.Wpf.Tests.Tools
             finally
             {
                 window?.Close();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
             }
         }
 
@@ -404,7 +404,7 @@ namespace Fluence.Wpf.Tests.Tools
             finally
             {
                 window?.Close();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
             }
         }
 #endif

@@ -54,7 +54,7 @@ maintainers.
   not dismiss a second occurrence either.
 
 - **Windows 10 legacy acrylic is unverified on real hardware** - the
-  `SetWindowCompositionAttribute` acrylic path (`BackdropType.Acrylic` on
+  `SetWindowCompositionAttribute` acrylic path (`WindowBackdropType.Acrylic` on
   Windows 10 build 17063+) is covered by pure policy tests only. The resolution
   rules, the plan values, and the `0xAABBGGRR` tint packing are pinned by
   `WindowPolicyTests` and `NativeMethodsTests`, but nothing in the suite can
@@ -95,7 +95,7 @@ maintainers.
   track page history. The demo does not use the back button; consumers are
   expected to own their own back stack and route `BackRequested`.
 - **Translucent layers over a DWM backdrop lose alpha precision on a 10 bpc
-  display** - symptom: under `BackdropType.Mica` in Light the `NavigationView`
+  display** - symptom: under `WindowBackdropType.Mica` in Light the `NavigationView`
   content canvas (`LayerFillColorDefault`, `#80FFFFFF`) reads darker than the
   pane and title bar, which straight alpha compositing cannot produce. Measured
   on a desktop whose active display path reports `bitsPerColorChannel = 10`
@@ -106,11 +106,11 @@ maintainers.
   of the 249 the token specifies, `#24000000` is invisible, and `#60FFFFFF`
   saturates to white. Colour channels keep full precision. The same figures
   come out of iNKORE.UI.WPF.Modern on the same desktop, and the quantisation is
-  absent under `BackdropType.None`, where WPF blends the layer itself. The
+  absent under `WindowBackdropType.None`, where WPF blends the layer itself. The
   likely mechanism is a `R10G10B10A2` composition surface when the output is
   10 bits per channel; this is inferred from the measurement, not documented
   by Microsoft, and is not yet verified against an 8 bpc display. Only
-  `BackdropType.Mica` was measured quantising under
+  `WindowBackdropType.Mica` was measured quantising under
   `DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO` flags `0x4` (10 bpc, advanced color
   off); enabling the GPU driver's 10-bit pixel format (AMD Adrenalin, Gaming,
   Graphics) reported advanced color enabled (flags `0x7`), and under that

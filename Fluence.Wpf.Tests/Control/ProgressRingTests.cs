@@ -394,7 +394,7 @@ namespace Fluence.Wpf.Tests.Control
                 SolidColorBrush initialExpected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorCautionBrush"));
                 Assert.Equal(initialExpected.Color, initialColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                 SolidColorBrush expected = Assert.IsType<SolidColorBrush>(app.TryFindResource("SystemFillColorCautionBrush"));

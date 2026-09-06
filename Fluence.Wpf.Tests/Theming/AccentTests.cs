@@ -100,7 +100,7 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
                 Assert.NotEqual(default, ApplicationAccentColorManager.SystemAccentColor);
@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 Color customColor = Color.FromRgb(0xFF, 0x88, 0x00);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
@@ -135,18 +135,22 @@ namespace Fluence.Wpf.Tests.Theming
             });
         }
 
+        /// <summary>
+        /// The Windows blue ramp that ApplyApplicationAccent used to hard-code is now written by
+        /// the caller. It must still raise AccentColorChanged exactly once.
+        /// </summary>
         [Fact]
-        public Task ApplyApplicationAccent_RaisesAccentColorChangedOnceAsync()
+        public Task ApplyCustomAccent_WindowsBlue_RaisesAccentColorChangedOnceAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
-                // Pin a seed that is deliberately not the Windows blue ApplyApplicationAccent uses,
-                // so the call under test is a genuine ramp transition on every host. Without this
-                // the fixture starts on the OS accent, and a machine with no HKCU accent palette
-                // falls back to the generated #0078D4 ramp: identical output, which the engine's
-                // redundant-publish gate correctly skips, and no event would be raised.
+                // Pin a seed that is deliberately not Windows blue, so the call under test is a
+                // genuine ramp transition on every host. Without this the fixture starts on the OS
+                // accent, and a machine with no HKCU accent palette falls back to the generated
+                // #0078D4 ramp: identical output, which the engine's redundant-publish gate
+                // correctly skips, and no event would be raised.
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xFF, 0x88, 0x00));
 
                 int eventCount = 0;
@@ -158,7 +162,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
                 try
                 {
-                    ApplicationAccentColorManager.ApplyApplicationAccent();
+                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                 }
                 finally
                 {
@@ -174,7 +178,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 int eventCount = 0;
                 void OnAccentColorChanged(object? sender, EventArgs e)
@@ -204,17 +208,17 @@ namespace Fluence.Wpf.Tests.Theming
                 Color lightSeed = Color.FromRgb(0x0F, 0x6C, 0xBD);
                 Color darkSeed = Color.FromRgb(0x47, 0x9E, 0xF5);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(lightSeed, darkSeed);
                 Assert.Equal(lightSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 Assert.Equal(darkSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 Assert.Equal(darkSeed, ApplicationAccentColorManager.SystemAccentColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 Assert.Equal(lightSeed, ApplicationAccentColorManager.SystemAccentColor);
             });
         }
@@ -224,7 +228,7 @@ namespace Fluence.Wpf.Tests.Theming
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 int eventCount = 0;
                 void OnAccentColorChanged(object? sender, EventArgs e)
@@ -255,10 +259,10 @@ namespace Fluence.Wpf.Tests.Theming
                 Color customColor = Color.FromRgb(0x00, 0x78, 0xD4);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 Color darkPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 Color lightPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
                 Assert.NotEqual(darkPrimary, lightPrimary);
@@ -275,7 +279,7 @@ namespace Fluence.Wpf.Tests.Theming
         // KnownAccentRamps short-circuit. The new design uses the caller's color verbatim and
         // runs Fluence's ramp algorithm directly (no OS mirroring), so the canonical assertions
         // no longer apply. AccentRampScoreboard covers algorithm regression against 21 captured
-        // OS ramps; see docs/_internal/theme-rewrite/design.md for the rationale.
+        // OS ramps.
 
         // The 8 representative accents from design.md Section 3.6.
         private static readonly Color WindowsBlue = Color.FromRgb(0x00, 0x78, 0xD4);

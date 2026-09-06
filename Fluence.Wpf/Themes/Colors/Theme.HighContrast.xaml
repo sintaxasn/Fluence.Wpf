@@ -10,9 +10,6 @@
     <!--  Application Background  -->
     <Color x:Key="ApplicationBackgroundColor">#FF000000</Color>
 
-    <!--  Keyboard Focus  -->
-    <Color x:Key="KeyboardFocusBorderColor">#FF1AEBFF</Color>
-
     <!--  Text Fill Colors  -->
     <Color x:Key="TextFillColorPrimary">#FFFFFFFF</Color>
     <Color x:Key="TextFillColorSecondary">#FFFFFFFF</Color>
@@ -58,7 +55,6 @@
     <!--  Control Stroke Colors  -->
     <Color x:Key="ControlStrokeColorDefault">#FF808080</Color>
     <Color x:Key="ControlStrokeColorSecondary">#FF808080</Color>
-    <Color x:Key="ControlStrokeColorTertiary">#FFFFFFFF</Color>
     <Color x:Key="ControlStrokeColorOnAccentDefault">#FF000000</Color>
     <Color x:Key="ControlStrokeColorOnAccentSecondary">#FF000000</Color>
     <Color x:Key="ControlStrokeColorOnAccentTertiary">#FF000000</Color>
@@ -121,7 +117,6 @@
 
     <!--  System Fill Colors  -->
     <Color x:Key="SystemFillColorAttention">#FF1AEBFF</Color>
-    <Color x:Key="SystemFillColorInformational">#FFFFFFFF</Color>
     <Color x:Key="SystemFillColorSuccess">#FFFFFFFF</Color>
     <Color x:Key="SystemFillColorCaution">#FFFFFFFF</Color>
     <Color x:Key="SystemFillColorCritical">#FFFFFFFF</Color>
@@ -134,12 +129,6 @@
     <Color x:Key="SystemFillColorNeutralBackground">#FF000000</Color>
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FF1AEBFF</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF000000</Color>
-
-    <!--  Window Chrome - Close Button (HC static fallbacks)  -->
-    <Color x:Key="WindowCloseFillColorHover">#FF1AEBFF</Color>
-    <Color x:Key="WindowCloseFillColorPressed">#FF1AEBFF</Color>
-    <Color x:Key="WindowCloseForegroundHover">#FF000000</Color>
-    <Color x:Key="WindowCloseForegroundPressed">#FF000000</Color>
 
     <!--  Accent Color fallbacks (static HC defaults)  -->
     <Color x:Key="SystemAccentColor">#FF1AEBFF</Color>

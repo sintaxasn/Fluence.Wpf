@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Demo.Pages
             ApplicationTheme next = ApplicationThemeManager.ResolvedTheme is ApplicationTheme.Dark
                 ? ApplicationTheme.Light
                 : ApplicationTheme.Dark;
-            ApplicationThemeManager.Apply(next, owner?.SystemBackdropType ?? BackdropType.Auto);
+            ApplicationThemeManager.Apply(next, owner?.SystemBackdropType ?? WindowBackdropType.Auto);
         }
 
         private void FavoriteToggleButton_CheckedChanged(object sender, RoutedEventArgs e)

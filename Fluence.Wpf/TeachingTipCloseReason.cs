@@ -29,23 +29,24 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Defines where spin buttons are placed relative to the <see cref="Controls.NumberBox"/> input.
+    /// Describes why a <see cref="Controls.TeachingTip"/> closed. Mirrors WinUI's
+    /// <c language="csharp">TeachingTipCloseReason</c>.
     /// </summary>
-    public enum SpinButtonPlacementMode
+    public enum TeachingTipCloseReason
     {
         /// <summary>
-        /// Spin buttons are not shown.
+        /// The user clicked the close button.
         /// </summary>
-        Hidden = 0,
+        CloseButton = 0,
 
         /// <summary>
-        /// Spin buttons appear when the control is hovered or keyboard-focused.
+        /// The user dismissed the tip by clicking away from it.
         /// </summary>
-        Compact = 1,
+        LightDismiss = 1,
 
         /// <summary>
-        /// Spin buttons are always visible.
+        /// Code set <see cref="Controls.TeachingTip.IsOpen"/> to <see langword="false"/>.
         /// </summary>
-        Inline = 2,
+        Programmatic = 2,
     }
 }

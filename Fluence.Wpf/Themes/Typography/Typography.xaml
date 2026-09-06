@@ -23,6 +23,14 @@
     <!--  Windows 11 Fluent - Typography layer  -->
     <!--  Prefer Display typography for large/small optical sizes; fall back when not installed.  -->
 
+    <!--
+        Two keys, one family. ContentControlThemeFontFamily is the WinUI name and is the
+        preferred key for new code. FluentFontFamily is the original Fluence name and is
+        consumed downstream through DynamicResource, where a rename fails silently, so it
+        ships for the life of 1.x. The two literals are kept in step by
+        ResourceAliasTests.FontFamilyAlias_ResolvesToTheSameFamily; edit both together.
+    -->
+    <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Display, Segoe UI Variable, Segoe UI</FontFamily>
     <FontFamily x:Key="FluentFontFamily">Segoe UI Variable Display, Segoe UI Variable, Segoe UI</FontFamily>
 
     <!--

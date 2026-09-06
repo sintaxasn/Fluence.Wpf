@@ -24,6 +24,7 @@ AcrylicBackgroundFillColorDefault|#FF2C2C2C|#00000000
 AcrylicBackgroundFillColorDefaultBrush|#00000000|#FF2C2C2C
 ApplicationBackgroundBrush|#00000000|#FF202020
 ApplicationBackgroundColor|#FF202020|#00000000
+ApplicationPageBackgroundThemeBrush|#00000000|#FF202020
 CardBackgroundFillColorDefault|#0DFFFFFF|#00000000
 CardBackgroundFillColorDefaultBrush|#00000000|#0DFFFFFF
 CardBackgroundFillColorSecondary|#08FFFFFF|#00000000
@@ -82,8 +83,6 @@ ControlStrokeColorOnAccentTertiary|#37000000|#00000000
 ControlStrokeColorOnAccentTertiaryBrush|#00000000|#37000000
 ControlStrokeColorSecondary|#18FFFFFF|#00000000
 ControlStrokeColorSecondaryBrush|#00000000|#18FFFFFF
-ControlStrokeColorTertiary|#C5FFFFFF|#00000000
-ControlStrokeColorTertiaryBrush|#00000000|#C5FFFFFF
 ControlStrongFillColorDefault|#8BFFFFFF|#00000000
 ControlStrongFillColorDefaultBrush|#00000000|#8BFFFFFF
 ControlStrongFillColorDisabled|#3FFFFFFF|#00000000
@@ -98,8 +97,6 @@ FocusStrokeColorInner|#B3000000|#00000000
 FocusStrokeColorInnerBrush|#00000000|#B3000000
 FocusStrokeColorOuter|#FFFFFFFF|#00000000
 FocusStrokeColorOuterBrush|#00000000|#FFFFFFFF
-KeyboardFocusBorderColor|#87FFFFFF|#00000000
-KeyboardFocusBorderColorBrush|#00000000|#87FFFFFF
 LayerFillColorAlt|#0DFFFFFF|#00000000
 LayerFillColorAltBrush|#00000000|#0DFFFFFF
 LayerFillColorDefault|#4C3A3A3A|#00000000
@@ -118,7 +115,7 @@ LayerOnMicaBaseAltFillColorTransparent|#00FFFFFF|#00000000
 LayerOnMicaBaseAltFillColorTransparentBrush|#00000000|#00FFFFFF
 NavigationViewContentBackground|#4C3A3A3A|#00000000
 NavigationViewContentBackgroundBrush|#00000000|#4C3A3A3A
-NavigationViewSelectionIndicatorBrush|#00000000|#FF4FB3FF
+NavigationViewSelectionIndicatorForeground|#00000000|#FF4FB3FF
 ScrollBarTrackFillBrush|#00000000|#FF2C2C2C
 SmokeFillColorDefault|#4D000000|#00000000
 SmokeFillColorDefaultBrush|#00000000|#4D000000
@@ -184,8 +181,6 @@ SystemFillColorCritical|#FFFF99A4|#00000000
 SystemFillColorCriticalBackground|#FF442726|#00000000
 SystemFillColorCriticalBackgroundBrush|#00000000|#FF442726
 SystemFillColorCriticalBrush|#00000000|#FFFF99A4
-SystemFillColorInformational|#FF8A8A8A|#00000000
-SystemFillColorInformationalBrush|#00000000|#FF8A8A8A
 SystemFillColorNeutral|#8BFFFFFF|#00000000
 SystemFillColorNeutralBackground|#08FFFFFF|#00000000
 SystemFillColorNeutralBackgroundBrush|#00000000|#08FFFFFF
@@ -232,11 +227,3 @@ WindowCloseButtonBackgroundPressed|#FFB4271C|#00000000
 WindowCloseButtonBackgroundPressedBrush|#00000000|#FFB4271C
 WindowCloseButtonForegroundPointerOver|#FFFFFFFF|#00000000
 WindowCloseButtonForegroundPointerOverBrush|#00000000|#FFFFFFFF
-WindowCloseFillColorHover|#FFC42B1C|#00000000
-WindowCloseFillColorHoverBrush|#00000000|#FFC42B1C
-WindowCloseFillColorPressed|#FFB4271C|#00000000
-WindowCloseFillColorPressedBrush|#00000000|#FFB4271C
-WindowCloseForegroundHover|#FFFFFFFF|#00000000
-WindowCloseForegroundHoverBrush|#00000000|#FFFFFFFF
-WindowCloseForegroundPressed|#FFFFFFFF|#00000000
-WindowCloseForegroundPressedBrush|#00000000|#FFFFFFFF

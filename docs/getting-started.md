@@ -23,8 +23,7 @@ Call **before** showing your main window (typically in `App.OnStartup` or equiva
 ```csharp
 Fluence.Wpf.ApplicationThemeManager.Apply(
     Fluence.Wpf.ApplicationTheme.Auto,
-    Fluence.Wpf.BackdropType.Mica,
-    updateAccent: true);
+    Fluence.Wpf.WindowBackdropType.Mica);
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
@@ -83,7 +82,7 @@ Fluence.Wpf.ApplicationThemeManager.Changed += (s, e) => { /* refresh theme-spec
 Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 ```
 
-`ApplicationThemeManager.Changed` fires once per applied theme change. Use it to swap theme-specific image assets; `GalleryHomePage.xaml.cs` in the demo shows the pattern, swapping the home hero between the light and dark header lockups.
+`ApplicationThemeManager.Changed` fires once per applied theme change. Use it for work that cannot be expressed declaratively. Swapping a theme-specific asset usually can be: the gallery's home page picks its hero lockup with a `ThemeDictionary` in the page resources and has no `Changed` subscription at all.
 
 ## Verify locally
 

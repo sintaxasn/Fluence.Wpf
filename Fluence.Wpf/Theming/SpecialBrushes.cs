@@ -69,7 +69,16 @@ namespace Fluence.Wpf.Theming
 
             // ApplicationBackgroundBrush is the irregular twin of ApplicationBackgroundColor
             // (the brush key drops the "Color" suffix), so BrushFactory does not emit it.
-            dict["ApplicationBackgroundBrush"] = Solid(colors["ApplicationBackgroundColor"]);
+            //
+            // ApplicationPageBackgroundThemeBrush is WinUI's name for the same role and is the
+            // preferred key for new code. Both ship: the Fluence name is bound downstream with
+            // DynamicResource, where a rename renders a consumer surface transparent with no
+            // error and no build failure. Same instance, so the two can never diverge. HighContrast
+            // reassigns both together below in AddHighContrastBrushes, since that override runs
+            // after this one.
+            SolidColorBrush applicationBackgroundBrush = Solid(colors["ApplicationBackgroundColor"]);
+            dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
+            dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
@@ -77,7 +86,7 @@ namespace Fluence.Wpf.Theming
             // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
             // uses the same accent fill for its Default/Light/Dark dictionaries); HighContrast is
             // overridden below with the live SystemColors.HighlightTextColor.
-            dict["NavigationViewSelectionIndicatorBrush"] = Solid(colors["AccentFillColorDefault"]);
+            dict["NavigationViewSelectionIndicatorForeground"] = Solid(colors["AccentFillColorDefault"]);
             // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
             // dictionary defines with the same tint, opacity, and fallback as
             // AcrylicBackgroundFillColorDefaultBrush in every theme, so the two resolve identically.
@@ -358,9 +367,12 @@ namespace Fluence.Wpf.Theming
             Color controlLight = SystemColors.ControlLightColor;
             Color transparent = Colors.Transparent;
 
-            // Application background / keyboard focus
-            dict["ApplicationBackgroundBrush"] = Solid(window);
-            dict["KeyboardFocusBorderColorBrush"] = Solid(highlight);
+            // Application background. ApplicationPageBackgroundThemeBrush must be kept pointing at
+            // the same instance here too, since this override runs after the general Add assignment
+            // and would otherwise leave the WinUI alias stale at the non-HC value.
+            SolidColorBrush applicationBackgroundBrush = Solid(window);
+            dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
+            dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
             // Text fill
             dict["TextFillColorPrimaryBrush"] = Solid(windowText);
@@ -410,7 +422,6 @@ namespace Fluence.Wpf.Theming
             // Control stroke
             dict["ControlStrokeColorDefaultBrush"] = Solid(controlDark);
             dict["ControlStrokeColorSecondaryBrush"] = Solid(controlDark);
-            dict["ControlStrokeColorTertiaryBrush"] = Solid(controlText);
             dict["ControlStrokeColorOnAccentDefaultBrush"] = Solid(highlightText);
             dict["ControlStrokeColorOnAccentSecondaryBrush"] = Solid(highlightText);
             dict["ControlStrokeColorOnAccentTertiaryBrush"] = Solid(highlightText);
@@ -479,7 +490,6 @@ namespace Fluence.Wpf.Theming
 
             // System fill (SystemFillColorAttention skipped by Build in HC; brush -> Highlight)
             dict["SystemFillColorAttentionBrush"] = Solid(highlight);
-            dict["SystemFillColorInformationalBrush"] = Solid(windowText);
             dict["SystemFillColorSuccessBrush"] = Solid(windowText);
             dict["SystemFillColorCautionBrush"] = Solid(windowText);
             dict["SystemFillColorCriticalBrush"] = Solid(windowText);
@@ -497,15 +507,9 @@ namespace Fluence.Wpf.Theming
             // binds the WindowCloseButton* keys via DynamicResource, so those are the ones that must
             // be overridden here; the theme-independent brand red seeded by
             // BaseColorTables.AddSharedColors would otherwise fail contrast in High Contrast.
-            // WindowCloseFillColor*/WindowCloseForeground* (below) are legacy keys nothing currently
-            // consumes; kept for parity with existing golden snapshots and tests.
             dict["WindowCloseButtonBackgroundPointerOverBrush"] = Solid(highlight);
             dict["WindowCloseButtonBackgroundPressedBrush"] = Solid(highlight);
             dict["WindowCloseButtonForegroundPointerOverBrush"] = Solid(highlightText);
-            dict["WindowCloseFillColorHoverBrush"] = Solid(highlight);
-            dict["WindowCloseFillColorPressedBrush"] = Solid(highlight);
-            dict["WindowCloseForegroundHoverBrush"] = Solid(highlightText);
-            dict["WindowCloseForegroundPressedBrush"] = Solid(highlightText);
 
             // NavigationView (and ListView/ListBox/TreeView) selection indicator binds to the
             // live Highlight color in HC (WinUI TreeView_themeresources.xaml:115's
@@ -513,7 +517,7 @@ namespace Fluence.Wpf.Theming
             // AccentFillColorDefault. Fluence's HC selected row background stays SystemColors.Control,
             // so HighlightText (designed to sit on a Highlight-colored fill) would be invisible here.
             // The content background binds to Window.
-            dict["NavigationViewSelectionIndicatorBrush"] = Solid(highlight);
+            dict["NavigationViewSelectionIndicatorForeground"] = Solid(highlight);
             dict["NavigationViewContentBackgroundBrush"] = Solid(window);
 
             // Elevation borders are solid in HC.

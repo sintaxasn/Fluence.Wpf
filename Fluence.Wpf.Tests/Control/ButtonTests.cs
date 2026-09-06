@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 AssertDisabledAccentButtonUsesDarkTokens();
@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
 
                 AssertDisabledAccentButtonUsesDarkTokens();
             });

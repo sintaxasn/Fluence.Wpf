@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
             {
                 Controls.NumberBox numberBox = new()
                 {
-                    SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
                     Width = 160,
                 };
                 Window window = new() { Content = numberBox, Width = 240, Height = 80 };

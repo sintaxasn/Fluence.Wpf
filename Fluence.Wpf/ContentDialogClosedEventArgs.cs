@@ -26,36 +26,24 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// DWM backdrop material applied to a <see cref="Controls.FluenceWindow"/> non-client area on Windows 11.
+    /// Provides data for the <see cref="ContentDialog.Closed"/> event.
     /// </summary>
-    public enum BackdropType
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ContentDialogClosedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="result">The outcome that closed the dialog.</param>
+    public sealed class ContentDialogClosedEventArgs(ContentDialogResult result) : EventArgs
     {
         /// <summary>
-        /// No Mica/Acrylic; standard solid backdrop.
+        /// Gets the outcome that closed the dialog. This is the same value the task returned by
+        /// <see cref="ContentDialog.ShowAsync"/> completes with.
         /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// Let the library pick the best supported backdrop for the OS version.
-        /// </summary>
-        Auto = 1,
-
-        /// <summary>
-        /// Mica (layered tint over wallpaper).
-        /// </summary>
-        Mica = 2,
-
-        /// <summary>
-        /// Acrylic blur.
-        /// </summary>
-        Acrylic = 3,
-
-        /// <summary>
-        /// Tabbed Mica for tabbed window groups (Windows 11).
-        /// </summary>
-        Tabbed = 4,
+        public ContentDialogResult Result { get; } = result;
     }
 }

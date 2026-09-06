@@ -4,52 +4,84 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+Version headings are the SemVer version. The git tag for a version is `v` plus that version exactly, enforced by CI from 1.0 onward. Tags before 1.0 used a `-pre` suffix that did not match the version they shipped, which is why some links below point at the releases page instead of a comparison.
+
 ## [Unreleased]
+
+## [1.0.0] - 2026-09-05
+
+This is the first stable release. The public CLR surface and the public XAML resource key set are frozen from here: minor releases are additive only, and removals or signature changes wait for a major release. `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so both are build failures rather than review misses. Every breaking change below is written up in [docs/migration-guide.md](https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/migration-guide.md).
 
 ### Added
 
-- Demo: `GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is a shared gallery page header modelled on the WinUI 3 Gallery's `Controls/PageHeader.xaml`: a page title on the left and a row of default-appearance action buttons on the right (Documentation, which opens the matching `docs/controls.md` section on GitHub; Toggle theme, which flips Light and Dark and disables itself under High Contrast; and an in-page Favorite toggle). 17 of the 18 `Gallery*Page.xaml` pages now open with this header in place of a bare page title `TextBlock`; Home mirrors the WinUI Gallery home page, which has no page title header, and keeps its hero lockup instead. Demo only; no library change.
-
-### Fixed
-
-- Control templates are re-aligned with the WinUI 3 CommonStyles token roles. A full parity audit against `Common_themeresources_any.xaml` found every shared Color token byte-identical in Light and Dark; the deviations were role choices, element opacities, and Fluence-only layers, and the ones with no recorded rationale are corrected here. The remaining deliberate deviations and known gaps are catalogued in `docs/winui-parity.md`.
-- `ControlElevationBorderBrush` no longer flips its gradient in Dark. WinUI applies the vertical flip only in the Light dictionary, so the 1 px highlight now sits on the WinUI edge in Dark across the button family. `AccentControlElevationBorderBrush`, which WinUI flips in both themes, is unchanged.
-- `AcrylicBackgroundFillColorDefault` is opaque (`#FFF9F9F9` Light, `#FF2C2C2C` Dark), the WinUI `AcrylicBrush` FallbackColor, and every acrylic-derived flyout plate binds it: `FlyoutPresenter`, `ContextMenu` root and submenu, the `ComboBox` dropdown, `DatePicker`, `TimePicker`, `AutoSuggestBox`, `CommandBarFlyout`, and the `DropDownButton`, `SplitButton` and `ToggleSplitButton` flyouts. Previously the plates mixed `SolidBackgroundFillColorTertiaryBrush` (`#282828` Dark, four units off the fallback) and, on the three button flyouts, `SolidBackgroundFillColorQuarternaryBrush` (pure white in Light). The Windows 10 legacy acrylic tint keeps its translucency through a fixed alpha applied at the point of use. `TeachingTip` keeps `SolidBackgroundFillColorTertiaryBrush`, which is WinUI's own token for it. The scroll bar track, which aliases the same key, is opaque as WinUI's fallback is.
-- The unused `TextPlaceholderColor` token is removed, and `TextBox` and `PasswordBox` placeholders use `TextFillColorSecondaryBrush` with `TextFillColorDisabledBrush` when disabled, as WinUI's `TextControlPlaceholderForeground` family does; `TextBox`, `PasswordBox` and `NumberBox` selection highlight uses `AccentFillColorSelectedTextBackgroundBrush`, the key WinUI binds, instead of `AccentFillColorDefaultBrush`. `NumberBox` has no placeholder element; it keeps the elevation border gradient when focused and its spin buttons follow WinUI's `NumberBoxSpinButtonStyle` fill, border and foreground states instead of a subtle-fill look with a 0.4 disabled fade.
-- `Slider` matches the WinUI role table: the unfilled track paints `ControlStrongFillColorDefaultBrush` (it previously referenced `ControlFillColorPrimaryBrush`, a key that did not exist, and painted nothing), the value fill reacts to hover, drag and disabled, tick bars use the strong fill family, the whole-control 0.8 disabled fade is gone, and the thumb is WinUI's fixed neutral capsule with `ControlElevationBorderBrush` around a scaling accent inner dot (0.86 rest, 1.167 hover, 0.71 pressed). `ColorPicker` channel sliders get their own neutral thumb style, and the spectrum and preview strokes move to WinUI's 2 px with a rounded spectrum.
-- `ControlFastOutSlowInKeySpline` is `0,0,0,1`, the WinUI value its own comment claimed; the inline `KeySpline="0.8,0,0,1"` literals scattered across the control templates that were never rebased onto the shared resource are swept to `0,0,0,1` as well.
-- The `AccentFillBackdrop` plate is switched off while a control is disabled in every consumer (`Button`, `ToggleButton`, `CheckBox`, `RadioButton`, `ToggleSwitch`, `SplitButton`, `ToggleSplitButton`, `DropDownButton`), so the translucent disabled accent fill composites over the live surface as it does in WinUI.
-- `HyperlinkButton` uses `AccentTextFillColorSecondaryBrush` on hover and `AccentTextFillColorDisabledBrush` when disabled, and no longer underlines on hover. `CheckBox` paints the pressed checked and indeterminate glyph with `TextOnAccentFillColorSecondaryBrush`, and its disabled checked stroke resolves through `ControlStrongStrokeColorDisabledBrush`. `RadioButton` keeps `TextOnAccentFillColorPrimaryBrush` on the disabled dot and gains WinUI's per-state dot stroke. `ToggleSwitch` drops the 0.4 opacity multiply on the disabled knob. `ToggleButton` paints the checked accent under the accent stroke.
-- `Expander` follows the WinUI two-tier card: header and content each carry `CardBackgroundFillColorDefault` or `Secondary` with a `CardStrokeColorDefault` border rounded on their own corners, hover and pressed tint a 32 px chevron plate instead of the whole header, the chevron is `TextFillColorPrimaryBrush`, and the disabled header keeps its card look. `Card` clickable hover and pressed swap to `SubtleFillColorSecondaryBrush` and `SubtleFillColorTertiaryBrush` rather than 50 percent white overlays, and disabling no longer paints over the `Outlined` variant.
-- `InfoBar` message text is `TextFillColorPrimaryBrush` and follows `Foreground`; the severity icon is WinUI's two-layer glyph (a severity-coloured disc under an inverse glyph); the Fluence-only 3 px indicator bar and its pulse are removed; the corner radius is `ControlCornerRadius`. `InfoBadge` foreground is `TextOnAccentFillColorPrimaryBrush` so it tracks a custom accent. `ProgressBar`'s track follows `Background`, its second indeterminate bar is no longer held at 0.9 opacity, and the root border now carries `BorderBrush` in preparation for a high contrast outline; `BorderThickness` stays `0` and no high contrast trigger sets it yet. `RatingControl` dims only set stars when disabled and previews unset stars in `ControlAltFillColorTertiaryBrush`.
-- `TeachingTip` uses `SurfaceStrokeColorDefaultBrush`, a primary subtitle, a standard action button, and gains WinUI's 1 px top highlight through the new `TeachingTipTopHighlight` token. `ContentDialog` accents only the button named by `DefaultButton`. `CommandBarFlyout` borders with `ControlStrokeColorDefaultBrush`. `ComboBox` selected items fill with `SubtleFillColorSecondaryBrush`. `ToolTip` casts `FlyoutShadowEffect` through a `ShadowCaster` like the other popups (a custom template disables the Win32 `HasDropShadow` path, so it had no shadow at all, and the 0.8.19 note claiming otherwise was wrong) and rounds at `ControlCornerRadius`, as do the `DatePicker` and `TimePicker` flyouts. Menu separators bleed full width, the checkmark follows the item foreground, and an open menu bar item keeps its plate.
-- `TreeViewItem` gains the accent selection pill the `ListView` and `ListBox` items already had and uses the disabled tokens instead of a 0.5 fade; `ListViewItem` disabled is WinUI's 0.3 opacity with no foreground swap; the collection focus visual carries the inner ring. `TabView` selected stroke, hover fill, close and scroll button foregrounds follow their WinUI tokens and the strip gains a bottom seam; `TabControl` drops its 0.55 disabled fade. `ScrollBar` line buttons no longer paint hover or pressed plates and a disabled thumb fades out. `BreadcrumbBar` crumbs paint no plate and the current crumb gains hover and pressed foregrounds. `PipsPager` navigation buttons are transparent in every state. `PersonPicture` badge stroke is transparent. Inactive caption glyphs and title dim to `TextFillColorTertiaryBrush`.
-- `NavigationViewSelectionIndicatorBrush` is published in every theme and consumed by every selection indicator (`NavigationView`, `ListView`, `ListBox`, `TreeView`): the accent fill in Light and Dark, the live `SystemColors.Highlight` colour in High Contrast, which WinUI does and the previous accent-bound indicators did not. High contrast binds `Highlight`, not `HighlightText`, because Fluence's HC selected row background stays `SystemColors.Control`; `HighlightText` is designed to sit on a `Highlight`-coloured fill and would be invisible against `Control`.
-- `FluenceWindow` suppresses `Mica`, `Acrylic`, and `Tabbed` while the resolved theme is `HighContrast`, painting the opaque high contrast window colour instead of any DWM material. `WindowPolicy.ResolveEffectiveBackdrop` previously only excluded high contrast on the Windows 10 legacy acrylic path, so on Windows 11 a window that requested Mica or Acrylic kept that material under the in-app High Contrast theme, measured this session in the gallery. Microsoft Learn's "Materials in Windows apps" states that in high contrast mode all materials are suppressed and the system applies high contrast theme colors instead, the Mica design page states that users continue to see their chosen background colour in place of Mica in High Contrast mode, and WinUI's `SystemBackdropConfiguration.IsHighContrast` is documented as true for the system or application high contrast theme, which covers this library's in-app theme the same way it covers the OS wide setting. The suppression now runs first in `ResolveEffectiveBackdrop`, ahead of any OS capability downgrade, so it applies uniformly on every Windows version.
-- The `ComboBox` dropdown no longer flashes a blank dark plate before it resolves. The open reveal faded only the dropdown surface, so the opaque `ShadowCaster` behind it painted at full strength on the first composited frame while the surface was still transparent. The fade now runs on the dropdown root, which carries the caster and the surface together, and the root is stamped hidden by the template and re-hidden when the dropdown closes, so a popup frame composited before the reveal seeds its start pose is invisible rather than showing the plate. WPF does not order the `IsDropDownOpen` invalidation against the `Popup.IsOpen` template binding, so that frame is possible on any open.
-- The `NavigationView` pane surfaces resolve to a real brush. All three templates bound the pane to `AcrylicInAppFillColorDefaultBrush`, a key the theme never defined, so the `Border.Background` stayed `null` and the pane was transparent by accident. Every Fluence pane mode is an inline two-column or two-row layout that pushes the content, which is WinUI's permanent `PaneNotOverlaying` state, and there WinUI paints `NavigationViewExpandedPaneBackground` and `NavigationViewTopPaneBackground`, both `SolidBackgroundFillColorTransparent`. The templates now bind that token, so the pane is transparent by design, and the pane transparency test fails on a `null` brush instead of passing through it. The `LeftCompact` enum doc no longer claims the pane expands as an overlay, and the template comment carries the real 320 open width.
-- The `NavigationView` content seam follows WinUI. The 1 px stroke between the pane or header and the content used a Fluence-only `NavigationViewContentSeparator` token (`#29000000` Light, `#0FFFFFFF` Dark) that was 2.7 times darker than the reference in Light. WinUI's `NavigationViewContentGridBorderBrush` is `CardStrokeColorDefaultBrush` (`#0F000000` Light, `#19000000` Dark), and the three seam sites now bind that key, so the Dark seam changes from a faint white hairline to WinUI's faint black one. The custom token and its high contrast override are removed; high contrast resolves the seam to the same `SystemColors.ControlDarkColor` as before.
-- `FluenceWindow` has one Light window base instead of three. The style painted `ApplicationBackgroundBrush` at `#FFFFFFFF`, the `BackdropType.None` fallback in code was `#FAFAFA`, and the WinUI `ApplicationPageBackgroundThemeBrush` is `SolidBackgroundFillColorBase` at `#F3F3F3`. Over pure white the `NavigationView` content layer (`#80FFFFFF`) is invisible; over `#F3F3F3` it composes to `#F9F9F9`, the WinUI result. `ApplicationBackgroundColor` in Light is now `#FFF3F3F3`, and the code fallback reads the published `ApplicationBackgroundBrush` rather than carrying its own literal, so high contrast also gets the live system window colour. Dark is unchanged at `#202020`. The Light golden and `DesignTime.Light.xaml` are regenerated.
-- The `ComboBox` dropdown surface is opaque, like every other popup in the library. It painted `AcrylicBackgroundFillColorDefaultBrush` (`#F0F9F9F9`, alpha 0.94, no blur), so a layered popup let 6 percent of whatever sat behind it show through unblurred. WinUI's `ComboBoxDropDownBackground` is an acrylic brush whose fallback colour is `#F9F9F9` / `#2C2C2C`, and WPF has no acrylic, so the dropdown now uses `SolidBackgroundFillColorTertiaryBrush`, the same opaque plate `FlyoutPresenter`, `ContextMenu`, `AutoSuggestBox`, `DatePicker`, `TimePicker`, `ToolTip`, `CommandBarFlyout` and `TeachingTip` already use. With an opaque plate the surface also gets `RenderOptions.ClearTypeHint="Enabled"` under the existing text rendering policy; the noise overlay sits behind the item text and does not affect it.
-- `FluenceWindow` now compensates for the 10 bits per channel alpha quantisation recorded in `KNOWN_ISSUES.md`. Only `Mica` was measured quantising under `DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO` flags `0x4` (10 bpc, advanced color off); `Tabbed` is included by DWM material-family inference and was measured only under `0x7` (full precision), and `Acrylic` is excluded because it too was measured only under `0x7` and was never measured under `0x4`. `NativeMethods.GetDisplayColorDepth` reads the bits per color channel and the advanced color state of the window's monitor through `DisplayConfigGetDeviceInfo`, retrying the buffer-size and query pair up to three times on `ERROR_INSUFFICIENT_BUFFER`. The pure `WindowPolicy.ShouldApplyContentLayerPreBlend` and `ResolveContentLayerPreBlend` prefer WinUI's own canonical `LayerOnMicaBaseAltFillColorTertiary` token (`#F9F9F9` Light, `#2C2C2C` Dark) and fall back to a computed straight-alpha composite only when that token is not defined. `FluenceWindow.ApplyBackdrop` sets or removes the window scoped `NavigationViewContentBackgroundBrush` resource accordingly, tracking ownership so a consumer's own value for that key is never overwritten or cleared, and re-runs on `WM_DISPLAYCHANGE`, `OnDpiChanged`, and `WM_WINDOWPOSCHANGED` (an equal-DPI monitor move, which raises neither of the other two) so a monitor move or a display setting change is always picked up. An 8 bpc display, high contrast, `BackdropType.None`, or advanced color enabled on a 10 bpc display all keep the canonical translucent token untouched.
-- `Button` composites its stroke over the surface beneath it, not over its own fill. WinUI's `DefaultButtonStyle` sets `BackgroundSizing="InnerBorderEdge"`, so the fill stops at the inner edge of the stroke; the Fluence template painted `RestFill` under `OuterBorder`, which brightened the stroke in Dark by the fill's alpha. Measured against the WinUI 3 Gallery at 150% DPI on the same `#202020` plate: both buttons are 48 px tall with a 45 fill, but the Fluence sides and bottom read 60 and the top 65 where the Gallery reads 48 and 53. `RestFill` now carries a brushless `BorderThickness` bound to the control's, which insets the fill by the stroke width, and `Appearance="Accent"` resets it to 0 because `AccentButtonStyle` uses `OuterBorderEdge`. `ToggleButton`, `RepeatButton` and `DropDownButton` already nest their fill inside the stroke border and are unchanged.
+- Demo: `GalleryPageHeader` is a shared gallery page header modelled on the WinUI 3 Gallery's `PageHeader`, with a title, a Documentation link, a theme toggle and a Favorite toggle, adopted by 17 of the 18 gallery pages.
+- `ContentDialogOpenedEventArgs`, `ContentDialogClosedEventArgs` (carrying `Result`), `InfoBarClosedEventArgs` and `TeachingTipClosedEventArgs` (both carrying `Reason`), the args classes for the four events that had none.
+- `InfoBarCloseReason` (`CloseButton`, `Programmatic`) and `TeachingTipCloseReason` (`CloseButton`, `LightDismiss`, `Programmatic`), mirroring WinUI.
+- `InfoBarClosingEventArgs.Reason`, so `Closing` and `Closed` agree on why the bar is closing.
+- `TitleBarAutomationPeer`, `InfoBadgeAutomationPeer` and `FlyoutPresenterAutomationPeer`. All three controls previously reported to a screen reader as a bare `FrameworkElement` with no control type; `InfoBadge` had no accessible representation of its count at all.
+- `Expander.TopCornerRadiusFilter` and `Expander.BottomCornerRadiusFilter`, public `IValueConverter` fields that replace the two corner-radius converters internalised below for template use via `x:Static`.
+- The resource keys `ContentControlThemeFontFamily` and `ApplicationPageBackgroundThemeBrush`, WinUI's names for `FluentFontFamily` and `ApplicationBackgroundBrush`. Both pairs ship and both original names are supported for the life of 1.x.
+- SourceLink, portable PDBs and a `.snupkg` symbol package, so a consumer can step into library sources from a debugger.
+- `Microsoft.CodeAnalysis.PublicApiAnalyzers` with a `PublicAPI.Shipped.txt` baseline per target framework, and `ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync` with `Theming/golden/PublicKeys.txt`, which together freeze the public surface mechanically.
+- A CI guard that fails a `v*` tag whose version does not match the tree, release notes taken from this file rather than from the commit list, and an automated NuGet push on a version tag.
 
 ### Changed
 
-- Demo: `DemoSampleControl` surfaces are measured against the installed WinUI 3 Gallery (2.9.3, Button page, 150% DPI) rather than read from its source alone. The sample card keeps `SolidBackgroundFillColorBaseBrush` (the Gallery `ControlExampleDisplayBrush`, 243 Light / 32 Dark on screen in both apps); the options rail moves from `CardBackgroundFillColorSecondaryBrush` to `CardBackgroundFillColorDefaultBrush` with a `DividerStrokeColorDefaultBrush` divider (Gallery 43 Dark, Fluence was 39); and the source expander header is one `CardBackgroundFillColorDefaultBrush` layer over the page (Gallery 54 Dark) instead of `ControlFillColorDefaultBrush` composited over the expander's own `CardBackgroundFillColorSecondaryBrush` root fill (62). The expanded source body follows the Gallery's translucent content tier: the expander's `CardBackgroundFillColorSecondaryBrush` is painted by the content border and the code viewer is transparent, replacing the opaque `SystemFillColorSolidAttentionBackgroundBrush` plate that had matched the Gallery's composite value (46 Dark) but not its opacity. Demo only; no library change.
-- Demo Buttons page opens the way the WinUI Gallery Button page does, with the Gallery captions ("Standard XAML button", "Accent style button", "Subtle style button"): a Standard button alone with its enable toggle, a new graphical-content sample (a 50 by 50 button carrying the transparent `Resources/SampleMedia/Slices.png` pie and reporting `You clicked: Pie`), then the Accent and Subtle appearances together. The remaining samples keep their order.
-- Demo Typography page hosts the type ramp table in a `DemoSampleControl` with the ramp XAML as its source, mirroring the Gallery's `ControlExample`; Icons is now the only direct catalog page.
-- Demo Colors page token rows sit on the Gallery `GalleryTileGridStyle` tile surface (`SolidBackgroundFillColorBaseBrush`, 1 px `CardStrokeColorDefaultBrush`, 8 px radius), the surface the Gallery Spacing page uses for its value table; the rows previously had no background at all. The example panels follow the Gallery `ColorPageExample` and paint `SolidBackgroundFillColorQuarternaryBrush` inside the same outline, with the Text and Accent Text previews sitting directly on that surface and the Text On Accent preview keeping its accent fill.
-- Demo window opens at, and cannot shrink below, 1200 by 880 (was 1170 wide) so the reshaped Buttons and Colors pages fit without wrapping.
-- The flyout `ShadowCaster` in `DropDownButton`, `SplitButton` and `ToggleSplitButton` sizes itself from the templated parent instead of an `ElementName=OuterBorder` binding. As the first element under the Popup it bound before the Popup child joined the template name scope, so every page load logged `System.Windows.Data Error: 4 : Cannot find source for binding with reference 'ElementName=OuterBorder'`. A test now loads the Buttons page under a `PresentationTraceSources` listener and fails on any data binding error.
-- `NavigationView` Left-mode items drop the 4 dp right margin on the item chrome and narrow the icon-to-text gap from 12 to 6 dp; `ListView` selection indicator sits at 4 dp from the item edge instead of 2; the demo Icons page catalog card paints `CardBackgroundFillColorTertiaryBrush` instead of the opaque `SolidBackgroundFillColorBaseBrush`. These are the working-copy edits carried over from the `main` checkout.
-- `FluenceWindow`'s outer border goes back to DWM on Windows 11. WinUI draws no template border at all on a top-level surface, and on Windows 11 DWM already draws and colors the 1 px outer border itself, so a WPF template border stacked on top of it painted a second, uncolored edge; wpfui's `ClientAreaBorder.cs` and iNKORE's `WindowHelper.ShouldDisplayManualBorder` corroborate the same split, both drawing 0 dp on Windows 11 and 1 dp only on Windows 10. Measured this session on a Windows 11 host at 150% DPI in Light, from a screen capture of the window's left edge (Dark and High Contrast were not captured): before the change, the active window showed 3 physical px of accent (DWM's 2 px colored border plus the template's own stroke), and the inactive window showed DWM's grey border followed by a 1 px pale `#EBEBEB` line before the content; after the change, both states show DWM's border running straight into the content with no extra pixel. `WindowPolicy.BuildFramePlan` now derives `FramePlan.TemplateBorderThickness` from `WindowCapabilities.SupportsBorderColor`: 0 dp where DWM can be colored, 1 dp where it cannot, and the implicit style's design-time default (and the value shown before the first `ApplyFrame` pass) moves from 2 to 1 to match the Windows 10 value. The maximized 0 dp trigger in `Themes/Controls/FluenceWindow.xaml` is unchanged. `ApplyFrame` ran on every activation, deactivation, and state change and always overwrote whatever value was already on `BorderBrush`, so the style's own `SurfaceStrokeColorDefaultBrush` setter was dead on any window that had ever been shown; the inactive template border brush key now resolves to that same `SurfaceStrokeColorDefaultBrush` key instead of `CardStrokeColorDefaultSolidBrush`, matching WinUI's use of that token for a top-level surface edge and bringing the style's own setter and the code path into agreement. `FluenceWindow.ApplyFrame` now writes `BorderBrush` and `BorderThickness` through `SetCurrentValue` instead of a plain assignment, so the declarative base value survives underneath and a consumer's own style setter or binding is overridden only while the shell manages the realised window. The Windows 10 1 dp `SurfaceStrokeColorDefaultBrush` edge is translucent and composites over the HWND redirection surface rather than painting an opaque grey; this is a deliberate tradeoff to keep reusing the canonical stroke token instead of adding a second, opaque, theme-aware fallback colour just for this edge. The template root also stops rounding itself. It carried `OverlayCornerRadius` (8 DIP) although DWM already masks the window at its own radius, and WinUI paints no rounded root of its own. Measured at 150% DPI with the default rounding, the corner pixels are byte-identical with and without the template radius (DWM scales its radius with DPI, so the two arcs coincided), so the change is parity, not a visible fix there; it does remove the rounded outline the template drew on a square window on Windows 10 and under `CornerPreference.DoNotRound`. DWM now owns the corners as well as the edge, and the maximized trigger only zeroes the Windows 10 border thickness.
-- Dead frame and backdrop plumbing is removed. `FramePlan.TemplateBorderThickness` and `BackdropPlan.UseTransparentBackground` were computed on every plan and read by nothing at the time; `FluenceWindow.ApplyFrame` used only the brush key and DWM colour, and `ApplyBackdrop` used `BackgroundColor`. (`TemplateBorderThickness` gained a real consumer again in the border fix above, which reintroduced it once `ApplyFrame` needed a template thickness to write; the two changes do not conflict.) `WindowPolicy.BuildFramePlan` drops its `WindowState` parameter with them, since the maximized 0 dp border comes from the template trigger in `Themes/Controls/FluenceWindow.xaml`. `NativeMethods.ExtendFrameIntoClientArea` and its `DwmExtendFrameIntoClientArea` CsWin32 request had no callers and are gone; `WindowChrome.GlassFrameThickness = -1` is what extends the frame. Tests asserting `UseTransparentBackground` now assert `BackgroundColor` directly, and `BuildFramePlan_Maximized_TemplateBorderIsZero`, which asserted only the removed property, is deleted. `KNOWN_ISSUES.md` gains the measurement behind the `NavigationView` content canvas reading darker than the pane over Mica on a 10 bits per channel display; the library keeps the canonical WinUI tokens.
-- `CheckBox`'s default style gains `HorizontalAlignment="Left"` and `MinWidth="120"`, matching WinUI's `DefaultCheckBoxStyle` (`CommonStyles\CheckBox_themeresources.xaml:273,284,290`). `HorizontalAlignment="Left"` stops the control and its focus visual stretching to the parent's width, and `MinWidth="120"` sets a 120 dp floor so short-labelled checkboxes keep a comfortable hit target, so short-labelled demo checkboxes (Selection page) now occupy 120 dp. WinUI's style additionally sets `VerticalAlignment="Center"` and `MinHeight="32"`, which this port does not adopt. The content-less `SelectionCheckBox` in `TreeView`'s Auto-width selection column, and the content-less task-complete checkbox in the `Fluence.Wpf.Demo.Mvvm` task list row, both opt back out with an explicit `MinWidth="0"` so their Auto-sized columns do not balloon to 120 dp.
-- Demo `SectionDescriptionStyle` uses `TextFillColorPrimaryBrush` instead of `TextFillColorSecondaryBrush`, matching the WinUI Gallery `descriptionText` TextBlock (`WinUIGallery\Pages\ItemPage.xaml:53-61`), which uses `BodyTextBlockStyle` and so keeps the page's default primary foreground rather than a dimmed one.
-- Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/`, each folder also a namespace segment, with one sealed class per subject in place of the 62-file `partial class ControlTests`, and a single application and theme reset (`TestApp.EnsureLibraryTheme`, with `TestApp.EnsureDemoTheme` as the explicit demo opt-in) in place of seven divergent private merge helpers. Library control tests no longer run with the demo resource dictionary merged over the theme slots, so a demo style can no longer shadow a library brush. Eighteen test cases are deleted as strictly subsumed or as not being tests, and one case is added by a theory fold, taking net10 from 1197 to 1180 and net472 from 1195 to 1178. No surviving test's assertions changed. The deletions, with the survivor that covers each: six per-theme corner-radius assertions in `ThemeMetricsTests`, covered by `CornerRadiusTokens_SurviveFullThemeCycleAsync`, which asserts both pairs at all four steps of the cycle; `DefaultControlFocusVisualStyle_PresentInAllThemesAsync`, byte-for-byte identical to `FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`; `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync`, covered by `ProgressBarTests.ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync`, which also asserts the control background and the half-pixel corner radius; `FiveSwitches_DictionaryCountStableAsync` and `MergedDictionaries_CountStableAfterMultipleSwitchesAsync`, both covered by `RepeatedThemeSwitches_NoDictionaryAccumulationAsync`, which does twenty switches against five and now runs as a theory over both `updateAccent` values; `BuildBackdropPlan_None_ReturnsOpaqueBackground` and `BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent`, each asserting one field of a plan that `WindowPolicyTests` asserts in full on the same call; `MainWindow_ProgressNumberBox_UpdatesFirstProgressBarAsync`, covered by `GalleryStatusPage_NumberBoxDrivesFirstProgressBarAsync` plus `MainWindow_DirectNavigation_LoadsConcretePagesAsync`; the three `AccentPaletteRegenerationExperiment` probes and the one `ImmersiveColorSetProbe` probe, whose own doc comments record the answers they were written to find and which never ran in CI; and `AccentRampScoreboard.Score_AllAlgorithms_AgainstCapturedFixtures`, whose only assertion was `Assert.True(Fixtures.Length > 0)` and whose twenty-one captured OS ramp fixtures are preserved as a comment block in `Theming/AccentTests.cs`.
+- `SpinButtonPlacementMode` is `NumberBoxSpinButtonPlacementMode`, `BackdropType` is `WindowBackdropType`, and `CornerPreference` is `WindowCornerPreference`, matching WinUI and the .NET WPF Fluent theme. Values are unchanged, and the properties that carry them keep their names.
+- `ContentDialog.Opened`, `ContentDialog.Closed`, `InfoBar.Closed` and `TeachingTip.Closed` are `EventHandler<TArgs>` instead of bare `EventHandler`.
+- `TabView.TabCloseRequested` and `TabViewItem.CloseRequested` declare `EventHandler<TabViewTabCloseRequestedEventArgs>`, so a handler reads `e.Tab` and `e.Item` with no cast. This retypes the registered handler delegate, so it breaks an already-compiled consumer binary as well as source that recompiles. Both still bubble as routed events.
+- Setting `InfoBar.IsOpen` to `false` in code raises `Closed` with `InfoBarCloseReason.Programmatic`; it previously raised nothing.
+- Pressing Escape to dismiss a `TeachingTip` now raises `Closed` with `TeachingTipCloseReason.LightDismiss`, matching WinUI; it previously reported `Programmatic`.
+- The resource key `NavigationViewSelectionIndicatorBrush` is `NavigationViewSelectionIndicatorForeground`, WinUI's own name. Like the fourteen keys removed below, this fails silently on a `DynamicResource` reference to the old name: no compile error, the target simply keeps its default at runtime.
+- `DebugType` is `portable` for every configuration, replacing `full`. Portable PDBs are supported by every debugger the target frameworks reach, Visual Studio 2019 and later on `net472` included, and are what a symbol package can carry.
+- The version is declared once, as `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. The duplicates in `Fluence.Wpf.csproj` won over that file and are gone, along with the hand-maintained `BuildDate`.
+- Demo: `DemoSampleControl` surfaces (sample card, options rail, source expander) are remeasured against the installed WinUI 3 Gallery 2.9.3 at 150% DPI.
+- Demo Buttons page reorders to match the WinUI Gallery Button page, adding a graphical-content sample between the Standard and Accent/Subtle samples.
+- Demo Typography page hosts its type ramp table in a `DemoSampleControl`, mirroring the Gallery's `ControlExample`; Icons is now the only direct catalog page.
+- Demo Colors page token rows and example panels adopt the Gallery's tile surface and example-panel colours.
+- Demo window's minimum size grows to 1200 by 880 so the reshaped Buttons and Colors pages fit without wrapping.
+- The flyout `ShadowCaster` in `DropDownButton`, `SplitButton` and `ToggleSplitButton` now sizes from the templated parent, fixing a silent data-binding error logged on every page load.
+- `NavigationView` Left-mode item spacing and the `ListView` selection indicator inset are tightened; the demo Icons page catalog card uses a translucent fill.
+- `FluenceWindow`'s outer border returns to DWM on Windows 11, since DWM already draws and colors it there; the WPF template border is now 0 dp on Windows 11 and 1 dp on Windows 10.
+- Dead frame and backdrop plumbing (`BackdropPlan.UseTransparentBackground`, `WindowPolicy.BuildFramePlan`'s `WindowState` parameter, `NativeMethods.ExtendFrameIntoClientArea`) is removed as unused.
+- `CheckBox`'s default style gains `HorizontalAlignment="Left"` and `MinWidth="120"`, matching WinUI's `DefaultCheckBoxStyle`; content-less checkboxes opt back out with an explicit `MinWidth="0"`.
+- Demo `SectionDescriptionStyle` uses `TextFillColorPrimaryBrush` instead of `TextFillColorSecondaryBrush`, matching the WinUI Gallery's description text style.
+- Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/` with one sealed class per subject, replacing the 62-file `partial class ControlTests`; eighteen redundant cases are deleted and one is added.
 
-## [0.8.19-Preview] - 2026-08-30
+### Removed
+
+- `LoopingSelectorList`, `CornerRadiusFilterConverter`, `CornerRadiusFilterEdge` and `GridLengthAnimation` are internal. All four were implementation details with a single in-library consumer. Internalizing breaks an already-compiled consumer binary at load time, not only source that recompiles.
+- The nine `NavigationView.Part*` constants are internal. Template part names are not API; read them from the shipped template. Unlike the internalisations above, a `const` inlines at the consumer's own compile site, so this is source-only: an already-built binary keeps working.
+- The third parameter of `ApplicationThemeManager.Apply`, `updateAccent`. It had been discarded inside the method since the single pipeline rewrite.
+- `ApplicationAccentColorManager.ApplyApplicationAccent()`, a one-line alias for `ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4))`.
+- `InfoBarClosingEventArgs`'s implicit parameterless constructor, replaced by a constructor that takes the new `Reason`. This is source-only: it matters only to code that constructed the args itself, since `InfoBar` raises them.
+- Fourteen unconsumed theme keys, rather than freeze them into the 1.0 surface: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, and their `*Brush` twins. The caption button colours remain published under their WinUI style names `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`. This also fails silently: a stale `DynamicResource` reference to any of these fourteen keeps building and simply resolves to nothing at runtime.
+
+### Fixed
+
+- Control templates are re-aligned with WinUI 3 CommonStyles token roles after a full audit against `Common_themeresources_any.xaml`; remaining deliberate deviations and known gaps are catalogued in `docs/winui-parity.md`.
+- `ControlElevationBorderBrush` no longer flips its gradient in Dark, matching WinUI, which flips only in the Light dictionary; `AccentControlElevationBorderBrush` is unchanged.
+- `AcrylicBackgroundFillColorDefault` is opaque and every acrylic-derived flyout, menu and picker plate binds it, replacing a mix of two other keys that had drifted from the WinUI fallback colour.
+- The unused `TextPlaceholderColor` token is removed; `TextBox`/`PasswordBox` placeholders and `NumberBox` selection highlight now follow the WinUI role tokens instead of ad hoc ones.
+- `Slider` now matches the WinUI role table for track, fill, ticks and thumb, including the WinUI thumb-dot hover/press scale; `ColorPicker` channel sliders and spectrum stroke follow the same metrics.
+- `ControlFastOutSlowInKeySpline` is corrected to `0,0,0,1`, the WinUI value its own comment claimed, and stray inline `KeySpline` literals across templates are swept onto it.
+- The `AccentFillBackdrop` plate now switches off while a control is disabled across every consumer, so the translucent disabled accent fill composites over the live surface as WinUI does.
+- `HyperlinkButton`, `CheckBox`, `RadioButton`, `ToggleSwitch` and `ToggleButton` state colours (hover, pressed, disabled, checked) are corrected to their WinUI token roles.
+- `Expander` adopts WinUI's two-tier card look with a chevron hover plate; `Card` clickable hover and pressed use `SubtleFillColorSecondary`/`TertiaryBrush` instead of white overlays.
+- `InfoBar` message text, severity icon and corner radius now follow WinUI roles; `InfoBadge` foreground tracks a custom accent; `ProgressBar` and `RatingControl` disabled and track visuals are corrected to match WinUI.
+- `TeachingTip`, `ContentDialog`, `CommandBarFlyout`, `ComboBox`, `ToolTip` and the date/time flyouts gain their WinUI stroke, subtitle, shadow and corner-radius roles; menu separators and checkmarks follow suit.
+- `TreeViewItem`, `TabView`, `ScrollBar`, `BreadcrumbBar`, `PipsPager`, `PersonPicture` and inactive caption text pick up their correct WinUI disabled tokens, selection pill, seam and transparent-state colours.
+- `NavigationViewSelectionIndicatorForeground` is published in every theme, including a live `SystemColors.Highlight` binding in High Contrast, and consumed by every selection indicator (`NavigationView`, `ListView`, `ListBox`, `TreeView`).
+- `FluenceWindow` now suppresses `Mica`, `Acrylic` and `Tabbed` under the in-app High Contrast theme on every Windows version, painting the opaque high contrast colour instead, matching Microsoft Learn's materials guidance.
+- The `ComboBox` dropdown no longer flashes a blank dark plate on open; the fade now runs on the dropdown root instead of only the surface.
+- `NavigationView` pane surfaces now resolve to a real brush; all three templates bound an undefined key, so panes were transparent by accident rather than by design.
+- The `NavigationView` content seam now binds `CardStrokeColorDefaultBrush`, WinUI's own `NavigationViewContentGridBorderBrush` role, replacing a Fluence-only token that was 2.7 times darker in Light.
+- `FluenceWindow` has one Light window base instead of three mismatched literals; `ApplicationBackgroundColor` in Light is now `#FFF3F3F3`, matching WinUI's `ApplicationPageBackgroundThemeBrush`.
+- The `ComboBox` dropdown surface is now opaque like every other popup, replacing a translucent fill that let 6 percent of whatever was behind it show through unblurred.
+- `FluenceWindow` now compensates for 10 bits per channel alpha quantisation on `Mica` and `Tabbed` backdrops, pre-blending the `NavigationView` content layer toward WinUI's canonical fallback token; see `KNOWN_ISSUES.md`.
+- `Button` now composites its stroke over the surface beneath it rather than its own fill, matching WinUI's `BackgroundSizing="InnerBorderEdge"`; the other button-family controls were already correct.
+
+## [0.8.19-preview] - 2026-08-30
 
 ### Fixed
 
@@ -75,7 +107,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The `FluenceWindow` outer border is `SurfaceStrokeColorDefaultBrush` at 2 px, replacing `CardStrokeColorDefaultSolidBrush` at 1 px. WinUI uses `SurfaceStrokeColorDefaultBrush` for the edge of a top-level surface (it is the source of `ContentDialogBorderBrush` in `ContentDialog_themeresources.xaml`), while `CardStrokeColorDefault` describes a card edge.
 - The Light `ApplicationBackgroundColor` is `#FFFFFFFF`, replacing `#FFFAFAFA`. Dark and High Contrast are unchanged. `Properties/DesignTime.Light.xaml` and the Light golden file were regenerated to match.
 
-## [0.8.18-Preview] - 2026-08-26
+## [0.8.18-preview] - 2026-08-26
 
 ### Changed
 
@@ -83,20 +115,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Light theme: `NavigationViewContentBackground` adjusted from 66% to 50% white (`#80FFFFFF`), letting more Mica through the content layer. Golden snapshots and the generated `DesignTime.Light.xaml` are updated to match.
 - Demo: the gallery shell extends its content into the title bar (`ExtendsContentIntoTitleBar="True"`) and opens at a fixed minimum size of 1170x880.
 
-## [0.8.17-Preview] - 2026-08-25
+## [0.8.17-preview] - 2026-08-25
 
 ### Fixed
 
 - Light theme: an inactive `FluenceWindow` no longer draws a pale halo inside its border, and the fix 0.8.16-preview shipped for it is superseded. The cause is where the border is painted, not which token it uses. 0.8.15-preview suppressed the DWM border with the `DWMWA_COLOR_NONE` sentinel and made the WPF template border the only outline, but that border paints inside the client area, over the window's own surface rather than over the desktop, so no stroke token can be as dark as the border Windows draws; 0.8.16-preview only moved it from `#EBEBEB` to `#D1D1D1`, and reverting the token to `CardStrokeColorDefaultSolidBrush` left a light line between the system border and the content, most visible where the content is dark (a `#EBEBEB` line against the PSAppDeployToolkit dialog's accent strip). `WindowPolicy.BuildFramePlan` now gives the border back to DWM wherever DWM can draw one: the accent COLORREF goes to `DWMWA_BORDER_COLOR` when the window is active with accent borders enabled and `DWMWA_COLOR_DEFAULT` otherwise, and the template border is 0 dp on that OS so nothing paints underneath it. Windows 10 has no `DWMWA_BORDER_COLOR`, so there the 2 dp template border remains the outline, keyed to `SystemAccentColorBrush` when active with accent borders and `CardStrokeColorDefaultSolidBrush` otherwise. The thickness does not vary with activation, so focusing a window never shifts its content. Measured on a PSAppDeployToolkit dialog over a dark backdrop, the left edge now goes `#3C3C3C` (system border) straight into the content when inactive and `#0078D4` (accent) when active, with no light line between.
 
-## [0.8.16-Preview] - 2026-08-25
+## [0.8.16-preview] - 2026-08-25
 
 ### Fixed
 
 - `FluenceWindow` no longer paints client content over its own rounded corners. A WPF `Border` draws a rounded outline but does not clip its child, and the child is inset only by `BorderThickness`, so its square corners overlap the arc and anything opaque there covers the outline. The caption close button's pointer-over fill sits in exactly that spot, which is why hovering close left a jagged red block where the top-right corner should be, and DWM does not hide it because the corner it masks is the window's, not the border's. The shell now clips the template root border's child to the same rounded rect, one border thickness in, so the outline stays continuous and WPF anti-aliases the caption fill into the corner the way WinUI does. Square corners (`CornerPreference.DoNotRound`, or a maximized window) get no clip at all. The template root border is now the named template part `PART_WindowBorder`.
 - Light theme: an inactive `FluenceWindow` no longer draws a near-white halo around itself. Suppressing the DWM border in 0.8.15-preview made the template hairline the only outline, and its inactive brush was `CardStrokeColorDefaultSolidBrush`, opaque `#EBEBEB`, which is invisible against a light window surface and reads as a bright ring against a dark desktop. The inactive (and accent-borders-off) border is now `SurfaceStrokeColorDefaultBrush`, the WinUI window-surface stroke at 40% `#757575` in both Light and Dark, which is the same nominal colour DWM composites for its own border, so the single border Fluence draws reads like the system one over any content. `FluenceWindow`'s default `BorderBrush` in `Themes/Controls/FluenceWindow.xaml` follows the same key.
 
-## [0.8.15-Preview] - 2026-08-25
+## [0.8.15-preview] - 2026-08-25
 
 ### Added
 
@@ -143,7 +175,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - The theme engine no longer leaves a previously published computed dictionary merged into `Application.Resources`. `RemoveFluenceDictionaries` recognised Typography and Generic by their pack URI, but the computed dictionary at slot [0] is built in code and has no `Source`, so seeding the slots again inserted a fresh computed dictionary at [0] and left the previous one further down the list. WPF resolves merged dictionaries last-wins, so the stale one answered lookups the fresh one owned: once a High Contrast dictionary had been published, later Light applies resolved opaque High Contrast tokens, which is what turned the translucent `ComboBox` dropdown surface opaque on a CI runner. Every published computed dictionary now carries a marker key that the removal pass recognises, and `DictionaryStabilityTests` pins the re-seed path.
 
-## [0.8.13-Preview] - 2026-08-13
+## [0.8.14-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
+
+## [0.8.13-preview] - 2026-08-13
 
 ### Added
 
@@ -161,7 +199,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Demo: monospace sample text unified behind the `DemoMonospaceFontFamily` token (Cascadia Mono with Consolas fallback) and the Colors page's inline size, margin, and font literals moved to shared demo tokens and the new `DemoCodeSampleTextStyle`; the source-code viewers pick up Cascadia Mono where installed.
 - Build: analyzer and test packages refreshed (Meziantou.Analyzer 3.0.150, Microsoft.Extensions.StaticAnalysis 10.9.0, Roslynator.Analyzers 4.16.0, Meziantou.Polyfill 1.0.159, Microsoft.NET.Test.Sdk 18.8.1). The Meziantou.Polyfill opt-in allowlist is centralized in `Directory.Build.props`, and the former net472 index/range (`IDE0056` / `IDE0057`) and string-comparison (`CA1307` / `CA1310` / `CA1847` / `CA1866`) suppressions are removed now that the polyfills cover them.
 
-## [0.8.12-Preview] - 2026-08-09
+## [0.8.12-preview] - 2026-08-09
 
 ### Added
 
@@ -176,13 +214,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `ProgressBar`: an indeterminate bar keeps animating with the Windows reduced-motion setting off, since motion is its only status signal; a determinate bar still honours the setting. Fixes dialogs that looked hung for screen-reader users.
 - `PasswordBox` forwards its accessible name and `AutomationProperties.LabeledBy` to the inner focusable password and reveal fields, so screen readers announce the caller's prompt instead of a bare protected edit field.
 
-## [0.8.11-Preview] - 2026-07-14
+## [0.8.11-preview] - 2026-07-14
 
 ### Fixed
 
 - Tests: `TextBox_TextViewAlignsWithPlaceholder_WhenIconIsShown` asserts placeholder and caret-host alignment to the nearest device pixel instead of a fixed 0.5 DIP, fixing false failures on fractional DPI scales.
 
-## [0.8.10-Preview] - 2026-07-14
+## [0.8.10-preview] - 2026-07-14
 
 ### Added
 
@@ -213,14 +251,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `FontIcon`: the `IsSpinning` rotation stops while unloaded or not visible and resumes when shown.
 - `NavigationView`: selecting items faster than the indicator animates retargets it mid-flight instead of snapping back and replaying from zero.
 
-## [0.8.9-Preview] - 2026-07-07
+## [0.8.9-preview] - 2026-07-07
 
 ### Changed
 
 - Raised static analysis to its strictest settings (Roslynator and Meziantou at maximum rule sets) and resolved every resulting warning; internal code-quality hardening only, no public API or behavior changes.
 - Updated analyzer and polyfill dependencies: BannedApiAnalyzers 5.6.0, Meziantou.Analyzer 3.0.121, Meziantou.Polyfill 1.0.157.
 
-## [0.8.8-Preview] - 2026-07-06
+## [0.8.8-preview] - 2026-07-06
 
 ### Added
 
@@ -273,6 +311,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 
 - Retired the previous brand asset family and the generated banner vector XAML.
+
+## [0.8.4-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
+
+## [0.8.3-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
 
 ## [0.8.2-preview] - 2026-06-17
 
@@ -421,4 +471,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.5.0] - 2026-05-21
 
+### Added
+
 - Initial release.
+
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v1.0.0...main
+[1.0.0]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v1.0.0
+[0.8.19-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.18-pre...v0.8.19-pre
+[0.8.18-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.17-pre...v0.8.18-pre
+[0.8.17-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.16-pre...v0.8.17-pre
+[0.8.16-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.15-pre...v0.8.16-pre
+[0.8.15-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.12-pre...v0.8.15-pre
+[0.8.14-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.13-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.12-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.11-pre...v0.8.12-pre
+[0.8.11-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.10-pre...v0.8.11-pre
+[0.8.10-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.9-pre...v0.8.10-pre
+[0.8.9-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.8-pre...v0.8.9-pre
+[0.8.8-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.7-pre...v0.8.8-pre
+[0.8.7-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.6-pre...v0.8.7-pre
+[0.8.6-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.1-pre...v0.8.6-pre
+[0.8.5-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.4-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.3-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.2-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.1-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.0-pre...v0.8.1-pre
+[0.8.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.7.0-pre...v0.8.0-pre
+[0.7.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.6.0-pre...v0.7.0-pre
+[0.6.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.5.0-pre...v0.6.0-pre
+[0.5.0]: https://github.com/sintaxasn/Fluence.Wpf/releases/tag/v0.5.0-pre

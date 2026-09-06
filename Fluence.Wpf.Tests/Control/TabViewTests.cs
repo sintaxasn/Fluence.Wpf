@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -231,7 +232,7 @@ namespace Fluence.Wpf.Tests.Control
                     TabViewTabCloseRequestedEventArgs? viewArgs = null;
                     int itemRaised = 0;
                     first.CloseRequested += (s, e) => itemRaised++;
-                    tabs.TabCloseRequested += (s, e) => viewArgs = e as TabViewTabCloseRequestedEventArgs;
+                    tabs.TabCloseRequested += (s, e) => viewArgs = e;
 
                     ButtonAutomationPeer peer = new(closeButton as System.Windows.Controls.Button);
                     IInvokeProvider invoke = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
@@ -438,6 +439,91 @@ namespace Fluence.Wpf.Tests.Control
                 finally
                 {
                     w.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// A handler typed on the args class receives it directly, with no cast, from both the
+        /// per-item event and the aggregated TabView event.
+        /// </summary>
+        [Fact]
+        public Task CloseRequested_TypedHandler_ReceivesArgsWithoutCastAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                TabView tabs = new();
+                TabViewItem first = new() { Header = "One", IsClosable = true };
+                _ = tabs.Items.Add(first);
+
+                try
+                {
+                    window.Content = tabs;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TabViewTabCloseRequestedEventArgs? itemArgs = null;
+                    TabViewTabCloseRequestedEventArgs? viewArgs = null;
+                    first.CloseRequested += (_, e) => itemArgs = e;
+                    tabs.TabCloseRequested += (_, e) => viewArgs = e;
+
+                    first.RaiseEvent(new TabViewTabCloseRequestedEventArgs(
+                        TabViewItem.CloseRequestedEvent, first, first, first));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.NotNull(itemArgs);
+                    Assert.Same(first, itemArgs.Tab);
+                    Assert.NotNull(viewArgs);
+                    Assert.Same(first, viewArgs.Tab);
+                    Assert.Same(first, viewArgs.Item);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// The aggregated event is still a bubbling RoutedEvent, so a parent element that never
+        /// sees the TabView's CLR event can still handle it with AddHandler.
+        /// </summary>
+        [Fact]
+        public Task TabCloseRequested_StillBubblesToAParentHandlerAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Grid host = new();
+                TabView tabs = new();
+                TabViewItem first = new() { Header = "One", IsClosable = true };
+                _ = tabs.Items.Add(first);
+                _ = host.Children.Add(tabs);
+
+                try
+                {
+                    window.Content = host;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TabViewTabCloseRequestedEventArgs? bubbled = null;
+                    host.AddHandler(
+                        TabView.TabCloseRequestedEvent,
+                        new EventHandler<TabViewTabCloseRequestedEventArgs>((_, e) => bubbled = e));
+
+                    first.RaiseEvent(new TabViewTabCloseRequestedEventArgs(
+                        TabViewItem.CloseRequestedEvent, first, first, first));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.NotNull(bubbled);
+                    Assert.Same(first, bubbled.Tab);
+                }
+                finally
+                {
+                    window.Close();
                 }
             });
         }

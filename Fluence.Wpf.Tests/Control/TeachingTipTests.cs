@@ -860,7 +860,7 @@ namespace Fluence.Wpf.Tests.Control
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     foreach (string? key in brushKeys)
                     {
                         Assert.NotNull(app.TryFindResource(key));
@@ -883,6 +883,201 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.Equal(
                     AutomationLiveSetting.Polite,
                     liveSetting);
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Closed event: typed args carrying the close reason
+        // ---------------------------------------------------------------------------
+
+        /// <summary>
+        /// Clicking the close button reports CloseButton on the Closed args.
+        /// </summary>
+        [Fact]
+        public Task Closed_CloseButtonClicked_ReportsCloseButtonReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Close me",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase).ConfigureAwait(true),
+                        "The tip must open and apply its template before the close button is clicked.");
+
+                    TeachingTipClosedEventArgs? received = null;
+                    tip.Closed += (_, e) => received = e;
+
+                    ButtonBase closeButton = Assert.IsType<ButtonBase>(tip.Template.FindName("PART_CloseButton", tip), exactMatch: false);
+                    closeButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => received is not null).ConfigureAwait(true),
+                        "Clicking the close button must raise Closed once the popup has closed.");
+                    Assert.Equal(TeachingTipCloseReason.CloseButton, received!.Reason);
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Setting IsOpen to false in code reports Programmatic.
+        /// </summary>
+        [Fact]
+        public Task Closed_IsOpenSetFalse_ReportsProgrammaticReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Closable",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
+                        "IsOpen=true must open the host popup before the close scenario.");
+
+                    TeachingTipClosedEventArgs? received = null;
+                    tip.Closed += (_, e) => received = e;
+
+                    tip.IsOpen = false;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => received is not null).ConfigureAwait(true),
+                        "Closing the tip must raise Closed after the popup closes.");
+                    Assert.Equal(TeachingTipCloseReason.Programmatic, received!.Reason);
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// A light dismiss closes the host popup without going through IsOpen, so the tip must
+        /// report LightDismiss rather than Programmatic, and must still sync IsOpen back to false.
+        /// </summary>
+        [Fact]
+        public Task Closed_PopupClosedOutsideIsOpen_ReportsLightDismissReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Dismissable",
+                    Target = target,
+                    IsLightDismissEnabled = true,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
+                        "IsOpen=true must open the host popup before the light dismiss.");
+
+                    TeachingTipClosedEventArgs? received = null;
+                    tip.Closed += (_, e) => received = e;
+
+                    // Closing the popup directly is exactly what a light dismiss does: it bypasses
+                    // the IsOpen pipeline, so IsOpen is still true when Popup.Closed arrives.
+                    Popup popup = Assert.IsType<Popup>(tip.HostPopup);
+                    popup.IsOpen = false;
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => received is not null).ConfigureAwait(true),
+                        "A light dismiss must raise Closed.");
+                    Assert.Equal(TeachingTipCloseReason.LightDismiss, received!.Reason);
+                    Assert.False(tip.IsOpen, "A light dismiss must sync IsOpen back to false.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Escape mirrors WinUI's keyboard contract, which treats it as a light dismiss, so the
+        /// tip must report LightDismiss rather than the default Programmatic reason.
+        /// </summary>
+        [Fact]
+        public Task Closed_EscapeKeyDismissal_ReportsLightDismissReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Escapable",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }).ConfigureAwait(true),
+                        "The tip must open before Escape is simulated.");
+
+                    TeachingTipClosedEventArgs? received = null;
+                    tip.Closed += (_, e) => received = e;
+
+                    tip.RaiseEvent(new KeyEventArgs(
+                        Keyboard.PrimaryDevice,
+                        PresentationSource.FromVisual(window),
+                        0,
+                        Key.Escape)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    });
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => received is not null).ConfigureAwait(true),
+                        "The Escape dismissal must raise Closed.");
+                    Assert.Equal(TeachingTipCloseReason.LightDismiss, received!.Reason);
+                    Assert.False(tip.IsOpen, "Escape inside the tip must set IsOpen back to false.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
             });
         }
 

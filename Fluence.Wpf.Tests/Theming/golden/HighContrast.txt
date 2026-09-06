@@ -24,6 +24,7 @@ AcrylicBackgroundFillColorDefault|#FF000000|#00000000
 AcrylicBackgroundFillColorDefaultBrush|#00000000|#FFFFFFFF
 ApplicationBackgroundBrush|#00000000|#FFFFFFFF
 ApplicationBackgroundColor|#FF000000|#00000000
+ApplicationPageBackgroundThemeBrush|#00000000|#FFFFFFFF
 CardBackgroundFillColorDefault|#FF000000|#00000000
 CardBackgroundFillColorDefaultBrush|#00000000|#FFF0F0F0
 CardBackgroundFillColorSecondary|#FF000000|#00000000
@@ -84,8 +85,6 @@ ControlStrokeColorOnAccentTertiary|#FF000000|#00000000
 ControlStrokeColorOnAccentTertiaryBrush|#00000000|#FFFFFFFF
 ControlStrokeColorSecondary|#FF808080|#00000000
 ControlStrokeColorSecondaryBrush|#00000000|#FFA0A0A0
-ControlStrokeColorTertiary|#FFFFFFFF|#00000000
-ControlStrokeColorTertiaryBrush|#00000000|#FF000000
 ControlStrongFillColorDefault|#FFFFFFFF|#00000000
 ControlStrongFillColorDefaultBrush|#00000000|#FF000000
 ControlStrongFillColorDisabled|#FF3FF23F|#00000000
@@ -99,7 +98,6 @@ DividerStrokeColorDefaultBrush|#00000000|#FFA0A0A0
 FocusStrokeColorInner|#FF000000|#00000000
 FocusStrokeColorInnerBrush|#00000000|#FFFFFFFF
 FocusStrokeColorOuter|#FF1AEBFF|#00000000
-KeyboardFocusBorderColor|#FF1AEBFF|#00000000
 LayerFillColorAlt|#FF000000|#00000000
 LayerFillColorAltBrush|#00000000|#FFFFFFFF
 LayerFillColorDefault|#FF000000|#00000000
@@ -180,8 +178,6 @@ SystemFillColorCritical|#FFFFFFFF|#00000000
 SystemFillColorCriticalBackground|#FF000000|#00000000
 SystemFillColorCriticalBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorCriticalBrush|#00000000|#FF000000
-SystemFillColorInformational|#FFFFFFFF|#00000000
-SystemFillColorInformationalBrush|#00000000|#FF000000
 SystemFillColorNeutral|#FFFFFFFF|#00000000
 SystemFillColorNeutralBackground|#FF000000|#00000000
 SystemFillColorNeutralBackgroundBrush|#00000000|#FFFFFFFF
@@ -225,9 +221,3 @@ WindowBorderColorBrush|#00000000|#FFFFFFFF
 WindowCloseButtonBackgroundPointerOver|#FFC42B1C|#00000000
 WindowCloseButtonBackgroundPressed|#FFB4271C|#00000000
 WindowCloseButtonForegroundPointerOver|#FFFFFFFF|#00000000
-WindowCloseFillColorHover|#FF1AEBFF|#00000000
-WindowCloseFillColorPressed|#FF1AEBFF|#00000000
-WindowCloseForegroundHover|#FF000000|#00000000
-WindowCloseForegroundHoverBrush|#00000000|#FFFFFFFF
-WindowCloseForegroundPressed|#FF000000|#00000000
-WindowCloseForegroundPressedBrush|#00000000|#FFFFFFFF

@@ -48,11 +48,8 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <c language="xaml">ControlStrongStrokeColorDefaultBrush</c>.</param>
         internal static void AssertBrushColor(Brush? actual, string expectedResourceKey)
         {
-            SolidColorBrush actualBrush = Assert.IsType<SolidColorBrush>(actual);
-            SolidColorBrush expected = Assert.IsType<SolidColorBrush>(
-                Application.Current?.TryFindResource(expectedResourceKey));
-
-            Assert.Equal(expected.Color, actualBrush.Color);
+            Color expected = SolidColor(Application.Current?.TryFindResource(expectedResourceKey));
+            Assert.Equal(expected, SolidColor(actual));
         }
 
         /// <summary>
@@ -64,8 +61,22 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <param name="resourceKey">The canonical WinUI-style brush key.</param>
         internal static Color ResolvedColor(Application application, string resourceKey)
         {
-            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(resourceKey));
-            return brush.Color;
+            return SolidColor(application.TryFindResource(resourceKey));
+        }
+
+        /// <summary>
+        /// Returns the colour of <paramref name="resource"/>, failing the test if it is not a
+        /// <see cref="SolidColorBrush"/>. The suite reads brush colours far more often than brush
+        /// instances, because the theme engine rebuilds every brush on each apply. Accepting
+        /// <see cref="object"/> rather than <see cref="Brush"/> keeps a resource lookup that
+        /// resolved to something other than a brush (a <see cref="Color"/>, a <see cref="Style"/>)
+        /// visible in the assertion failure message instead of collapsing it to null first.
+        /// </summary>
+        /// <param name="resource">The value to read, typically straight off an element under test
+        /// or out of a resource lookup.</param>
+        internal static Color SolidColor(object? resource)
+        {
+            return Assert.IsType<SolidColorBrush>(resource).Color;
         }
     }
 }
