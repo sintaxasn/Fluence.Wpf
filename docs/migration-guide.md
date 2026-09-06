@@ -8,13 +8,18 @@ Every breaking change in 1.0 is listed here. All of them are compile-time breaks
 
 ### Types that became internal
 
+Internalizing a type also breaks an already-compiled consumer binary, not only source that
+recompiles, because the type becomes inaccessible at load time. The template part constants are
+the one exception here: a `const` is inlined at the consumer's own compile site, so an
+already-built binary keeps working and only a recompile against the new library breaks.
+
 | Type | What to do |
 | --- | --- |
 | `Controls.LoopingSelectorList` | It was a `DatePicker` and `TimePicker` implementation detail. There is no replacement; use `DatePicker` or `TimePicker`. |
 | `Helpers.CornerRadiusFilterConverter` | Write a one-property `IValueConverter` in your own assembly if you need the same corner filtering. |
 | `Helpers.CornerRadiusFilterEdge` | Goes with `CornerRadiusFilterConverter`. |
 | `Helpers.GridLengthAnimation` | Animate a `GridLength` in your own assembly with an equivalent `AnimationTimeline`, or animate `Width` on the column content instead. |
-| The nine `NavigationView.Part*` constants | Template part names are not API. Read the name from the shipped template, or hard-code the string. |
+| The nine `NavigationView.Part*` constants | Template part names are not API. Read the name from the shipped template, or hard-code the string; this is the section's one source-only break. |
 
 ### Enums renamed
 
@@ -75,7 +80,7 @@ private void OnTabCloseRequested(object sender, TabViewTabCloseRequestedEventArg
 
 These seven Colors and their seven `*Brush` twins had no consumer and are gone: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`.
 
-The caption button colours remain published under their WinUI names: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`.
+The caption button colours remain published under their WinUI names: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. The close button template applies that single foreground key on both the pointer-over and the pressed trigger, so it is also the replacement for `WindowCloseForegroundPressed`, which has no separate pressed foreground key of its own. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`.
 
 **This fails silently**, like the rename below: a consumer's own XAML that still names one of the fourteen keeps building, and the target simply keeps its default value at runtime. Search your own XAML for these names as part of upgrading, not only your build output.
 
