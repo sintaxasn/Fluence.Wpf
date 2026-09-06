@@ -2,6 +2,93 @@
 
 `Fluence.Wpf` targets WPF applications on .NET Framework 4.7.2, .NET 8, and .NET 10 for Windows. It mirrors the Windows 11 Fluent / WinUI 3 visual language using WPF primitives, with no dependency on the Windows App SDK.
 
+## Upgrading to 1.0 from a 0.8 preview
+
+Every breaking change in 1.0 is listed here. All of them are compile-time breaks except the resource key changes near the end, which fail silently: a `DynamicResource` reference to a removed or renamed key produces no error and no build failure, and the target simply keeps its default.
+
+### Types that became internal
+
+| Type | What to do |
+| --- | --- |
+| `Controls.LoopingSelectorList` | It was a `DatePicker` and `TimePicker` implementation detail. There is no replacement; use `DatePicker` or `TimePicker`. |
+| `Helpers.CornerRadiusFilterConverter` | Write a one-property `IValueConverter` in your own assembly if you need the same corner filtering. |
+| `Helpers.CornerRadiusFilterEdge` | Goes with `CornerRadiusFilterConverter`. |
+| `Helpers.GridLengthAnimation` | Animate a `GridLength` in your own assembly with an equivalent `AnimationTimeline`, or animate `Width` on the column content instead. |
+| The nine `NavigationView.Part*` constants | Template part names are not API. Read the name from the shipped template, or hard-code the string. |
+
+### Enums renamed
+
+Values are unchanged in all three cases; rename the type at every use site.
+
+| Was | Is |
+| --- | --- |
+| `SpinButtonPlacementMode` | `NumberBoxSpinButtonPlacementMode`. The property `NumberBox.SpinButtonPlacementMode` keeps its name, so XAML attributes do not change. |
+| `BackdropType` | `WindowBackdropType`. `Auto` is unchanged. `FluenceWindow.SystemBackdropType` and `ApplicationThemeManager.CurrentBackdrop` keep their names and change type. |
+| `CornerPreference` | `WindowCornerPreference`. `FluenceWindow.CornerStyle` keeps its name and changes type. |
+
+### Events that gained typed args
+
+Change the handler signature. In every case the second parameter's type changes and nothing else does, so a handler written as a `(_, _)` lambda already compiles.
+
+| Event | New handler signature | What is new |
+| --- | --- | --- |
+| `ContentDialog.Opened` | `(object? sender, ContentDialogOpenedEventArgs e)` | nothing yet, the args type exists so data can be added additively |
+| `ContentDialog.Closed` | `(object? sender, ContentDialogClosedEventArgs e)` | `e.Result` is the outcome. It was previously reachable only from the task `ShowAsync` returns, which a handler does not hold. |
+| `InfoBar.Closed` | `(object? sender, InfoBarClosedEventArgs e)` | `e.Reason` says whether the user or code closed the bar. Setting `IsOpen` to `false` in code now raises `Closed` with `Programmatic`, which previously raised nothing. |
+| `TeachingTip.Closed` | `(object? sender, TeachingTipClosedEventArgs e)` | `e.Reason` distinguishes the close button, a light dismiss, and a programmatic close. |
+| `TabView.TabCloseRequested` | `(object? sender, TabViewTabCloseRequestedEventArgs e)` | the handler receives the args class directly instead of a base `RoutedEventArgs` that had to be cast. This retypes the registered handler delegate, so an already-compiled consumer binary breaks too, not only source that recompiles. `e.Tab` and `e.Item` are unchanged, and the event still bubbles. |
+| `TabViewItem.CloseRequested` | `(object? sender, TabViewTabCloseRequestedEventArgs e)` | as `TabView.TabCloseRequested`, including the binary break. |
+
+Before:
+
+```csharp
+private void OnTabCloseRequested(object sender, RoutedEventArgs e)
+{
+    if (e is not TabViewTabCloseRequestedEventArgs args)
+    {
+        return;
+    }
+
+    Tabs.Items.Remove(args.Tab);
+}
+```
+
+After:
+
+```csharp
+private void OnTabCloseRequested(object sender, TabViewTabCloseRequestedEventArgs e)
+{
+    Tabs.Items.Remove(e.Tab);
+}
+```
+
+`InfoBarClosingEventArgs` also gained `Reason`, which is additive: existing `Closing` handlers keep compiling. Its implicit parameterless constructor is gone, which matters only to code that constructed the args itself.
+
+### Members removed
+
+| Was | Is |
+| --- | --- |
+| `ApplicationThemeManager.Apply(theme, backdrop, updateAccent)` | `Apply(theme, backdrop)`. Delete the third argument. The pipeline always rebuilds using the current accent intent, so the flag had no effect since the single pipeline rewrite. |
+| `ApplicationAccentColorManager.ApplyApplicationAccent()` | `ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4))`. |
+
+### Resource keys removed
+
+These seven Colors and their seven `*Brush` twins had no consumer and are gone: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`.
+
+The caption button colours remain published under their WinUI names: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`.
+
+**This fails silently**, like the rename below: a consumer's own XAML that still names one of the fourteen keeps building, and the target simply keeps its default value at runtime. Search your own XAML for these names as part of upgrading, not only your build output.
+
+### Resource key renamed
+
+`NavigationViewSelectionIndicatorBrush` is now `NavigationViewSelectionIndicatorForeground`, WinUI's own name for the role. Note the missing `Brush` suffix: it is a brush-only key and that is WinUI's spelling.
+
+**This also fails silently.** A `DynamicResource` reference to a key that no longer exists produces no error and no build failure, the target simply keeps its default, so a selection indicator painted with the old key renders transparent. Search your XAML for the old name.
+
+### Resource keys added, nothing to do
+
+`ContentControlThemeFontFamily` and `ApplicationPageBackgroundThemeBrush` are WinUI's names for `FluentFontFamily` and `ApplicationBackgroundBrush`. Both pairs ship, and both original names are supported for the life of 1.x, so nothing has to change. Prefer the WinUI names in new code.
+
 ## Basic Steps
 
 1. Reference `Fluence.Wpf/Fluence.Wpf.csproj` or a local `Fluence.Wpf` package.
@@ -16,7 +103,7 @@
     ```csharp
     Fluence.Wpf.ApplicationThemeManager.Apply(
         Fluence.Wpf.ApplicationTheme.Auto,
-        Fluence.Wpf.BackdropType.Mica);
+        Fluence.Wpf.WindowBackdropType.Mica);
     Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
     ```
 
