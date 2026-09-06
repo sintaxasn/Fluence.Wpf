@@ -119,7 +119,7 @@ Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selec
 
 Key API:
 
-`ComboBox`, `Slider`, `NumberBox`, `TextBox`, `PasswordBoxExtensions`, `AutoSuggestBox`, `SpinButtonPlacementMode`, `NumberBoxValueChangedEventArgs`, `AutoSuggestBoxTextChangedEventArgs`, `AutoSuggestBoxSuggestionChosenEventArgs`, `AutoSuggestBoxQuerySubmittedEventArgs`, `AutoSuggestionBoxTextChangeReason`
+`ComboBox`, `Slider`, `NumberBox`, `TextBox`, `PasswordBoxExtensions`, `AutoSuggestBox`, `NumberBoxSpinButtonPlacementMode`, `NumberBoxValueChangedEventArgs`, `AutoSuggestBoxTextChangedEventArgs`, `AutoSuggestBoxSuggestionChosenEventArgs`, `AutoSuggestBoxQuerySubmittedEventArgs`, `AutoSuggestionBoxTextChangeReason`
 
 Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
 
@@ -728,7 +728,7 @@ Every control below overrides `OnCreateAutomationPeer` and reports its own class
 | `RatingControlAutomationPeer` | `RatingControl` | the rating with the range value pattern |
 | `SplitButtonAutomationPeer` | `SplitButton` | a split button with the invoke and expand and collapse patterns |
 | `TeachingTipAutomationPeer` | `TeachingTip` | the tip content and its close affordance |
-| `TextBlockAutomationPeer` | `TextBlock` extensions | the text and its typography role |
+| `TextBlockAutomationPeer` | `TextBlock` | the text as the Text control type, excluded from the control view unless an explicit `AutomationProperties.Name` is set |
 | `TimePickerAutomationPeer` | `TimePicker` | the selected time and its flyout |
 | `TitleBarAutomationPeer` | `TitleBar` | a title bar named after the title, or the explicit automation name when one is set |
 | `ToggleSplitButtonAutomationPeer` | `ToggleSplitButton` | the toggle state and the flyout |

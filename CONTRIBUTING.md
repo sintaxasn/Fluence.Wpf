@@ -75,3 +75,4 @@ Run `Fluence.Wpf.Demo` and exercise Light / Dark / High Contrast / Auto, a coupl
 - Update [CHANGELOG.md](CHANGELOG.md) under **Unreleased** (Keep a Changelog format, SemVer).
 - Update public docs ([README.md](README.md), [docs/controls.md](docs/controls.md), [docs/theming.md](docs/theming.md)) when consumer-visible behavior changes.
 - The PR template encodes the build / test / visual / docs gates; fill it in.
+- Maintainers follow [docs/release.md](docs/release.md) when publishing a package or tagging a release.
