@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+Version headings are the SemVer version. The git tag for a version is `v` plus that version exactly, enforced by CI from 1.0 onward. Tags before 1.0 used a `-pre` suffix that did not match the version they shipped, which is why some links below point at the releases page instead of a comparison.
+
 ## [Unreleased]
 
 ### Added
@@ -49,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Demo `SectionDescriptionStyle` uses `TextFillColorPrimaryBrush` instead of `TextFillColorSecondaryBrush`, matching the WinUI Gallery `descriptionText` TextBlock (`WinUIGallery\Pages\ItemPage.xaml:53-61`), which uses `BodyTextBlockStyle` and so keeps the page's default primary foreground rather than a dimmed one.
 - Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/`, each folder also a namespace segment, with one sealed class per subject in place of the 62-file `partial class ControlTests`, and a single application and theme reset (`TestApp.EnsureLibraryTheme`, with `TestApp.EnsureDemoTheme` as the explicit demo opt-in) in place of seven divergent private merge helpers. Library control tests no longer run with the demo resource dictionary merged over the theme slots, so a demo style can no longer shadow a library brush. Eighteen test cases are deleted as strictly subsumed or as not being tests, and one case is added by a theory fold, taking net10 from 1197 to 1180 and net472 from 1195 to 1178. No surviving test's assertions changed. The deletions, with the survivor that covers each: six per-theme corner-radius assertions in `ThemeMetricsTests`, covered by `CornerRadiusTokens_SurviveFullThemeCycleAsync`, which asserts both pairs at all four steps of the cycle; `DefaultControlFocusVisualStyle_PresentInAllThemesAsync`, byte-for-byte identical to `FocusVisualTests.FocusVisual_DefaultControlFocusVisualStyle_ResolvesInAllThemesAsync`; `ProgressBar_TrackBackground_UsesWinUiStrongStrokeRoleAsync`, covered by `ProgressBarTests.ProgressBar_Track_FollowsBackgroundWithHalfPixelCornerRadiusAsync`, which also asserts the control background and the half-pixel corner radius; `FiveSwitches_DictionaryCountStableAsync` and `MergedDictionaries_CountStableAfterMultipleSwitchesAsync`, both covered by `RepeatedThemeSwitches_NoDictionaryAccumulationAsync`, which does twenty switches against five and now runs as a theory over both `updateAccent` values; `BuildBackdropPlan_None_ReturnsOpaqueBackground` and `BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent`, each asserting one field of a plan that `WindowPolicyTests` asserts in full on the same call; `MainWindow_ProgressNumberBox_UpdatesFirstProgressBarAsync`, covered by `GalleryStatusPage_NumberBoxDrivesFirstProgressBarAsync` plus `MainWindow_DirectNavigation_LoadsConcretePagesAsync`; the three `AccentPaletteRegenerationExperiment` probes and the one `ImmersiveColorSetProbe` probe, whose own doc comments record the answers they were written to find and which never ran in CI; and `AccentRampScoreboard.Score_AllAlgorithms_AgainstCapturedFixtures`, whose only assertion was `Assert.True(Fixtures.Length > 0)` and whose twenty-one captured OS ramp fixtures are preserved as a comment block in `Theming/AccentTests.cs`.
 
-## [0.8.19-Preview] - 2026-08-30
+## [0.8.19-preview] - 2026-08-30
 
 ### Fixed
 
@@ -75,7 +77,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The `FluenceWindow` outer border is `SurfaceStrokeColorDefaultBrush` at 2 px, replacing `CardStrokeColorDefaultSolidBrush` at 1 px. WinUI uses `SurfaceStrokeColorDefaultBrush` for the edge of a top-level surface (it is the source of `ContentDialogBorderBrush` in `ContentDialog_themeresources.xaml`), while `CardStrokeColorDefault` describes a card edge.
 - The Light `ApplicationBackgroundColor` is `#FFFFFFFF`, replacing `#FFFAFAFA`. Dark and High Contrast are unchanged. `Properties/DesignTime.Light.xaml` and the Light golden file were regenerated to match.
 
-## [0.8.18-Preview] - 2026-08-26
+## [0.8.18-preview] - 2026-08-26
 
 ### Changed
 
@@ -83,20 +85,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Light theme: `NavigationViewContentBackground` adjusted from 66% to 50% white (`#80FFFFFF`), letting more Mica through the content layer. Golden snapshots and the generated `DesignTime.Light.xaml` are updated to match.
 - Demo: the gallery shell extends its content into the title bar (`ExtendsContentIntoTitleBar="True"`) and opens at a fixed minimum size of 1170x880.
 
-## [0.8.17-Preview] - 2026-08-25
+## [0.8.17-preview] - 2026-08-25
 
 ### Fixed
 
 - Light theme: an inactive `FluenceWindow` no longer draws a pale halo inside its border, and the fix 0.8.16-preview shipped for it is superseded. The cause is where the border is painted, not which token it uses. 0.8.15-preview suppressed the DWM border with the `DWMWA_COLOR_NONE` sentinel and made the WPF template border the only outline, but that border paints inside the client area, over the window's own surface rather than over the desktop, so no stroke token can be as dark as the border Windows draws; 0.8.16-preview only moved it from `#EBEBEB` to `#D1D1D1`, and reverting the token to `CardStrokeColorDefaultSolidBrush` left a light line between the system border and the content, most visible where the content is dark (a `#EBEBEB` line against the PSAppDeployToolkit dialog's accent strip). `WindowPolicy.BuildFramePlan` now gives the border back to DWM wherever DWM can draw one: the accent COLORREF goes to `DWMWA_BORDER_COLOR` when the window is active with accent borders enabled and `DWMWA_COLOR_DEFAULT` otherwise, and the template border is 0 dp on that OS so nothing paints underneath it. Windows 10 has no `DWMWA_BORDER_COLOR`, so there the 2 dp template border remains the outline, keyed to `SystemAccentColorBrush` when active with accent borders and `CardStrokeColorDefaultSolidBrush` otherwise. The thickness does not vary with activation, so focusing a window never shifts its content. Measured on a PSAppDeployToolkit dialog over a dark backdrop, the left edge now goes `#3C3C3C` (system border) straight into the content when inactive and `#0078D4` (accent) when active, with no light line between.
 
-## [0.8.16-Preview] - 2026-08-25
+## [0.8.16-preview] - 2026-08-25
 
 ### Fixed
 
 - `FluenceWindow` no longer paints client content over its own rounded corners. A WPF `Border` draws a rounded outline but does not clip its child, and the child is inset only by `BorderThickness`, so its square corners overlap the arc and anything opaque there covers the outline. The caption close button's pointer-over fill sits in exactly that spot, which is why hovering close left a jagged red block where the top-right corner should be, and DWM does not hide it because the corner it masks is the window's, not the border's. The shell now clips the template root border's child to the same rounded rect, one border thickness in, so the outline stays continuous and WPF anti-aliases the caption fill into the corner the way WinUI does. Square corners (`CornerPreference.DoNotRound`, or a maximized window) get no clip at all. The template root border is now the named template part `PART_WindowBorder`.
 - Light theme: an inactive `FluenceWindow` no longer draws a near-white halo around itself. Suppressing the DWM border in 0.8.15-preview made the template hairline the only outline, and its inactive brush was `CardStrokeColorDefaultSolidBrush`, opaque `#EBEBEB`, which is invisible against a light window surface and reads as a bright ring against a dark desktop. The inactive (and accent-borders-off) border is now `SurfaceStrokeColorDefaultBrush`, the WinUI window-surface stroke at 40% `#757575` in both Light and Dark, which is the same nominal colour DWM composites for its own border, so the single border Fluence draws reads like the system one over any content. `FluenceWindow`'s default `BorderBrush` in `Themes/Controls/FluenceWindow.xaml` follows the same key.
 
-## [0.8.15-Preview] - 2026-08-25
+## [0.8.15-preview] - 2026-08-25
 
 ### Added
 
@@ -143,7 +145,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - The theme engine no longer leaves a previously published computed dictionary merged into `Application.Resources`. `RemoveFluenceDictionaries` recognised Typography and Generic by their pack URI, but the computed dictionary at slot [0] is built in code and has no `Source`, so seeding the slots again inserted a fresh computed dictionary at [0] and left the previous one further down the list. WPF resolves merged dictionaries last-wins, so the stale one answered lookups the fresh one owned: once a High Contrast dictionary had been published, later Light applies resolved opaque High Contrast tokens, which is what turned the translucent `ComboBox` dropdown surface opaque on a CI runner. Every published computed dictionary now carries a marker key that the removal pass recognises, and `DictionaryStabilityTests` pins the re-seed path.
 
-## [0.8.13-Preview] - 2026-08-13
+## [0.8.14-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
+
+## [0.8.13-preview] - 2026-08-13
 
 ### Added
 
@@ -161,7 +169,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Demo: monospace sample text unified behind the `DemoMonospaceFontFamily` token (Cascadia Mono with Consolas fallback) and the Colors page's inline size, margin, and font literals moved to shared demo tokens and the new `DemoCodeSampleTextStyle`; the source-code viewers pick up Cascadia Mono where installed.
 - Build: analyzer and test packages refreshed (Meziantou.Analyzer 3.0.150, Microsoft.Extensions.StaticAnalysis 10.9.0, Roslynator.Analyzers 4.16.0, Meziantou.Polyfill 1.0.159, Microsoft.NET.Test.Sdk 18.8.1). The Meziantou.Polyfill opt-in allowlist is centralized in `Directory.Build.props`, and the former net472 index/range (`IDE0056` / `IDE0057`) and string-comparison (`CA1307` / `CA1310` / `CA1847` / `CA1866`) suppressions are removed now that the polyfills cover them.
 
-## [0.8.12-Preview] - 2026-08-09
+## [0.8.12-preview] - 2026-08-09
 
 ### Added
 
@@ -176,13 +184,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `ProgressBar`: an indeterminate bar keeps animating with the Windows reduced-motion setting off, since motion is its only status signal; a determinate bar still honours the setting. Fixes dialogs that looked hung for screen-reader users.
 - `PasswordBox` forwards its accessible name and `AutomationProperties.LabeledBy` to the inner focusable password and reveal fields, so screen readers announce the caller's prompt instead of a bare protected edit field.
 
-## [0.8.11-Preview] - 2026-07-14
+## [0.8.11-preview] - 2026-07-14
 
 ### Fixed
 
 - Tests: `TextBox_TextViewAlignsWithPlaceholder_WhenIconIsShown` asserts placeholder and caret-host alignment to the nearest device pixel instead of a fixed 0.5 DIP, fixing false failures on fractional DPI scales.
 
-## [0.8.10-Preview] - 2026-07-14
+## [0.8.10-preview] - 2026-07-14
 
 ### Added
 
@@ -213,14 +221,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `FontIcon`: the `IsSpinning` rotation stops while unloaded or not visible and resumes when shown.
 - `NavigationView`: selecting items faster than the indicator animates retargets it mid-flight instead of snapping back and replaying from zero.
 
-## [0.8.9-Preview] - 2026-07-07
+## [0.8.9-preview] - 2026-07-07
 
 ### Changed
 
 - Raised static analysis to its strictest settings (Roslynator and Meziantou at maximum rule sets) and resolved every resulting warning; internal code-quality hardening only, no public API or behavior changes.
 - Updated analyzer and polyfill dependencies: BannedApiAnalyzers 5.6.0, Meziantou.Analyzer 3.0.121, Meziantou.Polyfill 1.0.157.
 
-## [0.8.8-Preview] - 2026-07-06
+## [0.8.8-preview] - 2026-07-06
 
 ### Added
 
@@ -273,6 +281,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 
 - Retired the previous brand asset family and the generated banner vector XAML.
+
+## [0.8.4-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
+
+## [0.8.3-preview]
+
+### Changed
+
+- Internal build with no recorded consumer-visible change. No release notes survive for this version.
 
 ## [0.8.2-preview] - 2026-06-17
 
@@ -421,4 +441,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.5.0] - 2026-05-21
 
+### Added
+
 - Initial release.
+
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...main
+[0.8.19-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.18-pre...v0.8.19-pre
+[0.8.18-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.17-pre...v0.8.18-pre
+[0.8.17-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.16-pre...v0.8.17-pre
+[0.8.16-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.15-pre...v0.8.16-pre
+[0.8.15-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.12-pre...v0.8.15-pre
+[0.8.14-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.13-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.12-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.11-pre...v0.8.12-pre
+[0.8.11-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.10-pre...v0.8.11-pre
+[0.8.10-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.9-pre...v0.8.10-pre
+[0.8.9-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.8-pre...v0.8.9-pre
+[0.8.8-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.7-pre...v0.8.8-pre
+[0.8.7-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.6-pre...v0.8.7-pre
+[0.8.6-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.1-pre...v0.8.6-pre
+[0.8.5-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.4-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.3-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.2-preview]: https://github.com/sintaxasn/Fluence.Wpf/releases
+[0.8.1-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.0-pre...v0.8.1-pre
+[0.8.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.7.0-pre...v0.8.0-pre
+[0.7.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.6.0-pre...v0.7.0-pre
+[0.6.0-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.5.0-pre...v0.6.0-pre
+[0.5.0]: https://github.com/sintaxasn/Fluence.Wpf/releases/tag/v0.5.0-pre
