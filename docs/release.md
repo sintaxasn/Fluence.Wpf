@@ -4,11 +4,11 @@ A release is one action: bump the version, tag, push the tag. Everything after t
 
 ## Preconditions
 
-Confirm all of these before tagging. CI enforces the first three; the rest are judgement.
+Confirm all of these before tagging. CI enforces the first two; the rest are judgement.
 
 1. **CI is green on `main`.** The `build` job runs the text policy check, restores in locked mode, builds Release, verifies formatting, and runs both target framework test lanes.
 2. **`CHANGELOG.md` has a dated section for the version you are about to tag**, with nothing left under `Unreleased` that belongs in it. The release job slices that section for the release notes and fails if it is missing.
-3. **`PublicAPI.Unshipped.txt` is empty for every target framework.** Its contents are the API added since the last release; at a release they move into `PublicAPI.Shipped.txt`:
+3. **`PublicAPI.Unshipped.txt` is empty for every target framework.** Nothing in CI enforces this: `PublicApiAnalyzers` fails the build only when a public member is undeclared in both `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt` (RS0016) or when a declared member has disappeared (RS0017). A member sitting in `Unshipped` satisfies that check just as well as one folded into `Shipped`, so a 1.0 tag can go out with additions never folded in unless you confirm this by hand:
 
    ```powershell
    Get-ChildItem -Recurse -Filter PublicAPI.Unshipped.txt Fluence.Wpf/PublicAPI |
@@ -24,6 +24,7 @@ Confirm all of these before tagging. CI enforces the first three; the rest are j
    dotnet build Fluence.Wpf.sln -c Debug
    Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness
    ```
+6. **The `NUGET_API_KEY` repository secret is set.** The `release` job's last step pushes to nuget.org using it, and nothing prompts you to create it before the first tag. A missing or expired key fails only at that last step, after the GitHub release has already been created and the zips and packages already attached.
 
 ## Bump
 
@@ -58,8 +59,8 @@ On the tag push, the `build` job runs everything it runs for `main`, then packs.
 1. Checks the tag against the tree version and fails if they differ.
 2. Zips the per-target-framework library binaries and the demo.
 3. Slices the `CHANGELOG.md` section for the version into the release notes.
-4. Creates the GitHub release with those assets, the `.nupkg` and the `.snupkg` attached, marking it a prerelease when the tag carries a SemVer prerelease identifier.
-5. Pushes the `.nupkg` and the `.snupkg` to nuget.org from the `NUGET_API_KEY` secret, with `--skip-duplicate` so re-running a tag is a no-op.
+4. Creates the GitHub release with those assets, the `.nupkg` and the `.snupkg` attached, marking it a prerelease when the tag carries a SemVer prerelease identifier. If a release for the tag already exists, this step leaves it alone instead of recreating it, so re-running the job after a later step failed does not touch a release that already published correctly.
+5. Pushes the `.nupkg` to nuget.org from the `NUGET_API_KEY` secret; `dotnet nuget push` pushes the sibling `.snupkg` from the same folder automatically. `--skip-duplicate` means a re-run whose package already reached nuget.org does not fail on that account.
 
 ## Afterwards
 
@@ -70,6 +71,8 @@ On the tag push, the `build` job runs everything it runs for `main`, then packs.
 ## A mistaken tag
 
 A tag that fails the version guard has published nothing, so delete it, fix the version, and tag again. A tag that got past the guard has published to nuget.org, and **a published version can be unlisted but never replaced**. That is why the release candidate exists: tag `vX.Y.Z-rc.1` first and let it run the whole path before the stable tag.
+
+An RC tag needs its own dated `## [X.Y.Z-rc.1]` section in `CHANGELOG.md`, distinct from the `## [X.Y.Z]` section the stable tag will use later. Precondition 2 above applies to whichever version you are tagging: without a matching section, the changelog slice step fails and the RC tag never reaches the release job.
 
 ## Strong naming
 
