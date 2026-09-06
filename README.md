@@ -138,13 +138,13 @@ The guides live under [`docs/`](docs/). A hosted documentation site is planned b
 - [Controls](docs/controls.md) - catalog aligned with the demo gallery
 - [PowerShell](docs/powershell.md) - theme a WPF window from Windows PowerShell 5.1
 - [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
-- [Contributing](docs/contributing.md) - build matrix, tests, PR notes
+- [Contributing](CONTRIBUTING.md) - build matrix, tests, PR notes
 - [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
 - [Roadmap](docs/roadmap.md) - release policy, 1.0 readiness, candidate work
 
 ## Contributing
 
-The contributor guide is at [docs/contributing.md](docs/contributing.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
+The contributor guide is [CONTRIBUTING.md](CONTRIBUTING.md). It covers the build matrix, the WPF test harness, visual verification expectations, changelog policy, and documentation rules.
 
 For AI-assisted work, read [AGENTS.md](AGENTS.md) first.
 
