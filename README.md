@@ -21,6 +21,8 @@ dotnet add package Fluence.Wpf
 ## Use it
 
 ```csharp
+using Fluence.Wpf;
+
 // App.xaml.cs, before the first window is shown.
 ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 ```
@@ -28,6 +30,8 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 ```xml
 <fluence:FluenceWindow
     x:Class="MyApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
     ExtendsContentIntoTitleBar="True"
     SystemBackdropType="Mica"
@@ -53,7 +57,7 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 ## What is in the box
 
-**59 Fluent-styled controls**, from `Button` and `TextBox` through `NavigationView`, `TabView`, `ContentDialog`, `ColorPicker` and `TreeView`, each aligned with its WinUI 3 counterpart and covered by tests. See the [control catalog](docs/controls.md) for the full list and the per-control notes.
+**59 public `Fluence.Wpf.Controls` types**, from `Button` and `TextBox` through `NavigationView`, `TabView`, `ContentDialog`, `ColorPicker` and `TreeView`, each aligned with its WinUI 3 counterpart and covered by tests. See the [control catalog](docs/controls.md) for the full list and the per-control notes.
 
 **A theme engine** that resolves Light, Dark, High Contrast and Auto (follow Windows), generates the accent ramp from the OS palette or a colour you pin, and republishes every brush through `DynamicResource` so a running application re-themes with no restart and no per-control code. See [theming](docs/theming.md).
 
@@ -63,7 +67,7 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 ## Demos
 
-- **Gallery** (`Fluence.Wpf.Demo`): every control, with a live example and its source next to it, plus theme, accent and backdrop switching.
+- **Gallery** (`Fluence.Wpf.Demo`): 17 catalog pages organized by control category, each with a live example and its source next to it, plus theme, accent and backdrop switching.
 - **MVVM Task Manager** (`Fluence.Wpf.Demo.Mvvm`): a minimal CommunityToolkit.Mvvm application with no interaction logic in code-behind.
 - **PowerShell** (`Fluence.Wpf.Demo.PowerShell`): four standalone scripts that build a themed WPF UI from Windows PowerShell 5.1.
 
