@@ -118,9 +118,10 @@ here should fork `DialogManager` while it is internal to PSADT.
 
 The guides under `docs/` are the only documentation today, and there is no build
 or deploy workflow for a site: `.github/workflows/build.yml` has no job that
-builds or publishes one. [docs/controls.md](controls.md) already links API types as
-`../../api/Fluence.Wpf.Controls.<Type>.html`, which is DocFX output layout, so
-those links are dead until a site exists.
+builds or publishes one. [docs/controls.md](controls.md) used to link API types
+as `../../api/Fluence.Wpf.Controls.<Type>.html`, DocFX output layout for a site
+that was never built; those dead anchors were stripped for 1.0. A generated
+reference section is exactly what a documentation site would reintroduce.
 
 Requirements: build from the existing `docs/*.md` without copying them, generate
 API reference from the XML documentation the build already produces, host free

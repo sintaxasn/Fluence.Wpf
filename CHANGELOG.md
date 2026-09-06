@@ -71,7 +71,7 @@ This is the first stable release. The public CLR surface and the public XAML res
 - `InfoBar` message text, severity icon and corner radius now follow WinUI roles; `InfoBadge` foreground tracks a custom accent; `ProgressBar` and `RatingControl` disabled and track visuals are corrected to match WinUI.
 - `TeachingTip`, `ContentDialog`, `CommandBarFlyout`, `ComboBox`, `ToolTip` and the date/time flyouts gain their WinUI stroke, subtitle, shadow and corner-radius roles; menu separators and checkmarks follow suit.
 - `TreeViewItem`, `TabView`, `ScrollBar`, `BreadcrumbBar`, `PipsPager`, `PersonPicture` and inactive caption text pick up their correct WinUI disabled tokens, selection pill, seam and transparent-state colours.
-- `NavigationViewSelectionIndicatorBrush` is published in every theme, including a live `SystemColors.Highlight` binding in High Contrast, and consumed by every selection indicator (`NavigationView`, `ListView`, `ListBox`, `TreeView`).
+- `NavigationViewSelectionIndicatorForeground` is published in every theme, including a live `SystemColors.Highlight` binding in High Contrast, and consumed by every selection indicator (`NavigationView`, `ListView`, `ListBox`, `TreeView`).
 - `FluenceWindow` now suppresses `Mica`, `Acrylic` and `Tabbed` under the in-app High Contrast theme on every Windows version, painting the opaque high contrast colour instead, matching Microsoft Learn's materials guidance.
 - The `ComboBox` dropdown no longer flashes a blank dark plate on open; the fade now runs on the dropdown root instead of only the surface.
 - `NavigationView` pane surfaces now resolve to a real brush; all three templates bound an undefined key, so panes were transparent by accident rather than by design.

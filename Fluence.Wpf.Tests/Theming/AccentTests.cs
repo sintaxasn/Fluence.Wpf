@@ -279,7 +279,7 @@ namespace Fluence.Wpf.Tests.Theming
         // KnownAccentRamps short-circuit. The new design uses the caller's color verbatim and
         // runs Fluence's ramp algorithm directly (no OS mirroring), so the canonical assertions
         // no longer apply. AccentRampScoreboard covers algorithm regression against 21 captured
-        // OS ramps; see docs/_internal/theme-rewrite/design.md for the rationale.
+        // OS ramps.
 
         // The 8 representative accents from design.md Section 3.6.
         private static readonly Color WindowsBlue = Color.FromRgb(0x00, 0x78, 0xD4);

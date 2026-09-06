@@ -181,7 +181,7 @@ The slot layout is enforced by `DictionaryStabilityTests` - any change to count 
 
 ### Canonical color/brush keys
 
-Names align with WinUI 3. [docs/theming.md](docs/theming.md) is the canonical list of the published families, of which keys are supported, and of the two naming aliases kept for downstream consumers, `FluentFontFamily` and `ApplicationPageBackgroundThemeBrush`. That count excludes the eight high contrast brushes the same document separately calls aliases: those map a Fluence key straight to a WPF `SystemColors` value rather than aliasing another Fluence key, a different sense of the word. docs/theming.md is the file to update when a family changes. The pipeline narrative above stays here.
+Names align with WinUI 3. [docs/theming.md](docs/theming.md) is the canonical list of the published families, of which keys are supported, and of the two naming alias pairs kept for downstream consumers: `FluentFontFamily` and `ContentControlThemeFontFamily`, and `ApplicationBackgroundBrush` and `ApplicationPageBackgroundThemeBrush`. Those two pairs exclude the eight high contrast brushes the same document separately calls aliases: those map a Fluence key straight to a WPF `SystemColors` value rather than aliasing another Fluence key, a different sense of the word. docs/theming.md is the file to update when a family changes. The pipeline narrative above stays here.
 
 ### Theme API surface
 
