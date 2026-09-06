@@ -15,6 +15,10 @@
         caster rather than on ToolTipSurface itself because a WPF bitmap effect on a Border
         with CornerRadius produces squared-off artifacts at the rounded corners in a Popup
         (see DropDownButton.xaml).
+        The WinUI ToolTipMaxWidth of 320 (ToolTip_themeresources.xaml:51,77) sits on
+        ToolTipSurface below, not on this control: the control itself is the gutter plus the
+        plate, so a limit set here would constrain the gutter too and shrink the plate by 32px
+        (the gutter is 16px per side). Setting it on the plate keeps the WinUI number literal.
     -->
     <!--
         Suppress the system tooltip popup fade: WPF's ToolTip binds its internal host
@@ -34,7 +38,6 @@
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalOffset" Value="-16" />
-        <Setter Property="MaxWidth" Value="320" />
         <Setter Property="Padding" Value="9,6,9,8" />
         <Setter Property="Template">
             <Setter.Value>
@@ -47,7 +50,9 @@
                             HWND to exactly its child's layout size, so without it the effect is
                             clipped to the plate and only the corner notches survive. The style's
                             HorizontalOffset and VerticalOffset of -16 pull the tooltip back so the
-                            plate keeps its position.
+                            plate keeps its position. A consumer's own ToolTipService.HorizontalOffset
+                            or ToolTipService.VerticalOffset set on the owner element wins over these
+                            style setters and shifts the plate by that much.
                         -->
                         <Border
                             x:Name="ShadowCaster"
@@ -57,6 +62,7 @@
                             UseLayoutRounding="True" />
                         <Border
                             x:Name="ToolTipSurface"
+                            MaxWidth="320"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
@@ -106,8 +112,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalOffset" Value="-16" />
         <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalOffset" Value="-16" />
     </Style>
 
 </ResourceDictionary>

@@ -214,6 +214,49 @@ namespace Fluence.Wpf.Tests.Control.Rules
         }
 
         [Fact]
+        public Task TeachingTip_TipSurface_PlateWidthMatchesWinUiMinWidthAsync()
+        {
+            // Pins the fix for the size-shrink defect: TeachingTipMinWidth 320 (WinUI
+            // TeachingTip_themeresources.xaml) must land on the plate (TipSurface), not on the
+            // gutter-inclusive control, or the effective plate width shrinks by 32px (the 16px
+            // gutter on each side). With short content, MinWidth is the binding constraint, so the
+            // plate's ActualWidth is exactly the WinUI token.
+            return WpfTestSta.RunOnStaAsync(async static () =>
+            {
+                Window window = new() { Width = 420, Height = 300 };
+                System.Windows.Controls.Button target = new() { Content = "Anchor" };
+                TeachingTip tip = new()
+                {
+                    Title = "Pro tip",
+                    Subtitle = "A TeachingTip points at a target.",
+                    Target = target,
+                };
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(
+                        await WaitUntilAsync(window.Dispatcher, 2000, () => FindVisualChildByName<System.Windows.Controls.Border>(tip, "TipSurface") is not null).ConfigureAwait(true),
+                        "The teaching tip template must apply once the tip opens.");
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border surface = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(tip, "TipSurface"), exactMatch: false);
+
+                    Assert.Equal(320.0, surface.ActualWidth, 0.01);
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task CommandBarFlyoutPresenter_TemplateRoot_ReservesTheShadowGutterAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

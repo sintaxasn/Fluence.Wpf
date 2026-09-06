@@ -98,14 +98,18 @@ namespace Fluence.Wpf.Tests.Control
                     // explicitly to assert the template contract.
                     _ = tip.ApplyTemplate();
 
-                    Assert.Equal(320.0, tip.MinWidth, 0.01);
-                    Assert.Equal(336.0, tip.MaxWidth, 0.01);
                     Assert.Equal(new Thickness(16, 15, 16, 17), tip.Padding);
 
                     Border surface = Assert.IsType<Border>(FindVisualChildByName<Border>(tip, "TipSurface"), exactMatch: false);
                     CornerRadius? overlayRadius = (CornerRadius?)app.FindResource("OverlayCornerRadius");
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
+
+                    // TeachingTipMinWidth 320 / MaxWidth 336 (TeachingTip_themeresources.xaml) sit on
+                    // the plate (TipSurface), not on the gutter-inclusive control: a limit on the
+                    // control would constrain the 16px gutter too and shrink the plate by 32px.
+                    Assert.Equal(320.0, surface.MinWidth, 0.01);
+                    Assert.Equal(336.0, surface.MaxWidth, 0.01);
 
                     ButtonBase action = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton"), exactMatch: false);
                     ButtonBase close = Assert.IsType<ButtonBase>(FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton"), exactMatch: false);

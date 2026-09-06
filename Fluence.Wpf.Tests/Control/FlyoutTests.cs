@@ -83,8 +83,12 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(overlayRadius, surface.CornerRadius);
                     Assert.Equal(new Thickness(1), surface.BorderThickness);
                     Assert.Equal(new Thickness(16, 15, 16, 17), presenter.Padding);
-                    Assert.Equal(96.0, presenter.MinWidth, 0.01);
-                    Assert.Equal(456.0, presenter.MaxWidth, 0.01);
+
+                    // FlyoutThemeMinWidth 96 / MaxWidth 456 (Flyout_themeresources.xaml) sit on the
+                    // plate (PresenterSurface), not on the gutter-inclusive presenter control: a
+                    // limit on the control would constrain the 16px gutter too and shrink the plate.
+                    Assert.Equal(96.0, surface.MinWidth, 0.01);
+                    Assert.Equal(456.0, surface.MaxWidth, 0.01);
                 }
                 finally
                 {

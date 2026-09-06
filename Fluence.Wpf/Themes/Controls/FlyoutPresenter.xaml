@@ -19,9 +19,17 @@
         because WPF sizes a popup HWND to exactly its child's layout size, with no reserved space at
         all: without the gutter the effect is clipped away and survives only in the four rounded
         corner notches, where it reads as a dark square plate behind a rounded card. 16px covers the
-        effect's full bleed (BlurRadius 18 gives 9px sideways and up, plus ShadowDepth 4 downward).
+        effect's full bleed: BlurRadius 18 gives 9px of blur bleed on every side of the unshifted
+        shape, and ShadowDepth 4 at Direction 270 (SpecialBrushes.cs) shifts the shadow straight down,
+        so the sideways bleed stays 9px, the upward bleed shrinks to 5px (9 minus the 4px downward
+        shift) and the downward bleed grows to 13px (9 plus the shift); 16px covers all three.
         FlyoutBase.ShadowGutter subtracts the same 16px from every placement candidate so the plate
         lands where it did before. Keep the two numbers in step.
+        The WinUI FlyoutThemeMinWidth / MaxWidth / MinHeight / MaxHeight size limits above sit on
+        PresenterSurface below, not on this control: the presenter itself is the gutter plus the
+        plate, so a limit set here would constrain the gutter too and shrink the plate by 32px on
+        every axis (the gutter is 16px per side). Setting them on the plate keeps the WinUI numbers
+        literal.
     -->
     <Style TargetType="{x:Type controls:FlyoutPresenter}">
         <Setter Property="Background" Value="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}" />
@@ -31,10 +39,6 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="MaxHeight" Value="758" />
-        <Setter Property="MaxWidth" Value="456" />
-        <Setter Property="MinHeight" Value="40" />
-        <Setter Property="MinWidth" Value="96" />
         <Setter Property="Padding" Value="16,15,16,17" />
         <Setter Property="Template">
             <Setter.Value>
@@ -49,6 +53,10 @@
                             UseLayoutRounding="True" />
                         <Border
                             x:Name="PresenterSurface"
+                            MaxHeight="758"
+                            MaxWidth="456"
+                            MinHeight="40"
+                            MinWidth="96"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"

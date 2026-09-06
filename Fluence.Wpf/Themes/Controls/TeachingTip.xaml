@@ -31,6 +31,10 @@
         effect is not on the surface itself, and the template root carries a 16px transparent
         gutter, because WPF sizes a popup HWND to exactly its child's layout size and the effect
         would otherwise be clipped to the plate.
+        The WinUI TeachingTipMinWidth / MaxWidth limits above sit on TipSurface below, not on this
+        control: the control itself is the gutter plus the plate, so a limit set here would
+        constrain the gutter too and shrink the plate by 32px on every axis (the gutter is 16px per
+        side). Setting them on the plate keeps the WinUI numbers literal.
     -->
 
     <!--
@@ -82,8 +86,6 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="MaxWidth" Value="336" />
-        <Setter Property="MinWidth" Value="320" />
         <Setter Property="Padding" Value="16,15,16,17" />
         <Setter Property="Template">
             <Setter.Value>
@@ -120,6 +122,8 @@
                             x:Name="TipSurface"
                             Grid.Row="1"
                             Grid.Column="1"
+                            MaxWidth="336"
+                            MinWidth="320"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"

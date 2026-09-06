@@ -89,9 +89,12 @@ namespace Fluence.Wpf.Tests.Control
                     Style = style,
                 };
 
-                // FontSize and MaxWidth are ordinary DPs - they resolve via Style.Apply.
+                // FontSize is an ordinary DP - it resolves via Style.Apply. MaxWidth (WinUI
+                // ToolTipMaxWidth 320, ToolTip_themeresources.xaml:51,77) now sits on the
+                // ToolTipSurface plate inside the template rather than on the control itself, so
+                // it is pinned once the template applies instead:
+                // see ToolTip_OpenFade_SettlesAtFullOpacityAsync below.
                 Assert.Equal(12.0, tt.FontSize, 0.01);
-                Assert.Equal(320.0, tt.MaxWidth, 0.01);
                 Assert.Equal(new Thickness(9, 6, 9, 8), tt.Padding);
             });
         }
@@ -121,6 +124,11 @@ namespace Fluence.Wpf.Tests.Control
 
                     System.Windows.Controls.Border surface =
                         Assert.IsType<System.Windows.Controls.Border>(tip.Template.FindName("ToolTipSurface", tip));
+
+                    // WinUI ToolTipMaxWidth 320 (ToolTip_themeresources.xaml:51,77) sits on the
+                    // plate (ToolTipSurface), not on the gutter-inclusive control: a limit on the
+                    // control would constrain the 16px gutter too and shrink the plate by 32px.
+                    Assert.Equal(320.0, surface.MaxWidth, 0.01);
 
                     // The 83 ms open fade (WinUI FadeInThemeAnimation parity) must settle at
                     // full opacity. The trigger-begun HoldEnd clock keeps

@@ -1199,6 +1199,7 @@
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.FlyoutPresenter_DesiredSize_ExceedsThePlateByTwiceTheGutterAsync
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.ToolTip_TemplateRoot_ReservesTheShadowGutterAsync
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TeachingTip_TipRoot_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TeachingTip_TipSurface_PlateWidthMatchesWinUiMinWidthAsync
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.CommandBarFlyoutPresenter_TemplateRoot_ReservesTheShadowGutterAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync
@@ -1212,5 +1213,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1212 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 297ms
+Test discovery summary: found 1213 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 303ms
