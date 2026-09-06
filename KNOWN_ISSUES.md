@@ -53,6 +53,15 @@ maintainers.
   do not treat one failure of this test as a regression by itself, but do
   not dismiss a second occurrence either.
 
+- **An `InfoBar.Closing` handler that sets `IsOpen` to `false` raises `Closed`
+  twice** - the handler's own property change runs the close pipeline once, and
+  the close that triggered `Closing` then completes and raises `Closed` again.
+  Both events carry the same `InfoBarCloseReason`. Handlers that must run once
+  should guard on a local flag or on `IsOpen`; the fix is a re-entrancy guard in
+  the close pipeline, which waits for a minor release because
+  `InfoBarCloseReason` and the `Closed` signature are frozen at 1.0 and the fix
+  is behavioural. Tracked in the roadmap's candidate items.
+
 - **Windows 10 legacy acrylic is unverified on real hardware** - the
   `SetWindowCompositionAttribute` acrylic path (`WindowBackdropType.Acrylic` on
   Windows 10 build 17063+) is covered by pure policy tests only. The resolution
