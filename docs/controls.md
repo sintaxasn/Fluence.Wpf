@@ -700,6 +700,60 @@ The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `
 
 Marketing images live under [`assets/`](../assets), for example [`assets/Fluence_OGImage.png`](../assets/Fluence_OGImage.png). Capture control screenshots at 100% and 150% scaling and record the reference OS build, theme, and accent when adding them.
 
+## Automation peers
+
+Every control below overrides `OnCreateAutomationPeer` and reports its own class name, control type, and where relevant an automation pattern. A control that is not listed inherits the peer of the WPF type it derives from, which is already correct for it. All peers live in `Fluence.Wpf.Automation` and are named `<Control>AutomationPeer`.
+
+| Peer | Serves | Reports |
+| --- | --- | --- |
+| `AutoSuggestBoxAutomationPeer` | `AutoSuggestBox` | a combo box with the expand and collapse pattern |
+| `BreadcrumbBarAutomationPeer` | `BreadcrumbBar` | the navigation trail |
+| `CardAutomationPeer` | `Card` | a button with the invoke pattern when the card is clickable |
+| `ColorPickerAutomationPeer` | `ColorPicker` | the spectrum and channel structure |
+| `ContentDialogAutomationPeer` | `ContentDialog` | a modal dialog |
+| `DatePickerAutomationPeer` | `DatePicker` | the selected date and its flyout |
+| `DropDownButtonAutomationPeer` | `DropDownButton` | a button with the expand and collapse pattern |
+| `FlyoutPresenterAutomationPeer` | `FlyoutPresenter` | a group, the container role for flyout content |
+| `FontIconAutomationPeer` | `FontIcon` | a decorative element excluded from the control and content views |
+| `HyperlinkButtonAutomationPeer` | `HyperlinkButton` | a hyperlink with the invoke pattern |
+| `ImageAutomationPeer` | `Image` | an image with its accessible name |
+| `InfoBadgeAutomationPeer` | `InfoBadge` | text named after the badge value |
+| `InfoBarAutomationPeer` | `InfoBar` | a status bar named after the title, with a live region announcement |
+| `NavigationViewAutomationPeer` | `NavigationView` | the pane and item structure |
+| `NavigationViewItemAutomationPeer` | `NavigationViewItem` | a selectable item with the selection item pattern |
+| `NumberBoxAutomationPeer` | `NumberBox` | a spinner with the range value pattern |
+| `PersonPictureAutomationPeer` | `PersonPicture` | the display name or initials |
+| `PipsPagerAutomationPeer` | `PipsPager` | the page count and current page |
+| `ProgressRingAutomationPeer` | `ProgressRing` | a progress bar with the range value pattern |
+| `RatingControlAutomationPeer` | `RatingControl` | the rating with the range value pattern |
+| `SplitButtonAutomationPeer` | `SplitButton` | a split button with the invoke and expand and collapse patterns |
+| `TeachingTipAutomationPeer` | `TeachingTip` | the tip content and its close affordance |
+| `TextBlockAutomationPeer` | `TextBlock` extensions | the text and its typography role |
+| `TimePickerAutomationPeer` | `TimePicker` | the selected time and its flyout |
+| `TitleBarAutomationPeer` | `TitleBar` | a title bar named after the title, or the explicit automation name when one is set |
+| `ToggleSplitButtonAutomationPeer` | `ToggleSplitButton` | the toggle state and the flyout |
+| `ToggleSwitchAutomationPeer` | `ToggleSwitch` | a toggle with the toggle pattern |
+
+## Event args and support types
+
+These live in the root `Fluence.Wpf` namespace, one type per file, and are the args of the events named beside them.
+
+| Type | Event | Members |
+| --- | --- | --- |
+| `ContentDialogOpenedEventArgs` | `ContentDialog.Opened` | none. WinUI's counterpart carries none either; the type exists so the event can gain data additively. |
+| `ContentDialogClosedEventArgs` | `ContentDialog.Closed` | `ContentDialogResult Result`, the same value the `ShowAsync` task completes with |
+| `InfoBarClosingEventArgs` | `InfoBar.Closing` | `bool Cancel`, and `InfoBarCloseReason Reason` |
+| `InfoBarClosedEventArgs` | `InfoBar.Closed` | `InfoBarCloseReason Reason` |
+| `TeachingTipClosedEventArgs` | `TeachingTip.Closed` | `TeachingTipCloseReason Reason` |
+| `ThemeChangedEventArgs` | `ApplicationThemeManager.Changed` | `ApplicationTheme Theme`, `Color AccentColor` |
+| `TabViewTabCloseRequestedEventArgs` | `TabView.TabCloseRequested`, `TabViewItem.CloseRequested` | `TabViewItem Tab`, `object Item`. The only args class deriving from `RoutedEventArgs`, because both events bubble. |
+
+`InfoBarCloseReason` is `CloseButton` or `Programmatic`. `TeachingTipCloseReason` is `CloseButton`, `LightDismiss` or `Programmatic`. In both cases `Programmatic` means the control's `IsOpen` was set to `false` in code.
+
+`ElementPlacement` selects which side of its owner an element sits on, and is used where a control exposes a simple leading or trailing choice rather than the full `FlyoutPlacementMode` set.
+
+`Fluence.Wpf.Markup.ThemeResourceDictionaryCollection` is the collection type behind `ThemeDictionary.ThemeDictionaries`. It exists so the XAML parser has a strongly typed collection to populate; a consumer declares `ThemeResourceDictionary` entries inside a `ThemeDictionary` and never names the collection type directly. See [theming](theming.md) for the `ThemeDictionary` pattern.
+
 ## Tests
 
 The xunit.v3 suite exercises templates, theme stability, and control behavior on .NET Framework 4.7.2 and .NET 10 for Windows.
