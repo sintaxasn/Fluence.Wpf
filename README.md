@@ -57,7 +57,7 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 ## What is in the box
 
-**59 public `Fluence.Wpf.Controls` types**, from `Button` and `TextBox` through `NavigationView`, `TabView`, `ContentDialog`, `ColorPicker` and `TreeView`, each aligned with its WinUI 3 counterpart and covered by tests. See the [control catalog](docs/controls.md) for the full list and the per-control notes.
+**59 public `Fluence.Wpf.Controls` types that derive from `FrameworkElement`**, from `Button` and `TextBox` through `NavigationView`, `TabView`, `ContentDialog`, `ColorPicker` and `TreeView`, each aligned with its WinUI 3 counterpart and covered by tests. See the [control catalog](docs/controls.md) for the full list and the per-control notes.
 
 **A theme engine** that resolves Light, Dark, High Contrast and Auto (follow Windows), generates the accent ramp from the OS palette or a colour you pin, and republishes every brush through `DynamicResource` so a running application re-themes with no restart and no per-control code. See [theming](docs/theming.md).
 
