@@ -24,6 +24,8 @@ Mica and the 10 bits-per-channel alpha pre-blend are DWM composition concerns, n
 
 High contrast suppresses every backdrop on every Windows version: `WindowPolicy.ResolveEffectiveBackdrop` forces `None` before any OS capability check runs, matching the Microsoft Learn guidance that materials are suppressed under high contrast.
 
+`NavigationView`'s permanent pane layout (WinUI's `PaneNotOverlaying` state, the only one Fluence's inline two-column and two-row layouts implement) paints `SolidBackgroundFillColorTransparent` for both the pane and the content host, matching WinUI's `NavigationViewExpandedPaneBackground` and `NavigationViewTopPaneBackground` (`NavigationView\NavigationView_themeresources.xaml`, see file); the pane's visible colour comes from whatever sits behind it, which is deliberate rather than a transparent-by-accident default. The seam between the pane or header and the content binds `CardStrokeColorDefaultBrush`, WinUI's own `NavigationViewContentGridBorderBrush` role for that seam (same file, see file).
+
 ## 3. Elevation
 
 WPF has no `ThemeShadow` and no platform drop-shadow compositor comparable to WinUI's; every transient surface in Fluence casts a WPF `DropShadowEffect` frozen as the single `FlyoutShadowEffect` token (blur radius 18, direction 270, depth 4, 22% black), painted on an empty sibling `ShadowCaster` border so ClearType is not disabled on the text-bearing surface (see `docs/theming.md`, "Elevation").
@@ -66,6 +68,7 @@ Values below were read directly from the corresponding template or theme-resourc
 | Control | Fluence value | WinUI value | WinUI citation |
 | --- | --- | --- | --- |
 | `Button` | `MinWidth` 110, `MinHeight` 32 | no `MinWidth`/`MinHeight` setter | `CommonStyles\Button_themeresources.xaml` (verified absent) |
+| `Button` fill/stroke compositing | `RestFill` inset by the control's own `BorderThickness`, so the fill stops at the stroke's inner edge; `Appearance="Accent"` resets the inset to 0 | `BackgroundSizing="InnerBorderEdge"` on `DefaultButtonStyle`; `AccentButtonStyle` uses `OuterBorderEdge` | `CommonStyles\Button_themeresources.xaml` (see file) |
 | `CheckBox` indicator | 18 (`CheckBox.xaml:29`) | `CheckBoxSize` 20 | `CommonStyles\CheckBox_themeresources.xaml:270` |
 | `CheckBox` focus margin | -3 | `CheckBoxFocusVisualMargin` -7,-3,-7,-3 | `CommonStyles\CheckBox_themeresources.xaml:275` |
 | `RadioButton` dot | 8 rest, 6 pressed | `RadioButtonCheckGlyphSize` 12 rest, 14 hover, 10 pressed | `CommonStyles\RadioButton_themeresources.xaml:179-180,255-259,292-296` |
