@@ -240,21 +240,41 @@ jobs:
           Write-Host "Release notes:"
           Get-Content release-notes.md
 
+      # gh release create fails outright if a release for this tag already exists,
+      # which is exactly what a re-run after a failed NuGet push below hits: the
+      # release published fine the first time, only the push failed. Checking
+      # first and skipping creation when the release exists lets a re-run reach
+      # the push instead of dying here every time. This never overwrites an
+      # existing release: it either creates one or leaves the existing one alone.
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
-          $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
-          $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md')
-          # Any SemVer prerelease identifier (-rc.1, -preview, -beta) marks a prerelease.
-          if ('${{ github.ref_name }}'.Contains('-')) { $ghArgs += '--prerelease' }
-          gh @ghArgs
+          $releaseExists = $false
+          try {
+            gh release view '${{ github.ref_name }}' --repo '${{ github.repository }}' *> $null
+            $releaseExists = ($LASTEXITCODE -eq 0)
+          } catch {
+            $releaseExists = $false
+          }
+          if ($releaseExists) {
+            Write-Host "Release ${{ github.ref_name }} already exists. Leaving it as is so this re-run reaches the NuGet push below."
+          } else {
+            $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
+            $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
+            $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md')
+            # Any SemVer prerelease identifier (-rc.1, -preview, -beta) marks a prerelease.
+            if ('${{ github.ref_name }}'.Contains('-')) { $ghArgs += '--prerelease' }
+            gh @ghArgs
+          }
 
       # Last, so a failure in the release creation does not leave a package on
-      # nuget.org that cannot be replaced. --skip-duplicate makes a re-run of the
-      # same tag a no-op rather than a failure.
+      # nuget.org that cannot be replaced. dotnet nuget push already pushes the
+      # sibling .snupkg from the same folder when one is present, so pushing the
+      # .nupkg alone is enough; --skip-duplicate means a re-run whose package
+      # already reached nuget.org does not fail on that account. The release
+      # step above is what actually makes a re-run after this step fails safe to
+      # retry: it skips recreating a release that already exists and lands here.
       - name: Publish to NuGet
         run: |
           dotnet nuget push dist/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push dist/*.snupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

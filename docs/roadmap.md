@@ -117,8 +117,8 @@ here should fork `DialogManager` while it is internal to PSADT.
 ## 5. Documentation website
 
 The guides under `docs/` are the only documentation today, and there is no build
-or deploy workflow for a site ([docs/release.md](release.md) says so
-explicitly). [docs/controls.md](controls.md) already links API types as
+or deploy workflow for a site: `.github/workflows/build.yml` has no job that
+builds or publishes one. [docs/controls.md](controls.md) already links API types as
 `../../api/Fluence.Wpf.Controls.<Type>.html`, which is DocFX output layout, so
 those links are dead until a site exists.
 
