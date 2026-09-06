@@ -11,10 +11,11 @@ dotnet restore Fluence.Wpf.sln
 dotnet build   Fluence.Wpf.sln -c Debug
 ```
 
-The suite runs on Microsoft Testing Platform, so run the built executable rather than `dotnet test` (the SDK 10 VSTest bridge is gone). A single-process whole-assembly run on `net472` aborts non-deterministically, so both TFMs run as two complementary lanes whose union is the whole assembly; CI sums the two case counts per TFM. See AGENTS.md section 6 and `KNOWN_ISSUES.md`.
+The suite runs on Microsoft Testing Platform, so run the built executable rather than `dotnet test` (the SDK 10 VSTest bridge is gone). A single-process whole-assembly run on `net472` aborts non-deterministically, so `net472` runs locally as two complementary lanes whose union is the whole assembly. `net10.0-windows10.0.26100.0` does not abort and runs locally as one combined invocation; CI additionally splits it into the same two lanes, purely so the two per-TFM case counts can be summed and checked. See AGENTS.md section 6 and `KNOWN_ISSUES.md`.
 
 ```powershell
-# Two complementary lanes per target framework; their union is the whole assembly.
+# net472 runs as two complementary lanes because the whole-assembly run aborts; their union is the whole assembly.
+# net10.0-windows10.0.26100.0 does not abort, so a local run uses one combined invocation.
 Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe --filter-not-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --no-ansi --progress off
 Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
@@ -33,7 +34,7 @@ Both target frameworks (`net472` and `net10.0-windows10.0.26100.0`) must build a
 XAML style (4-space indent, UTF-8 with BOM, LF line endings, final newline) is governed by `.editorconfig`, applied to `.xaml` like every other source file; there is no separate XAML formatter tool. Encoding and text policy are enforced by a repo hook and in CI:
 
 ```powershell
-pwsh .claude/hooks/post-tool-util.ps1 -CheckAll   # CI gate: UTF-8 BOM, LF, banned APIs, hard-coded hex, em/en dashes
+pwsh -NoProfile .claude/hooks/post-tool-util.ps1 -CheckAll   # CI gate: UTF-8 BOM, LF, banned APIs, hard-coded hex, em/en dashes
 ```
 
 All source and text files are UTF-8 with BOM and LF; `string.IsNullOrEmpty()` is banned (use `string.IsNullOrWhiteSpace()`); do not inline hex colors in `Themes/Controls/**` or use em/en dashes in `.cs` / `.md`. Generated XAML (`Properties/DesignTime.*.xaml`) is excluded from the repo-wide check.
