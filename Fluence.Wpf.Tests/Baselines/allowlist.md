@@ -58,10 +58,10 @@ state in the same commit, so every task after this one diffs empty against them.
 ## Task 38: final branch-close regeneration
 
 Baseline files were regenerated once, at the end of the branch, per Ruling R4.
-This is the only other task allowed to touch this folder. The regenerated
-capture reflects every case Tasks 24 to 37 added on top of the Task 23 point
-above: 1208 cases on net10 (was 1180), 1206 on net472 (was 1178), a rise of 28
-on each TFM.
+This is the only other task allowed to touch this folder. No commit before
+this one touched this folder, so the regenerated capture reflects every case
+added anywhere on the branch since the Task 23 point above: 1208 cases on
+net10 (was 1180), 1206 on net472 (was 1178), a rise of 28 on each TFM.
 
 ### Renames: 1 line
 
