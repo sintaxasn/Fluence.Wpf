@@ -1201,6 +1201,14 @@
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TeachingTip_TipRoot_ReservesTheShadowGutterAsync
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TeachingTip_TipSurface_PlateWidthMatchesWinUiMinWidthAsync
   Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.CommandBarFlyoutPresenter_TemplateRoot_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.ComboBox_DropdownPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.AutoSuggestBox_SuggestionsPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.DatePicker_DropdownPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.TimePicker_DropdownPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.DropDownButton_FlyoutPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.SplitButton_FlyoutPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.ToggleSplitButton_FlyoutPopup_ReservesTheShadowGutterAsync
+  Fluence.Wpf.Tests.Control.Rules.PopupElevationTests.ContextMenu_TemplateRoot_ReservesTheShadowGutterAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotationAsync
@@ -1213,5 +1221,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1213 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 303ms
+Test discovery summary: found 1221 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 327ms

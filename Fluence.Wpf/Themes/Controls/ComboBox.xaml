@@ -212,6 +212,8 @@
                         <Popup
                             x:Name="PART_Popup"
                             AllowsTransparency="True"
+                            HorizontalOffset="-16"
+                            VerticalOffset="-16"
                             Focusable="False"
                             IsOpen="{TemplateBinding IsDropDownOpen}"
                             Placement="Bottom"
@@ -241,12 +243,15 @@
                                 template binding), so an unhidden root can composite one frame at
                                 rest before the reveal seeds its start pose.
                             -->
-                            <Grid x:Name="PART_DropdownRoot" Opacity="0">
+                            <Grid x:Name="PART_DropdownRoot" Margin="16" Opacity="0">
                                 <!--
                                     Elevation is cast by an empty sibling behind the dropdown, painted
                                     with the same opaque AcrylicBackgroundFillColorDefaultBrush as the
-                                    plate below it. No layout gutter is needed: PopupRoot already sizes a
-                                    popup window about 15 px larger per side than its child.
+                                    plate below it. This Grid's 16px margin is the popup's shadow
+                                    gutter: WPF sizes a popup HWND to exactly its child's layout size,
+                                    so without it the effect is clipped to the plate and only the
+                                    corner notches survive. PART_Popup's HorizontalOffset and
+                                    VerticalOffset of -16 pull it back so the plate keeps its position.
                                 -->
                                 <Border
                                     x:Name="ShadowCaster"

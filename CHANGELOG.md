@@ -14,6 +14,9 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
   window to exactly its child's layout size, so the shadow effect was clipped away and survived only in
   the rounded corner notches, where it read as a dark square plate behind a rounded card. Each presenter
   now reserves a 16 px transparent gutter and each popup subtracts the same 16 px from its placement.
+- ContextMenu and its submenus, ComboBox, AutoSuggestBox, DatePicker, TimePicker, DropDownButton,
+  SplitButton and ToggleSplitButton popups reserve the same 16 px elevation gutter, so every popup
+  surface in the library now casts the shadow it was already configured for.
 
 ## [1.0.0] - 2026-09-05
 

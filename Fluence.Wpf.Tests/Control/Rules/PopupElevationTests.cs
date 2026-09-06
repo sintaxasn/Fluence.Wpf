@@ -29,6 +29,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Effects;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -272,6 +273,220 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     Grid root = Assert.IsType<Grid>(FindVisualChild<Grid>(presenter), exactMatch: false);
 
                     Assert.Equal(new Thickness(ShadowGutter), root.Margin);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_DropdownPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox comboBox = new();
+                Window window = new() { Content = comboBox, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = comboBox.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(comboBox.Template.FindName("PART_Popup", comboBox));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task AutoSuggestBox_SuggestionsPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                AutoSuggestBox box = new();
+                Window window = new() { Content = box, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = box.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(box.Template.FindName("PART_SuggestionsPopup", box));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DatePicker_DropdownPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.DatePicker picker = new();
+                Window window = new() { Content = picker, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = picker.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(picker.Template.FindName("PART_Popup", picker));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task TimePicker_DropdownPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TimePicker picker = new();
+                Window window = new() { Content = picker, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = picker.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(picker.Template.FindName("PART_Popup", picker));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DropDownButton_FlyoutPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                DropDownButton button = new();
+                Window window = new() { Content = button, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = button.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(button.Template.FindName("PART_Popup", button));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task SplitButton_FlyoutPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                SplitButton button = new();
+                Window window = new() { Content = button, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = button.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(button.Template.FindName("PART_Popup", button));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ToggleSplitButton_FlyoutPopup_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ToggleSplitButton button = new();
+                Window window = new() { Content = button, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = button.ApplyTemplate();
+
+                    Popup popup = Assert.IsType<Popup>(button.Template.FindName("PART_Popup", button));
+
+                    Assert.Equal(-ShadowGutter, popup.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, popup.VerticalOffset, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContextMenu_TemplateRoot_ReservesTheShadowGutterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ContextMenu menu = new();
+                _ = menu.Items.Add(new Controls.MenuItem { Header = "Cut" });
+                System.Windows.Controls.Border host = new() { ContextMenu = menu };
+                Window window = new() { Content = host, Width = 320, Height = 200 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    menu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Grid root = Assert.IsType<Grid>(FindVisualChild<Grid>(menu), exactMatch: false);
+
+                    Assert.Equal(new Thickness(ShadowGutter), root.Margin);
+                    Assert.Equal(-ShadowGutter, menu.HorizontalOffset, 0.01);
+                    Assert.Equal(-ShadowGutter, menu.VerticalOffset, 0.01);
+
+                    menu.IsOpen = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                 }
                 finally
                 {

@@ -175,16 +175,21 @@
                             x:Name="PART_Popup"
                             Grid.Row="1"
                             AllowsTransparency="True"
+                            HorizontalOffset="-16"
+                            VerticalOffset="-16"
                             Focusable="False"
                             Placement="Bottom"
                             PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                             PopupAnimation="None">
-                            <Grid>
+                            <Grid Margin="16">
                                 <!--
                                     Elevation caster: an empty sibling behind the surface, because WPF
                                     drops ClearType for text under an Effect and this surface opts into
-                                    it. No layout gutter is needed, PopupRoot already reserves about
-                                    15 px per side for popup shadows. The width follows the templated
+                                    it. This Grid's 16px margin is the popup's shadow gutter: WPF sizes
+                                    a popup HWND to exactly its child's layout size, so without it the
+                                    effect is clipped to the plate and only the corner notches survive.
+                                    PART_Popup's HorizontalOffset and VerticalOffset of -16 pull it back
+                                    so the plate keeps its position. The width follows the templated
                                     parent (whose width OuterBorder fills) instead of an ElementName
                                     reference: this is the first element created under the Popup and it
                                     binds before the Popup child joins the template name scope, so an

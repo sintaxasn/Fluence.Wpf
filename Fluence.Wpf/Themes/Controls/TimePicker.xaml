@@ -136,17 +136,22 @@
                         <Popup
                             x:Name="PART_Popup"
                             AllowsTransparency="True"
+                            HorizontalOffset="-16"
+                            VerticalOffset="-16"
                             Focusable="False"
                             Placement="Bottom"
                             PlacementTarget="{Binding ElementName=PART_FlyoutButton}"
                             PopupAnimation="None"
                             StaysOpen="False">
-                            <Grid>
+                            <Grid Margin="16">
                                 <!--
                                     Elevation caster: an empty sibling behind the surface, because WPF
                                     drops ClearType for text under an Effect and this surface opts into
-                                    it. No layout gutter is needed, PopupRoot already reserves about
-                                    15 px per side for popup shadows.
+                                    it. This Grid's 16px margin is the popup's shadow gutter: WPF sizes
+                                    a popup HWND to exactly its child's layout size, so without it the
+                                    effect is clipped to the plate and only the corner notches survive.
+                                    PART_Popup's HorizontalOffset and VerticalOffset of -16 pull it back
+                                    so the plate keeps its position.
                                 -->
                                 <Border
                                     x:Name="ShadowCaster"

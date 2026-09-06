@@ -8,8 +8,12 @@
         Authority: WinUI 3 MenuFlyout_themeresources.xaml (brush keys, item heights, padding).
         Elevation is cast by an empty ShadowCaster sibling painted behind the surface, carrying
         FlyoutShadowEffect. WPF drops ClearType for every text run under an Effect, which is why the
-        effect is not on the surface itself, and no layout gutter is needed because PopupRoot already
-        sizes a popup window about 15 px larger per side than its child.
+        effect is not on the surface itself. WPF sizes a popup HWND to exactly its child's layout
+        size, with no reserved gutter of any kind, so the root menu's template Grid carries a 16px
+        transparent margin and the ContextMenu style pulls the popup back by the same amount with
+        HorizontalOffset and VerticalOffset setters of -16 (WPF owns the root context menu's popup,
+        so those setters are the only handle into it). A submenu is a popup too and gets the same
+        16px margin on its own Grid and the same offsets on its own PART_Popup.
     -->
 
     <!--  ═══════════════════════════════════════════════════════════  -->
@@ -22,16 +26,19 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalOffset" Value="-16" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ContextMenu}">
-                    <Grid>
+                    <Grid Margin="16">
                         <!--
                             The elevation is cast by an empty sibling painted behind the surface,
                             because WPF drops ClearType for every text run under an Effect and the
-                            surface opts into it. No layout gutter is needed: PopupRoot already sizes
-                            a popup window about 15 px larger per side than its child, which is more
-                            than FlyoutShadowEffect bleeds.
+                            surface opts into it. This Grid's 16px margin is the popup's shadow
+                            gutter: WPF sizes a popup HWND to exactly its child's layout size, so
+                            without it the effect is clipped to the plate and only the corner
+                            notches survive. The style's HorizontalOffset and VerticalOffset of -16
+                            pull the popup back so the plate keeps its position.
                         -->
                         <Border
                             x:Name="ShadowCaster"
@@ -59,6 +66,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalOffset" Value="-16" />
     </Style>
 
     <!--  ═══════════════════════════════════════════════════════════  -->
@@ -99,14 +107,16 @@
                             <Popup
                                 x:Name="PART_Popup"
                                 AllowsTransparency="True"
+                                HorizontalOffset="-16"
+                                VerticalOffset="-16"
                                 Focusable="False"
                                 IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                 Placement="Right"
                                 PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                 PopupAnimation="None">
                                 <!--  SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn).  -->
-                                <Grid>
-                                    <!--  Elevation caster, as on the root menu. A submenu is a popup too and gets the same shadow; it shares the slide transform so the shadow travels with it.  -->
+                                <Grid Margin="16">
+                                    <!--  Elevation caster, as on the root menu. A submenu is a popup too and gets the same shadow; it shares the slide transform so the shadow travels with it. This Grid's 16px margin is the same shadow gutter the root menu carries, and PART_Popup's HorizontalOffset and VerticalOffset of -16 pull it back so the plate keeps its position.  -->
                                     <Border
                                         x:Name="SubMenuShadowCaster"
                                         MinWidth="180"
