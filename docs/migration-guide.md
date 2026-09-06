@@ -4,7 +4,7 @@
 
 ## Upgrading to 1.0 from a 0.8 preview
 
-Every breaking change in 1.0 is listed here. All of them are compile-time breaks except the resource key changes near the end, which fail silently: a `DynamicResource` reference to a removed or renamed key produces no error and no build failure, and the target simply keeps its default.
+Every breaking change in 1.0 is listed here. Some entries break only at compile time and need a recompile; some also break an already-compiled consumer binary at load time; and the resource key changes near the end fail silently instead, with no compile error at all.
 
 ### Types that became internal
 
