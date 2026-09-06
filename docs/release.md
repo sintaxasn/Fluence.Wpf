@@ -72,7 +72,7 @@ On the tag push, the `build` job runs everything it runs for `main`, then packs.
 
 A tag that fails the version guard has published nothing, so delete it, fix the version, and tag again. A tag that got past the guard has published to nuget.org, and **a published version can be unlisted but never replaced**. That is why the release candidate exists: tag `vX.Y.Z-rc.1` first and let it run the whole path before the stable tag.
 
-An RC tag needs its own dated `## [X.Y.Z-rc.1]` section in `CHANGELOG.md`, distinct from the `## [X.Y.Z]` section the stable tag will use later. Precondition 2 above applies to whichever version you are tagging: without a matching section, the changelog slice step fails and the RC tag never reaches the release job.
+An RC tag needs its own dated `## [X.Y.Z-rc.1]` section in `CHANGELOG.md`, distinct from the `## [X.Y.Z]` section the stable tag will use later. Precondition 2 above applies to whichever version you are tagging: without a matching section, the changelog slice step fails inside the release job, before anything is created or published.
 
 ## Strong naming
 

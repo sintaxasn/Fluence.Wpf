@@ -142,7 +142,7 @@ Caveats:
 
 ## Backdrop (`FluenceWindow`)
 
-`BackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
+`WindowBackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
 
 Which backdrops work depends on OS support, and unsupported combinations fall back silently per the `WindowPolicy` resolution rules.
 

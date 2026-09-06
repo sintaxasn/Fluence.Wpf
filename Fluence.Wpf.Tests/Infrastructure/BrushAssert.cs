@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <c language="xaml">ControlStrongStrokeColorDefaultBrush</c>.</param>
         internal static void AssertBrushColor(Brush? actual, string expectedResourceKey)
         {
-            Color expected = SolidColor(Application.Current?.TryFindResource(expectedResourceKey) as Brush);
+            Color expected = SolidColor(Application.Current?.TryFindResource(expectedResourceKey));
             Assert.Equal(expected, SolidColor(actual));
         }
 
@@ -61,19 +61,22 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// <param name="resourceKey">The canonical WinUI-style brush key.</param>
         internal static Color ResolvedColor(Application application, string resourceKey)
         {
-            return SolidColor(application.TryFindResource(resourceKey) as Brush);
+            return SolidColor(application.TryFindResource(resourceKey));
         }
 
         /// <summary>
-        /// Returns the colour of <paramref name="brush"/>, failing the test if it is not a
+        /// Returns the colour of <paramref name="resource"/>, failing the test if it is not a
         /// <see cref="SolidColorBrush"/>. The suite reads brush colours far more often than brush
-        /// instances, because the theme engine rebuilds every brush on each apply.
+        /// instances, because the theme engine rebuilds every brush on each apply. Accepting
+        /// <see cref="object"/> rather than <see cref="Brush"/> keeps a resource lookup that
+        /// resolved to something other than a brush (a <see cref="Color"/>, a <see cref="Style"/>)
+        /// visible in the assertion failure message instead of collapsing it to null first.
         /// </summary>
-        /// <param name="brush">The brush to read, typically straight off an element under test or
-        /// out of a resource lookup.</param>
-        internal static Color SolidColor(Brush? brush)
+        /// <param name="resource">The value to read, typically straight off an element under test
+        /// or out of a resource lookup.</param>
+        internal static Color SolidColor(object? resource)
         {
-            return Assert.IsType<SolidColorBrush>(brush).Color;
+            return Assert.IsType<SolidColorBrush>(resource).Color;
         }
     }
 }
