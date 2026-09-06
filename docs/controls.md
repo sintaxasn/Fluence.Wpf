@@ -244,7 +244,7 @@ Both helpers stay in sync with the `InfoBar` control template; use them instead 
 
 Key API:
 
-`Automation namespace`, `NavigationViewAutomationPeer`, `ToggleSwitchAutomationPeer`, `InfoBarAutomationPeer`, `RatingControlAutomationPeer`, `PersonPictureAutomationPeer`, `ImageAutomationPeer`, `HyperlinkButtonAutomationPeer`, `CardAutomationPeer`
+`Fluence.Wpf.Automation` namespace: `NavigationViewAutomationPeer`, `ToggleSwitchAutomationPeer`, `InfoBarAutomationPeer`, `RatingControlAutomationPeer`, `PersonPictureAutomationPeer`, `ImageAutomationPeer`, `HyperlinkButtonAutomationPeer`, `CardAutomationPeer`
 
 Accessibility coverage includes focus visuals, high-contrast resources, automation peers, keyboard navigation, and right-to-left layout.
 

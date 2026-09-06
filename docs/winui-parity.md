@@ -131,7 +131,6 @@ These keys exist in Fluence's colour tables with no WinUI counterpart, or exist 
 - **`AcrylicBackgroundFillColorBase`, `AcrylicBackgroundFillColorDefault`** - WinUI's acrylic *fallback* colours, kept as named Fluence tokens because they are used directly as opaque plate fills rather than as a fallback for a material that never renders (see Materials).
 - **`ApplicationBackgroundColor`** - equals `SolidBackgroundFillColorBase`; a WPF-idiomatic name for the brush a top-level `Window.Background` binds to, since WPF has no `ApplicationPageBackgroundThemeBrush` naming convention of its own.
 - **`NavigationViewContentBackground`** - intentionally duplicates `LayerFillColorDefault` so a consumer can override the content-layer colour on a specific window without touching the shared `LayerFillColorDefault` token everything else reads.
-- **`WindowCloseFillColor`, `WindowCloseForeground`** (and their pointer-over/pressed variants) - legacy tokens from an earlier caption-button implementation; unused by current templates.
 - **`TeachingTipTopHighlight`** - the 1px highlight line along a `TeachingTip`'s top edge; new in this pass.
 - **`PopupCornerRadius`** - a WPF-specific radius token for popup-hosted surfaces, since WPF's `Popup` has no `CornerRadius` concept of its own to inherit from.
 
