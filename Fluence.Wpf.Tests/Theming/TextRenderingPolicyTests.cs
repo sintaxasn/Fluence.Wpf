@@ -352,7 +352,7 @@ namespace Fluence.Wpf.Tests.Theming
             // ClearType only helps on an opaque backplate, so the treated surface must stay opaque.
             Assert.Equal(
                 byte.MaxValue,
-                Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
+                BrushAssert.SolidColor(surface.Background).A);
         }
 
         private static System.Windows.Controls.Border FindTemplatedSurface(System.Windows.Controls.Control control, string surfaceName)
@@ -369,7 +369,7 @@ namespace Fluence.Wpf.Tests.Theming
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
         }
 
         private static void AssertTypographyMetrics(

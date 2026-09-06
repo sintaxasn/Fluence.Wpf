@@ -30,10 +30,10 @@ Fluence.Wpf.sln
 | Namespace                | Contents                                                                                                                                                                                                  |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Fluence.Wpf`            | `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, `ThemeChangedEventArgs`, theme enums, control enums, and event args such as `TabViewTabCloseRequestedEventArgs`         |
-| `Fluence.Wpf.Controls`   | Custom controls (`Button`, `TabView`, `Card`, `NavigationView`, etc.), `FluenceWindow`, `TitleBar`, `WindowPolicy`, layout controls, and navigation view family                                            |
+| `Fluence.Wpf.Controls`   | Custom controls (`Button`, `TabView`, `Card`, `NavigationView`, etc.), `FluenceWindow`, `TitleBar`, layout controls, and the navigation view family. `WindowPolicy` and `CaptionButtonChrome` live here but are `internal`. |
 | `Fluence.Wpf.Automation` | UI Automation peers for controls such as `NavigationView`, `ToggleSwitch`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `NumberBox`, `InfoBar`, and `ProgressRing`                                                     |
 | `Fluence.Wpf.Markup`     | WinUI theme-XAML parity: `ThemeResourceExtension` (`{fluence:ThemeResource}`), `ThemeDictionary`, `ThemeResourceDictionary`, `ThemeResourceDictionaryCollection`                                          |
-| `Fluence.Wpf.Helpers`    | Internal helpers (`AcrylicNoiseHelper`, `BackdropPlan`, `FramePlan`, `GridLengthAnimation`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`, `WindowCapabilities`)                                  |
+| `Fluence.Wpf.Helpers`    | Internal helpers, none of them public                                                                                                                                                                    |
 | `Fluence.Wpf.Native`     | P/Invoke constants, structs, and methods                                                                                                                                                                  |
 
 XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
@@ -72,13 +72,16 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 
 - SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1659`, `S3358`, `S3869`
 - Roslynator: `RCS1111`, `RCS1181`, `RCS1238`
-- Meziantou: `MA0009`, `MA0051`, `MA0104`, `MA0107`, `MA0110`, `MA0177`, `MA0181`
+- Meziantou: `MA0009`, `MA0051`, `MA0104`, `MA0107`, `MA0110`, `MA0177`, `MA0181`, `MA0214`
+- Threading: `VSTHRD001`
+- A `[*.xaml.cs]` block suppresses six more for generated-partial code-behind only: `CA1822`, `S1125`, `S1192`, `S2333`, `MA0038`, `MA0204`
 
 The former `IDE0056` / `IDE0057` (index/range operators) and `CA1307` / `CA1310` / `CA1847` / `CA1866` (string comparison overloads) suppressions are gone. `System.Index` / `System.Range` and `string.Contains(string, StringComparison)` now compile on `net472` through the polyfill allowlist above, and the `StartsWith` / `EndsWith` / `IndexOf` string+`StringComparison` overloads are in-box on `net472`. The char overloads `CA1847` / `CA1866` suggest (`Contains(char)`, `StartsWith(char)`, `EndsWith(char)`) are still absent on `net472`, and array range slicing needs `RuntimeHelpers.GetSubArray`; a hit from those rules requires adding the matching allowlist entry before the suggested fix compiles.
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
 
 - `SYSLIB1045` - regex source generator (not available on `net472`)
+- `SYSLIB1054` - `LibraryImport` source generator (the seven `[DllImport]` declarations in `Native/NativeMethods.cs` cannot use it on `net472`)
 - `S1244` - floating-point equality (necessary for pixel math)
 
 Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
@@ -101,7 +104,8 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 
 - Dependency properties: `public static readonly DependencyProperty FooProperty = DependencyProperty.Register(...)` with a CLR wrapper `public T Foo { get; set; }` and, when relevant, `OnFooChanged` static callback.
 - Readonly DPs end with `...PropertyKey` private field + public `...Property = ...PropertyKey.DependencyProperty`.
-- Template parts: `const string PART_Whatever = "PART_Whatever"`; annotate the class with `[TemplatePart(Name = PART_..., Type = typeof(T))]`.
+- Template parts: for new code, `const string PART_Whatever = "PART_Whatever"`, so the identifier and its value are the same text; annotate the class with `[TemplatePart(Name = PART_..., Type = typeof(T))]`. Do not assume every in-tree constant already follows that shape: a number of older `[TemplatePart]`-attributed constants pair a differently shaped identifier with a value that is not the same text, and the shapes vary. Examples include a `Part` prefix (`NavigationView` `PartPaneColumn = "PaneColumn"`; `ToggleSwitch` `PartSwitchKnob = "SwitchKnob"` and `PartSwitchThumb = "SwitchThumb"`), a `Part` suffix (`FlyoutPresenter` `PresenterSurfacePart = "PresenterSurface"`; `TeachingTip` `TipRootPart = "TipRoot"`), a `Name` suffix (`ProgressBar` `IndicatorHostName = "ProgressBarIndicatorHost"`), and even a `PART_` prefix whose value drops the prefix (`TreeViewItem` `PART_ItemsHost = "ItemsHost"`). `PasswordBoxExtensions` `PartMainBorder` and `PartPlaceholder` follow the `Part`-prefix shape too, but resolve through `Template.FindName` rather than `GetTemplateChild` and carry no `[TemplatePart]` attribute at all, since `PasswordBox` is sealed. Do not extend any of these older forms to a new template part; new code always uses the `PART_Whatever` form whose identifier and value match. A private constant naming a plain `x:Name` that is not a template part contract, for example `DatePicker` `SegmentsHostName` or `TreeViewItem` `SelectionCheckBoxPart`, keeps ordinary PascalCase and no attribute. Part constants are `private`, with one exception: the nine on `NavigationView` are `internal` because the NavigationView tests read them and `InternalsVisibleTo("Fluence.Wpf.Tests")` already exists. Do not add a second exception.
+- `PasswordBoxExtensions` and `ScrollBarExtensions` carry no `[TemplatePart]` or `[TemplateVisualState]`. They are static classes attaching behavior to a sealed or native framework type, so there is no class for the attribute to sit on. That is deliberate; do not re-flag it.
 - Visual states: `[TemplateVisualState(GroupName = "CommonStates", Name = "Normal|PointerOver|Pressed|Disabled")]`.
 
 ### XAML
@@ -177,28 +181,14 @@ The slot layout is enforced by `DictionaryStabilityTests` - any change to count 
 
 ### Canonical color/brush keys
 
-Names align with WinUI 3. Families currently used:
-
-- **Text**: `TextFillColorPrimary|Secondary|Tertiary|Disabled` (+ `Brush` suffix).
-- **Accent text**: `AccentTextFillColorPrimary|Secondary|Tertiary|Disabled`.
-- **Control fill**: `ControlFillColorDefault|Secondary|Tertiary|Disabled|InputActive|Transparent`.
-- **Control alt fill**: `ControlAltFillColorTransparent|Secondary|Tertiary|Quarternary|Disabled` (CheckBox / RadioButton / ToggleSwitch tracks, `Card` `Variant="Filled"`).
-- **Control stroke**: `ControlStrokeColorDefault|Secondary|OnAccentDefault|OnAccentSecondary|OnAccentTertiary|OnAccentDisabled`.
-- **Strong stroke** (ring-style selection / focus): `ControlStrongStrokeColorDefault|Disabled`.
-- **Card**: `CardBackgroundFillColorDefault|Secondary`, `CardStrokeColorDefault|DefaultSolid`.
-- **Background / layer**: `SolidBackgroundFillColorBase|Secondary|Tertiary|Quarternary`, `LayerFillColorDefault|Alt`.
-- **Accent fill**: `AccentFillColorDefault|Secondary|Tertiary|Disabled|SelectedTextBackground`.
-- **System**: `SystemFillColorSuccess|Caution|Critical|Neutral|NeutralBackground|SolidNeutral|SolidAttentionBackground`.
-- **Accent ramp**: `SystemAccentColor`, `SystemAccentColorPrimary|Secondary|Tertiary`, and matching `*Brush` pairs.
-
-Every color key generally has a sibling `*Brush` `SolidColorBrush`; template bindings almost always target the `Brush` version via `DynamicResource`.
+Names align with WinUI 3. [docs/theming.md](docs/theming.md) is the canonical list of the published families, of which keys are supported, and of the two naming alias pairs kept for downstream consumers: `FluentFontFamily` and `ContentControlThemeFontFamily`, and `ApplicationBackgroundBrush` and `ApplicationPageBackgroundThemeBrush`. Those two pairs exclude the eight high contrast brushes the same document separately calls aliases: those map a Fluence key straight to a WPF `SystemColors` value rather than aliasing another Fluence key, a different sense of the word. docs/theming.md is the file to update when a family changes. The pipeline narrative above stays here.
 
 ### Theme API surface
 
-- `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call seeds all three slots; later calls replace `[0]` with a freshly built computed dictionary. `updateAccent` is accepted for signature compatibility but no longer branches behavior.
+- `ApplicationThemeManager.Apply(ApplicationTheme theme, WindowBackdropType backdrop = WindowBackdropType.Auto)` - first call seeds all three slots; later calls replace `[0]` with a freshly built computed dictionary.
 - `ApplicationThemeManager.CurrentTheme` / `CurrentBackdrop` - read-only state.
 - `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change. `CurrentTheme` and `CurrentBackdrop` record the caller's *request* and are assigned on every `Apply`, even when the redundant-publish gate skips the rebuild. `Changed` fires when either the computed dictionary was republished or the requested theme or backdrop actually moved, so a backdrop-only change is observable without a dictionary rebuild, and a duplicate OS broadcast raises nothing.
-- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - set the accent intent and re-run the full pipeline. Subscribe to `AccentColorChanged` for post-apply hooks. These bypass `ApplicationThemeManager.Apply`, so they raise only `AccentColorChanged`, and the redundant-publish gate applies: an apply whose resolved ramp matches the one already published raises nothing. Pinning the seed that is already pinned, or calling `ApplyApplicationAccent()` on a host whose OS accent already resolves to the same `#0078D4` ramp, is a no-op. Tests that must observe the event have to make the apply a genuine transition.
+- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyCustomAccent(Color)` / `ApplyCustomAccent(Color light, Color dark)` - set the accent intent and re-run the full pipeline. Subscribe to `AccentColorChanged` for post-apply hooks. These bypass `ApplicationThemeManager.Apply`, so they raise only `AccentColorChanged`, and the redundant-publish gate applies: an apply whose resolved ramp matches the one already published raises nothing. Pinning the seed that is already pinned is a no-op. Tests that must observe the event have to make the apply a genuine transition.
 - `SystemThemeWatcher.Watch(Window)` / `UnWatch(Window)` - Win32 settings-change hooks with debounce; fires `Changed` (via `ApplicationThemeManager`) once per logical OS change. **Do not assume more than one `Changed` per user action in tests.**
 - `FluenceWindow` is the canonical WPF window with DWM backdrop, rounded corners, caption extension, and an optional title-bar content slot.
 
@@ -250,6 +240,7 @@ When adding a new control or materially changing an existing one:
    - In the static constructor: `DefaultStyleKeyProperty.OverrideMetadata(typeof(MyControl), new FrameworkPropertyMetadata(typeof(MyControl)));`.
    - Expose dependency properties; use `RegisterReadOnly` for state-only DPs (`IsPressed`, `IsValid`).
    - **Sealed framework type.** When the WPF control is `sealed` there is no derived type to write. `System.Windows.Controls.PasswordBox` is the one such control the library styles. Sealing blocks inheritance but not templating, so style the native type instead. Put an **implicit** style in `Themes/Controls/<Name>.xaml`, put the Fluence-only properties on a `<Name>Extensions` static class in `Fluence.Wpf/Controls/` as attached properties, and have the style attach a private per-instance behavior object that drives the template parts. The control then keeps its native focus, automation, and input handling. This is the only implicit style the library ships for a framework type; the other native-type styles (`ScrollBar`, `ScrollViewer`, `RepeatButton`, `Thumb`) stay keyed. Do not add a second one without agreeing it first. Attached-property accessors take the specific control type (`this System.Windows.Controls.PasswordBox obj`), not `DependencyObject`, so they cannot collide with the accessors on another `*Extensions` class. `RCS1224` requires the extension-method form on a class named `*Extensions`, and `TextBlockExtensions` already owns `GetPlaceholderText(DependencyObject)`.
+   - **Event shape.** Use `EventHandler<TArgs>` when WinUI's counterpart carries typed args, and bare `EventHandler` when WinUI passes `object`. Use a WPF `RoutedEvent` only when the event must tunnel or bubble through a template: the six that do are `BreadcrumbBarItem.Click`, `Card.Click`, `SplitButton.Click`, `TabView.AddTabButtonClick`, `TabView.TabCloseRequested` and `TabViewItem.CloseRequested`, and there are to be no more. A routed event whose args class carries data declares `EventHandler<TArgs>` as its handler type rather than `RoutedEventHandler`, and the args class overrides `InvokeEventHandler` so dispatch stays a direct call. `TabViewTabCloseRequestedEventArgs` is the worked example. Each new args class lives in its own file directly under `Fluence.Wpf/`.
 2. **Template**
    - Add `Themes/Controls/MyControl.xaml` as a standalone `ResourceDictionary` and merge it from `Themes/Generic.xaml`.
    - Mark template parts with `[TemplatePart]` attributes and wire them in `OnApplyTemplate`.
@@ -271,7 +262,7 @@ When adding a new control or materially changing an existing one:
 
 ## 6. Testing
 
-- **Framework**: xunit.v3 4.0.0 (`xunit.v3` / `xunit.runner.visualstudio`) via `Microsoft.NET.Test.Sdk` 18.8.1, running on Microsoft Testing Platform.
+- **Framework**: xunit.v3 4.0.0 (`xunit.v3` / `xunit.runner.visualstudio`) via `Microsoft.NET.Test.Sdk` 18.9.0, running under Microsoft Testing Platform.
 - **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
 - **Invocation**: run the built executable, not `dotnet test`. The SDK 10 VSTest bridge is gone.
 
@@ -297,8 +288,8 @@ When adding a new control or materially changing an existing one:
   | `Baselines/` | the committed `--list-tests` baseline per TFM and the name-change allowlist |
 
 - **Application and theme setup**: `TestApp.EnsureLibraryTheme()` resets the application, closes every open window, resets both managers, clears the resources, and applies a theme. It does **not** merge the demo dictionary. `TestApp.EnsureDemoTheme()` is the explicit opt-in that adds `DemoSharedStyles.xaml`, and only `Gallery/` uses it; a test elsewhere that needs it says so in a comment at its own call site, naming the demo style it depends on.
-- **Per-test isolation**: required for every new class, and for everything under `Control/`, `Control/Rules/` and `Gallery/Pages/`. Such a class implements `IAsyncLifetime` and calls `TestApp.EnsureLibraryTheme()` (or `EnsureDemoTheme()`) from `InitializeAsync` on the STA thread; test bodies do not call a setup helper themselves. A class in which no test applies a theme, changes the accent, or toggles reduced motion takes `IClassFixture<LightThemeFixture>` instead and pays that cost once. Pure-logic classes (`WindowPolicyTests`, `NativeMethodsTests`, `SnapLayoutHelperTests`) take neither. The remaining exceptions predate this rule and still reset in the test body: `Windowing/FluenceWindowTests.cs`, `Windowing/TitleBarTests.cs`, seven `Theming/` classes (`DesignTimeResourceTests`, `TextRenderingPolicyTests`, `ThemeEngineUnitTests`, `ThemeMetricsTests`, `ThemeParityTests`, `ThemeTestHelpersTests`, `TypographyResourceContractTests`), and `Gallery/DemoResourceCleanupTests.cs`, `Gallery/DemoSampleContractTests.cs`, `Gallery/Pages/GalleryPageHeaderTests.cs`.
-- **Shared helpers**: `WpfTestSta` (`RunOnStaAsync`, `DrainDispatcher`, `FindVisualDescendants`, `FindLogicalAndVisualDescendants`), `VisualTree` (`FindVisualChild`, `FindVisualChildByName`, `FindVisualChildByTypeName`, `FindVisualChildren`, `CloseWindowAndDrain`, brought in with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`), `BrushAssert` (`AssertBrushColor`, `ResolvedColor`), `ThemeTestHelpers` (`ApplyStandardThemeCycle`, `AssertKeyThemeBrushesResolve`) and `DemoTestHost`. Do not reintroduce a private copy of any of them. Prefer the condition-based `WaitUntil(dispatcher, timeoutMs, predicate)` over a fixed delay.
+- **Per-test isolation**: required for every new class, and for everything under `Control/`, `Control/Rules/` and `Gallery/Pages/`. Such a class implements `IAsyncLifetime` and calls `TestApp.EnsureLibraryTheme()` (or `EnsureDemoTheme()`) from `InitializeAsync` on the STA thread; test bodies do not call a setup helper themselves. A class in which no test applies a theme, changes the accent, or toggles reduced motion takes `IClassFixture<LightThemeFixture>` instead and pays that cost once; calling `TestApp.EnsureLibraryTheme(theme, backdrop)` with a theme or backdrop argument, or calling `TestApp.EnsureDemoTheme()` at all, counts as applying a theme and disqualifies the class just as surely. Pure-logic classes (`WindowPolicyTests`, `NativeMethodsTests`, `SnapLayoutHelperTests`) take neither. The remaining exceptions predate this rule and still reset in the test body: `Windowing/FluenceWindowTests.cs`, `Windowing/TitleBarTests.cs`, seven `Theming/` classes (`DesignTimeResourceTests`, `TextRenderingPolicyTests`, `ThemeEngineUnitTests`, `ThemeMetricsTests`, `ThemeParityTests`, `ThemeTestHelpersTests`, `TypographyResourceContractTests`), and `Gallery/DemoResourceCleanupTests.cs`, `Gallery/DemoSampleContractTests.cs`, `Gallery/Pages/GalleryPageHeaderTests.cs`.
+- **Shared helpers**: `WpfTestSta` (`RunOnStaAsync`, `DrainDispatcher`, `FindVisualDescendants`, `FindLogicalAndVisualDescendants`), `VisualTree` (`FindVisualChild`, `FindVisualChildByName`, `FindVisualChildByTypeName`, `FindVisualChildren`, `CloseWindowAndDrain`, brought in with `using static Fluence.Wpf.Tests.Infrastructure.VisualTree;`), `BrushAssert` (`AssertBrushColor`, `ResolvedColor`, `SolidColor`), `ThemeTestHelpers` (`ApplyStandardThemeCycle`, `AssertKeyThemeBrushesResolve`) and `DemoTestHost`. Do not reintroduce a private copy of any of them. Prefer the condition-based `WaitUntil(dispatcher, timeoutMs, predicate)` over a fixed delay.
 - **Tests for controls** typically:
   1. Let the class `IAsyncLifetime` or `LightThemeFixture` do the reset; the body starts with the control.
   2. Create a minimal `Window`, attach the control, call `Window.Show()` so `ApplyTemplate` runs.
@@ -328,6 +319,8 @@ The suite runs on Microsoft Testing Platform: run the built executable, not `dot
 - The gallery demo is run with `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or the matching `net10.0-windows10.0.26100.0` TFM.
 - For visual verification: exercise Light / Dark / High Contrast / Auto, a couple of accent swatches, Mica / Acrylic / Tabbed / None backdrops, and at least one control per gallery page.
 
+[CONTRIBUTING.md](CONTRIBUTING.md) is the canonical source for the full build, test, format and text-policy command set. The commands above are the subset an agent needs most often.
+
 ### Package management and lock files
 
 Package versions are managed centrally in [Directory.Packages.props](Directory.Packages.props). Do not put `Version` attributes on individual `PackageReference` items.
@@ -348,7 +341,7 @@ Every project has a committed `packages.lock.json` pinning the exact resolved ve
 
 ### CI/CD pipeline
 
-CI is defined in [.github/workflows/build.yml](.github/workflows/build.yml) and triggered by any push or pull request targeting `main`, plus `v*` tag pushes. The `build` job on `windows-latest` checks text policy (UTF-8 BOM, LF, banned APIs), restores, builds Release, verifies formatting with `dotnet format --verify-no-changes --severity info`, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts (net472, net8.0-windows, and net10.0-windows library binaries, the demo, and the nupkg). A `v*` tag additionally runs a `release` job after `build` succeeds: it zips the per-TFM binaries and the demo, and creates the GitHub release for the tag with those assets and the nupkg attached (tags containing `-pre` are marked prerelease). NuGet publish remains commented out as a deliberate manual release step.
+CI is defined in [.github/workflows/build.yml](.github/workflows/build.yml) and triggered by any push or pull request targeting `main`, plus `v*` tag pushes. The `build` job on `windows-latest` checks text policy (UTF-8 BOM, LF, banned APIs), restores, builds Release, verifies formatting with `dotnet format --verify-no-changes --severity info`, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts (net472, net8.0-windows, and net10.0-windows library binaries, the demo, and the nupkg). A `v*` tag additionally runs a `release` job after `build` succeeds: it zips the per-TFM binaries and the demo, and creates the GitHub release for the tag with those assets and the nupkg attached (tags containing a hyphen, such as `-rc.1`, `-preview`, or `-beta`, are marked prerelease). NuGet publish is live: the same `release` job fails closed if the tag does not match the version in `Directory.Build.props` or if `CHANGELOG.md` has no matching version section, then pushes the nupkg, with its sibling snupkg, to nuget.org using the `NUGET_API_KEY` secret. Creating and pushing the `v*` tag itself remains the owner's manual step.
 
 ```mermaid
 flowchart TD
@@ -364,7 +357,7 @@ flowchart TD
     J --> K[Upload test results<br/>always]
     K --> L[Pack NuGet]
     L --> M[Upload artifacts<br/>dotnet10 lib, dotnet8 lib, dotnet472 lib, demo, nupkg]
-    M --> N[NuGet publish<br/>commented out / manual]
+    M --> N[NuGet publish<br/>tag-gated, via release job]
     M --> R[Release job, v* tags only<br/>zip per-TFM binaries + demo,<br/>gh release create with assets]
 ```
 
@@ -430,7 +423,7 @@ Public and repository documentation:
 - [docs/winui-parity.md](docs/winui-parity.md)
 - [docs/powershell.md](docs/powershell.md)
 - [docs/migration-guide.md](docs/migration-guide.md)
-- [docs/contributing.md](docs/contributing.md)
+- [docs/roadmap.md](docs/roadmap.md)
 - [docs/release.md](docs/release.md)
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
@@ -441,8 +434,6 @@ Maintainer / AI context (this file and its siblings):
 - [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) - PR checklist shown to contributors
 - [.github/workflows/build.yml](.github/workflows/build.yml) - Release build, split-TFM tests, package artifacts
 
-Anything under `docs/_internal/` is not part of the public doc set. Do not link it from `README.md` or `docs/*.md`.
-
 ---
 
 ## 11. Role definition and quality gates
@@ -452,7 +443,7 @@ When you are editing this repository, you are acting as a **senior C#/.NET WPF e
 1. **Standards respected**: BSD header, `LangVersion=latest` with nullable-clean code, XML docs on public API, `DynamicResource` for theme-bound values, no hard-coded RGB, canonical WinUI key names, no banned APIs (`string.IsNullOrEmpty` etc.).
 2. **Reference authority followed**: any visual or behavioural decision is backed by [Section 4](#4-reference-priority) (in-tree precedent -> per-domain authority -> Windows 11 docs). Fabricated design choices do not pass review.
 3. **Build clean**: `dotnet build Fluence.Wpf.sln -c Debug` with **zero** errors and **zero** warnings after your change on every TFM; Release must also remain clean for release and CI work.
-pass; every new control, public API, or behaviour change ships with an xUnit test that exercises it,
+4. **Tests green**: both TFM lanes pass; every new control, public API, or behaviour change ships with an xUnit test that exercises it, and the HEAD-of-branch pass count is the floor.
 5. **Visual parity**: any template / XAML change is confirmed in `Fluence.Wpf.Demo` across Light, Dark, High Contrast, accent swap, and at least one backdrop. Capture screenshots (100% and 150% DPI) when visuals change materially.
 6. **Docs synced**: public changes update `CHANGELOG.md`, and any of `README.md` / `docs/controls.md` / `docs/theming.md` that a consumer would rely on.
 7. **Scope discipline**: do not touch unrelated files or rename things unless explicitly asked; do not commit without the user's explicit request.

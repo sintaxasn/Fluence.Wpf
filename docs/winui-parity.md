@@ -2,7 +2,7 @@
 
 This page records where Fluence.Wpf's templates and tokens agree with WinUI 3 CommonStyles and where they knowingly diverge. It exists so a consumer who knows WinUI can predict Fluence's behavior without re-deriving it from the source, and so a maintainer has one place to check before "fixing" a difference that is actually deliberate.
 
-Every entry states what Fluence does, what WinUI does (with a citation), why the difference exists, and where it was verified. A citation of the form `Control\File_themeresources.xaml:12-34` was read at those line numbers under `F:\Consolidation\WInUI\controls\dev` while writing this page; a citation with no line number means the resource exists in that file but its exact line was not pinned down, or the claim concerns behavior rather than a single token.
+Every entry states what Fluence does, what WinUI does (with a citation), why the difference exists, and where it was verified. A citation of the form `Control\File_themeresources.xaml:12-34` names a file under [`src/controls/dev`](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev) in the microsoft-ui-xaml repository, read at those line numbers while writing this page; a citation with no line number means the resource exists in that file but its exact line was not pinned down, or the claim concerns behavior rather than a single token.
 
 ## 1. Method
 
@@ -23,6 +23,8 @@ The WinUI menu family (`MenuFlyout`, `ContextMenu`) is defined as a transparent 
 Mica and the 10 bits-per-channel alpha pre-blend are DWM composition concerns, not template concerns, and are documented in full in `KNOWN_ISSUES.md` ("Translucent layers over a DWM backdrop lose alpha precision on a 10 bpc display"). In short: `NavigationView`'s content-layer brush is pre-blended to WinUI's own `LayerOnMicaBaseAltFillColorTertiary` token when the active display quantises alpha to two bits and the effective backdrop is Mica or Tabbed.
 
 High contrast suppresses every backdrop on every Windows version: `WindowPolicy.ResolveEffectiveBackdrop` forces `None` before any OS capability check runs, matching the Microsoft Learn guidance that materials are suppressed under high contrast.
+
+`NavigationView`'s permanent pane layout (WinUI's `PaneNotOverlaying` state, the only one Fluence's inline two-column and two-row layouts implement) paints `SolidBackgroundFillColorTransparent` for both the pane and the content host, matching WinUI's `NavigationViewExpandedPaneBackground` and `NavigationViewTopPaneBackground` (`NavigationView\NavigationView_themeresources.xaml`, see file); the pane's visible colour comes from whatever sits behind it, which is deliberate rather than a transparent-by-accident default. The seam between the pane or header and the content binds `CardStrokeColorDefaultBrush`, WinUI's own `NavigationViewContentGridBorderBrush` role for that seam (same file, see file).
 
 ## 3. Elevation
 
@@ -66,6 +68,7 @@ Values below were read directly from the corresponding template or theme-resourc
 | Control | Fluence value | WinUI value | WinUI citation |
 | --- | --- | --- | --- |
 | `Button` | `MinWidth` 110, `MinHeight` 32 | no `MinWidth`/`MinHeight` setter | `CommonStyles\Button_themeresources.xaml` (verified absent) |
+| `Button` fill/stroke compositing | `RestFill` inset by the control's own `BorderThickness`, so the fill stops at the stroke's inner edge; `Appearance="Accent"` resets the inset to 0 | `BackgroundSizing="InnerBorderEdge"` on `DefaultButtonStyle`; `AccentButtonStyle` uses `OuterBorderEdge` | `CommonStyles\Button_themeresources.xaml` (see file) |
 | `CheckBox` indicator | 18 (`CheckBox.xaml:29`) | `CheckBoxSize` 20 | `CommonStyles\CheckBox_themeresources.xaml:270` |
 | `CheckBox` focus margin | -3 | `CheckBoxFocusVisualMargin` -7,-3,-7,-3 | `CommonStyles\CheckBox_themeresources.xaml:275` |
 | `RadioButton` dot | 8 rest, 6 pressed | `RadioButtonCheckGlyphSize` 12 rest, 14 hover, 10 pressed | `CommonStyles\RadioButton_themeresources.xaml:179-180,255-259,292-296` |
@@ -107,7 +110,7 @@ Two entries above could not be pinned to a specific WinUI source line despite th
 
 The `FluenceWindow` separator between `SurfaceStrokeColorDefault` and high contrast draws `ControlDark`, where WinUI's window-surface stroke role in high contrast resolves to `WindowText`. Fluence's content seam (the border between the `NavigationView` pane and its content region) is drawn in high contrast where WinUI draws none there.
 
-`NavigationViewSelectionIndicatorBrush`, shared by `NavigationView`, `ListView`, `ListBox`, and `TreeView`, binds the live `SystemColors.Highlight` colour in high contrast rather than `HighlightText`. `HighlightText` is designed to sit on top of a `Highlight`-coloured fill, but Fluence's high contrast selected row background stays `SystemColors.Control`, so a `HighlightText` indicator would be invisible against it; `Highlight` reads correctly against `Control`.
+`NavigationViewSelectionIndicatorForeground`, shared by `NavigationView`, `ListView`, `ListBox`, and `TreeView`, binds the live `SystemColors.Highlight` colour in high contrast rather than `HighlightText`. `HighlightText` is designed to sit on top of a `Highlight`-coloured fill, but Fluence's high contrast selected row background stays `SystemColors.Control`, so a `HighlightText` indicator would be invisible against it; `Highlight` reads correctly against `Control`.
 
 The static high contrast colour values in `Theme.HighContrast.xaml` are fallbacks only; live values come from `SystemColors` through `SpecialBrushes.AddHighContrastBrushes`, rebuilt on every `WM_SETTINGCHANGE`-triggered re-`Apply` (see `docs/theming.md`, "High contrast").
 
@@ -130,11 +133,7 @@ These keys exist in Fluence's colour tables with no WinUI counterpart, or exist 
 - **`AccentFillBackdrop`** - see section 4.
 - **`AcrylicBackgroundFillColorBase`, `AcrylicBackgroundFillColorDefault`** - WinUI's acrylic *fallback* colours, kept as named Fluence tokens because they are used directly as opaque plate fills rather than as a fallback for a material that never renders (see Materials).
 - **`ApplicationBackgroundColor`** - equals `SolidBackgroundFillColorBase`; a WPF-idiomatic name for the brush a top-level `Window.Background` binds to, since WPF has no `ApplicationPageBackgroundThemeBrush` naming convention of its own.
-- **`ControlStrokeColorTertiary`** - present for the demo's colour-swatch gallery; no template consumes it.
-- **`KeyboardFocusBorderColor`** - backs the 2px focus overlay described in section 5.
 - **`NavigationViewContentBackground`** - intentionally duplicates `LayerFillColorDefault` so a consumer can override the content-layer colour on a specific window without touching the shared `LayerFillColorDefault` token everything else reads.
-- **`SystemFillColorAttention`, `SystemFillColorInformational`** - additional semantic fill roles beyond WinUI's four (`Success`, `Caution`, `Critical`, `Neutral`).
-- **`WindowCloseFillColor`, `WindowCloseForeground`** (and their pointer-over/pressed variants) - legacy tokens from an earlier caption-button implementation; unused by current templates.
 - **`TeachingTipTopHighlight`** - the 1px highlight line along a `TeachingTip`'s top edge; new in this pass.
 - **`PopupCornerRadius`** - a WPF-specific radius token for popup-hosted surfaces, since WPF's `Popup` has no `CornerRadius` concept of its own to inherit from.
 

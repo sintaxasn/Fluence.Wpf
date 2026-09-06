@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                MainWindow window = DemoShellTests.CreateShownMainWindow();
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
                 try
                 {
                     window.NavigateTo("colors");
@@ -206,7 +206,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     List<string> unresolved = [];
                     foreach (ApplicationTheme theme in themes)
                     {
-                        ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                         ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                         foreach (string resourceKey in resourceKeys.Where(resourceKey => application.TryFindResource(resourceKey) is null))

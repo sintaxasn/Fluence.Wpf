@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Tests.Windowing
 {
     // WI-2 S2.6 regression floor for WindowPolicy (internal, visible via
     // [InternalsVisibleTo("Fluence.Wpf.Tests")]). WindowPolicy is pure logic: it maps
-    // the requested BackdropType + OS capabilities to an effective backdrop, a DWM plan,
+    // the requested WindowBackdropType + OS capabilities to an effective backdrop, a DWM plan,
     // and a template frame plan. These tests pin those mappings so a future OS-caps
     // refactor cannot silently regress the downgrade behaviour PSADT relies on for
     // Windows 10 1809+ baseline support.
@@ -80,131 +80,131 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public void ResolveEffectiveBackdrop_Auto_Win11_22H2_ReturnsMica()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Auto,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Auto,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Auto_Win11Pre22H2_LegacyMicaOnly_ReturnsMica()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Auto,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Auto,
                 Caps(legacyMica: true, roundedCorners: true, captionColor: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Auto_Win10_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Auto,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Auto,
                 Caps());
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_None_Win11_PassesThrough()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.None,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.None,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Mica_Win22H2_PassesThrough()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Mica_Win11Pre22H2_UsesLegacyMica()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Caps(legacyMica: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Mica_Win10_DowngradesToNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Caps());
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win22H2_PassesThrough()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Acrylic, effective);
+            Assert.Equal(WindowBackdropType.Acrylic, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win11Pre22H2_DowngradesToMica()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps(legacyMica: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win10_DowngradesToNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps());
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Tabbed_Win22H2_PassesThrough()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Tabbed,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Tabbed,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Tabbed, effective);
+            Assert.Equal(WindowBackdropType.Tabbed, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Tabbed_Win11Pre22H2_DowngradesToMica()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Tabbed,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Tabbed,
                 Caps(legacyMica: true, roundedCorners: true));
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Tabbed_Win10_DowngradesToNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Tabbed,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Tabbed,
                 Caps());
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         #endregion ResolveEffectiveBackdrop - capability matrix
@@ -223,49 +223,49 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public void ResolveEffectiveBackdrop_Mica_Win22H2_HighContrast_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win22H2_HighContrast_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Tabbed_Win22H2_HighContrast_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Tabbed,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Tabbed,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Auto_Win22H2_HighContrast_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Auto,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Auto,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
@@ -273,13 +273,13 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             // 21H2 (SupportsMicaEffect only, no DWMWA_SYSTEMBACKDROP_TYPE): HighContrast must still
             // suppress Mica rather than falling through to the legacy DWMWA_MICA_EFFECT path.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Caps(legacyMica: true, roundedCorners: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
@@ -287,14 +287,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = SystemColors.WindowColor;
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.HighContrast,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
             Assert.Equal(fallback, plan.BackgroundColor);
             Assert.False(plan.UseLegacyMicaEffect);
@@ -305,14 +305,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = SystemColors.WindowColor;
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.HighContrast,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
             Assert.Equal(fallback, plan.BackgroundColor);
         }
@@ -322,14 +322,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = SystemColors.WindowColor;
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Tabbed,
+                WindowBackdropType.Tabbed,
                 ApplicationTheme.HighContrast,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
             Assert.Equal(fallback, plan.BackgroundColor);
         }
@@ -339,14 +339,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = SystemColors.WindowColor;
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Auto,
+                WindowBackdropType.Auto,
                 ApplicationTheme.HighContrast,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.Equal((DWM_SYSTEMBACKDROP_TYPE?)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_NONE, plan.SystemBackdropType);
             Assert.Equal(fallback, plan.BackgroundColor);
         }
@@ -356,14 +356,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = SystemColors.WindowColor;
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.HighContrast,
                 Caps(legacyMica: true, roundedCorners: true),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyMicaEffect,
                 "HighContrast must suppress Mica outright, not fall through to the legacy DWMWA_MICA_EFFECT path.");
             Assert.False(plan.SystemBackdropType is not null,
@@ -380,14 +380,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.None,
+                WindowBackdropType.None,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true),
                 fallback,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.NotEqual(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(fallback, plan.BackgroundColor);
             Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.CaptionColor);
@@ -399,7 +399,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_None_OnWin10_OmitsSystemBackdropType()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.None,
+                WindowBackdropType.None,
                 ApplicationTheme.Light,
                 Caps(),
                 Color.FromRgb(0xFA, 0xFA, 0xFA),
@@ -418,14 +418,14 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_Mica_LegacyPath_UsesDwmMicaEffect_NotSystemBackdrop()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Dark,
                 Caps(legacyMica: true, roundedCorners: true),
                 Colors.White,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Mica, plan.EffectiveBackdrop);
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(PInvoke.DWMWA_COLOR_NONE, plan.CaptionColor);
             Assert.False(plan.SystemBackdropType is not null,
@@ -438,14 +438,14 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_Mica_Win22H2_UsesDwmSystemBackdropType_NotLegacy()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true),
                 Colors.White,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Mica, plan.EffectiveBackdrop);
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW, plan.SystemBackdropType);
             Assert.False(plan.UseLegacyMicaEffect,
@@ -460,14 +460,14 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_Acrylic_Win22H2_MapsToTransientWindow()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true),
                 Colors.White,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.Acrylic, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Acrylic, plan.EffectiveBackdrop);
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType);
         }
 
@@ -475,14 +475,14 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_Tabbed_Win22H2_MapsToTabbedWindow()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Tabbed,
+                WindowBackdropType.Tabbed,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true),
                 Colors.White,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: Colors.Transparent);
 
-            Assert.Equal(BackdropType.Tabbed, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Tabbed, plan.EffectiveBackdrop);
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TABBEDWINDOW, plan.SystemBackdropType);
         }
 
@@ -493,13 +493,13 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win10Legacy_TransparencyOn_StaysAcrylic()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Win10AcrylicCaps(),
                 isTransparencyEnabled: true,
                 ApplicationTheme.Light);
 
-            Assert.Equal(BackdropType.Acrylic, effective);
+            Assert.Equal(WindowBackdropType.Acrylic, effective);
         }
 
         [Fact]
@@ -507,35 +507,35 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             // The transparency argument defaults to false on purpose: a caller that does not read
             // the OS toggle must not be handed a blur the user has switched off.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Win10AcrylicCaps());
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win10Legacy_HighContrast_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Win10AcrylicCaps(),
                 isTransparencyEnabled: true,
                 ApplicationTheme.HighContrast);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Acrylic_Win10PreLegacyBuild_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps(),
                 isTransparencyEnabled: true,
                 ApplicationTheme.Light);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
@@ -543,25 +543,25 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             // The legacy accent policy has no tabbed equivalent, so Tabbed keeps downgrading to
             // None on Windows 10 even where Acrylic now survives.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Tabbed,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Tabbed,
                 Win10AcrylicCaps(),
                 isTransparencyEnabled: true,
                 ApplicationTheme.Light);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
         public void ResolveEffectiveBackdrop_Mica_Win10Legacy_ReturnsNone()
         {
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Mica,
                 Win10AcrylicCaps(),
                 isTransparencyEnabled: true,
                 ApplicationTheme.Light);
 
-            Assert.Equal(BackdropType.None, effective);
+            Assert.Equal(WindowBackdropType.None, effective);
         }
 
         [Fact]
@@ -569,27 +569,27 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             // The Win11 arms must not be reachable by the legacy-acrylic branch: 21H2 has Mica,
             // which is a better answer than a Windows 10 accent blur.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Acrylic,
+            WindowBackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
+                WindowBackdropType.Acrylic,
                 Caps(legacyMica: true, roundedCorners: true, captionColor: true),
                 isTransparencyEnabled: true,
                 ApplicationTheme.Light);
 
-            Assert.Equal(BackdropType.Mica, effective);
+            Assert.Equal(WindowBackdropType.Mica, effective);
         }
 
         [Fact]
         public void BuildBackdropPlan_Acrylic_Win10Legacy_TransparencyOn_UsesLegacyAcrylic()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Win10AcrylicCaps(),
                 Color.FromRgb(0xFA, 0xFA, 0xFA),
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.Acrylic, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Acrylic, plan.EffectiveBackdrop);
             Assert.True(plan.UseLegacyAcrylic,
                 "Windows 10 17063+ with transparency on must take the legacy accent-policy path.");
             Assert.Equal(AcrylicTint, plan.LegacyAcrylicTintColor);
@@ -606,7 +606,7 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color darkTint = Color.FromArgb(0xF0, 0x2C, 0x2C, 0x2C);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Dark,
                 Win10AcrylicCaps(),
                 Color.FromRgb(0x20, 0x20, 0x20),
@@ -623,14 +623,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Win10AcrylicCaps(),
                 fallback,
                 isTransparencyEnabled: false,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic,
                 "The OS transparency-effects toggle being off must suppress the accent policy entirely.");
             Assert.NotEqual(Colors.Transparent, plan.BackgroundColor);
@@ -643,14 +643,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0x00, 0x00, 0x00);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.HighContrast,
                 Win10AcrylicCaps(),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic,
                 "High contrast must never be blurred - the theme exists to guarantee contrast.");
             Assert.Equal(fallback, plan.BackgroundColor);
@@ -661,14 +661,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Caps(),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic);
             Assert.Equal(fallback, plan.BackgroundColor);
         }
@@ -678,14 +678,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Tabbed,
+                WindowBackdropType.Tabbed,
                 ApplicationTheme.Light,
                 Win10AcrylicCaps(),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic);
             Assert.Equal(fallback, plan.BackgroundColor);
         }
@@ -695,14 +695,14 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 Win10AcrylicCaps(),
                 fallback,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.None, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.None, plan.EffectiveBackdrop);
             Assert.False(plan.UseLegacyAcrylic);
             Assert.False(plan.UseLegacyMicaEffect);
             Assert.Equal(fallback, plan.BackgroundColor);
@@ -714,14 +714,14 @@ namespace Fluence.Wpf.Tests.Windowing
             // The Windows 11 path must stay byte-identical whatever the transparency toggle says:
             // DWM honours that setting itself.
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true),
                 Colors.White,
                 isTransparencyEnabled: true,
                 legacyAcrylicTintColor: AcrylicTint);
 
-            Assert.Equal(BackdropType.Acrylic, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Acrylic, plan.EffectiveBackdrop);
             Assert.Equal(DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType);
             Assert.False(plan.UseLegacyAcrylic,
                 "Windows 11 has DWM acrylic - the legacy accent policy must never be used there.");
@@ -749,7 +749,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_DarkTheme_SetsImmersiveDarkMode()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.None,
+                WindowBackdropType.None,
                 ApplicationTheme.Dark,
                 Caps(systemBackdrop: true),
                 Color.FromRgb(0x20, 0x20, 0x20),
@@ -764,7 +764,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void BuildBackdropPlan_LightTheme_DoesNotSetImmersiveDarkMode()
         {
             BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
-                BackdropType.None,
+                WindowBackdropType.None,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true),
                 Color.FromRgb(0xFA, 0xFA, 0xFA),
@@ -782,30 +782,30 @@ namespace Fluence.Wpf.Tests.Windowing
         public void GetCornerPreference_Round_MapsToDwmwcpRound()
         {
             Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
-                WindowPolicy.GetCornerPreference(CornerPreference.Round));
+                WindowPolicy.GetCornerPreference(WindowCornerPreference.Round));
         }
 
         [Fact]
         public void GetCornerPreference_Default_MapsToDwmwcpRound()
         {
-            // FluenceWindow exposes CornerPreference.Default as "library default" - which in a
+            // FluenceWindow exposes WindowCornerPreference.Default as "library default" - which in a
             // Fluent library means rounded on Win11. The policy normalises Default to Round.
             Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
-                WindowPolicy.GetCornerPreference(CornerPreference.Default));
+                WindowPolicy.GetCornerPreference(WindowCornerPreference.Default));
         }
 
         [Fact]
         public void GetCornerPreference_DoNotRound_MapsToDwmwcpDoNotRound()
         {
             Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
-                WindowPolicy.GetCornerPreference(CornerPreference.DoNotRound));
+                WindowPolicy.GetCornerPreference(WindowCornerPreference.DoNotRound));
         }
 
         [Fact]
         public void GetCornerPreference_RoundSmall_MapsToDwmwcpRoundSmall()
         {
             Assert.Equal(DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
-                WindowPolicy.GetCornerPreference(CornerPreference.RoundSmall));
+                WindowPolicy.GetCornerPreference(WindowCornerPreference.RoundSmall));
         }
 
         #endregion GetCornerPreference - enum → DWMWCP_* mapping
@@ -1025,7 +1025,7 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public void GetGlassFrameThickness_NoBackdrop_NoShadow_VeryThin()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.None, hasShadow: false);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.None, hasShadow: false);
             Assert.Equal(0.00001, t.Left, 1e-9);
             Assert.Equal(0.00001, t.Top, 1e-9);
             Assert.Equal(0.00001, t.Right, 1e-9);
@@ -1035,35 +1035,35 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public void GetGlassFrameThickness_NoBackdrop_WithShadow_FullGlass()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.None, hasShadow: true);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.None, hasShadow: true);
             Assert.Equal(-1, t.Left, 1e-9);
         }
 
         [Fact]
         public void GetGlassFrameThickness_MicaBackdrop_FullGlass()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Mica, hasShadow: false);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.Mica, hasShadow: false);
             Assert.Equal(-1, t.Left, 1e-9);
         }
 
         [Fact]
         public void GetGlassFrameThickness_AcrylicBackdrop_FullGlass()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Acrylic, hasShadow: false);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.Acrylic, hasShadow: false);
             Assert.Equal(-1, t.Left, 1e-9);
         }
 
         [Fact]
         public void GetGlassFrameThickness_TabbedBackdrop_FullGlass()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Tabbed, hasShadow: false);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.Tabbed, hasShadow: false);
             Assert.Equal(-1, t.Left, 1e-9);
         }
 
         [Fact]
         public void GetGlassFrameThickness_AutoBackdrop_FullGlass()
         {
-            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Auto, hasShadow: false);
+            Thickness t = WindowPolicy.GetGlassFrameThickness(WindowBackdropType.Auto, hasShadow: false);
             Assert.Equal(-1, t.Left, 1e-9);
         }
 
@@ -1088,7 +1088,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_Bpc8_ReturnsNull()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(8, advancedColorEnabled: false),
                 LightCanonical,
@@ -1102,7 +1102,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_BpcUnknown_ReturnsNull()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(0, advancedColorEnabled: false),
                 LightCanonical,
@@ -1116,7 +1116,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_BackdropNone_ReturnsNull()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.None,
+                WindowBackdropType.None,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 LightCanonical,
@@ -1130,7 +1130,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_HighContrast_ReturnsNull()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.HighContrast,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 LightCanonical,
@@ -1147,7 +1147,7 @@ namespace Fluence.Wpf.Tests.Windowing
             // pixel format toggle) composites client alpha at full precision, so no pre-blend
             // substitute is needed.
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: true),
                 LightCanonical,
@@ -1161,7 +1161,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Light_CanonicalPresent_ReturnsCanonical()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 LightCanonical,
@@ -1177,7 +1177,7 @@ namespace Fluence.Wpf.Tests.Windowing
             // The Light fallback composite reproduces the canonical value exactly:
             // round(0.501961 * 0xFF + 0.498039 * 0xF3) = round(249.02) = 249 = 0xF9 per channel.
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 canonicalPreBlend: null,
@@ -1191,7 +1191,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Tabbed_Light_CanonicalPresent_ReturnsCanonical()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Tabbed,
+                WindowBackdropType.Tabbed,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 LightCanonical,
@@ -1205,7 +1205,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalPresent_ReturnsCanonical()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Dark,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 DarkCanonical,
@@ -1224,7 +1224,7 @@ namespace Fluence.Wpf.Tests.Windowing
             // reproduction, of the canonical WinUI value, which is why the canonical key is
             // authoritative whenever it resolves.
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Dark,
                 new DisplayColorDepth(10, advancedColorEnabled: false),
                 canonicalPreBlend: null,
@@ -1238,7 +1238,7 @@ namespace Fluence.Wpf.Tests.Windowing
         public void ShouldApplyContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_ReturnsTrue()
         {
             Assert.True(WindowPolicy.ShouldApplyContentLayerPreBlend(
-                BackdropType.Mica,
+                WindowBackdropType.Mica,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false)));
         }
@@ -1248,7 +1248,7 @@ namespace Fluence.Wpf.Tests.Windowing
         {
             // Acrylic is excluded pending its own 0x4 measurement; see PreBlendEligibleBackdrops.
             Assert.False(WindowPolicy.ShouldApplyContentLayerPreBlend(
-                BackdropType.Acrylic,
+                WindowBackdropType.Acrylic,
                 ApplicationTheme.Light,
                 new DisplayColorDepth(10, advancedColorEnabled: false)));
         }
@@ -1269,11 +1269,11 @@ namespace Fluence.Wpf.Tests.Windowing
                 supportsCaptionColor: false);
 
             Color fallback = Color.FromRgb(0x20, 0x20, 0x20);
-            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(WindowBackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback, isTransparencyEnabled: false, legacyAcrylicTintColor: Colors.Transparent);
 
             // Should fall back to Mica (legacy) and use transparent background.
             Assert.Equal(Colors.Transparent, plan.BackgroundColor);
-            Assert.Equal(BackdropType.Mica, plan.EffectiveBackdrop);
+            Assert.Equal(WindowBackdropType.Mica, plan.EffectiveBackdrop);
         }
 
         #endregion BuildBackdropPlan - Acrylic falls back to Mica when only the legacy Mica effect is available

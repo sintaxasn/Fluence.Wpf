@@ -146,9 +146,9 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty SystemBackdropTypeProperty =
             DependencyProperty.Register(
                 "SystemBackdropType",
-                typeof(BackdropType),
+                typeof(WindowBackdropType),
                 typeof(FluenceWindow),
-                new PropertyMetadata(BackdropType.Auto, OnSystemBackdropTypeChanged));
+                new PropertyMetadata(WindowBackdropType.Auto, OnSystemBackdropTypeChanged));
 
         /// <summary>
         /// Identifies the <see cref="CornerStyle"/> dependency property.
@@ -156,9 +156,9 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty CornerStyleProperty =
             DependencyProperty.Register(
                 "CornerStyle",
-                typeof(CornerPreference),
+                typeof(WindowCornerPreference),
                 typeof(FluenceWindow),
-                new PropertyMetadata(CornerPreference.Round, OnCornerStyleChanged));
+                new PropertyMetadata(WindowCornerPreference.Round, OnCornerStyleChanged));
 
         /// <summary>
         /// Identifies the <see cref="MarginMaximized"/> dependency property.
@@ -307,18 +307,18 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the requested system backdrop (Mica, Acrylic, Tabbed, or none).
         /// </summary>
-        public BackdropType SystemBackdropType
+        public WindowBackdropType SystemBackdropType
         {
-            get => (BackdropType)GetValue(SystemBackdropTypeProperty);
+            get => (WindowBackdropType)GetValue(SystemBackdropTypeProperty);
             set => SetValue(SystemBackdropTypeProperty, value);
         }
 
         /// <summary>
         /// Gets or sets the preferred window corner rounding policy for DWM.
         /// </summary>
-        public CornerPreference CornerStyle
+        public WindowCornerPreference CornerStyle
         {
-            get => (CornerPreference)GetValue(CornerStyleProperty);
+            get => (WindowCornerPreference)GetValue(CornerStyleProperty);
             set => SetValue(CornerStyleProperty, value);
         }
 
@@ -957,7 +957,7 @@ namespace Fluence.Wpf.Controls
         /// </para>
         /// </remarks>
         /// <param name="effectiveBackdrop">The effective backdrop just resolved by <see cref="ApplyBackdrop"/>.</param>
-        private void ApplyContentLayerPreBlend(BackdropType effectiveBackdrop)
+        private void ApplyContentLayerPreBlend(WindowBackdropType effectiveBackdrop)
         {
             DisplayColorDepth colorDepth = _handle == IntPtr.Zero
                 ? default

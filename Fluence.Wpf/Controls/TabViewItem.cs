@@ -26,7 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -37,11 +37,11 @@ namespace Fluence.Wpf.Controls
     /// A <see cref="TabItem"/> container used by <see cref="TabView"/> that renders an icon, a header,
     /// and an optional close button aligned with the WinUI 3 TabView visual language.
     /// </summary>
-    [TemplatePart(Name = PartCloseButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
     public class TabViewItem : TabItem
     {
         // Template part names.
-        private const string PartCloseButton = "PART_CloseButton";
+        private const string PART_CloseButton = "PART_CloseButton";
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Controls
         public static readonly RoutedEvent CloseRequestedEvent = EventManager.RegisterRoutedEvent(
             nameof(CloseRequested),
             RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
+            typeof(EventHandler<TabViewTabCloseRequestedEventArgs>),
             typeof(TabViewItem));
 
         /// <summary>
@@ -108,8 +108,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the per-tab close button. The parent <see cref="TabView"/>
         /// aggregates this into <see cref="TabView.TabCloseRequested"/> for convenience.
         /// </summary>
-        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
-        public event RoutedEventHandler CloseRequested
+        public event EventHandler<TabViewTabCloseRequestedEventArgs> CloseRequested
         {
             add => AddHandler(CloseRequestedEvent, value);
             remove => RemoveHandler(CloseRequestedEvent, value);
@@ -120,7 +119,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
             _closeButton?.Click -= OnCloseButtonClick;
-            _closeButton = GetTemplateChild(PartCloseButton) as ButtonBase;
+            _closeButton = GetTemplateChild(PART_CloseButton) as ButtonBase;
             _closeButton?.Click += OnCloseButtonClick;
         }
 

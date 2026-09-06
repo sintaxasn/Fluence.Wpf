@@ -32,7 +32,7 @@ namespace Fluence.Wpf.Helpers
     /// Identifies which edge of a stacked pair of tiers (such as the Expander header and content
     /// borders) a <see cref="CornerRadiusFilterConverter"/> instance keeps live.
     /// </summary>
-    public enum CornerRadiusFilterEdge
+    internal enum CornerRadiusFilterEdge
     {
         /// <summary>
         /// The element occupies the top of the stack.

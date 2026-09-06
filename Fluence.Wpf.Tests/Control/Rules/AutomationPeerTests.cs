@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -284,6 +285,101 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     Assert.Equal(1, numberBox.SpyPeer!.RaiseValueChangedCallCount);
                     Assert.Equal(10d, numberBox.SpyPeer.LastOldValue);
                     Assert.Equal(42d, numberBox.SpyPeer.LastNewValue);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        /// <summary>
+        /// TitleBar is the shell surface of every Fluence app and reported as a bare
+        /// FrameworkElement to a screen reader until it has a peer of its own.
+        /// </summary>
+        [Fact]
+        public Task TitleBar_AutomationPeer_ReportsTitleBarControlTypeAndTitleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TitleBar titleBar = new() { Title = "Fluence Gallery" };
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(titleBar), exactMatch: false);
+
+                _ = Assert.IsType<TitleBarAutomationPeer>(peer, exactMatch: false);
+                Assert.Equal("TitleBar", peer.GetClassName(), StringComparer.Ordinal);
+                Assert.Equal(AutomationControlType.TitleBar, peer.GetAutomationControlType());
+                Assert.Equal("Fluence Gallery", peer.GetName(), StringComparer.Ordinal);
+            });
+        }
+
+        /// <summary>
+        /// An explicit AutomationProperties.Name wins over the Title, matching WinUI's own
+        /// TitleBarAutomationPeer.
+        /// </summary>
+        [Fact]
+        public Task TitleBar_AutomationPeer_PrefersExplicitAutomationNameAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TitleBar titleBar = new() { Title = "Fluence Gallery" };
+                AutomationProperties.SetName(titleBar, "Application title bar");
+
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(titleBar), exactMatch: false);
+                Assert.Equal("Application title bar", peer.GetName(), StringComparer.Ordinal);
+            });
+        }
+
+        /// <summary>
+        /// InfoBadge's count has no other accessible representation: the number lives in a
+        /// template TextBlock with no name, so without a peer a screen reader reads nothing.
+        /// A Value of -1 is the dot form and carries no number to announce.
+        /// </summary>
+        /// <param name="value">The badge value to set.</param>
+        /// <param name="expectedName">The name the peer must report.</param>
+        [Theory]
+        [InlineData(5, "5")]
+        [InlineData(0, "0")]
+        [InlineData(-1, "")]
+        public Task InfoBadge_AutomationPeer_ReportsValueAsNameAsync(int value, string expectedName)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                InfoBadge badge = new() { Value = value };
+                AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                    UIElementAutomationPeer.CreatePeerForElement(badge), exactMatch: false);
+
+                _ = Assert.IsType<InfoBadgeAutomationPeer>(peer, exactMatch: false);
+                Assert.Equal("InfoBadge", peer.GetClassName(), StringComparer.Ordinal);
+                Assert.Equal(AutomationControlType.Text, peer.GetAutomationControlType());
+                Assert.Equal(expectedName, peer.GetName(), StringComparer.Ordinal);
+            });
+        }
+
+        /// <summary>
+        /// FlyoutPresenter is the container every flyout renders into, so one peer gives the
+        /// whole family a control type instead of a bare FrameworkElement.
+        /// </summary>
+        [Fact]
+        public Task FlyoutPresenter_AutomationPeer_ReportsGroupControlTypeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FlyoutPresenter presenter = new() { Content = "Body" };
+                Window window = new() { Content = presenter, Width = 200, Height = 200 };
+                window.Show();
+                _ = presenter.ApplyTemplate();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                try
+                {
+                    AutomationPeer peer = Assert.IsType<AutomationPeer>(
+                        UIElementAutomationPeer.CreatePeerForElement(presenter), exactMatch: false);
+
+                    _ = Assert.IsType<FlyoutPresenterAutomationPeer>(peer, exactMatch: false);
+                    Assert.Equal("FlyoutPresenter", peer.GetClassName(), StringComparer.Ordinal);
+                    Assert.Equal(AutomationControlType.Group, peer.GetAutomationControlType());
+                    Assert.True(peer.IsControlElement(), "A flyout container must stay in the control view.");
                 }
                 finally
                 {

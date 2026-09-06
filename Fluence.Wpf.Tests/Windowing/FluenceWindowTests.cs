@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Tests.Windowing
             ApplicationAccentColorManager.ResetForTesting();
             app.Resources.MergedDictionaries.Clear();
 
-            ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
         }
 
         private static void ResetAndApply(Application app)
@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests.Windowing
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             app.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
         }
 
         // ---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 FluenceWindow w = new();
                 try
                 {
-                    Assert.Equal(BackdropType.Auto, w.SystemBackdropType);
+                    Assert.Equal(WindowBackdropType.Auto, w.SystemBackdropType);
                 }
                 finally { w.Close(); }
             });
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public Task SystemBackdropType_CanSetAllValuesAsync()
         {
-            // Verifies that the DP accepts all four BackdropType values without throwing.
+            // Verifies that the DP accepts all four WindowBackdropType values without throwing.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application app = WpfTestSta.EnsureApplication();
@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 FluenceWindow w = new();
                 try
                 {
-                    foreach (BackdropType bd in new[] { BackdropType.None, BackdropType.Mica, BackdropType.Acrylic, BackdropType.Tabbed, BackdropType.Auto })
+                    foreach (WindowBackdropType bd in new[] { WindowBackdropType.None, WindowBackdropType.Mica, WindowBackdropType.Acrylic, WindowBackdropType.Tabbed, WindowBackdropType.Auto })
                     {
                         w.SystemBackdropType = bd;
                         Assert.Equal(bd, w.SystemBackdropType);
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests.Windowing
 
                 foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
-                    ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                     foreach (string? key in keys)
                     {
                         object resource = Assert.IsType<object>(app.TryFindResource(key), exactMatch: false);
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 object brush = Assert.IsType<object>(app.TryFindResource("SystemFillColorCriticalBrush"), exactMatch: false);
             });
         }
@@ -190,17 +190,10 @@ namespace Fluence.Wpf.Tests.Windowing
                 Application app = WpfTestSta.EnsureApplication();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPointerOverBrush", Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C));
-                AssertCloseButtonBrush(app, "WindowCloseButtonBackgroundPressedBrush", Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C));
-                AssertCloseButtonBrush(app, "WindowCloseButtonForegroundPointerOverBrush", Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF));
+                Assert.Equal(Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C), BrushAssert.ResolvedColor(app, "WindowCloseButtonBackgroundPointerOverBrush"));
+                Assert.Equal(Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C), BrushAssert.ResolvedColor(app, "WindowCloseButtonBackgroundPressedBrush"));
+                Assert.Equal(Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF), BrushAssert.ResolvedColor(app, "WindowCloseButtonForegroundPointerOverBrush"));
             });
-        }
-
-        private static void AssertCloseButtonBrush(Application app, string key, Color expected)
-        {
-            object? resource = app.TryFindResource(key);
-            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(resource, exactMatch: false);
-            Assert.Equal(expected, brush.Color);
         }
 
         [Fact]
@@ -328,7 +321,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -362,7 +355,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -383,7 +376,7 @@ namespace Fluence.Wpf.Tests.Windowing
 
                     // Swapping to None re-runs ApplyBackdrop; both layers must move together to the
                     // opaque theme fallback so the invariant holds across runtime backdrop changes.
-                    w.SystemBackdropType = BackdropType.None;
+                    w.SystemBackdropType = WindowBackdropType.None;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                     Color contentNone = ((SolidColorBrush)w.Background).Color;
                     Assert.Equal(contentNone, sourceCompositionTarget.BackgroundColor);
@@ -469,7 +462,7 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         // ---------------------------------------------------------------------------
-        // 8. Defect: disagreeing Light "window base" values. Under BackdropType.None the
+        // 8. Defect: disagreeing Light "window base" values. Under WindowBackdropType.None the
         // realised window Background must agree with the published ApplicationBackgroundBrush
         // in every theme (High Contrast pins the live SystemColors.WindowColor override), and
         // the Light token must equal the WinUI ApplicationPageBackgroundThemeBrush source.
@@ -493,7 +486,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 200,
                     Height = 150,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.None,
+                    SystemBackdropType = WindowBackdropType.None,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -547,7 +540,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -588,7 +581,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -628,7 +621,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -645,8 +638,8 @@ namespace Fluence.Wpf.Tests.Windowing
                     // from Mica and back so the SystemBackdropType change callback re-runs
                     // ApplyBackdrop.
                     DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
-                    w.SystemBackdropType = BackdropType.None;
-                    w.SystemBackdropType = BackdropType.Mica;
+                    w.SystemBackdropType = WindowBackdropType.None;
+                    w.SystemBackdropType = WindowBackdropType.Mica;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.False(w.Resources.Contains("NavigationViewContentBackgroundBrush"));
@@ -681,7 +674,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -701,8 +694,8 @@ namespace Fluence.Wpf.Tests.Windowing
                     // Even a swing to 8 bpc, which would otherwise remove Fluence's own substitute,
                     // must leave a consumer-owned value alone.
                     DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
-                    w.SystemBackdropType = BackdropType.None;
-                    w.SystemBackdropType = BackdropType.Mica;
+                    w.SystemBackdropType = WindowBackdropType.None;
+                    w.SystemBackdropType = WindowBackdropType.Mica;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Assert.Same(consumerBrush, w.Resources["NavigationViewContentBackgroundBrush"]);
@@ -739,7 +732,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -755,8 +748,8 @@ namespace Fluence.Wpf.Tests.Windowing
                     Assert.Equal(Color.FromArgb(0xFF, 0xF9, 0xF9, 0xF9), resolved);
 
                     DisplayDepthProbe.Override = static _ => new DisplayColorDepth(8, advancedColorEnabled: false);
-                    w.SystemBackdropType = BackdropType.None;
-                    w.SystemBackdropType = BackdropType.Mica;
+                    w.SystemBackdropType = WindowBackdropType.None;
+                    w.SystemBackdropType = WindowBackdropType.Mica;
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Color afterRemoval = Assert.IsType<SolidColorBrush>(border.Background, exactMatch: false).Color;
@@ -916,7 +909,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Width = 320,
                     Height = 240,
                     ShowInTaskbar = false,
-                    SystemBackdropType = BackdropType.Mica,
+                    SystemBackdropType = WindowBackdropType.Mica,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = -10000,
                     Top = -10000,
@@ -930,7 +923,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     Assert.NotEqual(Colors.Transparent, highContrastBackground);
                     Assert.Equal(expectedHighContrastBackground, highContrastBackground);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
                     Color afterLightBackground = Assert.IsType<SolidColorBrush>(w.Background, exactMatch: false).Color;
@@ -1007,7 +1000,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 FluenceWindow window = new()
                 {
                     Title = "SizeToContent fill",
-                    SystemBackdropType = BackdropType.None,
+                    SystemBackdropType = WindowBackdropType.None,
                     ShowInTaskbar = false,
                     SizeToContent = SizeToContent.WidthAndHeight,
                     WindowStartupLocation = WindowStartupLocation.Manual,
@@ -1057,7 +1050,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 FluenceWindow window = new()
                 {
                     Title = "SizeToContent grow",
-                    SystemBackdropType = BackdropType.None,
+                    SystemBackdropType = WindowBackdropType.None,
                     ShowInTaskbar = false,
                     SizeToContent = SizeToContent.WidthAndHeight,
                     WindowStartupLocation = WindowStartupLocation.Manual,
@@ -1110,7 +1103,7 @@ namespace Fluence.Wpf.Tests.Windowing
                 FluenceWindow window = new()
                 {
                     Title = "Fixed size",
-                    SystemBackdropType = BackdropType.None,
+                    SystemBackdropType = WindowBackdropType.None,
                     ShowInTaskbar = false,
                     Width = 420,
                     Height = 320,

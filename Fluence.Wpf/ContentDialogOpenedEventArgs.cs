@@ -26,31 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Controls.FluenceWindow"/>.
+    /// Provides data for the <see cref="ContentDialog.Opened"/> event. WinUI's
+    /// <c language="csharp">ContentDialogOpenedEventArgs</c> carries no members either; the type exists so the
+    /// event can gain data in a later minor release without a breaking signature change.
     /// </summary>
-    public enum CornerPreference
-    {
-        /// <summary>
-        /// OS default rounding.
-        /// </summary>
-        Default = 0,
-
-        /// <summary>
-        /// Sharp corners.
-        /// </summary>
-        DoNotRound = 1,
-
-        /// <summary>
-        /// Large radius.
-        /// </summary>
-        Round = 2,
-
-        /// <summary>
-        /// Smaller radius.
-        /// </summary>
-        RoundSmall = 3,
-    }
+    public sealed class ContentDialogOpenedEventArgs : EventArgs;
 }
