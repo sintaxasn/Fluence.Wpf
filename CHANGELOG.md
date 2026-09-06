@@ -10,7 +10,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [1.0.0] - 2026-09-05
 
-This is the first stable release. The public CLR surface and the public XAML resource key set are frozen from here: minor releases are additive only, and removals or signature changes wait for a major release. `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so both are build failures rather than review misses. Every breaking change below is written up in [docs/migration-guide.md](docs/migration-guide.md).
+This is the first stable release. The public CLR surface and the public XAML resource key set are frozen from here: minor releases are additive only, and removals or signature changes wait for a major release. `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so both are build failures rather than review misses. Every breaking change below is written up in [docs/migration-guide.md](https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/migration-guide.md).
 
 ### Added
 
@@ -31,7 +31,8 @@ This is the first stable release. The public CLR surface and the public XAML res
 - `ContentDialog.Opened`, `ContentDialog.Closed`, `InfoBar.Closed` and `TeachingTip.Closed` are `EventHandler<TArgs>` instead of bare `EventHandler`.
 - `TabView.TabCloseRequested` and `TabViewItem.CloseRequested` declare `EventHandler<TabViewTabCloseRequestedEventArgs>`, so a handler reads `e.Tab` and `e.Item` with no cast. This retypes the registered handler delegate, so it breaks an already-compiled consumer binary as well as source that recompiles. Both still bubble as routed events.
 - Setting `InfoBar.IsOpen` to `false` in code raises `Closed` with `InfoBarCloseReason.Programmatic`; it previously raised nothing.
-- The resource key `NavigationViewSelectionIndicatorBrush` is `NavigationViewSelectionIndicatorForeground`, WinUI's own name. This one fails silently on a `DynamicResource` reference to the old name.
+- Pressing Escape to dismiss a `TeachingTip` now raises `Closed` with `TeachingTipCloseReason.LightDismiss`, matching WinUI; it previously reported `Programmatic`.
+- The resource key `NavigationViewSelectionIndicatorBrush` is `NavigationViewSelectionIndicatorForeground`, WinUI's own name. Like the fourteen keys removed below, this fails silently on a `DynamicResource` reference to the old name: no compile error, the target simply keeps its default at runtime.
 - `DebugType` is `portable` for every configuration, replacing `full`. Portable PDBs are supported by every debugger the target frameworks reach, Visual Studio 2019 and later on `net472` included, and are what a symbol package can carry.
 - The version is declared once, as `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. The duplicates in `Fluence.Wpf.csproj` won over that file and are gone, along with the hand-maintained `BuildDate`.
 - Demo: `DemoSampleControl` surfaces (sample card, options rail, source expander) are remeasured against the installed WinUI 3 Gallery 2.9.3 at 150% DPI.
@@ -49,11 +50,12 @@ This is the first stable release. The public CLR surface and the public XAML res
 
 ### Removed
 
-- `LoopingSelectorList`, `CornerRadiusFilterConverter`, `CornerRadiusFilterEdge` and `GridLengthAnimation` are internal. All four were implementation details with a single in-library consumer.
-- The nine `NavigationView.Part*` constants are internal. Template part names are not API; read them from the shipped template.
+- `LoopingSelectorList`, `CornerRadiusFilterConverter`, `CornerRadiusFilterEdge` and `GridLengthAnimation` are internal. All four were implementation details with a single in-library consumer. Internalizing breaks an already-compiled consumer binary at load time, not only source that recompiles.
+- The nine `NavigationView.Part*` constants are internal. Template part names are not API; read them from the shipped template. Unlike the internalisations above, a `const` inlines at the consumer's own compile site, so this is source-only: an already-built binary keeps working.
 - The third parameter of `ApplicationThemeManager.Apply`, `updateAccent`. It had been discarded inside the method since the single pipeline rewrite.
 - `ApplicationAccentColorManager.ApplyApplicationAccent()`, a one-line alias for `ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4))`.
-- Fourteen unconsumed theme keys, rather than freeze them into the 1.0 surface: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, and their `*Brush` twins. The caption button colours remain published under their WinUI style names `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`.
+- `InfoBarClosingEventArgs`'s implicit parameterless constructor, replaced by a constructor that takes the new `Reason`. This is source-only: it matters only to code that constructed the args itself, since `InfoBar` raises them.
+- Fourteen unconsumed theme keys, rather than freeze them into the 1.0 surface: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, and their `*Brush` twins. The caption button colours remain published under their WinUI style names `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`. This also fails silently: a stale `DynamicResource` reference to any of these fourteen keeps building and simply resolves to nothing at runtime.
 
 ### Fixed
 
