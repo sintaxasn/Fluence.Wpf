@@ -2,9 +2,9 @@
 
 `Fluence.Wpf` targets WPF applications on .NET Framework 4.7.2, .NET 8, and .NET 10 for Windows. It mirrors the Windows 11 Fluent / WinUI 3 visual language using WPF primitives, with no dependency on the Windows App SDK.
 
-## Upgrading to 1.0 from a 0.8 preview
+## Upgrading to 0.9.0-pre from a 0.8 preview
 
-Every breaking change in 1.0 is listed here. Some entries break only at compile time and need a recompile; some also break an already-compiled consumer binary at load time; and the resource key changes near the end fail silently instead, with no compile error at all.
+Every breaking change in 0.9.0-pre, the last preview before 1.0, is listed here. Some entries break only at compile time and need a recompile; some also break an already-compiled consumer binary at load time; and the resource key changes near the end fail silently instead, with no compile error at all.
 
 ### Types that became internal
 

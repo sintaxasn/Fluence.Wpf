@@ -31,19 +31,19 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. Nothing else in the tree carries a version:
 
 ```xml
-<VersionPrefix>1.0.0</VersionPrefix>
-<VersionSuffix></VersionSuffix>
+<VersionPrefix>0.9.0</VersionPrefix>
+<VersionSuffix>pre</VersionSuffix>
 ```
 
-An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
+An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `pre`, which produces `0.9.0-pre`, or `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
 
 Commit the bump, along with the `CHANGELOG.md` section, on `main`.
 
 ## Tag
 
 ```powershell
-git tag v1.0.0
-git push origin v1.0.0
+git tag v0.9.0-pre
+git push origin v0.9.0-pre
 ```
 
 The tag must be exactly `v` plus the version the tree resolves to. CI checks it and fails the release before publishing anything if it does not match. To confirm before tagging:

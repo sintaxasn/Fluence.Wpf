@@ -1,4 +1,4 @@
-name: Build & Test
+﻿name: Build & Test
 
 permissions:
   contents: read
@@ -186,7 +186,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       # Runs before anything is published. A v1.0.0 tag on a tree still at
-      # 0.8.19-preview would otherwise publish a mislabeled package to nuget.org,
+      # 0.9.0-pre would otherwise publish a mislabeled package to nuget.org,
       # which can only be unlisted, never replaced.
       - name: Verify the tag matches the tree version
         run: |

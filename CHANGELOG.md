@@ -4,54 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Version headings are the SemVer version. The git tag for a version is `v` plus that version exactly, enforced by CI from 1.0 onward. Tags before 1.0 used a `-pre` suffix that did not match the version they shipped, which is why some links below point at the releases page instead of a comparison.
+Version headings are the SemVer version. The git tag for a version is `v` plus that version exactly, enforced by CI. Tags up to and including `v0.8.19-pre` used a `-pre` suffix that did not match the `-preview` version they shipped, which is why some links below point at the releases page instead of a comparison. From `0.9.0-pre` the suffix is `pre`, so the tag and the version are the same string.
 
-## [Unreleased]
+## [0.9.0-pre - Unreleased]
 
-### Changed
-
-- Demo: `GalleryPageHeader` now follows the WinUI 3 Gallery `PageHeader` layout on every page: the title
-  sits alone on the first row in `TitleTextBlockStyle`, and a second row carries `Documentation` and
-  `Source` drop-downs on the left (the docs link from `DocsDocument` plus `DocsAnchor`, the page XAML and
-  code-behind on GitHub resolved from the hosting page type, and an optional `ControlSourcePath`) and
-  the theme toggle, a new copy-link button and the favorite toggle on the right, separated as WinUI does.
-- Demo: new `DemoCodePresenter` shows an inline, syntax-highlighted snippet without a card, mirroring the
-  Gallery `SampleCodePresenter`; the highlighter moved out of `DemoSampleControl` into the shared
-  `DemoSourceHighlighter` so expander tabs and inline snippets colorize identically. The Colors page uses
-  it for its brush example and drops the old monospace card and `DemoCodeSampleTextStyle`.
-- Demo: `DemoSelectorBarStyle` restyles a `TabControl` to WinUI `SelectorBar` metrics (12,10,12,7 item
-  padding, 14 px text, no selected plate, a 16 by 3 accent pill); the Colors page section switcher uses it.
-- Demo: the Colors page is rebuilt from the WinUI 3 Gallery Color page. Six sections (Text, Fill,
-  Stroke, Background, Signal, High Contrast) each pair a `ColorPageExample` card with rows of
-  `ColorTile` swatches painted in the brush they name, in the Gallery's order, wording and column
-  counts, with a copy button per tile. Three platform deviations are documented in the page: WPF has
-  no per-element backdrop, so Acrylic and Mica tiles show their fallback brushes; Fluence publishes
-  no accent-acrylic brushes, so that group and the tile-less Mica Background group are omitted; and
-  High Contrast shows the live `SystemColor*` aliases instead of four hard-coded palettes. The
-  `ThemeDictionary` sample that lived at the foot of the old page is gone from Colors (it is not part
-  of the Gallery page); the Home page hero and `docs/theming.md` still demonstrate it. Every size on
-  the page comes from new `DemoColor*` tokens in `DemoSharedStyles.xaml`.
-- Tests: `GalleryColorsPageTests` is rewritten for the new page (5 cases removed, 8 added), `GalleryPageHeaderTests`
-  gains two layout and source-link cases, and `DemoCodePresenterTests` adds three, so the `--list-tests`
-  baselines and the CI lane totals move from 1219 to 1227 on `net472` and from 1220 to 1228 on
-  `net10.0-windows10.0.26100.0`.
-
-### Fixed
-
-- Flyout, ToolTip, TeachingTip and CommandBarFlyout now cast a real drop shadow. WPF sizes a popup
-  window to exactly its child's layout size, so the shadow effect was clipped away and survived only in
-  the rounded corner notches, where it read as a dark square plate behind a rounded card. Each presenter
-  now reserves a 16 px transparent gutter and each popup subtracts the same 16 px from its placement.
-- ContextMenu and its submenus, ComboBox, AutoSuggestBox, DatePicker, TimePicker, DropDownButton,
-  SplitButton and ToggleSplitButton popups reserve the same 16 px elevation gutter, so every popup
-  surface in the library now casts the shadow it was already configured for.
-
-## [1.0.0] - 2026-09-05
-
-This is the first stable release. The public CLR surface and the public XAML resource key set are frozen from here: minor releases are additive only, and removals or signature changes wait for a major release. `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so both are build failures rather than review misses. Every breaking change below is written up in [docs/migration-guide.md](https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/migration-guide.md).
+This is the last preview before 1.0 and it carries the whole 1.0 readiness pass, breaking changes included. The public CLR surface and the public XAML resource key set take the shape they will freeze in: `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so a change to either is a build failure rather than a review miss. The freeze itself starts at 1.0, when minor releases become additive only and removals or signature changes wait for a major release. Until then this section can still move, and any further break lands in another pre-1.0 preview. Every breaking change below is written up in [docs/migration-guide.md](https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/migration-guide.md).
 
 ### Added
 
+- Demo: the Colors page is rebuilt from the WinUI 3 Gallery Color page. Six sections (Text, Fill, Stroke, Background, Signal, High Contrast) each pair a `ColorPageExample` card with rows of `ColorTile` swatches painted in the brush they name, in the Gallery's order, wording and column counts, with a copy button per tile. Three platform deviations are documented in the page: WPF has no per-element backdrop, so Acrylic and Mica tiles show their fallback brushes; Fluence publishes
+  no accent-acrylic brushes, so that group and the tile-less Mica Background group are omitted; and High Contrast shows the live `SystemColor*` aliases instead of four hard-coded palettes. The `ThemeDictionary` sample that lived at the foot of the old page is gone from Colors (it is not part of the Gallery page); the Home page hero and `docs/theming.md` still demonstrate it. Every size on the page comes from new `DemoColor*` tokens in `DemoSharedStyles.xaml`.
 - Demo: `GalleryPageHeader` is a shared gallery page header modelled on the WinUI 3 Gallery's `PageHeader`, with a title, a Documentation link, a theme toggle and a Favorite toggle, adopted by 17 of the 18 gallery pages.
 - `ContentDialogOpenedEventArgs`, `ContentDialogClosedEventArgs` (carrying `Result`), `InfoBarClosedEventArgs` and `TeachingTipClosedEventArgs` (both carrying `Reason`), the args classes for the four events that had none.
 - `InfoBarCloseReason` (`CloseButton`, `Programmatic`) and `TeachingTipCloseReason` (`CloseButton`, `LightDismiss`, `Programmatic`), mirroring WinUI.
@@ -85,15 +47,21 @@ This is the first stable release. The public CLR surface and the public XAML res
 - `CheckBox`'s default style gains `HorizontalAlignment="Left"` and `MinWidth="120"`, matching WinUI's `DefaultCheckBoxStyle`; content-less checkboxes opt back out with an explicit `MinWidth="0"`.
 - Demo `SectionDescriptionStyle` uses `TextFillColorPrimaryBrush` instead of `TextFillColorSecondaryBrush`, matching the WinUI Gallery's description text style.
 - Tests: the suite is reorganised into `Infrastructure/`, `Control/`, `Control/Rules/`, `Theming/`, `Windowing/`, `Gallery/` and `Tools/` with one sealed class per subject, replacing the 62-file `partial class ControlTests`; eighteen redundant cases are deleted and one is added.
-
-### Removed
-
-- `LoopingSelectorList`, `CornerRadiusFilterConverter`, `CornerRadiusFilterEdge` and `GridLengthAnimation` are internal. All four were implementation details with a single in-library consumer. Internalizing breaks an already-compiled consumer binary at load time, not only source that recompiles.
-- The nine `NavigationView.Part*` constants are internal. Template part names are not API; read them from the shipped template. Unlike the internalisations above, a `const` inlines at the consumer's own compile site, so this is source-only: an already-built binary keeps working.
-- The third parameter of `ApplicationThemeManager.Apply`, `updateAccent`. It had been discarded inside the method since the single pipeline rewrite.
-- `ApplicationAccentColorManager.ApplyApplicationAccent()`, a one-line alias for `ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4))`.
-- `InfoBarClosingEventArgs`'s implicit parameterless constructor, replaced by a constructor that takes the new `Reason`. This is source-only: it matters only to code that constructed the args itself, since `InfoBar` raises them.
-- Fourteen unconsumed theme keys, rather than freeze them into the 1.0 surface: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, and their `*Brush` twins. The caption button colours remain published under their WinUI style names `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`. This also fails silently: a stale `DynamicResource` reference to any of these fourteen keeps building and simply resolves to nothing at runtime.
+- Demo: `GalleryPageHeader` now follows the WinUI 3 Gallery `PageHeader` layout on every page: the title
+  sits alone on the first row in `TitleTextBlockStyle`, and a second row carries `Documentation` and
+  `Source` drop-downs on the left (the docs link from `DocsDocument` plus `DocsAnchor`, the page XAML and
+  code-behind on GitHub resolved from the hosting page type, and an optional `ControlSourcePath`) and
+  the theme toggle, a new copy-link button and the favorite toggle on the right, separated as WinUI does.
+- Demo: new `DemoCodePresenter` shows an inline, syntax-highlighted snippet without a card, mirroring the
+  Gallery `SampleCodePresenter`; the highlighter moved out of `DemoSampleControl` into the shared
+  `DemoSourceHighlighter` so expander tabs and inline snippets colorize identically. The Colors page uses
+  it for its brush example and drops the old monospace card and `DemoCodeSampleTextStyle`.
+- Demo: `DemoSelectorBarStyle` restyles a `TabControl` to WinUI `SelectorBar` metrics (12,10,12,7 item
+  padding, 14 px text, no selected plate, a 16 by 3 accent pill); the Colors page section switcher uses it.
+- Tests: `GalleryColorsPageTests` is rewritten for the new page (5 cases removed, 8 added), `GalleryPageHeaderTests`
+  gains two layout and source-link cases, and `DemoCodePresenterTests` adds three, so the `--list-tests`
+  baselines and the CI lane totals move from 1219 to 1227 on `net472` and from 1220 to 1228 on
+  `net10.0-windows10.0.26100.0`.
 
 ### Fixed
 
@@ -118,6 +86,24 @@ This is the first stable release. The public CLR surface and the public XAML res
 - The `ComboBox` dropdown surface is now opaque like every other popup, replacing a translucent fill that let 6 percent of whatever was behind it show through unblurred.
 - `FluenceWindow` now compensates for 10 bits per channel alpha quantisation on `Mica` and `Tabbed` backdrops, pre-blending the `NavigationView` content layer toward WinUI's canonical fallback token; see `KNOWN_ISSUES.md`.
 - `Button` now composites its stroke over the surface beneath it rather than its own fill, matching WinUI's `BackgroundSizing="InnerBorderEdge"`; the other button-family controls were already correct.
+- Flyout, ToolTip, TeachingTip and CommandBarFlyout now cast a real drop shadow. WPF sizes a popup
+  window to exactly its child's layout size, so the shadow effect was clipped away and survived only in
+  the rounded corner notches, where it read as a dark square plate behind a rounded card. Each presenter
+  now reserves a 16 px transparent gutter and each popup subtracts the same 16 px from its placement.
+- ContextMenu and its submenus, ComboBox, AutoSuggestBox, DatePicker, TimePicker, DropDownButton,
+  SplitButton and ToggleSplitButton popups reserve the same 16 px elevation gutter, so every popup
+  surface in the library now casts the shadow it was already configured for.
+
+### Removed
+
+- `LoopingSelectorList`, `CornerRadiusFilterConverter`, `CornerRadiusFilterEdge` and `GridLengthAnimation` are internal. All four were implementation details with a single in-library consumer. Internalizing breaks an already-compiled consumer binary at load time, not only source that recompiles.
+- The nine `NavigationView.Part*` constants are internal. Template part names are not API; read them from the shipped template. Unlike the internalisations above, a `const` inlines at the consumer's own compile site, so this is source-only: an already-built binary keeps working.
+- The third parameter of `ApplicationThemeManager.Apply`, `updateAccent`. It had been discarded inside the method since the single pipeline rewrite.
+- `ApplicationAccentColorManager.ApplyApplicationAccent()`, a one-line alias for `ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4))`.
+- `InfoBarClosingEventArgs`'s implicit parameterless constructor, replaced by a constructor that takes the new `Reason`. This is source-only: it matters only to code that constructed the args itself, since `InfoBar` raises them.
+- Fourteen unconsumed theme keys, rather than freeze them into the 1.0 surface: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, and their `*Brush` twins. The caption button colours remain published under their WinUI style names `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`. This also fails silently: a stale `DynamicResource` reference to any of these fourteen keeps building and simply resolves to nothing at runtime.
+
+
 
 ## [0.8.19-preview] - 2026-08-30
 
@@ -513,8 +499,8 @@ This is the first stable release. The public CLR surface and the public XAML res
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v1.0.0...main
-[1.0.0]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v1.0.0
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...main
+[0.9.0-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v0.9.0-pre
 [0.8.19-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.18-pre...v0.8.19-pre
 [0.8.18-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.17-pre...v0.8.18-pre
 [0.8.17-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.16-pre...v0.8.17-pre
