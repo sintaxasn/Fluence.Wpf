@@ -27,19 +27,28 @@
  */
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     /// <summary>
-    /// Shared gallery page header modelled on the WinUI 3 Gallery's Controls/PageHeader.xaml:
-    /// a page title on the left and a row of default-appearance action buttons on the right
-    /// (Documentation, Toggle theme, Favorite).
+    /// Shared gallery page header modelled on the WinUI 3 Gallery's <c language="text">Controls/PageHeader.xaml</c>:
+    /// the page title on its own row, then an action row with the Documentation and Source drop-downs
+    /// on the left and the theme toggle, copy-link and favorite buttons on the right.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="DocsAnchor"/> and <see cref="DocsDocument"/> build the Documentation link
+    /// (<c language="text">docs/&lt;DocsDocument&gt;#&lt;DocsAnchor&gt;</c> on the repository's main branch); the
+    /// drop-down is hidden while the anchor is empty. The Source drop-down always offers the hosting
+    /// page's XAML and code-behind on GitHub, resolved from the page type the header is placed in,
+    /// plus the optional <see cref="ControlSourcePath"/> for the library file the page demonstrates.
+    /// The copy-link button copies the Documentation link when there is one, else the page XAML link.
+    /// </para>
+    /// </remarks>
     public partial class GalleryPageHeader : UserControl
     {
         /// <summary>
@@ -47,7 +56,7 @@ namespace Fluence.Wpf.Demo.Pages
         /// </summary>
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
-                "Title",
+                nameof(Title),
                 typeof(string),
                 typeof(GalleryPageHeader),
                 new FrameworkPropertyMetadata(string.Empty));
@@ -57,12 +66,35 @@ namespace Fluence.Wpf.Demo.Pages
         /// </summary>
         public static readonly DependencyProperty DocsAnchorProperty =
             DependencyProperty.Register(
-                "DocsAnchor",
+                nameof(DocsAnchor),
                 typeof(string),
                 typeof(GalleryPageHeader),
-                new FrameworkPropertyMetadata(string.Empty, OnDocsAnchorChanged));
+                new FrameworkPropertyMetadata(string.Empty, OnLinksChanged));
 
-        private static readonly Uri ControlsDocBaseUri = new UriBuilder("https", "github.com", -1, "sintaxasn/Fluence.Wpf/blob/main/docs/controls.md").Uri;
+        /// <summary>
+        /// Identifies the <see cref="DocsDocument"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DocsDocumentProperty =
+            DependencyProperty.Register(
+                nameof(DocsDocument),
+                typeof(string),
+                typeof(GalleryPageHeader),
+                new FrameworkPropertyMetadata("controls.md", OnLinksChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="ControlSourcePath"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ControlSourcePathProperty =
+            DependencyProperty.Register(
+                nameof(ControlSourcePath),
+                typeof(string),
+                typeof(GalleryPageHeader),
+                new FrameworkPropertyMetadata(string.Empty, OnLinksChanged));
+
+        private const string RepositoryBlobRoot = "sintaxasn/Fluence.Wpf/blob/main/";
+        private const string PagesFolder = "Fluence.Wpf.Demo/Pages/";
+
+        private static readonly Uri RepositoryBlobBaseUri = new UriBuilder("https", "github.com", -1, RepositoryBlobRoot).Uri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GalleryPageHeader"/> class.
@@ -70,14 +102,14 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryPageHeader()
         {
             InitializeComponent();
-            UpdateDocsButtonVisibility();
+            UpdateLinks();
             UpdateFavoriteState(isFavorite: false);
             Loaded += GalleryPageHeader_Loaded;
             Unloaded += GalleryPageHeader_Unloaded;
         }
 
         /// <summary>
-        /// Gets or sets the page title shown at the left of the header.
+        /// Gets or sets the page title.
         /// </summary>
         public string Title
         {
@@ -86,8 +118,8 @@ namespace Fluence.Wpf.Demo.Pages
         }
 
         /// <summary>
-        /// Gets or sets the docs/controls.md heading slug the Documentation button opens.
-        /// The button is hidden when this value is empty or whitespace.
+        /// Gets or sets the heading slug inside <see cref="DocsDocument"/> the Documentation link opens.
+        /// Empty hides the Documentation drop-down.
         /// </summary>
         public string DocsAnchor
         {
@@ -95,17 +127,61 @@ namespace Fluence.Wpf.Demo.Pages
             set => SetValue(DocsAnchorProperty, value);
         }
 
-        private static void OnDocsAnchorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Gets or sets the file under <c language="text">docs/</c> the Documentation link opens. Defaults to <c language="text">controls.md</c>.
+        /// </summary>
+        public string DocsDocument
+        {
+            get => (string)GetValue(DocsDocumentProperty);
+            set => SetValue(DocsDocumentProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the repository-relative path of the library source the page demonstrates,
+        /// for example <c language="text">Fluence.Wpf/Themes/Controls/Button.xaml</c>. Empty hides the section.
+        /// </summary>
+        public string ControlSourcePath
+        {
+            get => (string)GetValue(ControlSourcePathProperty);
+            set => SetValue(ControlSourcePathProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the Documentation link, or <see langword="null"/> when <see cref="DocsAnchor"/> is empty.
+        /// </summary>
+        public Uri? DocumentationUri =>
+            string.IsNullOrWhiteSpace(DocsAnchor)
+                ? null
+                : new Uri(RepositoryBlobBaseUri, "docs/" + DocsDocument + "#" + DocsAnchor);
+
+        /// <summary>
+        /// Gets the GitHub link to the hosting page's XAML, or <see langword="null"/> when the header is not inside a gallery page.
+        /// </summary>
+        public Uri? PageXamlUri { get; private set; }
+
+        private static void OnLinksChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is GalleryPageHeader header)
             {
-                header.UpdateDocsButtonVisibility();
+                header.UpdateLinks();
             }
+        }
+
+        private static string DescribeDocument(string document)
+        {
+            return document switch
+            {
+                "controls.md" => "Control reference",
+                "theming.md" => "Theming guide",
+                "getting-started.md" => "Getting started",
+                _ => document,
+            };
         }
 
         private void GalleryPageHeader_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateThemeToggleEnabled();
+            ResolvePageSourceLinks();
             ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
             ApplicationThemeManager.Changed += ApplicationThemeManager_Changed;
         }
@@ -125,33 +201,69 @@ namespace Fluence.Wpf.Demo.Pages
             ThemeToggleButton.IsEnabled = ApplicationThemeManager.ResolvedTheme is not ApplicationTheme.HighContrast;
         }
 
-        private void UpdateDocsButtonVisibility()
+        private void UpdateLinks()
         {
-            DocsButton.Visibility = string.IsNullOrWhiteSpace(DocsAnchor) ? Visibility.Collapsed : Visibility.Visible;
+            Uri? docs = DocumentationUri;
+            DocsDropDownButton.Visibility = docs is null ? Visibility.Collapsed : Visibility.Visible;
+            DocsLink.Content = DescribeDocument(DocsDocument);
+            DocsLink.ToolTip = docs?.AbsoluteUri;
+            if (docs is not null)
+            {
+                DocsLink.NavigateUri = docs;
+            }
+
+            bool hasControlSource = !string.IsNullOrWhiteSpace(ControlSourcePath);
+            ControlSourcePanel.Visibility = hasControlSource ? Visibility.Visible : Visibility.Collapsed;
+            if (hasControlSource)
+            {
+                Uri controlSource = new(RepositoryBlobBaseUri, ControlSourcePath.Replace('\\', '/'));
+                ControlSourceLink.Content = System.IO.Path.GetFileName(ControlSourcePath) ?? ControlSourcePath;
+                ControlSourceLink.ToolTip = controlSource.AbsoluteUri;
+                ControlSourceLink.NavigateUri = controlSource;
+            }
         }
 
-        private void DocsButton_Click(object sender, RoutedEventArgs e)
+        // The header is placed inside a gallery page UserControl; its type name is the page file name,
+        // so the GitHub links to the page XAML and code-behind can be derived rather than declared.
+        private void ResolvePageSourceLinks()
         {
-            if (string.IsNullOrWhiteSpace(DocsAnchor))
+            DependencyObject? current = VisualTreeHelper.GetParent(this);
+            UserControl? page = null;
+            while (current is not null)
             {
+                if (current is UserControl candidate && candidate is not GalleryPageHeader &&
+                    string.Equals(candidate.GetType().Namespace, typeof(GalleryPageHeader).Namespace, StringComparison.Ordinal))
+                {
+                    page = candidate;
+                    break;
+                }
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            if (page is null)
+            {
+                PageXamlUri = null;
+                PageSourcePanel.Visibility = Visibility.Collapsed;
                 return;
             }
 
-            Uri target = new(ControlsDocBaseUri.AbsoluteUri + "#" + DocsAnchor);
-            ProcessStartInfo startInfo = new(target.AbsoluteUri)
-            {
-                UseShellExecute = true,
-            };
+            string pageFile = PagesFolder + page.GetType().Name + ".xaml";
+            PageXamlUri = new Uri(RepositoryBlobBaseUri, pageFile);
+            Uri pageCode = new(RepositoryBlobBaseUri, pageFile + ".cs");
+            PageXamlLink.NavigateUri = PageXamlUri;
+            PageXamlLink.ToolTip = PageXamlUri.AbsoluteUri;
+            PageCodeLink.NavigateUri = pageCode;
+            PageCodeLink.ToolTip = pageCode.AbsoluteUri;
+            PageSourcePanel.Visibility = Visibility.Visible;
+        }
 
-            try
+        private void CopyLinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            Uri? link = DocumentationUri ?? PageXamlUri;
+            if (link is not null)
             {
-                _ = Process.Start(startInfo);
-            }
-            catch (Win32Exception)
-            {
-                // Opening the default browser is best-effort: Process.Start throws Win32Exception
-                // when no shell handler is registered for the URI, and that must never surface as
-                // an unhandled exception from a click handler.
+                DemoClipboard.SetText(link.AbsoluteUri);
             }
         }
 

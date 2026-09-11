@@ -26,8 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
@@ -39,7 +43,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
     public sealed class GalleryPageHeaderTests
     {
         [Fact]
-        public Task GalleryPageHeader_DocsButton_TracksDocsAnchorVisibilityAsync()
+        public Task GalleryPageHeader_DocsDropDown_TracksDocsAnchorVisibilityAsync()
         {
             return WpfTestSta.RunOnStaAsync(static delegate
             {
@@ -48,12 +52,22 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(header);
                 try
                 {
-                    Controls.Button docsButton = Assert.IsType<Controls.Button>(DemoTestHost.FindByName<Controls.Button>(header, "DocsButton"), exactMatch: false);
+                    Controls.DropDownButton docsButton = Assert.IsType<Controls.DropDownButton>(DemoTestHost.FindByName<Controls.DropDownButton>(header, "DocsDropDownButton"), exactMatch: false);
                     Assert.Equal(Visibility.Collapsed, docsButton.Visibility);
+                    Assert.Null(header.DocumentationUri);
 
                     header.DocsAnchor = "basic-actions";
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(Visibility.Visible, docsButton.Visibility);
+                    Assert.Equal("https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/controls.md#basic-actions", header.DocumentationUri?.AbsoluteUri, StringComparer.Ordinal);
+
+                    header.DocsDocument = "theming.md";
+                    header.DocsAnchor = "canonical-token-families";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("https://github.com/sintaxasn/Fluence.Wpf/blob/main/docs/theming.md#canonical-token-families", header.DocumentationUri?.AbsoluteUri, StringComparer.Ordinal);
+                    Controls.HyperlinkButton docsLink = Assert.IsType<Controls.HyperlinkButton>(header.FindName("DocsLink"), exactMatch: false);
+                    Assert.Equal("Theming guide", docsLink.Content as string, StringComparer.Ordinal);
+                    Assert.Equal(header.DocumentationUri, docsLink.NavigateUri);
 
                     header.DocsAnchor = string.Empty;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -211,6 +225,86 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     favoriteToggle.IsChecked = false;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("\uE734", favoriteIcon.Glyph);
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
+            });
+        }
+
+        // WinUI Gallery PageHeader.xaml: the title sits alone on row 0 in TitleTextBlockStyle; row 1 holds the
+        // Documentation and Source drop-downs on the left and theme, copy-link and favorite on the right.
+        [Fact]
+        public Task GalleryPageHeader_Layout_MirrorsWinUiPageHeaderRowsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                Application application = DemoTestHost.EnsureDemoTheme();
+                GalleryPageHeader header = new() { Title = "Buttons", DocsAnchor = "basic-actions" };
+                Window window = DemoTestHost.CreateHostWindow(header);
+                try
+                {
+                    TextBlock title = Assert.IsType<TextBlock>(DemoTestHost.FindByName<TextBlock>(header, "TitleTextBlock"), exactMatch: false);
+                    Assert.Same(application.TryFindResource("TitleTextBlockStyle"), title.Style);
+                    Assert.Equal(0, Grid.GetRow(title));
+
+                    Controls.DropDownButton docs = Assert.IsType<Controls.DropDownButton>(DemoTestHost.FindByName<Controls.DropDownButton>(header, "DocsDropDownButton"), exactMatch: false);
+                    Controls.DropDownButton source = Assert.IsType<Controls.DropDownButton>(DemoTestHost.FindByName<Controls.DropDownButton>(header, "SourceDropDownButton"), exactMatch: false);
+                    Controls.Button theme = Assert.IsType<Controls.Button>(DemoTestHost.FindByName<Controls.Button>(header, "ThemeToggleButton"), exactMatch: false);
+                    Controls.Button copyLink = Assert.IsType<Controls.Button>(DemoTestHost.FindByName<Controls.Button>(header, "CopyLinkButton"), exactMatch: false);
+                    Controls.ToggleButton favorite = Assert.IsType<Controls.ToggleButton>(DemoTestHost.FindByName<Controls.ToggleButton>(header, "FavoriteToggleButton"), exactMatch: false);
+
+                    // Left to right on the action row, below the title.
+                    double titleBottom = title.TranslatePoint(new Point(0, title.ActualHeight), header).Y;
+                    foreach (FrameworkElement element in new FrameworkElement[] { docs, source, theme, copyLink, favorite })
+                    {
+                        Assert.True(element.TranslatePoint(new Point(0, 0), header).Y >= titleBottom, element.Name + " should sit below the title row.");
+                    }
+
+                    double[] lefts = [.. new FrameworkElement[] { docs, source, theme, copyLink, favorite }.Select(element => element.TranslatePoint(new Point(0, 0), header).X)];
+                    for (int i = 1; i < lefts.Length; i++)
+                    {
+                        Assert.True(lefts[i] > lefts[i - 1], "Action row controls should run left to right in WinUI PageHeader order.");
+                    }
+
+                    Assert.Equal(32, theme.ActualHeight);
+                    Assert.Equal("Copy link", AutomationProperties.GetName(copyLink), StringComparer.Ordinal);
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
+            });
+        }
+
+        // The Source drop-down derives the page XAML and code-behind links from the hosting page type.
+        [Fact]
+        public Task GalleryPageHeader_SourceLinks_ResolveFromHostingPageAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                _ = DemoTestHost.EnsureDemoTheme();
+                GalleryButtonsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    GalleryPageHeader header = Assert.Single(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page));
+                    Controls.HyperlinkButton xaml = Assert.IsType<Controls.HyperlinkButton>(header.FindName("PageXamlLink"), exactMatch: false);
+                    Controls.HyperlinkButton code = Assert.IsType<Controls.HyperlinkButton>(header.FindName("PageCodeLink"), exactMatch: false);
+                    Assert.Equal("https://github.com/sintaxasn/Fluence.Wpf/blob/main/Fluence.Wpf.Demo/Pages/GalleryButtonsPage.xaml", xaml.NavigateUri.AbsoluteUri, StringComparer.Ordinal);
+                    Assert.Equal("https://github.com/sintaxasn/Fluence.Wpf/blob/main/Fluence.Wpf.Demo/Pages/GalleryButtonsPage.xaml.cs", code.NavigateUri.AbsoluteUri, StringComparer.Ordinal);
+                    Assert.Equal(xaml.NavigateUri, header.PageXamlUri);
+
+                    StackPanel controlSource = Assert.IsType<StackPanel>(header.FindName("ControlSourcePanel"), exactMatch: false);
+                    Assert.Equal(string.IsNullOrWhiteSpace(header.ControlSourcePath) ? Visibility.Collapsed : Visibility.Visible, controlSource.Visibility);
+
+                    header.ControlSourcePath = "Fluence.Wpf/Themes/Controls/Button.xaml";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, controlSource.Visibility);
+                    Controls.HyperlinkButton control = Assert.IsType<Controls.HyperlinkButton>(header.FindName("ControlSourceLink"), exactMatch: false);
+                    Assert.Equal("https://github.com/sintaxasn/Fluence.Wpf/blob/main/Fluence.Wpf/Themes/Controls/Button.xaml", control.NavigateUri.AbsoluteUri, StringComparer.Ordinal);
+                    Assert.Equal("Button.xaml", control.Content as string, StringComparer.Ordinal);
                 }
                 finally
                 {

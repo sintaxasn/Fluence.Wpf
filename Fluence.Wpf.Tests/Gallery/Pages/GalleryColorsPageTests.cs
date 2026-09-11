@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -43,28 +44,51 @@ using Xunit;
 namespace Fluence.Wpf.Tests.Gallery.Pages
 {
     /// <summary>
-    /// Covers <see cref="GalleryColorsPage"/>.
+    /// Covers <see cref="GalleryColorsPage"/>, a direct catalog page that mirrors the WinUI 3 Gallery
+    /// Color page (six sections of <see cref="ColorPageExample"/> cards and <see cref="ColorTile"/> rows)
+    /// and, like Icons, renders without a <see cref="DemoSampleControl"/>.
     /// </summary>
     public sealed class GalleryColorsPageTests : IAsyncLifetime
     {
-        private static readonly string[] SectionNames =
+        // Transcribed from WinUIGallery/Controls/DesignGuidance/ColorSections/*Section.xaml: the
+        // ColorPageExample titles in order and the tile-row column counts in order, per SelectorBar item.
+        private static readonly SectionExpectation[] Sections =
         [
-            "Text",
-            "Fill",
-            "Stroke",
-            "Background",
-            "Signal",
-            "High Contrast",
+            new("Text", ["Text", "Accent Text", "Text On Accent"], [4, 4, 2, 2]),
+            new("Fill", ["Control Fill", "Control Alt Fill", "Neutral Solid", "Neutral Strong", "Subtle Fill", "Control On Image Fill", "Accent Fill"], [4, 3, 3, 2, 1, 2, 4, 4, 3, 2]),
+            new("Stroke", ["Card Stroke", "Control Elevation (gradient strokes)", "Control Stroke", "Control Strong Stroke", "Surface Stroke", "Divider Stroke", "Focus Stroke"], [2, 3, 2, 4, 3, 2, 2, 1, 2]),
+            new("Background", ["Card Background", "Smoke Background", "Layer", "Layer on Acrylic", "Layer on Mica Base Alt", "Solid Background", "Acrylic Background"], [3, 1, 2, 1, 4, 4, 3, 2]),
+            new("Signal", ["System"], [3, 3, 3, 3, 1]),
+            new("High Contrast", [], [4]),
         ];
+
+        private const int ExpectedTileCount = 102;
+
+        private Window? _host;
+        private GalleryColorsPage? _page;
 
         public ValueTask InitializeAsync()
         {
-            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
+            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
+            {
+                _ = TestApp.EnsureDemoTheme();
+                _page = new GalleryColorsPage();
+                _host = DemoTestHost.CreateHostWindow(_page);
+            }));
         }
 
         public ValueTask DisposeAsync()
         {
-            return default;
+            return new ValueTask(WpfTestSta.RunOnStaAsync(() =>
+            {
+                if (_host is not null)
+                {
+                    DemoTestHost.CloseWindow(_host);
+                    _host = null;
+                }
+
+                _page = null;
+            }));
         }
 
         // This test needs the real shell NavigationView to reach the Colors page by route, so
@@ -95,19 +119,164 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryColorsPage_ExposesGalleryPageHeaderWithColorsTitleAsync()
         {
-            return DemoTestHost.RunDemoPageTestAsync(static () => new GalleryColorsPage(), static window =>
+            return WpfTestSta.RunOnStaAsync(() =>
             {
-                GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(window).FirstOrDefault(), exactMatch: false);
+                GalleryColorsPage page = Page();
+                GalleryPageHeader header = Assert.IsType<GalleryPageHeader>(DemoTestHost.FindVisualChildren<GalleryPageHeader>(page).FirstOrDefault(), exactMatch: false);
                 Assert.Equal("Colors", header.Title, StringComparer.Ordinal);
-                Assert.True(string.IsNullOrWhiteSpace(header.DocsAnchor),
-                    "Colors has no matching docs/controls.md section, so the Documentation button should stay hidden.");
+                // Colors documents the theme tokens, so its Documentation link targets docs/theming.md rather than docs/controls.md.
+                Assert.Equal("theming.md", header.DocsDocument, StringComparer.Ordinal);
+                Assert.Equal("canonical-token-families", header.DocsAnchor, StringComparer.Ordinal);
+                Assert.Equal("Fluence.Wpf/Themes/Colors/Theme.Light.xaml", header.ControlSourcePath, StringComparer.Ordinal);
+
+                // WinUI Gallery ColorPage.xaml: an inline SampleCodePresenter without a copy button, then the SelectorBar.
+                DemoCodePresenter snippet = Assert.Single(DemoTestHost.FindVisualChildren<DemoCodePresenter>(page));
+                Assert.Contains("TextFillColorPrimaryBrush", snippet.Code, StringComparison.Ordinal);
+                Assert.Equal(DemoSourceLanguage.Xaml, snippet.CodeLanguage);
+                Assert.False(snippet.IsCopyButtonVisible);
+                _ = Assert.Single(DemoTestHost.FindVisualChildren<RichTextBox>(snippet));
+                Assert.Same(WpfTestSta.EnsureApplication().TryFindResource("DemoSelectorBarStyle"), ColorTabs(page).Style);
             });
         }
 
-        // This test drives the page's color-section tabs, so it builds its own instance rather
-        // than mutating the one the class shares.
         [Fact]
-        public Task GalleryColorsPage_UsesWinUiGalleryColorStructureAsync()
+        public Task GalleryColorsPage_MirrorsWinUiGalleryColorSectionsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                _ = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
+                Assert.Empty(DemoTestHost.FindVisualChildren<DemoSampleControl>(page));
+                Assert.Empty(DemoTestHost.FindVisualChildren<WrapPanel>(page));
+
+                TabControl tabs = ColorTabs(page);
+                Assert.Equal(Sections.Length, tabs.Items.Count);
+
+                int totalTiles = 0;
+                for (int i = 0; i < Sections.Length; i++)
+                {
+                    SectionExpectation expected = Sections[i];
+                    TabItem tab = (TabItem)tabs.Items[i];
+                    Assert.Equal(expected.Title, tab.Header as string, StringComparer.Ordinal);
+
+                    SelectTab(tabs, i, page.Dispatcher);
+
+                    List<string> exampleTitles = [.. DemoTestHost.FindVisualChildren<ColorPageExample>(SectionPanel(tabs, i)).Select(static example => example.Title)];
+                    Assert.Equal(expected.ExampleTitles, exampleTitles, StringComparer.Ordinal);
+
+                    List<UniformGrid> rows = TileRows(SectionPanel(tabs, i));
+                    Assert.Equal(expected.RowColumns, rows.Select(static row => row.Columns));
+                    foreach (UniformGrid row in rows)
+                    {
+                        Assert.True(row.Columns <= 4, "WinUI Gallery tile rows never exceed four columns.");
+                        Assert.Equal(row.Columns * row.Rows, row.Children.Count);
+                        totalTiles += row.Children.Count;
+                    }
+                }
+
+                Assert.Equal(ExpectedTileCount, totalTiles);
+            });
+        }
+
+        [Fact]
+        public Task GalleryColorsPage_TilesArePaintedWithTheirOwnBrushAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                Application application = WpfTestSta.EnsureApplication();
+                TabControl tabs = ColorTabs(page);
+                CornerRadius middle = Assert.IsType<CornerRadius>(application.TryFindResource("DemoColorTileMiddleCornerRadius"), exactMatch: false);
+                Color surfaceColor = Assert.IsType<SolidColorBrush>(application.TryFindResource("SolidBackgroundFillColorBaseBrush"), exactMatch: false).Color;
+
+                for (int i = 0; i < tabs.Items.Count; i++)
+                {
+                    SelectTab(tabs, i, page.Dispatcher);
+                    foreach (UniformGrid row in TileRows(SectionPanel(tabs, i)))
+                    {
+                        // WinUI Gallery GalleryTileGridStyle: the row sits on the base solid background inside a 1px card stroke.
+                        Border surface = Assert.IsType<Border>(row.Parent, exactMatch: false);
+                        Assert.Equal(surfaceColor, Assert.IsType<SolidColorBrush>(surface.Background, exactMatch: false).Color);
+                        Assert.Equal(new Thickness(1), surface.BorderThickness);
+
+                        List<ColorTile> tiles = [.. row.Children.Cast<ColorTile>()];
+                        for (int t = 0; t < tiles.Count; t++)
+                        {
+                            ColorTile tile = tiles[t];
+                            string key = Assert.IsType<string>(tile.Tag, exactMatch: false);
+                            Assert.Equal(key, tile.ColorBrushName, StringComparer.Ordinal);
+                            Assert.Same(application.TryFindResource(key), tile.Background);
+                            Assert.NotNull(tile.Foreground);
+
+                            int column = t % row.Columns;
+                            bool edge = column is 0 || column == row.Columns - 1;
+                            bool cornerRow = row.Rows is 1 || t / row.Columns is 0 || t / row.Columns == row.Rows - 1;
+                            Assert.Equal(edge && cornerRow, tile.TileCornerRadius != middle);
+                            Assert.Equal(column < row.Columns - 1, tile.ShowSeparator);
+                        }
+                    }
+                }
+            });
+        }
+
+        [Fact]
+        public Task GalleryColorsPage_ExamplePanelsUseGalleryLayeringAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                Application application = WpfTestSta.EnsureApplication();
+                TabControl tabs = ColorTabs(page);
+
+                for (int i = 0; i < tabs.Items.Count; i++)
+                {
+                    SelectTab(tabs, i, page.Dispatcher);
+                    foreach (ColorPageExample example in DemoTestHost.FindVisualChildren<ColorPageExample>(SectionPanel(tabs, i)))
+                    {
+                        // WinUI Gallery ColorPageExample backgrounds: quarternary solid, except the accent and smoke groups.
+                        string expectedKey = example.Title switch
+                        {
+                            "Text On Accent" => "AccentFillColorDefaultBrush",
+                            "Smoke Background" => "SmokeFillColorDefaultBrush",
+                            _ => "SolidBackgroundFillColorQuarternaryBrush",
+                        };
+                        Assert.Same(application.TryFindResource(expectedKey), example.Background);
+                        Assert.NotNull(example.ExampleContent);
+                    }
+                }
+            });
+        }
+
+        [Fact]
+        public Task GalleryColorsPage_TileCopyButtonsCarryBrushKeysAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                TabControl tabs = ColorTabs(page);
+                SortedSet<string> copiedKeys = new(StringComparer.Ordinal);
+
+                for (int i = 0; i < tabs.Items.Count; i++)
+                {
+                    SelectTab(tabs, i, page.Dispatcher);
+                    foreach (ColorTile tile in DemoTestHost.FindVisualChildren<ColorTile>(SectionPanel(tabs, i)))
+                    {
+                        Controls.Button copy = Assert.Single(DemoTestHost.FindVisualChildren<Controls.Button>(tile));
+                        Assert.Equal(tile.ColorBrushName, copy.Tag as string, StringComparer.Ordinal);
+                        Assert.Equal("Copy brush name", AutomationProperties.GetName(copy), StringComparer.Ordinal);
+                        _ = copiedKeys.Add(tile.ColorBrushName);
+                    }
+                }
+
+                Assert.Contains("TextFillColorPrimaryBrush", copiedKeys);
+                Assert.Contains("AccentFillColorDefaultBrush", copiedKeys);
+                Assert.Contains("SystemColorWindowTextColorBrush", copiedKeys);
+            });
+        }
+
+        // This test cycles the app theme, so it builds its own page rather than mutating the one the class shares.
+        [Fact]
+        public Task GalleryColorsPage_BrushKeys_ResolveAcrossThemesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -116,85 +285,18 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Controls.SmoothScrollViewer scrollViewer = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
-
-                    TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
-                    Assert.Equal(SectionNames.Length, colorTabs.Items.Count);
-
-                    for (int i = 0; i < SectionNames.Length; i++)
+                    SortedSet<string> resourceKeys = new(StringComparer.Ordinal);
+                    TabControl tabs = ColorTabs(page);
+                    for (int i = 0; i < tabs.Items.Count; i++)
                     {
-                        TabItem tabItem = (TabItem)colorTabs.Items[i];
-                        Assert.Equal(SectionNames[i], tabItem.Header as string, StringComparer.Ordinal);
-                    }
-
-                    List<string> exampleTitles = [.. DemoTestHost.FindVisualChildren<TextBlock>(page)
-                        .Where(static text => string.Equals(text.Tag as string, "ColorExampleTitle", StringComparison.Ordinal))
-                        .Select(static text => text.Text)];
-                    Assert.Equal(["Text", "Accent Text", "Text On Accent"], exampleTitles, StringComparer.Ordinal);
-
-                    Assert.Empty(DemoTestHost.FindVisualChildren<WrapPanel>(page));
-                    Assert.Empty(DemoTestHost.FindVisualChildren<DemoSampleControl>(page));
-
-                    int totalTiles = 0;
-                    bool sawSystemColorAlias = false;
-                    bool sawAccentFill = false;
-                    for (int i = 0; i < colorTabs.Items.Count; i++)
-                    {
-                        SelectTab(colorTabs, i, window.Dispatcher);
-
-                        List<UniformGrid> rows = [.. DemoTestHost.FindVisualChildren<UniformGrid>(page)
-                            .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal))];
-                        Assert.True(rows.Count > 0, "Selected Colors page section should contain token rows.");
-
-                        // WinUI Gallery GalleryTileGridStyle: token rows sit on the SolidBackgroundFillColorBase tile surface.
-                        Color surfaceColor = Assert.IsType<SolidColorBrush>(application.TryFindResource("SolidBackgroundFillColorBaseBrush"), exactMatch: false).Color;
-                        foreach (UniformGrid row in rows)
+                        SelectTab(tabs, i, window.Dispatcher);
+                        foreach (ColorTile tile in DemoTestHost.FindVisualChildren<ColorTile>(SectionPanel(tabs, i)))
                         {
-                            Border surface = Assert.IsType<Border>(row.Parent, exactMatch: false);
-                            Assert.Equal(surfaceColor, Assert.IsType<SolidColorBrush>(surface.Background, exactMatch: false).Color);
-                            Assert.Equal(new Thickness(1), surface.BorderThickness);
-                        }
-
-                        foreach (UniformGrid row in rows)
-                        {
-                            Assert.Equal(row.Children.Count, row.Columns);
-                            Assert.True(row.Columns <= 4, "Token rows should stay compact at four columns or fewer.");
-
-                            foreach (string resourceKey in row.Children.Cast<FrameworkElement>().Select(static tile => tile.Tag as string ?? string.Empty))
-                            {
-                                Assert.False(string.IsNullOrWhiteSpace(resourceKey), "Each token tile should expose its resource key.");
-                                totalTiles++;
-                                sawSystemColorAlias |= string.Equals(resourceKey, "SystemColorWindowTextColorBrush", StringComparison.Ordinal);
-                                sawAccentFill |= string.Equals(resourceKey, "AccentFillColorDefaultBrush", StringComparison.Ordinal);
-                            }
+                            _ = resourceKeys.Add(tile.ColorBrushName);
                         }
                     }
 
-                    Assert.True(totalTiles >= 90, "Colors page should expose the WinUI-style brush catalogue through token tiles.");
-                    Assert.True(sawSystemColorAlias, "High Contrast section should use SystemColor alias resources.");
-                    Assert.True(sawAccentFill, "Fill section should include accent fill resources.");
-                }
-                finally
-                {
-                    DemoTestHost.CloseWindow(window);
-                }
-            });
-        }
-
-        // This test drives the page's color-section tabs and cycles the app theme, so it
-        // builds its own instance rather than mutating the one the class shares.
-        [Fact]
-        public Task GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemesAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static () =>
-            {
-                Application application = WpfTestSta.EnsureApplication();
-                GalleryColorsPage page = new();
-                Window window = DemoTestHost.CreateHostWindow(page);
-                try
-                {
-                    SortedSet<string> resourceKeys = CollectColorTokenResourceKeys(page, window.Dispatcher);
-                    Assert.True(resourceKeys.Count >= 90, "Colors page should expose enough token keys to cover the Fluent color families.");
+                    Assert.True(resourceKeys.Count >= 100, "Colors page should expose the WinUI brush catalogue.");
 
                     ApplicationTheme[] themes =
                     [
@@ -209,10 +311,8 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                         ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                        foreach (string resourceKey in resourceKeys.Where(resourceKey => application.TryFindResource(resourceKey) is null))
-                        {
-                            unresolved.Add(theme + ": " + resourceKey);
-                        }
+                        // Elevation strokes resolve as gradient brushes, so only presence is asserted.
+                        unresolved.AddRange(resourceKeys.Where(key => application.TryFindResource(key) is not Brush).Select(key => theme + ": " + key));
                     }
 
                     Assert.Empty(unresolved);
@@ -225,58 +325,103 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         }
 
         [Fact]
-        public async Task GalleryColorsPage_SourceAvoidsLegacyControlsAndLiteralForegroundsAsync()
+        public async Task GalleryColorsPage_SourceHasNoLiteralGeometryOrColorsAsync()
         {
-            string pageXaml = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml").ConfigureAwait(true);
-            string pageCode = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml.cs").ConfigureAwait(true);
-            string source = pageXaml + Environment.NewLine + pageCode;
+            string[] files =
+            [
+                "GalleryColorsPage.xaml",
+                "GalleryColorsPage.xaml.cs",
+                "ColorTile.xaml",
+                "ColorPageExample.xaml",
+            ];
 
             string[] forbidden =
             [
-                "ColorGuidance",
-                "GalleryBackgroundBrush",
                 "Foreground=\"Black\"",
                 "Foreground=\"White\"",
-                "Foreground=\"#",
+                "=\"#",
                 "WrapPanel",
-                "SectionSelectorHost",
-                "FluenceToggleButton",
+                "ThemeDictionary",
+                "new Thickness(",
+                "new CornerRadius(",
+                "DemoSampleControl",
+                "DemoCodeSampleTextStyle",
             ];
 
-            Assert.DoesNotContain(forbidden, value => source.Contains(value, StringComparison.Ordinal));
+            foreach (string file in files)
+            {
+                string source = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Pages", file).ConfigureAwait(true);
+                Assert.DoesNotContain(forbidden, value => source.Contains(value, StringComparison.Ordinal));
+                if (file.EndsWith(".xaml", StringComparison.Ordinal))
+                {
+                    // Every geometry attribute in the page XAML is a resource reference or a binding, never a literal.
+                    string? literal = FindLiteralGeometryAttribute(source);
+                    Assert.True(literal is null, file + " carries a literal geometry attribute: " + literal);
+                }
+            }
         }
 
-        private static SortedSet<string> CollectColorTokenResourceKeys(GalleryColorsPage page, Dispatcher dispatcher)
+        private static string? FindLiteralGeometryAttribute(string source)
         {
-            SortedSet<string> resourceKeys = new(StringComparer.OrdinalIgnoreCase);
-            TabControl colorTabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
-
-            for (int index = 0; index < colorTabs.Items.Count; index++)
+            foreach (string attribute in (string[])["Margin", "Padding", "CornerRadius", "FontSize", "Width", "Height", "MinWidth", "MinHeight", "BorderThickness"])
             {
-                SelectTab(colorTabs, index, dispatcher);
-                foreach (UniformGrid row in DemoTestHost.FindVisualChildren<UniformGrid>(page)
-                    .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal)))
+                string token = attribute + "=\"";
+                int index = source.IndexOf(token, StringComparison.Ordinal);
+                while (index >= 0)
                 {
-                    foreach (UIElement child in row.Children)
+                    bool wordBoundary = index is 0 || !char.IsLetterOrDigit(source[index - 1]);
+                    int valueStart = index + token.Length;
+                    if (wordBoundary && valueStart < source.Length)
                     {
-                        if (child is FrameworkElement { Tag: string resourceKey } &&
-                            !string.IsNullOrWhiteSpace(resourceKey))
+                        string value = source.Substring(valueStart, Math.Min(8, source.Length - valueStart));
+                        if (value[0] is not '{' and not '*' && !value.StartsWith("Auto", StringComparison.Ordinal))
                         {
-                            _ = resourceKeys.Add(resourceKey);
+                            return token + value;
                         }
                     }
+
+                    index = source.IndexOf(token, valueStart, StringComparison.Ordinal);
                 }
             }
 
-            return resourceKeys;
+            return null;
         }
 
-        private static void SelectTab(TabControl colorTabs, int index, Dispatcher dispatcher)
+        private GalleryColorsPage Page()
         {
-            colorTabs.SelectedIndex = index;
+            return _page ?? throw new InvalidOperationException("Page was not initialized.");
+        }
+
+        private static TabControl ColorTabs(GalleryColorsPage page)
+        {
+            return Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(page, "ColorSectionTabs"), exactMatch: false);
+        }
+
+        private static DependencyObject SectionPanel(TabControl tabs, int index)
+        {
+            return Assert.IsType<DependencyObject>(((TabItem)tabs.Items[index]).Content, exactMatch: false);
+        }
+
+        private static List<UniformGrid> TileRows(DependencyObject section)
+        {
+            return [.. DemoTestHost.FindVisualChildren<UniformGrid>(section).Where(static row => row.Children.Count > 0 && row.Children[0] is ColorTile)];
+        }
+
+        private static void SelectTab(TabControl tabs, int index, Dispatcher dispatcher)
+        {
+            tabs.SelectedIndex = index;
             WpfTestSta.DrainDispatcher(dispatcher);
-            colorTabs.UpdateLayout();
+            tabs.UpdateLayout();
             WpfTestSta.DrainDispatcher(dispatcher);
+        }
+
+        private sealed class SectionExpectation(string title, string[] exampleTitles, int[] rowColumns)
+        {
+            public string Title { get; } = title;
+
+            public string[] ExampleTitles { get; } = exampleTitles;
+
+            public int[] RowColumns { get; } = rowColumns;
         }
     }
 }

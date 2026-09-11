@@ -359,6 +359,9 @@
   Fluence.Wpf.Tests.Theming.ThemeTestHelpersTests.VisualTreeHelper_GetDpi_ReturnsPositiveScaleAsync
   Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.ControlFastOutSlowInKeySpline_MatchesWinUiCanonicalCurveAsync
   Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.TextBlockExtensions_Typography_UsesNamedTextBlockStyleResourceAsync
+  Fluence.Wpf.Tests.Gallery.DemoCodePresenterTests.DemoCodePresenter_RendersColorizedXamlWithoutAPlateAsync
+  Fluence.Wpf.Tests.Gallery.DemoCodePresenterTests.DemoCodePresenter_CopyButtonFollowsIsCopyButtonVisibleAsync
+  Fluence.Wpf.Tests.Gallery.DemoCodePresenterTests.DemoCodePresenter_ReRendersWhenCodeOrLanguageChangesAsync
   Fluence.Wpf.Tests.Gallery.DemoResourceCleanupTests.DesignTimeResourceDictionaries_LoadAsync
   Fluence.Wpf.Tests.Gallery.DemoResourceCleanupTests.DemoThemeStartup_AppendsDemoStylesAfterFluenceDictionariesAsync
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSamplePageWiring_MovesSlotContentAndAppliesTypedSourcesAsync
@@ -440,9 +443,12 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryAccessibilityPageTests.GalleryAccessibilityPage_RtlSampleDefaultsOnAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_NavigationRoute_LoadsConcretePageAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ExposesGalleryPageHeaderWithColorsTitleAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_UsesWinUiGalleryColorStructureAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemesAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_SourceAvoidsLegacyControlsAndLiteralForegroundsAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_MirrorsWinUiGalleryColorSectionsAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_TilesArePaintedWithTheirOwnBrushAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ExamplePanelsUseGalleryLayeringAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_TileCopyButtonsCarryBrushKeysAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_BrushKeys_ResolveAcrossThemesAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_SourceHasNoLiteralGeometryOrColorsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesHeaderLockupHeroAndGitHubLinkAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGalleryAsync
@@ -454,11 +460,13 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_CompactSourceMatchesLiveInteractionAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_CompactSampleShowsBackAndPaneToggleButtonsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_IconsAreDefaultSizeAndInfoBadgePaneStartsExpandedAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_DocsButton_TracksDocsAnchorVisibilityAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_DocsDropDown_TracksDocsAnchorVisibilityAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_ThemeToggle_DisabledUnderHighContrastEnabledUnderLightAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_ThemeToggle_ClickFromLightResolvesToDarkAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_ThemeToggle_PreservesShellBackdropAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_FavoriteToggle_FlipsGlyphWhenCheckedAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_Layout_MirrorsWinUiPageHeaderRowsAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryPageHeaderTests.GalleryPageHeader_SourceLinks_ResolveFromHostingPageAsync
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_AppThemeCombo_TracksExternalThemeChangeAsync
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_NavigationStyleCombo_TracksExternalIsPaneOpenChangesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_NavigationStyleCombo_SwitchesPaneModeAndKeepsContentLiveAsync
@@ -1223,5 +1231,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1223 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+Test discovery summary: found 1231 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
   duration: 195ms

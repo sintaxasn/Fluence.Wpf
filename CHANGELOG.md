@@ -8,6 +8,34 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Changed
+
+- Demo: `GalleryPageHeader` now follows the WinUI 3 Gallery `PageHeader` layout on every page: the title
+  sits alone on the first row in `TitleTextBlockStyle`, and a second row carries `Documentation` and
+  `Source` drop-downs on the left (the docs link from `DocsDocument` plus `DocsAnchor`, the page XAML and
+  code-behind on GitHub resolved from the hosting page type, and an optional `ControlSourcePath`) and
+  the theme toggle, a new copy-link button and the favorite toggle on the right, separated as WinUI does.
+- Demo: new `DemoCodePresenter` shows an inline, syntax-highlighted snippet without a card, mirroring the
+  Gallery `SampleCodePresenter`; the highlighter moved out of `DemoSampleControl` into the shared
+  `DemoSourceHighlighter` so expander tabs and inline snippets colorize identically. The Colors page uses
+  it for its brush example and drops the old monospace card and `DemoCodeSampleTextStyle`.
+- Demo: `DemoSelectorBarStyle` restyles a `TabControl` to WinUI `SelectorBar` metrics (12,10,12,7 item
+  padding, 14 px text, no selected plate, a 16 by 3 accent pill); the Colors page section switcher uses it.
+- Demo: the Colors page is rebuilt from the WinUI 3 Gallery Color page. Six sections (Text, Fill,
+  Stroke, Background, Signal, High Contrast) each pair a `ColorPageExample` card with rows of
+  `ColorTile` swatches painted in the brush they name, in the Gallery's order, wording and column
+  counts, with a copy button per tile. Three platform deviations are documented in the page: WPF has
+  no per-element backdrop, so Acrylic and Mica tiles show their fallback brushes; Fluence publishes
+  no accent-acrylic brushes, so that group and the tile-less Mica Background group are omitted; and
+  High Contrast shows the live `SystemColor*` aliases instead of four hard-coded palettes. The
+  `ThemeDictionary` sample that lived at the foot of the old page is gone from Colors (it is not part
+  of the Gallery page); the Home page hero and `docs/theming.md` still demonstrate it. Every size on
+  the page comes from new `DemoColor*` tokens in `DemoSharedStyles.xaml`.
+- Tests: `GalleryColorsPageTests` is rewritten for the new page (5 cases removed, 8 added), `GalleryPageHeaderTests`
+  gains two layout and source-link cases, and `DemoCodePresenterTests` adds three, so the `--list-tests`
+  baselines and the CI lane totals move from 1219 to 1227 on `net472` and from 1220 to 1228 on
+  `net10.0-windows10.0.26100.0`.
+
 ### Fixed
 
 - Flyout, ToolTip, TeachingTip and CommandBarFlyout now cast a real drop shadow. WPF sizes a popup
