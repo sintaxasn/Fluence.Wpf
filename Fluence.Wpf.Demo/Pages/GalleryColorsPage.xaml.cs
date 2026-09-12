@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -45,11 +46,18 @@ namespace Fluence.Wpf.Demo.Pages
     /// takes its text brush from the Gallery's per-tile pairing. Every brush, size, margin and radius is a
     /// resource reference, so the whole page follows theme, accent and high contrast changes.
     /// </remarks>
-    public partial class GalleryColorsPage : UserControl
+    public partial class GalleryColorsPage : Page
     {
         private const string PrimaryText = "TextFillColorPrimaryBrush";
         private const string InverseText = "TextFillColorInverseBrush";
         private const string OnAccentText = "TextOnAccentFillColorPrimaryBrush";
+
+        // The Gallery paints its accent and elevation-border tiles with a foreground that is white
+        // in every theme (its TextOnAccentFillColorDefaultBrush); the published token with that
+        // shape here is TextOnAccentFillColorSelectedText, which ColorMap seeds white for both
+        // themes. The tiles below are dark in both themes, so a theme-following foreground would
+        // render black-on-dark in Light.
+        private const string AlwaysWhiteText = "TextOnAccentFillColorSelectedTextBrush";
         private const string QuarternarySurface = "SolidBackgroundFillColorQuarternaryBrush";
         private const string CardStroke = "CardStrokeColorDefaultBrush";
         private const string SingleStroke = "DemoSingleBorderThickness";
@@ -221,14 +229,14 @@ namespace Fluence.Wpf.Demo.Pages
                         [
                             new(rows: 1,
                             [
-                                new("Accent / Default", "Rest", "AccentFillColorDefaultBrush", OnAccentText),
-                                new("Accent / Secondary", "Hover", "AccentFillColorSecondaryBrush", OnAccentText),
-                                new("Accent / Tertiary", "Pressed", "AccentFillColorTertiaryBrush", OnAccentText),
+                                new("Accent / Default", "Rest", "AccentFillColorDefaultBrush", AlwaysWhiteText),
+                                new("Accent / Secondary", "Hover", "AccentFillColorSecondaryBrush", AlwaysWhiteText),
+                                new("Accent / Tertiary", "Pressed", "AccentFillColorTertiaryBrush", AlwaysWhiteText),
                             ]),
                             new(rows: 1,
                             [
                                 new("Accent / Disabled", "Disabled", "AccentFillColorDisabledBrush", PrimaryText),
-                                new("Accent / Selected Text Background", "Highlighted/selected text background", "AccentFillColorSelectedTextBackgroundBrush", OnAccentText),
+                                new("Accent / Selected Text Background", "Highlighted/selected text background", "AccentFillColorSelectedTextBackgroundBrush", AlwaysWhiteText),
                             ]),
                         ]),
                 ]),
@@ -260,7 +268,7 @@ namespace Fluence.Wpf.Demo.Pages
                             [
                                 new("Control / Border", "Rest", "ControlElevationBorderBrush", PrimaryText),
                                 new("Circle / Border", "Rest", "CircleElevationBorderBrush", PrimaryText),
-                                new("Text Control / Border", "Rest", "TextControlElevationBorderBrush", PrimaryText),
+                                new("Text Control / Border", "Rest", "TextControlElevationBorderBrush", AlwaysWhiteText),
                             ]),
                             new(rows: 1,
                             [
@@ -389,7 +397,7 @@ namespace Fluence.Wpf.Demo.Pages
                         "Used on background colors of any material to create layering.",
                         QuarternarySurface,
                         foregroundKey: null,
-                        static () => CreateLayerExample(backgroundKey: null, "LayerOnAcrylicFillColorDefaultBrush"),
+                        static () => CreateLayerExample("AcrylicBackgroundFillColorBaseBrush", "LayerOnAcrylicFillColorDefaultBrush"),
                         [
                             new(rows: 1,
                             [
@@ -445,6 +453,19 @@ namespace Fluence.Wpf.Demo.Pages
                                 new("Acrylic Background / Default", "Default acrylic recipe used for control flyouts and surfaces that live with in the context of an app", "AcrylicBackgroundFillColorDefaultBrush", PrimaryText),
                             ]),
                         ]),
+                    new(
+                        "Accent Acrylic Background",
+                        "Acrylic background colors to place layers, cards, or controls on.",
+                        QuarternarySurface,
+                        foregroundKey: null,
+                        static () => CreateSurface("AccentAcrylicBackgroundFillColorBaseBrush", CardStroke, OverlayRadius, SurfaceWidth, SurfaceHeight),
+                        [
+                            new(rows: 1,
+                            [
+                                new("Accent Acrylic Background / Base", "Used for the bottom most layer of an acrylic surface only when the surface will use layers", "AccentAcrylicBackgroundFillColorBaseBrush", AlwaysWhiteText),
+                                new("Accent Acrylic Background / Default", "Default acrylic recipe used for control flyouts and surfaces that live with in the context of an app", "AccentAcrylicBackgroundFillColorDefaultBrush", AlwaysWhiteText),
+                            ]),
+                        ]),
                 ]),
             new(
                 "Signal",
@@ -489,7 +510,7 @@ namespace Fluence.Wpf.Demo.Pages
                 ]),
             new(
                 "High Contrast",
-                "Brush names are the same in every theme; Windows chooses the colors from the active contrast theme. The tiles below show the live system colors.",
+                "Brush names are the same in every theme; Windows chooses the colors from the active contrast theme. The first row shows the live system colors, so it is the palette this machine is running; the four below are the contrast themes Windows ships.",
                 [
                     new(
                         title: null,
@@ -510,6 +531,46 @@ namespace Fluence.Wpf.Demo.Pages
                                 new("Gray Text Color / Disabled", "Foreground / Text color for Inactive (disabled) UI", "SystemColorGrayTextColorBrush", "SystemColorWindowColorBrush"),
                             ]),
                         ]),
+                    new(
+                        "Aquatic",
+                        "The shipped Aquatic contrast theme.",
+                        QuarternarySurface,
+                        foregroundKey: null,
+                        example: null,
+                        [
+                            new(rows: 2, HighContrastPalette("#FFFFFF", "#202020", "#263B50", "#8EE3F0", "#FFFFFF", "#202020", "#75E9FC", "#A6A6A6")),
+                        ],
+                        headingOnly: true),
+                    new(
+                        "Desert",
+                        "The shipped Desert contrast theme.",
+                        QuarternarySurface,
+                        foregroundKey: null,
+                        example: null,
+                        [
+                            new(rows: 2, HighContrastPalette("#3D3D3D", "#FFFAEF", "#FFF5E3", "#903909", "#202020", "#FFFAEF", "#1C5E75", "#676767")),
+                        ],
+                        headingOnly: true),
+                    new(
+                        "Dusk",
+                        "The shipped Dusk contrast theme.",
+                        QuarternarySurface,
+                        foregroundKey: null,
+                        example: null,
+                        [
+                            new(rows: 2, HighContrastPalette("#FFFFFF", "#2D3236", "#212D3B", "#ABCFF2", "#B6F6F0", "#2D3236", "#70EBDE", "#A6A6A6")),
+                        ],
+                        headingOnly: true),
+                    new(
+                        "Night Sky",
+                        "The shipped Night Sky contrast theme.",
+                        QuarternarySurface,
+                        foregroundKey: null,
+                        example: null,
+                        [
+                            new(rows: 2, HighContrastPalette("#FFFFFF", "#000000", "#2B2B2B", "#D6B4FD", "#FFEE32", "#000000", "#8080FF", "#A6A6A6")),
+                        ],
+                        headingOnly: true),
                 ]),
         ];
 
@@ -524,29 +585,75 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void BuildSections()
         {
-            if (ColorSectionTabs.Items.Count != Sections.Length)
+            if (ColorSectionSelector.Items.Count != Sections.Length)
             {
-                throw new InvalidOperationException("The Colors page declares " + ColorSectionTabs.Items.Count.ToString(CultureInfo.InvariantCulture) + " tabs but " + Sections.Length.ToString(CultureInfo.InvariantCulture) + " sections.");
+                throw new InvalidOperationException("The Colors page declares " + ColorSectionSelector.Items.Count.ToString(CultureInfo.InvariantCulture) + " selector items but " + Sections.Length.ToString(CultureInfo.InvariantCulture) + " sections.");
             }
 
+            _sectionPanels = new FrameworkElement[Sections.Length];
             for (int i = 0; i < Sections.Length; i++)
             {
-                TabItem tab = (TabItem)ColorSectionTabs.Items[i];
-                if (!string.Equals(tab.Header as string, Sections[i].Title, StringComparison.Ordinal))
+                Controls.SelectorBarItem item = (Controls.SelectorBarItem)ColorSectionSelector.Items[i];
+                if (!string.Equals(item.Text, Sections[i].Title, StringComparison.Ordinal))
                 {
-                    throw new InvalidOperationException("Colors tab '" + tab.Header + "' does not match section '" + Sections[i].Title + "'.");
+                    throw new InvalidOperationException("Colors selector item '" + item.Text + "' does not match section '" + Sections[i].Title + "'.");
                 }
 
-                tab.Content = CreateSection(Sections[i]);
+                _sectionPanels[i] = CreateSection(Sections[i]);
             }
 
-            ColorSectionTabs.SelectedIndex = 0;
+            // Every section is built up front, as the tabbed version built every tab's content,
+            // so switching sections is a content swap rather than a rebuild.
+            ColorSectionSelector.SelectionChanged += OnSectionSelectionChanged;
+            ColorSectionSelector.SelectedIndex = 0;
         }
 
-        private static Controls.StackPanel CreateSection(ColorSectionData section)
+        /// <summary>
+        /// Navigates the section presenter, choosing the slide direction from the move the way the
+        /// WinUI Gallery's own Color page does (ColorPage.xaml.cs): a later section slides in from
+        /// the right, an earlier one from the left.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnSectionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int index = ColorSectionSelector.SelectedIndex;
+            if (_sectionPanels is null || index < 0 || index >= _sectionPanels.Length)
+            {
+                return;
+            }
+
+            ColorSectionPresenter.TransitionEffect = index > _selectedSectionIndex
+                ? SlideNavigationTransitionEffect.FromRight
+                : SlideNavigationTransitionEffect.FromLeft;
+            ColorSectionPresenter.Content = _sectionPanels[index];
+            _selectedSectionIndex = index;
+        }
+
+        /// <summary>
+        /// The built section views, one per selector item, or null before the page is built. Each
+        /// is the section's own scroll host, so the scrollbar sits inside the presenter and slides
+        /// with the section it belongs to.
+        /// </summary>
+        private FrameworkElement[]? _sectionPanels;
+
+        /// <summary>
+        /// The section the presenter is showing, so the next navigation knows which way to slide.
+        /// </summary>
+        private int _selectedSectionIndex;
+
+        /// <summary>
+        /// Builds one section: its content stack inside its own scroll host. The scroll host is
+        /// focusable so a click in the section hands it Home, End, Page Up and Page Down, leaving
+        /// the arrow keys to the SelectorBar the click came from.
+        /// </summary>
+        /// <param name="section">The section to build.</param>
+        /// <returns>The section view.</returns>
+        private static FrameworkElement CreateSection(ColorSectionData section)
         {
             Controls.StackPanel panel = new();
             panel.SetResourceReference(Controls.StackPanel.SpacingProperty, "DemoColorSectionSpacing");
+            panel.SetResourceReference(MarginProperty, "DemoColorSectionContentMargin");
 
             if (section.Intro is not null)
             {
@@ -558,7 +665,14 @@ namespace Fluence.Wpf.Demo.Pages
 
             foreach (ColorGroupData group in section.Groups)
             {
-                if (group.Title is not null)
+                if (group.Title is not null && group.HeadingOnly)
+                {
+                    TextBlock heading = new() { Text = group.Title, TextWrapping = TextWrapping.Wrap };
+                    heading.SetResourceReference(StyleProperty, "SubtitleTextBlockStyle");
+                    heading.SetResourceReference(MarginProperty, "DemoColorExampleMargin");
+                    _ = panel.Children.Add(heading);
+                }
+                else if (group.Title is not null)
                 {
                     ColorPageExample example = new()
                     {
@@ -581,12 +695,69 @@ namespace Fluence.Wpf.Demo.Pages
                 }
             }
 
-            return panel;
+            Controls.SmoothScrollViewer scroll = new()
+            {
+                Content = panel,
+                Focusable = true,
+            };
+            scroll.SetResourceReference(StyleProperty, "GalleryPageScrollViewerStyle");
+            return scroll;
         }
 
         // WinUI Gallery GalleryTileGridStyle: tiles sit on the base solid background inside a 1px card stroke at
         // OverlayCornerRadius. WPF's Border does not clip children to that radius, so the corner tiles round
         // their own outer corners instead.
+        /// <summary>
+        /// Builds the eight tiles of one shipped high contrast palette, in the Gallery's order and
+        /// with its colour pairings (HighContrastSection.xaml). The brush keys are the same in every
+        /// palette, which is the point the section makes: Windows picks the colours, the app keeps
+        /// naming the same brushes.
+        /// </summary>
+        /// <param name="windowText">Window text colour.</param>
+        /// <param name="window">Window background colour.</param>
+        /// <param name="highlightText">Highlight text colour.</param>
+        /// <param name="highlight">Highlight background colour.</param>
+        /// <param name="buttonText">Button text colour.</param>
+        /// <param name="buttonFace">Button face colour.</param>
+        /// <param name="hotlight">Hyperlink colour.</param>
+        /// <param name="grayText">Disabled text colour.</param>
+        /// <returns>The palette's tiles, laid out as four columns over two rows.</returns>
+        private static ColorTileData[] HighContrastPalette(
+            string windowText,
+            string window,
+            string highlightText,
+            string highlight,
+            string buttonText,
+            string buttonFace,
+            string hotlight,
+            string grayText)
+        {
+            return
+            [
+                new("Window Text Color", "Foreground / Text color for Headings, body copy, lists, placeholder text, app and window borders, any UI that can't be interacted with", "SystemColorWindowTextColor", foregroundKey: null, windowText, window),
+                new("Highlight Text Color", "Foreground color for text or UI that is selected, interacted with (hover, pressed), or in progress", "SystemColorHighlightTextColor", foregroundKey: null, highlightText, highlight),
+                new("Button Text Color", "Foreground color for buttons and any UI that can be interacted with", "SystemColorButtonTextColor", foregroundKey: null, buttonText, buttonFace),
+                new("Hotlight Color", "Foreground / Text color for hyperlink text", "SystemColorHotlightColor", foregroundKey: null, hotlight, window),
+                new("Window Color", "Background of pages, panes, popups, and windows", "SystemColorWindowColor", foregroundKey: null, window, windowText),
+                new("Highlight Color", "Background or accent color for UI that is selected, interacted with (hover, pressed), or in progress", "SystemColorHighlightColor", foregroundKey: null, highlight, highlightText),
+                new("Button Face Color", "Background color for buttons and any UI that can be interacted with", "SystemColorButtonFaceColor", foregroundKey: null, buttonFace, buttonText),
+                new("Gray Text Color / Disabled", "Foreground / Text color for Inactive (disabled) UI", "SystemColorGrayTextColor", foregroundKey: null, grayText, window),
+            ];
+        }
+
+        /// <summary>
+        /// Returns a frozen brush for a literal hex colour from one of the shipped high contrast
+        /// palettes.
+        /// </summary>
+        /// <param name="hex">The colour, as the Gallery writes it.</param>
+        /// <returns>The frozen brush.</returns>
+        private static SolidColorBrush Frozen(string hex)
+        {
+            SolidColorBrush brush = new((Color)ColorConverter.ConvertFromString(hex));
+            brush.Freeze();
+            return brush;
+        }
+
         private static Controls.Border CreateTileGrid(ColorTileRowData row)
         {
             int columns = row.Tiles.Length / row.Rows;
@@ -603,17 +774,29 @@ namespace Fluence.Wpf.Demo.Pages
                     ColorExplanation = data.Explanation,
                     ColorBrushName = data.BrushKey,
                     ShowSeparator = columnIndex < columns - 1,
-                    Tag = data.BrushKey,
+                    // A live tile carries its key so the tests and the copy button can read it; a
+                    // high contrast palette tile paints a fixed colour and has no live brush.
+                    Tag = data.LiteralBackground is null ? data.BrushKey : null,
                 };
-                tile.SetResourceReference(BackgroundProperty, data.BrushKey);
-                if (data.ForegroundKey is null)
+                if (data.LiteralBackground is not null)
                 {
-                    // The Gallery paints this tile with literal Black; see ColorTile.AutoContrastForeground.
-                    tile.AutoContrastForeground = true;
+                    // A high contrast palette tile: the Gallery prints the four shipped contrast
+                    // themes as fixed values, so these do not follow the live theme.
+                    tile.Background = Frozen(data.LiteralBackground);
+                    tile.Foreground = Frozen(data.LiteralForeground ?? "#FFFFFF");
                 }
                 else
                 {
-                    tile.SetResourceReference(ForegroundProperty, data.ForegroundKey);
+                    tile.SetResourceReference(BackgroundProperty, data.BrushKey);
+                    if (data.ForegroundKey is null)
+                    {
+                        // The Gallery paints this tile with literal Black; see ColorTile.AutoContrastForeground.
+                        tile.AutoContrastForeground = true;
+                    }
+                    else
+                    {
+                        tile.SetResourceReference(ForegroundProperty, data.ForegroundKey);
+                    }
                 }
                 tile.SetResourceReference(ColorTile.TileCornerRadiusProperty, GetTileCornerRadiusKey(rowIndex, columnIndex, row.Rows, columns));
                 _ = grid.Children.Add(tile);
@@ -621,8 +804,8 @@ namespace Fluence.Wpf.Demo.Pages
 
             Controls.Border surface = new() { Child = grid };
             surface.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
-            surface.SetResourceReference(BorderBrushProperty, CardStroke);
-            surface.SetResourceReference(BorderThicknessProperty, SingleStroke);
+            surface.SetResourceReference(Border.BorderBrushProperty, CardStroke);
+            surface.SetResourceReference(Border.BorderThicknessProperty, SingleStroke);
             surface.SetResourceReference(Border.CornerRadiusProperty, OverlayRadius);
             return surface;
         }
@@ -692,10 +875,10 @@ namespace Fluence.Wpf.Demo.Pages
         private static StackPanel CreateSubtleFillExample()
         {
             Controls.Border rest = new() { Child = new TextBlock { Text = "Rest" } };
-            rest.SetResourceReference(PaddingProperty, "DemoColorExampleSubtleRestPadding");
+            rest.SetResourceReference(Border.PaddingProperty, "DemoColorExampleSubtleRestPadding");
 
             Controls.Border hover = new() { Child = new TextBlock { Text = "Hover" } };
-            hover.SetResourceReference(PaddingProperty, "DemoColorExampleSubtleHoverPadding");
+            hover.SetResourceReference(Border.PaddingProperty, "DemoColorExampleSubtleHoverPadding");
             hover.SetResourceReference(MinWidthProperty, "DemoColorExampleSubtleHoverMinWidth");
             hover.SetResourceReference(BackgroundProperty, "SubtleFillColorSecondaryBrush");
             hover.SetResourceReference(Border.CornerRadiusProperty, ControlRadius);
@@ -725,8 +908,8 @@ namespace Fluence.Wpf.Demo.Pages
         private static Controls.Border CreateDividerExample()
         {
             Controls.Border divider = new() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Stretch };
-            divider.SetResourceReference(BorderBrushProperty, "DividerStrokeColorDefaultBrush");
-            divider.SetResourceReference(BorderThicknessProperty, "DemoColorTileSeparatorThickness");
+            divider.SetResourceReference(Border.BorderBrushProperty, "DividerStrokeColorDefaultBrush");
+            divider.SetResourceReference(Border.BorderThicknessProperty, "DemoColorTileSeparatorThickness");
 
             Controls.Border surface = CreateSurface("AcrylicBackgroundFillColorBaseBrush", "SurfaceStrokeColorDefaultBrush", OverlayRadius, SurfaceWidth, SurfaceHeight);
             surface.Child = divider;
@@ -739,13 +922,13 @@ namespace Fluence.Wpf.Demo.Pages
             content.Child = new TextBlock { Text = "Text", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
 
             Controls.Border inner = new() { Child = content };
-            inner.SetResourceReference(BorderBrushProperty, "FocusStrokeColorInnerBrush");
-            inner.SetResourceReference(BorderThicknessProperty, "DemoColorExampleFocusStrokeThickness");
+            inner.SetResourceReference(Border.BorderBrushProperty, "FocusStrokeColorInnerBrush");
+            inner.SetResourceReference(Border.BorderThicknessProperty, "DemoColorExampleFocusStrokeThickness");
             inner.SetResourceReference(Border.CornerRadiusProperty, "DemoColorExampleFocusInnerCornerRadius");
 
             Controls.Border outer = new() { Child = inner };
-            outer.SetResourceReference(BorderBrushProperty, "FocusStrokeColorOuterBrush");
-            outer.SetResourceReference(BorderThicknessProperty, "DemoColorExampleFocusStrokeThickness");
+            outer.SetResourceReference(Border.BorderBrushProperty, "FocusStrokeColorOuterBrush");
+            outer.SetResourceReference(Border.BorderThicknessProperty, "DemoColorExampleFocusStrokeThickness");
             outer.SetResourceReference(Border.CornerRadiusProperty, "DemoColorExampleFocusOuterCornerRadius");
             return outer;
         }
@@ -755,8 +938,8 @@ namespace Fluence.Wpf.Demo.Pages
             Controls.Border layer = new() { HorizontalAlignment = HorizontalAlignment.Right };
             layer.SetResourceReference(WidthProperty, "DemoColorExampleLayerInnerWidth");
             layer.SetResourceReference(BackgroundProperty, layerKey);
-            layer.SetResourceReference(BorderBrushProperty, CardStroke);
-            layer.SetResourceReference(BorderThicknessProperty, "DemoColorExampleLayerInnerBorderThickness");
+            layer.SetResourceReference(Border.BorderBrushProperty, CardStroke);
+            layer.SetResourceReference(Border.BorderThicknessProperty, "DemoColorExampleLayerInnerBorderThickness");
 
             Controls.Border surface = CreateSurface(backgroundKey, CardStroke, OverlayRadius, SurfaceWidth, SurfaceHeight);
             surface.Child = layer;
@@ -792,8 +975,8 @@ namespace Fluence.Wpf.Demo.Pages
                 surface.SetResourceReference(BackgroundProperty, backgroundKey);
             }
 
-            surface.SetResourceReference(BorderBrushProperty, borderKey);
-            surface.SetResourceReference(BorderThicknessProperty, SingleStroke);
+            surface.SetResourceReference(Border.BorderBrushProperty, borderKey);
+            surface.SetResourceReference(Border.BorderThicknessProperty, SingleStroke);
             surface.SetResourceReference(Border.CornerRadiusProperty, cornerRadiusKey);
             surface.SetResourceReference(WidthProperty, widthKey);
             surface.SetResourceReference(HeightProperty, heightKey);
@@ -809,9 +992,15 @@ namespace Fluence.Wpf.Demo.Pages
             public ColorGroupData[] Groups { get; } = groups;
         }
 
-        private sealed class ColorGroupData(string? title, string description, string backgroundKey, string? foregroundKey, Func<UIElement>? example, ColorTileRowData[] rows)
+        private sealed class ColorGroupData(string? title, string description, string backgroundKey, string? foregroundKey, Func<UIElement>? example, ColorTileRowData[] rows, bool headingOnly = false)
         {
             public string? Title { get; } = title;
+
+            /// <summary>
+            /// True for a group the Gallery introduces with a plain heading rather than a
+            /// ColorPageExample card, as its high contrast palettes are.
+            /// </summary>
+            public bool HeadingOnly { get; } = headingOnly;
 
             public string Description { get; } = description;
 
@@ -831,7 +1020,7 @@ namespace Fluence.Wpf.Demo.Pages
             public ColorTileData[] Tiles { get; } = tiles;
         }
 
-        private sealed class ColorTileData(string name, string explanation, string brushKey, string? foregroundKey)
+        private sealed class ColorTileData(string name, string explanation, string brushKey, string? foregroundKey, string? literalBackground = null, string? literalForeground = null)
         {
             public string Name { get; } = name;
 
@@ -840,6 +1029,18 @@ namespace Fluence.Wpf.Demo.Pages
             public string BrushKey { get; } = brushKey;
 
             public string? ForegroundKey { get; } = foregroundKey;
+
+            /// <summary>
+            /// The literal tile colour, for the high contrast palettes the Gallery prints as fixed
+            /// values rather than as live theme brushes. Null means the tile paints
+            /// <see cref="BrushKey"/> from the current theme.
+            /// </summary>
+            public string? LiteralBackground { get; } = literalBackground;
+
+            /// <summary>
+            /// The literal text colour that pairs with <see cref="LiteralBackground"/>.
+            /// </summary>
+            public string? LiteralForeground { get; } = literalForeground;
         }
     }
 }

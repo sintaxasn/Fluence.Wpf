@@ -56,89 +56,89 @@
                             CornerRadius="{DynamicResource OverlayCornerRadius}"
                             Effect="{DynamicResource FlyoutShadowEffect}"
                             UseLayoutRounding="True" />
-                    <Border
-                        x:Name="DialogSurface"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        UseLayoutRounding="True">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Border
-                                x:Name="ContentArea"
-                                Grid.Row="0"
-                                Padding="24"
-                                Background="{DynamicResource LayerFillColorAltBrush}"
-                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="0,0,0,1"
-                                CornerRadius="8,8,0,0">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <ContentPresenter
-                                        x:Name="TitlePresenter"
-                                        Grid.Row="0"
-                                        Margin="0,0,0,12"
-                                        Content="{TemplateBinding Title}"
-                                        ContentTemplate="{TemplateBinding TitleTemplate}"
-                                        TextElement.FontSize="20"
-                                        TextElement.FontWeight="SemiBold"
-                                        TextElement.Foreground="{TemplateBinding Foreground}" />
-                                    <ScrollViewer
-                                        x:Name="ContentScrollViewer"
-                                        Grid.Row="1"
-                                        HorizontalScrollBarVisibility="Disabled"
-                                        Style="{DynamicResource ScrollViewerStyle}"
-                                        VerticalScrollBarVisibility="Auto">
+                        <Border
+                            x:Name="DialogSurface"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}"
+                            UseLayoutRounding="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Border
+                                    x:Name="ContentArea"
+                                    Grid.Row="0"
+                                    Padding="24"
+                                    Background="{DynamicResource LayerFillColorAltBrush}"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="0,0,0,1"
+                                    CornerRadius="8,8,0,0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
                                         <ContentPresenter
-                                            x:Name="BodyPresenter"
-                                            TextElement.FontFamily="{TemplateBinding FontFamily}"
-                                            TextElement.FontSize="{TemplateBinding FontSize}"
+                                            x:Name="TitlePresenter"
+                                            Grid.Row="0"
+                                            Margin="0,0,0,12"
+                                            Content="{TemplateBinding Title}"
+                                            ContentTemplate="{TemplateBinding TitleTemplate}"
+                                            TextElement.FontSize="20"
+                                            TextElement.FontWeight="SemiBold"
                                             TextElement.Foreground="{TemplateBinding Foreground}" />
-                                    </ScrollViewer>
+                                        <ScrollViewer
+                                            x:Name="ContentScrollViewer"
+                                            Grid.Row="1"
+                                            HorizontalScrollBarVisibility="Disabled"
+                                            Style="{DynamicResource ScrollViewerStyle}"
+                                            VerticalScrollBarVisibility="Auto">
+                                            <ContentPresenter
+                                                x:Name="BodyPresenter"
+                                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Border>
+                                <Grid
+                                    x:Name="CommandSpace"
+                                    Grid.Row="1"
+                                    Margin="24">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition x:Name="PrimaryColumn" Width="*" />
+                                        <ColumnDefinition x:Name="SecondaryColumn" Width="*" />
+                                        <ColumnDefinition x:Name="CloseColumn" Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <controls:Button
+                                        x:Name="PART_PrimaryButton"
+                                        Grid.Column="0"
+                                        MinWidth="0"
+                                        Margin="0,0,4,0"
+                                        HorizontalAlignment="Stretch"
+                                        Content="{TemplateBinding PrimaryButtonText}"
+                                        IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}" />
+                                    <controls:Button
+                                        x:Name="PART_SecondaryButton"
+                                        Grid.Column="1"
+                                        MinWidth="0"
+                                        Margin="4,0,4,0"
+                                        HorizontalAlignment="Stretch"
+                                        Content="{TemplateBinding SecondaryButtonText}"
+                                        IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}" />
+                                    <controls:Button
+                                        x:Name="PART_CloseButton"
+                                        Grid.Column="2"
+                                        MinWidth="0"
+                                        Margin="4,0,0,0"
+                                        HorizontalAlignment="Stretch"
+                                        Content="{TemplateBinding CloseButtonText}" />
                                 </Grid>
-                            </Border>
-                            <Grid
-                                x:Name="CommandSpace"
-                                Grid.Row="1"
-                                Margin="24">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition x:Name="PrimaryColumn" Width="*" />
-                                    <ColumnDefinition x:Name="SecondaryColumn" Width="*" />
-                                    <ColumnDefinition x:Name="CloseColumn" Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <controls:Button
-                                    x:Name="PART_PrimaryButton"
-                                    Grid.Column="0"
-                                    MinWidth="0"
-                                    Margin="0,0,4,0"
-                                    HorizontalAlignment="Stretch"
-                                    Content="{TemplateBinding PrimaryButtonText}"
-                                    IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}" />
-                                <controls:Button
-                                    x:Name="PART_SecondaryButton"
-                                    Grid.Column="1"
-                                    MinWidth="0"
-                                    Margin="4,0,4,0"
-                                    HorizontalAlignment="Stretch"
-                                    Content="{TemplateBinding SecondaryButtonText}"
-                                    IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}" />
-                                <controls:Button
-                                    x:Name="PART_CloseButton"
-                                    Grid.Column="2"
-                                    MinWidth="0"
-                                    Margin="4,0,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    Content="{TemplateBinding CloseButtonText}" />
                             </Grid>
-                        </Grid>
-                    </Border>
+                        </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Title" Value="{x:Null}">

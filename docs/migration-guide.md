@@ -78,17 +78,29 @@ private void OnTabCloseRequested(object sender, TabViewTabCloseRequestedEventArg
 
 ### Resource keys removed
 
-These seven Colors and their seven `*Brush` twins had no consumer and are gone: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`.
+These nine Colors and their nine `*Brush` twins had no consumer and are gone: `WindowCloseFillColorHover`, `WindowCloseFillColorPressed`, `WindowCloseForegroundHover`, `WindowCloseForegroundPressed`, `ControlStrokeColorTertiary`, `SystemFillColorInformational`, `KeyboardFocusBorderColor`, `NavigationViewContentSeparator`, `TextPlaceholderColor`.
 
-The caption button colours remain published under their WinUI names: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. The close button template applies that single foreground key on both the pointer-over and the pressed trigger, so it is also the replacement for `WindowCloseForegroundPressed`, which has no separate pressed foreground key of its own. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, and `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`.
+The caption button colours remain published under their WinUI names: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed` and `WindowCloseButtonForegroundPointerOver`. The close button template applies that single foreground key on both the pointer-over and the pressed trigger, so it is also the replacement for `WindowCloseForegroundPressed`, which has no separate pressed foreground key of its own. Use `SystemFillColorAttention` in place of `SystemFillColorInformational`, `FocusStrokeColorOuter` in place of `KeyboardFocusBorderColor`, `CardStrokeColorDefaultBrush` in place of `NavigationViewContentSeparatorBrush` (the pane/content seam the `NavigationView` template now paints with), and `TextFillColorSecondaryBrush` in place of `TextPlaceholderColorBrush` (the role `TextBox` and `PasswordBox` placeholders now follow).
 
-**This fails silently**, like the rename below: a consumer's own XAML that still names one of the fourteen keeps building, and the target simply keeps its default value at runtime. Search your own XAML for these names as part of upgrading, not only your build output.
+**This fails silently**, like the rename below: a consumer's own XAML that still names one of the eighteen keeps building, and the target simply keeps its default value at runtime. Search your own XAML for these names as part of upgrading, not only your build output.
 
 ### Resource key renamed
 
 `NavigationViewSelectionIndicatorBrush` is now `NavigationViewSelectionIndicatorForeground`, WinUI's own name for the role. Note the missing `Brush` suffix: it is a brush-only key and that is WinUI's spelling.
 
 **This also fails silently.** A `DynamicResource` reference to a key that no longer exists produces no error and no build failure, the target simply keeps its default, so a selection indicator painted with the old key renders transparent. Search your XAML for the old name.
+
+### Visual defaults changed
+
+Four template changes alter how existing markup renders, with nothing to fix at build time.
+
+`ContentDialog` no longer accents a button unless you ask for one. The primary button carried `Appearance="Accent"` unconditionally; it is now driven by `DefaultButton`, whose default is `ContentDialogButton.None`, so a dialog that does not set `DefaultButton` renders all three buttons standard. This is WinUI's own `DefaultButtonStates` behaviour. To keep the old look, set `DefaultButton="Primary"` on the dialog.
+
+`CheckBox` has a `MinWidth` of 120, the WinUI `CheckBoxMinWidth`. A checkbox in a tight column, a `DataGrid` cell or an item template now reserves that width even when its content is narrower. Set `MinWidth="0"` on the instance or in a derived style to opt out; the library does exactly that for the `TreeView` item template.
+
+The framework `Separator` style is keyed rather than implicit. It was an implicit `TargetType="{x:Type Separator}"` style, which WPF never applied inside a menu anyway; it is now keyed to `{x:Static MenuItem.SeparatorStyleKey}`, the key a `Menu` or `ContextMenu` actually looks up, so menu separators finally get the Fluent look. The consequence is that a bare `<Separator/>` outside a menu falls back to the WPF system theme. Use `fluence:Separator` for standalone separators, which is what the Fluence separator style targets.
+
+Popup surfaces reserve a 16 px shadow gutter and compensate for it with `HorizontalOffset` and `VerticalOffset` of -16. WPF's own offset coercion returns the owner element's value whenever that value is not the property default, so an element that sets `ToolTipService.HorizontalOffset`, `ToolTipService.VerticalOffset`, `ContextMenuService.HorizontalOffset` or `ContextMenuService.VerticalOffset` replaces the compensation instead of adding to it, and its tooltip or context menu lands 16 px further right and down than the same markup used to place it. Subtract 16 from those offsets, or drop them and let the style place the popup.
 
 ### Resource keys added, nothing to do
 

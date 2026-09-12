@@ -33,7 +33,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryButtonsPage : UserControl
+    public partial class GalleryButtonsPage : Page
     {
         private static readonly string ButtonStandardXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Buttons.ButtonStandard",

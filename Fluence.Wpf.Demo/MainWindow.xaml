@@ -65,6 +65,21 @@
                     </fluence:NavigationViewItem.Icon>
                 </fluence:NavigationViewItem>
             </fluence:NavigationView.FooterMenuItems>
+
+            <!--
+                The gallery pages are Page objects, as the WinUI Gallery's own pages are, and WPF
+                only lets a Window or a Frame parent one. The shell therefore hosts them in a
+                Frame with its navigation chrome hidden; MainWindow keeps owning the back stack,
+                so the frame's own journal is cleared after every navigation. The frame is set as
+                the navigation view's Content: NavigationView derives from Selector, so a bare
+                child would join Items instead.
+            -->
+            <fluence:NavigationView.Content>
+                <Frame
+                    x:Name="PageFrame"
+                    Focusable="False"
+                    NavigationUIVisibility="Hidden" />
+            </fluence:NavigationView.Content>
         </fluence:NavigationView>
     </Grid>
 </fluence:FluenceWindow>

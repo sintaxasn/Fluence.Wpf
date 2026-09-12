@@ -10,6 +10,11 @@ Windows 11 Fluent Design controls and theming for WPF, implemented in plain WPF 
 
 ## Install
 
+The package publishes to nuget.org from the `v0.9.0-pre` tag, so the two NuGet badges above stay
+blank and the command below fails until that tag is pushed. Until then, reference
+`Fluence.Wpf/Fluence.Wpf.csproj` directly, or build a local package with
+`dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release`.
+
 ```powershell
 dotnet add package Fluence.Wpf
 ```

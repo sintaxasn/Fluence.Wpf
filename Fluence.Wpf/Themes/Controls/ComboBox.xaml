@@ -263,42 +263,42 @@
                                     Effect="{DynamicResource FlyoutShadowEffect}"
                                     RenderTransform="{Binding RenderTransform, ElementName=PART_DropdownBorder}"
                                     RenderTransformOrigin="0.5,0" />
-                            <Border
-                                x:Name="PART_DropdownBorder"
-                                MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
-                                MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                Margin="0,4,0,0"
-                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                BorderThickness="1"
-                                CornerRadius="{TemplateBinding DropdownCornerRadius}"
-                                RenderOptions.ClearTypeHint="Enabled"
-                                RenderTransformOrigin="0.5,0">
-                                <Border.RenderTransform>
-                                    <TranslateTransform x:Name="DropdownTranslate" />
-                                </Border.RenderTransform>
-                                <Grid>
-                                    <!--  The noise overlay fills the rounded popup shape. Its CornerRadius  -->
-                                    <!--  MUST track the outer PART_DropdownBorder.CornerRadius so that when  -->
-                                    <!--  the popup opens upward (IsDropDownOpenedUpward=True) the outer goes  -->
-                                    <!--  flat at the bottom and the noise does the same - otherwise the noise  -->
-                                    <!--  paints rounded bottom corners that no longer match the outer flat  -->
-                                    <!--  edge, which reads as "bottom corners not properly rounded".  -->
-                                    <Border
-                                        x:Name="NoiseOverlay"
-                                        Background="{DynamicResource AcrylicNoiseBrush}"
-                                        CornerRadius="{TemplateBinding DropdownCornerRadius}"
-                                        Opacity="0.04" />
-                                    <ScrollViewer
-                                        Margin="4"
-                                        CanContentScroll="True"
-                                        HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                        Style="{DynamicResource ScrollViewerStyle}"
-                                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
-                                    </ScrollViewer>
-                                </Grid>
-                            </Border>
+                                <Border
+                                    x:Name="PART_DropdownBorder"
+                                    MinWidth="{Binding ActualWidth, ElementName=MainBorder}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                    Margin="0,4,0,0"
+                                    Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="{TemplateBinding DropdownCornerRadius}"
+                                    RenderOptions.ClearTypeHint="Enabled"
+                                    RenderTransformOrigin="0.5,0">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="DropdownTranslate" />
+                                    </Border.RenderTransform>
+                                    <Grid>
+                                        <!--  The noise overlay fills the rounded popup shape. Its CornerRadius  -->
+                                        <!--  MUST track the outer PART_DropdownBorder.CornerRadius so that when  -->
+                                        <!--  the popup opens upward (IsDropDownOpenedUpward=True) the outer goes  -->
+                                        <!--  flat at the bottom and the noise does the same - otherwise the noise  -->
+                                        <!--  paints rounded bottom corners that no longer match the outer flat  -->
+                                        <!--  edge, which reads as "bottom corners not properly rounded".  -->
+                                        <Border
+                                            x:Name="NoiseOverlay"
+                                            Background="{DynamicResource AcrylicNoiseBrush}"
+                                            CornerRadius="{TemplateBinding DropdownCornerRadius}"
+                                            Opacity="0.04" />
+                                        <ScrollViewer
+                                            Margin="4"
+                                            CanContentScroll="True"
+                                            HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                            Style="{DynamicResource ScrollViewerStyle}"
+                                            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </Popup>
                         <!--

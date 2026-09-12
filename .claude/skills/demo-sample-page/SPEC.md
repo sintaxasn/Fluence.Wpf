@@ -6,19 +6,31 @@ Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design
 
 ## Page skeleton
 
+Every gallery page is a `Page`, as the WinUI Gallery's own pages are. WPF only lets a `Window` or a
+`Frame` parent a `Page`, so the shell hosts them in the `Frame` named `PageFrame` inside
+`NavigationView.Content`; `MainWindow` still owns the back stack and clears the frame's journal after
+each navigation.
+
 ```text
-ScrollViewer
-└── StackPanel (page root)
-    ├── GalleryPageHeader - Page name, Documentation/Toggle theme/Favorite actions [Title typography]
-    ├── TextBlock        - Page description       [Body, secondary foreground]
-    └── for each sample:
-        └── DemoSampleControl
-            ├── SampleDescription                [Body Strong]
-            ├── DemoContent                      [live sample]
-            ├── OutputContent                    [optional interaction result]
-            ├── RightRailContent                 [optional options pane]
-            └── Source expander                  [XAML and C# tabs]
+Page
+└── ScrollViewer
+    └── StackPanel (page root)
+        ├── GalleryPageHeader - Page name, Documentation/Toggle theme/Favorite actions [Title typography]
+        ├── TextBlock        - Page description       [Body, secondary foreground]
+        └── for each sample:
+            └── DemoSampleControl
+                ├── SampleDescription                [Body Strong]
+                ├── DemoContent                      [live sample]
+                ├── OutputContent                    [optional interaction result]
+                ├── RightRailContent                 [optional options pane]
+                └── Source expander                  [XAML and C# tabs]
 ```
+
+Two pages depart from the scrolling stack, each following the Gallery page it mirrors. Icons and
+Colors are Grids on `GalleryPageContentGridStyle`: the rows above the last one stay locked and only
+the final star row scrolls. On Colors that means the header, the intro line, the brush snippet, and
+the `SelectorBar` hold their place while the section content moves, as `ColorPage.xaml` does with its
+own `ScrollViewer` in the last row.
 
 `GalleryPageHeader` (`Fluence.Wpf.Demo/Pages/GalleryPageHeader.xaml(.cs)`) is the shared page header for every gallery page except Home, modelled on the WinUI 3 Gallery `Controls/PageHeader.xaml`. Home mirrors the WinUI Gallery home page, which has no page title header, and keeps its hero lockup instead. Set `Title` for the page name; set `DocsAnchor` to the matching `docs/controls.md` heading slug to show the Documentation button, or leave it empty to hide it (Colors and Settings have no matching section).
 
@@ -56,7 +68,7 @@ Composition requirements:
 - Demo region uses a `*, Auto` layout. Output content lives inside the demo region, not the right rail.
 - Right rail collapses when empty, uses the right-rail brush, and keeps `CornerRadius="0,8,0,0"`.
 - Source expander is attached below the card with `CornerRadius="0,0,8,8"`, header text `Source code`, the source-header brush when collapsed, and the source-content brush when expanded.
-- Source content uses a `TabControl` with `XAML` and `C#` tabs. Each tab hosts the syntax-highlighted, copy-enabled RichTextBox viewer owned by `DemoSampleControl`.
+- Source content uses a `SelectorBar` with `XAML` and `C#` items above a content host, as the WinUI Gallery `ControlExample` does. Each item carries its syntax-highlighted, copy-enabled RichTextBox viewer, owned by `DemoSampleControl`, on its `Tag`.
 - Do not use or reintroduce legacy `Title`, `Description`, `SampleContent`, `ReplaceSourceLink(...)`, obsolete forwarding members, or source-link placeholder buttons.
 
 Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Prefer page-owned hidden `ContentControl` slots plus `DemoSamplePageWiring.Apply(...)` from code-behind with typed `DemoSampleSource` registrations. The helper owns slot discovery, content transfer, source assignment, duplicate-slot detection, missing-source detection, and clearing the hidden slots after handoff. Catalog pages may stay outside `DemoSampleControl` when the WinUI Gallery reference itself is a direct catalog or guidance surface.
@@ -65,7 +77,7 @@ Named live controls must not be declared directly inside `DemoSampleControl` pro
 
 Icons and Accessibility are part of this standard for discrete demonstrations. Icons renders its catalog directly without a trailing source expander. Typography hosts its type ramp table in a `DemoSampleControl` with the ramp XAML as source, as the WinUI Gallery does.
 
-Colors renders directly without `DemoSampleControl`, like Icons, because the WinUI Gallery Color page has no source expander. Its one-line brush snippet is a `DemoCodePresenter` (the Gallery `SampleCodePresenter` inline state: highlighted code, no card, optional copy button) and its section switcher is a `TabControl` in `DemoSelectorBarStyle` (Gallery `SelectorBar` metrics). Its sections are `ColorPageExample` cards (`SolidBackgroundFillColorQuarternaryBrush` inside a 1 px `CardStrokeColorDefaultBrush` outline at `OverlayCornerRadius`, with the accent group on `AccentFillColorDefaultBrush` and the smoke group on `SmokeFillColorDefaultBrush`) followed by `ColorTile` rows on the Gallery `GalleryTileGridStyle` surface: `SolidBackgroundFillColorBaseBrush` with the same outline, each tile painted in the brush it names. Both controls live in `Fluence.Wpf.Demo/Pages` and are driven from the page code-behind data table; their sizes come from the `DemoColor*` tokens in `DemoSharedStyles.xaml`.
+Colors renders directly without `DemoSampleControl`, like Icons, because the WinUI Gallery Color page has no source expander. Its one-line brush snippet is a `DemoCodePresenter` (the Gallery `SampleCodePresenter` inline state: highlighted code, no card, optional copy button) and its section switcher is a `SelectorBar` whose sections are swapped through a `SlideNavigationPresenter`, as the Gallery switches its own Color sections, and the page is a Grid whose header, intro, snippet and switcher rows stay locked while only the section row scrolls. Its sections are `ColorPageExample` cards (`SolidBackgroundFillColorQuarternaryBrush` inside a 1 px `CardStrokeColorDefaultBrush` outline at `OverlayCornerRadius`, with the accent group on `AccentFillColorDefaultBrush` and the smoke group on `SmokeFillColorDefaultBrush`) followed by `ColorTile` rows on the Gallery `GalleryTileGridStyle` surface: `SolidBackgroundFillColorBaseBrush` with the same outline, each tile painted in the brush it names. Both controls live in `Fluence.Wpf.Demo/Pages` and are driven from the page code-behind data table; their sizes come from the `DemoColor*` tokens in `DemoSharedStyles.xaml`.
 
 ## Definition of done
 

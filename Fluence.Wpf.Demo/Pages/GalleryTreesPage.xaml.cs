@@ -31,7 +31,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryTreesPage : UserControl
+    public partial class GalleryTreesPage : Page
     {
         private static readonly string TreeViewHierarchyXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy",

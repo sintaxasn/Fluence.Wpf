@@ -298,7 +298,8 @@ namespace Fluence.Wpf.Demo.Pages
         private void ResetSource()
         {
             _sourceLoaded = false;
-            SourceTabControl?.Items.Clear();
+            SourceSelector?.Items.Clear();
+            SourceContentHost?.SetCurrentValue(ContentProperty, value: null);
 
             UpdateSourceVisibility();
             if ((SourceExpander?.IsExpanded) is true)
@@ -320,7 +321,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             _sourceLoaded = true;
-            SourceTabControl.Items.Clear();
+            SourceSelector.Items.Clear();
             if (!string.IsNullOrWhiteSpace(XamlSource))
             {
                 AddSourceTab("XAML", XamlSource, DemoSourceLanguage.Xaml);
@@ -334,17 +335,25 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void AddSourceTab(string header, string source, DemoSourceLanguage language)
         {
-            TabItem tab = new()
+            // The pane hangs off the item rather than being rebuilt on every selection change,
+            // the way the WinUI Gallery keeps one SampleCodePresenter per SelectorBarItem.
+            Controls.SelectorBarItem item = new()
             {
-                Header = header,
-                Content = CreateSourcePane(source, language),
+                Text = header,
+                Tag = CreateSourcePane(source, language),
             };
-            _ = SourceTabControl.Items.Add(tab);
+            _ = SourceSelector.Items.Add(item);
 
-            if (SourceTabControl.SelectedIndex < 0)
+            if (SourceSelector.SelectedIndex < 0)
             {
-                SourceTabControl.SelectedIndex = 0;
+                SourceSelector.SelectedIndex = 0;
             }
+        }
+
+        private void SourceSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            object? pane = (SourceSelector.SelectedItem as Controls.SelectorBarItem)?.Tag;
+            SourceContentHost.SetCurrentValue(ContentProperty, pane);
         }
 
         private static Grid CreateSourcePane(string source, DemoSourceLanguage language)

@@ -223,15 +223,17 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        // The header is placed inside a gallery page UserControl; its type name is the page file name,
-        // so the GitHub links to the page XAML and code-behind can be derived rather than declared.
+        // The header is placed inside a gallery Page; its type name is the page file name, so the
+        // GitHub links to the page XAML and code-behind can be derived rather than declared. The
+        // header itself is a UserControl, and so are the sample controls it can sit beside, so the
+        // walk looks for a Page in this namespace rather than any FrameworkElement.
         private void ResolvePageSourceLinks()
         {
             DependencyObject? current = VisualTreeHelper.GetParent(this);
-            UserControl? page = null;
+            Page? page = null;
             while (current is not null)
             {
-                if (current is UserControl candidate && candidate is not GalleryPageHeader &&
+                if (current is Page candidate &&
                     string.Equals(candidate.GetType().Namespace, typeof(GalleryPageHeader).Namespace, StringComparison.Ordinal))
                 {
                     page = candidate;

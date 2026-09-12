@@ -19,3 +19,36 @@ override Fluence.Wpf.Controls.FlyoutPresenter.OnCreateAutomationPeer() -> System
 *REMOVED*Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs() -> void
 Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs(Fluence.Wpf.InfoBarCloseReason reason) -> void
 Fluence.Wpf.InfoBarClosingEventArgs.Reason.get -> Fluence.Wpf.InfoBarCloseReason
+Fluence.Wpf.Automation.SelectorBarItemAutomationPeer
+Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.SelectorBarItemAutomationPeer(Fluence.Wpf.Controls.SelectorBarItem! owner) -> void
+Fluence.Wpf.Controls.SelectorBar
+Fluence.Wpf.Controls.SelectorBar.SelectorBar() -> void
+Fluence.Wpf.Controls.SelectorBarItem
+Fluence.Wpf.Controls.SelectorBarItem.Icon.get -> object?
+Fluence.Wpf.Controls.SelectorBarItem.Icon.set -> void
+Fluence.Wpf.Controls.SelectorBarItem.SelectorBarItem() -> void
+Fluence.Wpf.Controls.SelectorBarItem.Text.get -> string?
+Fluence.Wpf.Controls.SelectorBarItem.Text.set -> void
+Fluence.Wpf.Controls.SlideNavigationPresenter
+Fluence.Wpf.Controls.SlideNavigationPresenter.SlideNavigationPresenter() -> void
+Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffect.get -> Fluence.Wpf.SlideNavigationTransitionEffect
+Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffect.set -> void
+Fluence.Wpf.SlideNavigationTransitionEffect
+Fluence.Wpf.SlideNavigationTransitionEffect.FromLeft = 1 -> Fluence.Wpf.SlideNavigationTransitionEffect
+Fluence.Wpf.SlideNavigationTransitionEffect.FromRight = 0 -> Fluence.Wpf.SlideNavigationTransitionEffect
+override Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.GetClassNameCore() -> string!
+override Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.GetNameCore() -> string!
+override Fluence.Wpf.Controls.SelectorBar.GetContainerForItemOverride() -> System.Windows.DependencyObject!
+override Fluence.Wpf.Controls.SelectorBar.IsItemItsOwnContainerOverride(object! item) -> bool
+override Fluence.Wpf.Controls.SelectorBar.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void
+override Fluence.Wpf.Controls.SelectorBarItem.OnApplyTemplate() -> void
+override Fluence.Wpf.Controls.SelectorBarItem.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+override Fluence.Wpf.Controls.SelectorBarItem.OnSelected(System.Windows.RoutedEventArgs! e) -> void
+override Fluence.Wpf.Controls.SelectorBarItem.OnUnselected(System.Windows.RoutedEventArgs! e) -> void
+override Fluence.Wpf.Controls.SlideNavigationPresenter.OnApplyTemplate() -> void
+override Fluence.Wpf.Controls.SlideNavigationPresenter.OnContentChanged(object! oldContent, object! newContent) -> void
+static readonly Fluence.Wpf.Controls.SelectorBarItem.IconProperty -> System.Windows.DependencyProperty!
+static readonly Fluence.Wpf.Controls.SelectorBarItem.TextProperty -> System.Windows.DependencyProperty!
+static readonly Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffectProperty -> System.Windows.DependencyProperty!
+override Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.GetLocalizedControlTypeCore() -> string!
+override Fluence.Wpf.Controls.SelectorBar.OnGotKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs! e) -> void

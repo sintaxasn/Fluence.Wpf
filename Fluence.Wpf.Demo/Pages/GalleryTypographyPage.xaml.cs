@@ -34,7 +34,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryTypographyPage : UserControl
+    public partial class GalleryTypographyPage : Page
     {
         private const string CopyGlyph = "\uE8C8";
 

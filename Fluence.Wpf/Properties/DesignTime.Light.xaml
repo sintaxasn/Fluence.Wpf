@@ -7,6 +7,8 @@
     <!--  Regenerate with the RegenerateDesignTimeResources test after an intentional engine change.  -->
 
     <!--  Colors  -->
+    <Color x:Key="AccentAcrylicBackgroundFillColorBase">#FF8DCDFF</Color>
+    <Color x:Key="AccentAcrylicBackgroundFillColorDefault">#FF8DCDFF</Color>
     <Color x:Key="AccentFillBackdrop">#FFFFFFFF</Color>
     <Color x:Key="AccentFillColorDefault">#FF005BA1</Color>
     <Color x:Key="AccentFillColorDisabled">#37000000</Color>
@@ -122,6 +124,8 @@
     <Color x:Key="WindowCloseButtonForegroundPointerOver">#FFFFFFFF</Color>
 
     <!--  Solid color brushes  -->
+    <SolidColorBrush x:Key="AccentAcrylicBackgroundFillColorBaseBrush" Color="#FF8DCDFF" />
+    <SolidColorBrush x:Key="AccentAcrylicBackgroundFillColorDefaultBrush" Color="#FF8DCDFF" />
     <SolidColorBrush x:Key="AccentFillBackdropBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#FF005BA1" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="#37000000" />

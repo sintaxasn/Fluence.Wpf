@@ -31,7 +31,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryDataPage : UserControl
+    public partial class GalleryDataPage : Page
     {
         private static readonly string ListViewItemsXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Data.ListViewItems",

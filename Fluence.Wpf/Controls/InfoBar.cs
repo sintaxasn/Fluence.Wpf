@@ -273,8 +273,11 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Occurs before the info bar closes. Set <see cref="InfoBarClosingEventArgs.Cancel"/>
-        /// to <see langword="true"/> to prevent closing.
+        /// Occurs before the info bar closes, whichever way the close started: the close button
+        /// or <see cref="IsOpen"/> set to <see langword="false"/> in code. Set
+        /// <see cref="InfoBarClosingEventArgs.Cancel"/> to <see langword="true"/> to prevent
+        /// closing; <see cref="IsOpen"/> goes back to <see langword="true"/> and
+        /// <see cref="Closed"/> is not raised.
         /// </summary>
         public event EventHandler<InfoBarClosingEventArgs>? Closing;
 
@@ -303,26 +306,51 @@ namespace Fluence.Wpf.Controls
             InfoBar bar = (InfoBar)d;
             if ((bool)e.NewValue)
             {
-                bar.AnnounceLiveRegion();
+                // A cancelled close puts IsOpen back without the bar ever having closed, so it
+                // is not a fresh appearance and must not be announced a second time.
+                if (!bar._revertingCancelledClose)
+                {
+                    bar.AnnounceLiveRegion();
+                }
+
                 return;
             }
 
-            // The close-button path raises Closed itself with the CloseButton reason, so the
-            // flag stops a single dismissal producing two events.
-            if (!bar._closingFromCloseButton)
-            {
-                bar.RaiseClosed(InfoBarCloseReason.Programmatic);
-            }
+            bar.RunClosePipeline();
         }
 
         /// <summary>
-        /// Raises <see cref="Closed"/> with <paramref name="reason"/>. Kept as an instance method,
-        /// rather than invoked directly from the static <see cref="OnIsOpenChanged"/> callback, so
-        /// the sender argument is the literal <see langword="this"/>.
+        /// Runs the whole close pipeline from the <see cref="IsOpen"/> changed callback, the way
+        /// WinUI's InfoBar does (InfoBar.cpp OnIsOpenPropertyChanged): raises
+        /// <see cref="Closing"/> with the reason the close was started for, puts
+        /// <see cref="IsOpen"/> back to <see langword="true"/> when a handler cancels, and
+        /// otherwise raises <see cref="Closed"/> exactly once with the same reason. Driving both
+        /// events from the single property transition is what makes a handler's own
+        /// <c language="text">IsOpen = false</c> a no-op rather than a second close: the property
+        /// is already false by the time the handler runs.
         /// </summary>
-        /// <param name="reason">The reason to report on the raised event.</param>
-        private void RaiseClosed(InfoBarCloseReason reason)
+        private void RunClosePipeline()
         {
+            InfoBarCloseReason reason = _closeReason;
+            _closeReason = InfoBarCloseReason.Programmatic;
+
+            InfoBarClosingEventArgs closingArgs = new(reason);
+            Closing?.Invoke(this, closingArgs);
+            if (closingArgs.Cancel)
+            {
+                _revertingCancelledClose = true;
+                try
+                {
+                    IsOpen = true;
+                }
+                finally
+                {
+                    _revertingCancelledClose = false;
+                }
+
+                return;
+            }
+
             Closed?.Invoke(this, new InfoBarClosedEventArgs(reason));
         }
 
@@ -359,30 +387,26 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Raises the <see cref="Closing"/> event. If not canceled, sets <see cref="IsOpen"/>
-        /// to <see langword="false"/> and raises <see cref="Closed"/> with
-        /// <see cref="InfoBarCloseReason.CloseButton"/>.
+        /// Stamps <see cref="InfoBarCloseReason.CloseButton"/> as the reason for the close the
+        /// button is about to start, then drives <see cref="IsOpen"/> to
+        /// <see langword="false"/>. The <see cref="Closing"/> and <see cref="Closed"/> events are
+        /// raised by the property's changed callback, so a cancelled close leaves the bar open
+        /// and a completed one raises <see cref="Closed"/> once, with this reason.
         /// </summary>
         protected virtual void OnCloseButtonClick()
         {
-            InfoBarClosingEventArgs args = new(InfoBarCloseReason.CloseButton);
-            Closing?.Invoke(this, args);
-            if (args.Cancel)
-            {
-                return;
-            }
-
-            _closingFromCloseButton = true;
+            _closeReason = InfoBarCloseReason.CloseButton;
             try
             {
                 IsOpen = false;
             }
             finally
             {
-                _closingFromCloseButton = false;
+                // A click on an already-closed bar changes nothing, so the pipeline never runs
+                // and never consumes the stamped reason. Clearing it here stops that reason
+                // leaking into the next, programmatic close.
+                _closeReason = InfoBarCloseReason.Programmatic;
             }
-
-            Closed?.Invoke(this, new InfoBarClosedEventArgs(InfoBarCloseReason.CloseButton));
         }
 
         /// <summary>
@@ -391,9 +415,16 @@ namespace Fluence.Wpf.Controls
         private System.Windows.Controls.Button? _closeButton;
 
         /// <summary>
-        /// True while <see cref="OnCloseButtonClick()"/> is driving <see cref="IsOpen"/> to false,
-        /// so the property's changed callback does not raise a second, programmatic Closed.
+        /// The reason to report on the next close. Stamped by <see cref="OnCloseButtonClick()"/>
+        /// before it drives <see cref="IsOpen"/>, and consumed (and reset) by
+        /// <see cref="RunClosePipeline"/>. A close nothing stamped is programmatic.
         /// </summary>
-        private bool _closingFromCloseButton;
+        private InfoBarCloseReason _closeReason = InfoBarCloseReason.Programmatic;
+
+        /// <summary>
+        /// True while <see cref="RunClosePipeline"/> is putting <see cref="IsOpen"/> back after a
+        /// cancelled close, so the reopen is not announced as a fresh appearance.
+        /// </summary>
+        private bool _revertingCancelledClose;
     }
 }

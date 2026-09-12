@@ -31,7 +31,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryInputsPage : UserControl
+    public partial class GalleryInputsPage : Page
     {
         private static readonly string TextBoxInputXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Inputs.TextBoxInput",

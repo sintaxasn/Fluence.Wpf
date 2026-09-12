@@ -33,7 +33,7 @@ using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryTabsPage : UserControl
+    public partial class GalleryTabsPage : Page
     {
         private static readonly string TabControlBasicsXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics",

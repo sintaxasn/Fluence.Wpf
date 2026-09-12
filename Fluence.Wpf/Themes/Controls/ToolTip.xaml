@@ -42,7 +42,17 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ToolTip}">
-                    <Grid Margin="16">
+                    <!--
+                        The fade plays on this root, not the surface alone, so the opaque
+                        ShadowCaster behind the surface fades with it. Fading only the surface let
+                        the caster paint a blank plate at full strength on the first frame of every
+                        show. The root starts hidden so no frame composites at rest before the fade
+                        seeds its start pose.
+                    -->
+                    <Grid
+                        x:Name="ToolTipRoot"
+                        Margin="16"
+                        Opacity="0">
                         <!--
                             Elevation caster: an empty sibling behind the surface, because WPF
                             drops ClearType for text under an Effect and the surface opts into it.
@@ -98,7 +108,7 @@
                         <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="ToolTipSurface">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToolTipSurface" Storyboard.TargetProperty="Opacity">
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToolTipRoot" Storyboard.TargetProperty="Opacity">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                         <SplineDoubleKeyFrame
                                             KeySpline="0,0,0,1"

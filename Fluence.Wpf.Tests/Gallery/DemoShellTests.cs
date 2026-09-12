@@ -1088,7 +1088,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     Assert.Equal(typeof(GalleryHomePage), content.GetType());
 
                     Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
-                    Assert.Same(content, nav.Content);
+                    Frame frame = Assert.IsType<Frame>(nav.Content, exactMatch: false);
+                    Assert.Same(content, frame.Content);
                 }
                 finally
                 {
@@ -1244,7 +1245,7 @@ namespace Fluence.Wpf.Tests.Gallery
                 Style contentGridStyle = Assert.IsType<Style>(Application.Current?.TryFindResource("GalleryPageContentGridStyle"));
                 Assert.Same(fluentScrollStyle, scrollStyle.BasedOn);
 
-                UserControl[] pages =
+                FrameworkElement[] pages =
                 [
                     new GalleryHomePage(),
                     new GalleryIconsPage(),
@@ -1263,13 +1264,18 @@ namespace Fluence.Wpf.Tests.Gallery
                     new GalleryLayoutPage(),
                     new GalleryStatusPage(),
                     new GallerySettingsPage(),
+                    new GalleryColorsPage(),
                 ];
 
-                foreach (UserControl page in pages)
+                foreach (FrameworkElement page in pages)
                 {
                     Window window = DemoTestHost.CreateHostWindow(page);
                     try
                     {
+                        // The WinUI Gallery's own pages are Pages, not UserControls, and these
+                        // mirror them.
+                        _ = Assert.IsType<Page>(page, exactMatch: false);
+
                         // Home mirrors the WinUI Gallery home page, which has no page title
                         // header; every other gallery page carries exactly one.
                         if (page is not GalleryHomePage)
@@ -1290,6 +1296,36 @@ namespace Fluence.Wpf.Tests.Gallery
                             Assert.True(double.IsPositiveInfinity(pageContent.MaxWidth),
                                 "Icons should stretch instead of keeping the old max content width.");
                             Assert.Equal(HorizontalAlignment.Stretch, pageContent.HorizontalAlignment);
+                            continue;
+                        }
+
+                        if (page is GalleryColorsPage)
+                        {
+                            // Colors follows the Gallery's own Color page: a Grid whose header,
+                            // intro, snippet and SelectorBar rows are locked, with only the last
+                            // star row scrolling.
+                            Grid colorsRoot = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageRoot"), exactMatch: false);
+                            Assert.Null(colorsRoot.Background);
+
+                            Grid colorsContent = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageContent"), exactMatch: false);
+                            Assert.Same(contentGridStyle, colorsContent.Style);
+                            Assert.Equal(new Thickness(36, 24, 36, 48), colorsContent.Margin);
+                            Assert.Equal(5, colorsContent.RowDefinitions.Count);
+                            Assert.Equal(GridLength.Auto, colorsContent.RowDefinitions[0].Height);
+                            Assert.Equal(new GridLength(1, GridUnitType.Star), colorsContent.RowDefinitions[4].Height);
+
+                            Controls.SlideNavigationPresenter sectionPresenter = Assert.IsType<Controls.SlideNavigationPresenter>(DemoTestHost.FindByName<Controls.SlideNavigationPresenter>(page, "ColorSectionPresenter"), exactMatch: false);
+                            Assert.Equal(4, Grid.GetRow(sectionPresenter));
+
+                            // The scroll host lives inside the presenter, one per section, so the
+                            // scrollbar belongs to the section and travels with it.
+                            Controls.SmoothScrollViewer sectionScroll = Assert.IsType<Controls.SmoothScrollViewer>(sectionPresenter.Content, exactMatch: false);
+                            Assert.Same(scrollStyle, sectionScroll.Style);
+                            Assert.True(sectionScroll.Focusable, "The section scroll host takes focus so it answers Home, End and the page keys.");
+
+                            // Only the section content scrolls: the locked rows sit outside it.
+                            Assert.Empty(DemoTestHost.FindVisualChildren<GalleryPageHeader>(sectionScroll));
+                            Assert.Empty(DemoTestHost.FindVisualChildren<Controls.SelectorBar>(sectionScroll));
                             continue;
                         }
 
@@ -1592,7 +1628,10 @@ namespace Fluence.Wpf.Tests.Gallery
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    _ = Assert.IsType<GallerySettingsPage>(nav.Content, exactMatch: false);
+                    // A footer invocation clears the main selection, so read the hosting frame
+                    // directly rather than through the selected-item helper.
+                    Frame settingsFrame = Assert.IsType<Frame>(nav.Content, exactMatch: false);
+                    _ = Assert.IsType<GallerySettingsPage>(settingsFrame.Content, exactMatch: false);
                     Assert.True(settings.IsSelected,
                         "The footer Settings item should show the same selected state as navigation list items.");
                     Assert.True(nav.FooterMenuItems.Contains(settings),
@@ -2064,12 +2103,19 @@ namespace Fluence.Wpf.Tests.Gallery
             }
         }
 
+        /// <summary>
+        /// Returns the gallery page the shell is showing. The pages are Page objects, so the shell
+        /// hosts them in a Frame rather than assigning the navigation view's content directly.
+        /// </summary>
+        /// <param name="window">The shell window.</param>
+        /// <returns>The hosted page.</returns>
         private static object GetSelectedPageContent(MainWindow window)
         {
             Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
 
             Assert.NotNull(nav.SelectedItem as Controls.NavigationViewItem);
-            return nav.Content;
+            Frame frame = Assert.IsType<Frame>(nav.Content, exactMatch: false);
+            return frame.Content;
         }
 
         private static void InvokeTitleBarBack(Controls.TitleBar titleBar)

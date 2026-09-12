@@ -55,8 +55,10 @@ namespace Fluence.Wpf.Controls
         private const string Row1DefName = "Row1Def";
 
         // WinUI Expander.xaml ExpandDown/CollapseDown splines (0,0,0,1 / 1,1,0,1), 333/167 ms.
-        // These are the WinUI-literal Expander values, deliberately not the repo-wide 0.8,0,0,1
-        // spline. 333 ms mirrors the Typography.xaml ControlSlowAnimationDuration token and
+        // These are the WinUI-literal Expander values and stay literal here even though the
+        // expand spline now has the same value as the repo-wide decelerating token that
+        // MotionHelper mirrors. The collapse spline has no such twin, and WinUI owns the two as
+        // a pair. 333 ms mirrors the Typography.xaml ControlSlowAnimationDuration token and
         // 167 ms mirrors ControlFastAnimationDuration; code-built animations cannot reference
         // the XAML TimeSpan tokens, so the values are mirrored here (ContentDialog pattern).
         private const double ExpandSlideMilliseconds = 333;

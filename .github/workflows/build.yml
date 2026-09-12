@@ -78,15 +78,18 @@ jobs:
       # out of balance. It does not catch the same typo repeated identically in both filters:
       # that would leave lane A empty and lane B carrying the whole assembly, and the sum is
       # unchanged, though a single-process net472 run still aborts loudly (see KNOWN_ISSUES.md).
-      # The expected totals exclude the three Screenshots-category cases removed by
+      # The floors are the HEAD-of-branch case counts, matching the AGENTS.md baseline policy:
+      # adding tests raises the real total and must not redden CI, while a filter typo drops
+      # cases and does. They exclude the three Screenshots-category cases removed by
       # --filter-not-trait above; net10 carries all three (the Mvvm capture only targets
       # net10.0-windows10.0.26100.0), while net472 carries only the two that target it, so
-      # the two expected totals differ by one screenshot case, not by zero.
+      # the two floors differ by one screenshot case, not by zero. Raise both when a release
+      # deliberately drops cases, alongside Fluence.Wpf.Tests/Baselines.
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $expected = @{ 'net472' = 1227; 'net10' = 1228 }
-          foreach ($tfm in $expected.Keys) {
+          $floor = @{ 'net472' = 1249; 'net10' = 1250 }
+          foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
               $path = "TestResults/$tfm/$tfm.$lane.trx"
@@ -94,8 +97,8 @@ jobs:
               [xml]$trx = Get-Content $path
               $total += [int]$trx.TestRun.ResultSummary.Counters.total
             }
-            if ($total -ne $expected[$tfm]) {
-              Write-Error "$tfm : lanes summed to $total, expected $($expected[$tfm])"
+            if ($total -lt $floor[$tfm]) {
+              Write-Error "$tfm : lanes summed to $total, below the floor of $($floor[$tfm]). Either a lane filter dropped cases, or cases were removed on purpose: in that case lower the floor in .github/workflows/build.yml and update Fluence.Wpf.Tests/Baselines."
             } else {
               Write-Host "$tfm : $total cases across both lanes."
             }

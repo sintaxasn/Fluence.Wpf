@@ -58,7 +58,10 @@
   <!--
     PublicApiAnalyzers freezes the public CLR surface. RS0016 fails the build on an undeclared
     public member and RS0017 on a declared member that has disappeared. The library multi-targets
-    and the surface differs by TFM, so each TFM owns its own pair of tracking files.
+    and the surface is allowed to differ by TFM, so each TFM owns its own pair of tracking files.
+    The three pairs happen to be identical today, since nothing in the public surface is
+    conditioned on the target framework; the split is what keeps a future per-TFM member from
+    silently entering every baseline at once.
   -->
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers">

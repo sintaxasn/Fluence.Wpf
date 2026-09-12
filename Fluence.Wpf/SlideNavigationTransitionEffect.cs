@@ -26,49 +26,32 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Fluence.Wpf.Controls;
-
-namespace Fluence.Wpf.Demo.Pages
+namespace Fluence.Wpf
 {
-    public partial class GalleryHomePage : Page
+    /// <summary>
+    /// The direction the incoming content slides in from during a
+    /// <see cref="Controls.SlideNavigationPresenter"/> content change, mirroring the WinUI 3
+    /// <c language="csharp">SlideNavigationTransitionEffect</c>.
+    /// </summary>
+    /// <remarks>
+    /// WinUI's enumeration also carries <c language="text">FromBottom</c>, which its own
+    /// implementation animates with a different curve family (an exponential ease over the
+    /// vertical axis rather than the two horizontal key splines). Only the two horizontal
+    /// effects are ported, so the enumeration does not advertise a value the presenter cannot
+    /// play. The gap is recorded in docs/winui-parity.md.
+    /// </remarks>
+    public enum SlideNavigationTransitionEffect
     {
-        public GalleryHomePage()
-        {
-            InitializeComponent();
-        }
+        /// <summary>
+        /// The incoming content enters from the right and the outgoing content leaves to the
+        /// left, the effect WinUI uses when moving forward through a set of peers.
+        /// </summary>
+        FromRight = 0,
 
-        // The hero lockup swap is fully declarative: a ThemeDictionary in the page
-        // resources maps HomeHeroImageSource per theme (including the high-contrast
-        // polarity tables), so no ApplicationThemeManager.Changed subscription exists here.
-
-        // Handles a click on any featured-control or action Card tile; reads the Card's
-        // Tag string and routes to the matching gallery page via host.NavigateTo(tag).
-        private void Card_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Card card)
-            {
-                return;
-            }
-
-            if (card.Tag is not string tag || string.IsNullOrWhiteSpace(tag))
-            {
-                return;
-            }
-
-            if (Window.GetWindow(this) is MainWindow host)
-            {
-                host.NavigateTo(tag);
-            }
-        }
-
-        private void GitHubLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            _ = Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
-            e.Handled = true;
-        }
+        /// <summary>
+        /// The incoming content enters from the left and the outgoing content leaves to the
+        /// right, the effect WinUI uses when moving backward through a set of peers.
+        /// </summary>
+        FromLeft = 1,
     }
 }

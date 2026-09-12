@@ -430,7 +430,7 @@ namespace Fluence.Wpf.Controls
         /// position, Top slides up, Right slides right, Left slides left, and Center (untargeted
         /// or explicitly centered, a dialog-like surface that implies no direction) fades only.
         /// The motion mirrors the previous template storyboard: an 83 ms fade with a 167 ms
-        /// slide on the 0.8,0,0,1 spline (the Typography.xaml ControlFasterAnimationDuration,
+        /// slide on the 0,0,0,1 spline (the Typography.xaml ControlFasterAnimationDuration,
         /// ControlFastAnimationDuration, and ControlFastOutSlowInKeySpline motion tokens,
         /// mirrored by value), following the <see cref="FlyoutPresenter"/> code-reveal
         /// precedent. The animations use <see cref="FillBehavior.Stop"/>; the completed
@@ -525,7 +525,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         to,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }

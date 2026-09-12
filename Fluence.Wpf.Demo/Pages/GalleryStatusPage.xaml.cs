@@ -33,7 +33,7 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryStatusPage : UserControl
+    public partial class GalleryStatusPage : Page
     {
         private static readonly string ProgressBarValueXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Status.ProgressBarValue",

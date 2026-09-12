@@ -358,6 +358,7 @@
   Fluence.Wpf.Tests.Theming.ThemeTestHelpersTests.StandardThemeCycle_ResolvesKeyBrushesAsync
   Fluence.Wpf.Tests.Theming.ThemeTestHelpersTests.VisualTreeHelper_GetDpi_ReturnsPositiveScaleAsync
   Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.ControlFastOutSlowInKeySpline_MatchesWinUiCanonicalCurveAsync
+  Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.MotionHelperKeySpline_MirrorsPublishedTokenAsync
   Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.TextBlockExtensions_Typography_UsesNamedTextBlockStyleResourceAsync
   Fluence.Wpf.Tests.Gallery.DemoCodePresenterTests.DemoCodePresenter_RendersColorizedXamlWithoutAPlateAsync
   Fluence.Wpf.Tests.Gallery.DemoCodePresenterTests.DemoCodePresenter_CopyButtonFollowsIsCopyButtonVisibleAsync
@@ -449,6 +450,9 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_TileCopyButtonsCarryBrushKeysAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_BrushKeys_ResolveAcrossThemesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_SourceHasNoLiteralGeometryOrColorsAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_CopyButton_CopiesBrushNameAndShowsFeedbackAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_InDarkTheme_StartsWithThemeForegroundAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ContentStretchesToTheShellWidthAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesHeaderLockupHeroAndGitHubLinkAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGalleryAsync
@@ -717,6 +721,9 @@
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_ClosingCancel_PreventsCloseAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.Closed_CloseButtonClicked_ReportsCloseButtonReasonAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.Closed_IsOpenSetFalse_ReportsProgrammaticReasonOnceAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.Closing_IsOpenSetFalse_ReportsProgrammaticReasonAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.ClosingCancel_IsOpenSetFalse_ReopensAndRaisesNoClosedAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.Closed_ClosingHandlerSetsIsOpenFalse_RaisedOnceWithStartingReasonAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.Closing_CloseButtonClicked_ReportsCloseButtonReasonAsync
   Fluence.Wpf.Tests.Control.LayoutPrimitiveTests.Stage3_Border_Variant_DefaultIsNoneAsync
   Fluence.Wpf.Tests.Control.LayoutPrimitiveTests.Stage3_StackPanel_Spacing_DefaultZeroAsync
@@ -974,10 +981,25 @@
   Fluence.Wpf.Tests.Control.ScrollBarTests.ScrollBar_ThemeCycle_BrushesResolveAfterEachSwitchAsync
   Fluence.Wpf.Tests.Control.ScrollBarTests.ScrollBar_HighContrast_TrackFillFollowsSystemWindowColorAsync
   Fluence.Wpf.Tests.Control.ScrollBarTests.ScrollViewer_FlyoutPresenter_UsesTheFluentScrollViewerStyleAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_DefaultStyle_AppliesAndGeneratesSelectorBarItemContainersAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_SelectionMode_IsClampedToSingleAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_DeclaredInline_KeepsItsOwnTextAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_DisplayMemberPath_DrivesTheItemLabelAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_KeyboardFocus_SelectsTheFirstItemWhenNothingIsSelectedAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_Selected_RevealsAccentPillAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_ReducedMotion_StampsPillWithoutAnimatingAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_AutomationPeer_ReportsTextAsNameAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_ThemeCycle_KeepsPillAndLabelBrushesResolvableAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_DefaultStyle_AppliesAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_Height_IsOneAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_Background_UsesDividerStrokeColorDefaultBrushAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_ThemeCycle_StyleRemainsAppliedAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_DefaultStyle_AppliesTemplatePartsAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_ContentChanged_SlidesFromTheRequestedSideAsync(effect: FromRight, direction: -1)
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_ContentChanged_SlidesFromTheRequestedSideAsync(effect: FromLeft, direction: 1)
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_MidTransition_KeepsOutgoingContentHiddenAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_ReducedMotion_SwapsWithoutSlidingAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_RapidChanges_KeepOnlyTheNewestContentAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_StyleApplies_PartTrackFoundAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbTemplate_HasEllipseAndInnerDotAsync
@@ -1231,5 +1253,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1231 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 195ms
+Test discovery summary: found 1253 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 202ms

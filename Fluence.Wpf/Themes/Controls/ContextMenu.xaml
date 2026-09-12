@@ -38,7 +38,10 @@
                             gutter: WPF sizes a popup HWND to exactly its child's layout size, so
                             without it the effect is clipped to the plate and only the corner
                             notches survive. The style's HorizontalOffset and VerticalOffset of -16
-                            pull the popup back so the plate keeps its position.
+                            pull the popup back so the plate keeps its position. A consumer's own
+                            ContextMenuService.HorizontalOffset or ContextMenuService.VerticalOffset
+                            set on the owner element wins over these style setters and shifts the
+                            plate by that much.
                         -->
                         <Border
                             x:Name="ShadowCaster"

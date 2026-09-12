@@ -69,6 +69,7 @@
                     Tag="{Binding ColorBrushName, ElementName=Root}"
                     ToolTip="Copy brush name">
                     <fluence:FontIcon
+                        x:Name="CopyBrushNameGlyph"
                         Foreground="{Binding Foreground, ElementName=Root}"
                         Glyph="&#xE8C8;"
                         IconFontSize="{DynamicResource DemoCopyGlyphFontSize}" />

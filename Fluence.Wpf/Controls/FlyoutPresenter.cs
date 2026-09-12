@@ -43,12 +43,22 @@ namespace Fluence.Wpf.Controls
     /// (flyout background fill, flyout stroke, overlay corner radius). The themed template
     /// lives in <c language="text">Themes/Controls/FlyoutPresenter.xaml</c>.
     /// </summary>
+    [TemplatePart(Name = PART_PresenterRoot, Type = typeof(Panel))]
     [TemplatePart(Name = PresenterSurfacePart, Type = typeof(Border))]
     [TemplatePart(Name = PresenterTranslatePart, Type = typeof(TranslateTransform))]
     public class FlyoutPresenter : ContentControl
     {
         /// <summary>
-        /// The name of the surface Border template part whose opacity the open reveal fades.
+        /// The name of the template root the open reveal fades. The root carries both the
+        /// surface and the opaque ShadowCaster behind it, so fading the root fades the two
+        /// together; fading the surface alone left the caster painting a blank plate at full
+        /// strength on the first frame of every open.
+        /// </summary>
+        private const string PART_PresenterRoot = "PART_PresenterRoot";
+
+        /// <summary>
+        /// The name of the surface Border template part that carries the reveal's slide
+        /// transform.
         /// </summary>
         private const string PresenterSurfacePart = "PresenterSurface";
 
@@ -125,10 +135,11 @@ namespace Fluence.Wpf.Controls
         /// Plays the open reveal each time the presenter loads inside the host popup: the
         /// surface slides 8 px in from the side selected by <see cref="RevealPlacement"/>
         /// (Bottom slides down from above the rest position, Top slides up, Right slides
-        /// right, Left slides left) while fading 0 to 1, mirroring the previous template
-        /// storyboard: 167 ms on the 0.8,0,0,1 spline (the Typography.xaml
+        /// right, Left slides left) while the template root fades 0 to 1, mirroring the
+        /// previous template storyboard: 167 ms on the 0,0,0,1 spline (the Typography.xaml
         /// ControlFastAnimationDuration and ControlFastOutSlowInKeySpline motion tokens,
-        /// mirrored by value). The animations use <see cref="FillBehavior.Stop"/>; the
+        /// mirrored by value). The fade is on the root rather than the surface so the opaque
+        /// ShadowCaster fades with it. The animations use <see cref="FillBehavior.Stop"/>; the
         /// completed handlers stamp the rest values and release the clocks so nothing stays
         /// animated once the reveal settles.
         /// </summary>
@@ -139,7 +150,7 @@ namespace Fluence.Wpf.Controls
             // A presenter whose Loaded fires without an applied template (a collapsed
             // declaration) has no reveal parts to animate.
             if (GetTemplateChild(PresenterTranslatePart) is not TranslateTransform translate ||
-                GetTemplateChild(PresenterSurfacePart) is not Border surface)
+                GetTemplateChild(PART_PresenterRoot) is not Panel root)
             {
                 return;
             }
@@ -152,8 +163,8 @@ namespace Fluence.Wpf.Controls
                 translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
                 translate.SetCurrentValue(TranslateTransform.XProperty, 0.0);
                 translate.SetCurrentValue(TranslateTransform.YProperty, 0.0);
-                surface.BeginAnimation(OpacityProperty, animation: null);
-                surface.SetCurrentValue(OpacityProperty, 1.0);
+                root.BeginAnimation(OpacityProperty, animation: null);
+                root.SetCurrentValue(OpacityProperty, 1.0);
                 return;
             }
 
@@ -169,7 +180,7 @@ namespace Fluence.Wpf.Controls
             // position: the offset on the chosen axis, 0 on the other, fully transparent.
             translate.SetCurrentValue(slideProperty, startOffset);
             translate.SetCurrentValue(restProperty, 0.0);
-            surface.SetCurrentValue(OpacityProperty, 0.0);
+            root.SetCurrentValue(OpacityProperty, 0.0);
 
             DoubleAnimationUsingKeyFrames slideAnimation = CreateRevealAnimation(startOffset, 0.0);
             slideAnimation.Completed += (_, _) =>
@@ -181,12 +192,12 @@ namespace Fluence.Wpf.Controls
             DoubleAnimationUsingKeyFrames fadeAnimation = CreateRevealAnimation(0.0, 1.0);
             fadeAnimation.Completed += (_, _) =>
             {
-                surface.SetCurrentValue(OpacityProperty, 1.0);
-                surface.BeginAnimation(OpacityProperty, animation: null);
+                root.SetCurrentValue(OpacityProperty, 1.0);
+                root.BeginAnimation(OpacityProperty, animation: null);
             };
 
             translate.BeginAnimation(slideProperty, slideAnimation);
-            surface.BeginAnimation(OpacityProperty, fadeAnimation);
+            root.BeginAnimation(OpacityProperty, fadeAnimation);
         }
 
         /// <summary>
@@ -208,7 +219,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         to,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(RevealMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }

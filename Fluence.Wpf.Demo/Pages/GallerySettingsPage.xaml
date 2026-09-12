@@ -1,10 +1,11 @@
-﻿<UserControl
+﻿<Page
     x:Class="Fluence.Wpf.Demo.Pages.GallerySettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:demo="clr-namespace:Fluence.Wpf.Demo"
-    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages">
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}">
 
     <Grid Style="{StaticResource GalleryPageRootStyle}">
         <fluence:SmoothScrollViewer
@@ -399,4 +400,4 @@
             </StackPanel>
         </fluence:SmoothScrollViewer>
     </Grid>
-</UserControl>
+</Page>

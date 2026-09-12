@@ -19,10 +19,12 @@
         because WPF sizes a popup HWND to exactly its child's layout size, with no reserved space at
         all: without the gutter the effect is clipped away and survives only in the four rounded
         corner notches, where it reads as a dark square plate behind a rounded card. 16px covers the
-        effect's full bleed: BlurRadius 18 gives 9px of blur bleed on every side of the unshifted
-        shape, and ShadowDepth 4 at Direction 270 (SpecialBrushes.cs) shifts the shadow straight down,
-        so the sideways bleed stays 9px, the upward bleed shrinks to 5px (9 minus the 4px downward
-        shift) and the downward bleed grows to 13px (9 plus the shift); 16px covers all three.
+        effect's painted bleed, measured by rendering the effect to a RenderTargetBitmap rather than
+        taken from the BlurRadius: the 18px BlurRadius paints 13px of visible falloff on every side
+        of the unshifted shape, and ShadowDepth 4 at Direction 270 (SpecialBrushes.cs) shifts the
+        shadow straight down, so the sideways bleed stays 13px, the upward bleed shrinks to 9px and
+        the downward bleed grows to 16px, the gutter exactly. Raising BlurRadius or ShadowDepth
+        means re-measuring and raising the gutter with them.
         FlyoutBase.ShadowGutter subtracts the same 16px from every placement candidate so the plate
         lands where it did before. Keep the two numbers in step.
         The WinUI FlyoutThemeMinWidth / MaxWidth / MinHeight / MaxHeight size limits above sit on
@@ -43,7 +45,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FlyoutPresenter}">
-                    <Grid Margin="16">
+                    <!--
+                        The reveal fades this root, not the presenter surface alone, so the opaque
+                        ShadowCaster behind the surface fades with it. The root starts hidden so no
+                        frame composites at rest before FlyoutPresenter.OnLoaded seeds the start
+                        pose.
+                    -->
+                    <Grid
+                        x:Name="PART_PresenterRoot"
+                        Margin="16"
+                        Opacity="0">
                         <Border
                             x:Name="ShadowCaster"
                             Background="{TemplateBinding Background}"

@@ -85,7 +85,8 @@ namespace Fluence.Wpf.Theming
             // Shared selection-pill accent for NavigationView, ListView, ListBox, and TreeView.
             // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
             // uses the same accent fill for its Default/Light/Dark dictionaries); HighContrast is
-            // overridden below with the live SystemColors.HighlightTextColor.
+            // overridden below with the live SystemColors.HighlightColor (HighlightText would be
+            // invisible on the HC selected-row fill; see AddHighContrastBrushes).
             dict["NavigationViewSelectionIndicatorForeground"] = Solid(colors["AccentFillColorDefault"]);
             // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
             // dictionary defines with the same tint, opacity, and fallback as

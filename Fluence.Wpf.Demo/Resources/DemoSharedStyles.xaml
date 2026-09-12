@@ -62,6 +62,8 @@
     <!--  Vertical padding pairs with the 32px WinUI chevron backplate to keep the 48px source header height.  -->
     <Thickness x:Key="DemoSampleSourceHeaderPadding">24,8</Thickness>
     <Thickness x:Key="DemoSampleSourceTabMargin">16,8,16,16</Thickness>
+    <!--  WinUI Gallery ControlExample.xaml: the source SelectorBar carries Margin 4,0,0,0 above the code presenters.  -->
+    <Thickness x:Key="DemoSampleSourceSelectorMargin">4,0,0,0</Thickness>
     <Thickness x:Key="DemoSourceCodeDocumentPadding">12</Thickness>
     <Thickness x:Key="DemoSourceCopyButtonHostMargin">0,8,8,0</Thickness>
     <Thickness x:Key="DemoSourceCopyButtonPadding">8,4</Thickness>
@@ -385,107 +387,14 @@
         </Style.Triggers>
     </Style>
 
-    <!--  **** Demo Styles *** SelectorBar-shaped TabControl  -->
-    <!--
-        WinUI 3 has SelectorBar (controls/dev/SelectorBar/SelectorBar.xaml); Fluence does not yet, so the
-        pages that mirror a Gallery SelectorBar (Colors) restyle a TabControl to its metrics: items at
-        SelectorBarItemPadding 12,10,12,7 with ControlContentThemeFontSize 14, no selected plate, and a
-        16 by 3 accent pill (SelectorBarItemPillWidth 4 scaled 4x, PillHeight 3) centred under the text.
-        SelectorBarPadding is 0,4. Hover text is TextFillColorSecondary, selected stays primary.
-    -->
-    <Thickness x:Key="DemoSelectorBarPadding">0,4</Thickness>
-    <Thickness x:Key="DemoSelectorBarItemPadding">12,10,12,7</Thickness>
-    <sys:Double x:Key="DemoSelectorBarPillHeight">3</sys:Double>
-    <sys:Double x:Key="DemoSelectorBarPillWidth">16</sys:Double>
-    <sys:Double x:Key="DemoSelectorBarPillRadius">1.5</sys:Double>
     <!--  WinUI Gallery ColorPage.xaml: the SelectorBar carries Margin -12,0,0,0 so its first label aligns with the text above.  -->
     <Thickness x:Key="DemoColorSelectorBarMargin">-12,4,0,0</Thickness>
+    <!--
+        The section content keeps an equal gutter on both sides inside its scroll host, so the
+        vertical scrollbar has the right-hand gutter to sit in instead of running under the cards
+        or riding the window edge.
+    -->
+    <Thickness x:Key="DemoColorSectionContentMargin">12,0,12,0</Thickness>
     <Thickness x:Key="DemoNoMargin">0</Thickness>
-
-    <Style x:Key="DemoSelectorBarItemStyle" TargetType="{x:Type TabItem}">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
-        <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Margin" Value="{DynamicResource DemoNoMargin}" />
-        <Setter Property="Padding" Value="{DynamicResource DemoSelectorBarItemPadding}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Grid x:Name="Root" Background="{TemplateBinding Background}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <ContentPresenter
-                            x:Name="ContentSite"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            ContentSource="Header"
-                            RecognizesAccessKey="True"
-                            TextElement.FontSize="{TemplateBinding FontSize}"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
-                        <Rectangle
-                            x:Name="SelectionPill"
-                            Grid.Row="1"
-                            Width="{DynamicResource DemoSelectorBarPillWidth}"
-                            Height="{DynamicResource DemoSelectorBarPillHeight}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Bottom"
-                            Fill="{DynamicResource AccentFillColorDefaultBrush}"
-                            IsHitTestVisible="False"
-                            Opacity="0"
-                            RadiusX="{DynamicResource DemoSelectorBarPillRadius}"
-                            RadiusY="{DynamicResource DemoSelectorBarPillRadius}" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-                            <Setter TargetName="SelectionPill" Property="Opacity" Value="1" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="SelectionPill" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="DemoSelectorBarStyle" TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource DemoSelectorBarItemStyle}" />
-        <Setter Property="Padding" Value="{DynamicResource DemoSelectorBarPadding}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TabControl}">
-                    <Grid Background="{TemplateBinding Background}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TabPanel
-                            x:Name="HeaderPanel"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="Left"
-                            IsItemsHost="True"
-                            KeyboardNavigation.TabIndex="1" />
-                        <ContentPresenter
-                            x:Name="PART_SelectedContentHost"
-                            Grid.Row="1"
-                            ContentSource="SelectedContent" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
 </ResourceDictionary>

@@ -43,7 +43,7 @@ using System.Windows.Resources;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryIconsPage : UserControl
+    public partial class GalleryIconsPage : Page
     {
         // Tile metrics mirroring the WinUI 3 Gallery Iconography grid: near-square
         // 115x110 cards separated by 12px gutters.

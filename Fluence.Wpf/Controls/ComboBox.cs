@@ -328,7 +328,7 @@ namespace Fluence.Wpf.Controls
         /// from below for an upward one, per <see cref="IsDropDownOpenedUpward"/>) while the
         /// dropdown root (surface plus the elevation caster behind it, so the caster never
         /// paints a blank plate at full strength while the surface is still transparent) fades
-        /// 0 to 1, mirroring the previous template storyboard: 167 ms on the 0.8,0,0,1
+        /// 0 to 1, mirroring the previous template storyboard: 167 ms on the 0,0,0,1
         /// spline (the Typography.xaml ControlFastAnimationDuration and
         /// ControlFastOutSlowInKeySpline motion tokens, mirrored by value). The reveal moved
         /// from the template's MultiTrigger storyboards into code (FlyoutPresenter precedent)
@@ -438,7 +438,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         to,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(RevealMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }

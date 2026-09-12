@@ -32,7 +32,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using Fluence.Wpf.Demo;
 using Xunit;
 
@@ -109,11 +108,11 @@ namespace Fluence.Wpf.Tests.Infrastructure
         /// </summary>
         /// <param name="createPage">Creates the page under test.</param>
         /// <param name="verify">Asserts against the shown, laid-out host window.</param>
-        internal static Task RunDemoPageTestAsync(Func<UserControl> createPage, Action<Window> verify)
+        internal static Task RunDemoPageTestAsync(Func<FrameworkElement> createPage, Action<Window> verify)
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                UserControl page = createPage();
+                FrameworkElement page = createPage();
                 Window window = new()
                 {
                     Width = 900,

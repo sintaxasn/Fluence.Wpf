@@ -32,6 +32,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -245,11 +246,82 @@ namespace Fluence.Wpf.Demo.Pages
             catch (ExternalException)
             {
                 System.Diagnostics.Debug.WriteLine("Clipboard was unavailable while copying a brush name.");
+                return;
             }
             catch (ThreadStateException)
             {
                 System.Diagnostics.Debug.WriteLine("Clipboard access requires an STA thread.");
+                return;
             }
+
+            ShowCopiedFeedback();
         }
+
+        /// <summary>
+        /// Swaps the copy glyph for a checkmark for a moment, the way the WinUI Gallery's own
+        /// CopyButton plays a success cue after a copy (CopyButton.xaml CopyToClipboardSuccessAnimation).
+        /// Without it a successful copy looks like nothing happened.
+        /// </summary>
+        private void ShowCopiedFeedback()
+        {
+            if (CopyBrushNameGlyph is null)
+            {
+                return;
+            }
+
+            CopyBrushNameGlyph.SetCurrentValue(Controls.FontIcon.GlyphProperty, CopiedGlyph);
+            CopyBrushNameButton?.SetCurrentValue(ToolTipProperty, CopiedToolTip);
+
+            _copiedRevert?.Stop();
+            _copiedRevert = new DispatcherTimer(DispatcherPriority.Background, Dispatcher)
+            {
+                Interval = CopiedFeedbackDuration,
+            };
+            _copiedRevert.Tick += OnCopiedRevertTick;
+            _copiedRevert.Start();
+        }
+
+        /// <summary>
+        /// Puts the copy glyph and tooltip back once the success cue has been seen.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnCopiedRevertTick(object? sender, EventArgs e)
+        {
+            _copiedRevert?.Stop();
+            _copiedRevert = null;
+            CopyBrushNameGlyph?.SetCurrentValue(Controls.FontIcon.GlyphProperty, CopyGlyph);
+            CopyBrushNameButton?.SetCurrentValue(ToolTipProperty, CopyToolTip);
+        }
+
+        /// <summary>
+        /// The Segoe Fluent Icons copy glyph shown at rest.
+        /// </summary>
+        private const string CopyGlyph = "";
+
+        /// <summary>
+        /// The Segoe Fluent Icons checkmark glyph shown right after a copy.
+        /// </summary>
+        private const string CopiedGlyph = "";
+
+        /// <summary>
+        /// The rest tooltip.
+        /// </summary>
+        private const string CopyToolTip = "Copy brush name";
+
+        /// <summary>
+        /// The tooltip shown with the success cue, matching the Gallery's copied message.
+        /// </summary>
+        private const string CopiedToolTip = "Brush name copied to clipboard";
+
+        /// <summary>
+        /// How long the success cue stays up.
+        /// </summary>
+        private static readonly TimeSpan CopiedFeedbackDuration = TimeSpan.FromMilliseconds(1200);
+
+        /// <summary>
+        /// The timer that reverts the success cue, or null while no cue is showing.
+        /// </summary>
+        private DispatcherTimer? _copiedRevert;
     }
 }

@@ -326,7 +326,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabControl tabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(sample, "SourceTabControl"), exactMatch: false);
+                    Controls.SelectorBar tabs = Assert.IsType<Controls.SelectorBar>(DemoTestHost.FindByName<Controls.SelectorBar>(sample, "SourceSelector"), exactMatch: false);
                     Assert.Equal(2, tabs.Items.Count);
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                     AssertSourceTab(tabs, "C#", sample.CSharpSource);
@@ -366,7 +366,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabControl tabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(sample, "SourceTabControl"), exactMatch: false);
+                    Controls.SelectorBar tabs = Assert.IsType<Controls.SelectorBar>(DemoTestHost.FindByName<Controls.SelectorBar>(sample, "SourceSelector"), exactMatch: false);
                     string renderedXaml = GetSourceTabText(tabs, "XAML");
                     string renderedCSharp = GetSourceTabText(tabs, "C#");
 
@@ -400,7 +400,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabControl? tabs = DemoTestHost.FindByName<TabControl>(sample, "SourceTabControl");
+                    Controls.SelectorBar? tabs = DemoTestHost.FindByName<Controls.SelectorBar>(sample, "SourceSelector");
                     Assert.Equal(1, tabs?.Items.Count);
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                 }
@@ -472,7 +472,7 @@ namespace Fluence.Wpf.Tests.Gallery
             return clip?.ActualHeight ?? 0d;
         }
 
-        private static void AssertSourceTab(TabControl? tabs, string expectedHeader, string expectedSource)
+        private static void AssertSourceTab(Controls.SelectorBar? tabs, string expectedHeader, string expectedSource)
         {
             if (tabs is null)
             {
@@ -480,30 +480,30 @@ namespace Fluence.Wpf.Tests.Gallery
             }
             foreach (object item in tabs.Items)
             {
-                if (item is TabItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                if (item is Controls.SelectorBarItem tab && string.Equals(tab.Text, expectedHeader, StringComparison.Ordinal))
                 {
-                    Button copy = Assert.IsType<Button>(DemoTestHost.FindByName<Button>(tab.Content as DependencyObject, "CopySourceButton"), exactMatch: false);
+                    Button copy = Assert.IsType<Button>(DemoTestHost.FindByName<Button>(tab.Tag as DependencyObject, "CopySourceButton"), exactMatch: false);
                     Assert.Equal(expectedSource, copy.Tag as string, StringComparer.Ordinal);
                     return;
                 }
             }
 
-            Assert.Fail("Missing source tab: " + expectedHeader);
+            Assert.Fail("Missing source selector item: " + expectedHeader);
         }
 
-        private static string GetSourceTabText(TabControl tabs, string expectedHeader)
+        private static string GetSourceTabText(Controls.SelectorBar tabs, string expectedHeader)
         {
             foreach (object item in tabs.Items)
             {
-                if (item is TabItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                if (item is Controls.SelectorBarItem tab && string.Equals(tab.Text, expectedHeader, StringComparison.Ordinal))
                 {
-                    RichTextBox viewer = Assert.IsType<RichTextBox>(DemoTestHost.FindByName<RichTextBox>(tab.Content as DependencyObject, "SourceTextViewer"), exactMatch: false);
+                    RichTextBox viewer = Assert.IsType<RichTextBox>(DemoTestHost.FindByName<RichTextBox>(tab.Tag as DependencyObject, "SourceTextViewer"), exactMatch: false);
                     TextRange textRange = new(viewer.Document.ContentStart, viewer.Document.ContentEnd);
                     return textRange.Text;
                 }
             }
 
-            Assert.Fail("Missing source tab: " + expectedHeader);
+            Assert.Fail("Missing source selector item: " + expectedHeader);
             return string.Empty;
         }
 
@@ -519,10 +519,10 @@ namespace Fluence.Wpf.Tests.Gallery
 
         private static void AssertSourceCopyTag(DemoSampleControl sample, string expectedSource)
         {
-            TabControl tabs = Assert.IsType<TabControl>(DemoTestHost.FindByName<TabControl>(sample, "SourceTabControl"), exactMatch: false);
+            Controls.SelectorBar tabs = Assert.IsType<Controls.SelectorBar>(DemoTestHost.FindByName<Controls.SelectorBar>(sample, "SourceSelector"), exactMatch: false);
             _ = Assert.Single(tabs.Items);
-            TabItem tab = (TabItem)tabs.Items[0];
-            Button copy = Assert.IsType<Button>(DemoTestHost.FindByName<Button>(tab.Content as DependencyObject, "CopySourceButton"), exactMatch: false);
+            Controls.SelectorBarItem tab = (Controls.SelectorBarItem)tabs.Items[0];
+            Button copy = Assert.IsType<Button>(DemoTestHost.FindByName<Button>(tab.Tag as DependencyObject, "CopySourceButton"), exactMatch: false);
             Assert.Equal(expectedSource, copy.Tag as string, StringComparer.Ordinal);
         }
 

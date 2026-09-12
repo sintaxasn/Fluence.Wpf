@@ -52,7 +52,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem` (stock container, restyled by the Fluence theme)                              |
 | Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
 | Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
-| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `BreadcrumbBar`, `BreadcrumbBarItem`, `PipsPager` |
+| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `BreadcrumbBar`, `BreadcrumbBarItem`, `PipsPager`, `SelectorBar`, `SelectorBarItem`, `SlideNavigationPresenter` |
 | Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `TeachingTip`, `CommandBarFlyout`, `CommandBarFlyoutPresenter`, `AppBarButton` |
 | Dialogs             | `ContentDialog`                                                                                                                    |
 | Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
@@ -167,7 +167,7 @@ Key API:
 
 Key API:
 
-`NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `NavigationViewPaneDisplayMode`, `NavigationViewBackRequestedEventArgs`, `NavigationViewItemInvokedEventArgs`, `BreadcrumbBar`, `BreadcrumbBarItem`, `BreadcrumbBarItemClickedEventArgs`, `PipsPager`, `PipsPagerButtonVisibility`, `PipsPagerSelectedIndexChangedEventArgs`
+`NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `NavigationViewPaneDisplayMode`, `NavigationViewBackRequestedEventArgs`, `NavigationViewItemInvokedEventArgs`, `BreadcrumbBar`, `BreadcrumbBarItem`, `BreadcrumbBarItemClickedEventArgs`, `PipsPager`, `PipsPagerButtonVisibility`, `PipsPagerSelectedIndexChangedEventArgs`, `SelectorBar`, `SelectorBarItem`, `SlideNavigationPresenter`, `SlideNavigationTransitionEffect`
 
 `NavigationView` owns pane layout, selection, back-button state, top overflow, and item invocation events. Application route history remains app-owned.
 
@@ -186,6 +186,31 @@ Key API:
     NextButtonVisibility="Visible"
     SelectedIndexChanged="Pager_SelectedIndexChanged" />
 ```
+
+`SelectorBar` is a row of peer destinations for switching between sibling views of one page: one `SelectorBarItem` per destination, exactly one selected, with an accent pill that grows out from under the selected label. Items carry `Text` and an optional `Icon`, matching WinUI's own item surface, and the bar is always single-select. Pair it with `SlideNavigationPresenter` to move between the views the way a WinUI `Frame` does with a `SlideNavigationTransitionInfo`: pick `SlideNavigationTransitionEffect.FromRight` when moving to a later peer and `FromLeft` when moving back, then assign the new view.
+
+```xml
+<ui:SelectorBar x:Name="Sections" SelectionChanged="Sections_SelectionChanged">
+    <ui:SelectorBarItem Text="Recent" />
+    <ui:SelectorBarItem Text="Shared" />
+    <ui:SelectorBarItem Text="Favorites" />
+</ui:SelectorBar>
+<ui:SlideNavigationPresenter x:Name="SectionHost" />
+```
+
+```csharp
+private void Sections_SelectionChanged(object sender, SelectionChangedEventArgs e)
+{
+    int index = Sections.SelectedIndex;
+    SectionHost.TransitionEffect = index > _selectedIndex
+        ? SlideNavigationTransitionEffect.FromRight
+        : SlideNavigationTransitionEffect.FromLeft;
+    SectionHost.Content = _sections[index];
+    _selectedIndex = index;
+}
+```
+
+`SlideNavigationPresenter` works with any content change, not only a `SelectorBar`: the outgoing content fades out as it slides 150 px away over 150 ms, and the incoming content enters from 200 px out and settles over a further 300 ms, the offsets, durations, and key splines WinUI's own horizontal slide transition uses. It honours the library motion gate, so the swap is instant when Windows animations are off or rendering is software-only.
 
 ### Tabs
 
@@ -239,6 +264,8 @@ Status controls cover severity, closable state, determinate and indeterminate pr
 - `InfoBar.GetSeverityBrushKey(InfoBarSeverity)` - returns the theme brush resource key for the given severity, suitable for a `SetResourceReference` call or a `DynamicResource` binding.
 
 Both helpers stay in sync with the `InfoBar` control template; use them instead of hardcoding glyph or brush values.
+
+`InfoBar` raises `Closing` and `Closed` from the `IsOpen` transition, so both fire whether the bar is dismissed by its close button or by `IsOpen = false` in code, and `InfoBarCloseReason` says which. Setting `InfoBarClosingEventArgs.Cancel` in a `Closing` handler keeps the bar open: `IsOpen` returns to `true` and no `Closed` follows. A `Closing` handler may set `IsOpen` itself without producing a second `Closed`.
 
 ### Accessibility
 
@@ -724,6 +751,7 @@ Every control below overrides `OnCreateAutomationPeer` and reports its own class
 | `NumberBoxAutomationPeer` | `NumberBox` | a spinner with the range value pattern |
 | `PersonPictureAutomationPeer` | `PersonPicture` | the display name or initials |
 | `PipsPagerAutomationPeer` | `PipsPager` | the page count and current page |
+| `SelectorBarItemAutomationPeer` | `SelectorBarItem` | the item label, which lives on `Text` rather than the unused content |
 | `ProgressRingAutomationPeer` | `ProgressRing` | a progress bar with the range value pattern |
 | `RatingControlAutomationPeer` | `RatingControl` | the rating with the range value pattern |
 | `SplitButtonAutomationPeer` | `SplitButton` | a split button with the invoke and expand and collapse patterns |

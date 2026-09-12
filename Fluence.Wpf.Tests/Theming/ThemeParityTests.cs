@@ -511,7 +511,9 @@ namespace Fluence.Wpf.Tests.Theming
         /// Light is the reference theme. High contrast overrides the value of existing keys rather
         /// than publishing new ones, so one file covers the contract.
         /// The current set is always written to data/theme-golden/PublicKeys.txt, which is what an
-        /// intentional change copies over the committed file.
+        /// intentional change copies over the committed file. The four golden files are therefore
+        /// stored the way File.WriteAllLinesAsync emits them, without a byte order mark, so that
+        /// copy is a content diff and not a whole-file one.
         /// </remarks>
         [Fact]
         public async Task PublicKeyInventory_MatchesFrozenSetAsync()

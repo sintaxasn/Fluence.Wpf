@@ -54,7 +54,7 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
-        /// The seven Color keys removed at 1.0, and their seven Brush twins, must not resolve in
+        /// The nine Color keys removed at 1.0, and their nine Brush twins, must not resolve in
         /// any theme. A key that quietly came back would be frozen by the next release.
         /// </summary>
         /// <param name="theme">The theme to apply before probing.</param>
@@ -77,6 +77,8 @@ namespace Fluence.Wpf.Tests.Theming
                     "ControlStrokeColorTertiary",
                     "SystemFillColorInformational",
                     "KeyboardFocusBorderColor",
+                    "NavigationViewContentSeparator",
+                    "TextPlaceholderColor",
                 ];
 
                 foreach (string key in removed)

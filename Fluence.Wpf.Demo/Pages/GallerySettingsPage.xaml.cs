@@ -38,7 +38,7 @@ namespace Fluence.Wpf.Demo.Pages
     /// <summary>
     /// Settings page for the demo shell.
     /// </summary>
-    public partial class GallerySettingsPage : UserControl
+    public partial class GallerySettingsPage : Page
     {
         private const double PageHorizontalMargin = 72.0;
         private const double PageMaxWidth = 1064.0;

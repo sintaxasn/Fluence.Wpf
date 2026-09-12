@@ -317,9 +317,11 @@
                     </Border>
                 </Grid>
 
-                <!--  CornerRadius 0,8,0,0 keeps the rail's fill inside SampleCard's rounded
-                      top-right arc: a WPF Border does not clip children, so a square rail
-                      corner would overpaint the card's 8px outline and stroke.  -->
+                <!--
+                    CornerRadius 0,8,0,0 keeps the rail's fill inside SampleCard's rounded
+                    top-right arc: a WPF Border does not clip children, so a square rail
+                    corner would overpaint the card's 8px outline and stroke.
+                -->
                 <Border
                     x:Name="RightRailBorder"
                     Grid.Column="1"
@@ -342,7 +344,21 @@
             Expanded="SourceExpander_Expanded"
             Header="Source code"
             Style="{StaticResource DemoSampleSourceExpanderStyle}">
-            <TabControl x:Name="SourceTabControl" Margin="{DynamicResource DemoSampleSourceTabMargin}" />
+            <!--
+                WinUI Gallery ControlExample.xaml: a SelectorBar of XAML / C# items above the
+                code presenters, not a TabControl.
+            -->
+            <Grid Margin="{DynamicResource DemoSampleSourceTabMargin}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <fluence:SelectorBar
+                    x:Name="SourceSelector"
+                    Margin="{DynamicResource DemoSampleSourceSelectorMargin}"
+                    SelectionChanged="SourceSelector_SelectionChanged" />
+                <ContentControl x:Name="SourceContentHost" Grid.Row="1" />
+            </Grid>
         </fluence:Expander>
     </Grid>
 </ContentControl>

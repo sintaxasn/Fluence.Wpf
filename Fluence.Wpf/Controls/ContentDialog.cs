@@ -660,7 +660,7 @@ namespace Fluence.Wpf.Controls
             // storyboard attributes cannot reference and code therefore mirrors by value:
             // ControlFasterAnimationDuration (83 ms) for the linear opacity rise and
             // ControlNormalAnimationDuration (250 ms) with ControlFastOutSlowInKeySpline
-            // (0.8,0,0,1) for the scale settle.
+            // (0,0,0,1) for the scale settle.
             DoubleAnimationUsingKeyFrames opacityAnimation = new()
             {
                 FillBehavior = FillBehavior.Stop,
@@ -692,7 +692,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         1.0,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(OpenScaleMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }
@@ -923,7 +923,7 @@ namespace Fluence.Wpf.Controls
 
             // WinUI ContentDialog_themeresources.xaml "To=DialogHidden" transition: scale
             // 1.0 to 1.05 over 167 ms (ControlFastAnimationDuration) on
-            // ControlFastOutSlowInKeySpline (0.8,0,0,1), opacity 1 to 0 linear over 83 ms
+            // ControlFastOutSlowInKeySpline (0,0,0,1), opacity 1 to 0 linear over 83 ms
             // (ControlFasterAnimationDuration); code mirrors the Typography.xaml token
             // values. The keyframe tracks omit the discrete start so each animation departs
             // from the live value, which keeps a close during the entrance continuing from
@@ -971,7 +971,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         1.05,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(CloseScaleMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }

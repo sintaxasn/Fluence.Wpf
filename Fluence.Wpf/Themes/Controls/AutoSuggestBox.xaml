@@ -152,26 +152,26 @@
                                     CornerRadius="{DynamicResource OverlayCornerRadius}"
                                     Effect="{DynamicResource FlyoutShadowEffect}"
                                     UseLayoutRounding="True" />
-                            <Border
-                                x:Name="SuggestionsSurface"
-                                MinWidth="{Binding ActualWidth, ElementName=FieldRoot}"
-                                MaxHeight="{TemplateBinding MaxSuggestionListHeight}"
-                                Margin="0,4,0,0"
-                                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                BorderThickness="1"
-                                CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                RenderOptions.ClearTypeHint="Enabled"
-                                UseLayoutRounding="True">
-                                <controls:ListBox
-                                    x:Name="PART_SuggestionsList"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    DisplayMemberPath="{TemplateBinding TextMemberPath}"
-                                    Focusable="False"
-                                    IsTabStop="False"
-                                    ItemsSource="{TemplateBinding ItemsSource}" />
-                            </Border>
+                                <Border
+                                    x:Name="SuggestionsSurface"
+                                    MinWidth="{Binding ActualWidth, ElementName=FieldRoot}"
+                                    MaxHeight="{TemplateBinding MaxSuggestionListHeight}"
+                                    Margin="0,4,0,0"
+                                    Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                    RenderOptions.ClearTypeHint="Enabled"
+                                    UseLayoutRounding="True">
+                                    <controls:ListBox
+                                        x:Name="PART_SuggestionsList"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        DisplayMemberPath="{TemplateBinding TextMemberPath}"
+                                        Focusable="False"
+                                        IsTabStop="False"
+                                        ItemsSource="{TemplateBinding ItemsSource}" />
+                                </Border>
                             </Grid>
                         </Popup>
                     </Grid>

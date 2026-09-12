@@ -503,6 +503,133 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         /// <summary>
+        /// A programmatic close raises Closing too, with the Programmatic reason, the way WinUI
+        /// raises it from the IsOpen transition rather than from the close button alone.
+        /// </summary>
+        [Fact]
+        public Task Closing_IsOpenSetFalse_ReportsProgrammaticReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Programmatic",
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = infoBar.ApplyTemplate();
+
+                    List<InfoBarCloseReason> closing = [];
+                    infoBar.Closing += (_, e) => closing.Add(e.Reason);
+
+                    infoBar.IsOpen = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal([InfoBarCloseReason.Programmatic], closing);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Cancelling a programmatic close puts IsOpen back to true and raises no Closed, the
+        /// same veto the close button already honoured.
+        /// </summary>
+        [Fact]
+        public Task ClosingCancel_IsOpenSetFalse_ReopensAndRaisesNoClosedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Cancelled",
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = infoBar.ApplyTemplate();
+
+                    List<InfoBarCloseReason> closed = [];
+                    infoBar.Closing += static (_, e) => e.Cancel = true;
+                    infoBar.Closed += (_, e) => closed.Add(e.Reason);
+
+                    infoBar.IsOpen = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(infoBar.IsOpen, "Cancelling the Closing event must reopen the bar.");
+                    Assert.Empty(closed);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// A Closing handler that sets IsOpen to false itself must not produce a second Closed.
+        /// The property is already false when the handler runs, so its assignment is a no-op and
+        /// the single transition still raises exactly one Closed, carrying the reason the close
+        /// actually started with.
+        /// </summary>
+        [Fact]
+        public Task Closed_ClosingHandlerSetsIsOpenFalse_RaisedOnceWithStartingReasonAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                InfoBar infoBar = new()
+                {
+                    IsClosable = true,
+                    IsOpen = true,
+                    Title = "Reentrant",
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = infoBar.ApplyTemplate();
+
+                    List<InfoBarCloseReason> closed = [];
+                    infoBar.Closing += (_, _) => infoBar.IsOpen = false;
+                    infoBar.Closed += (_, e) => closed.Add(e.Reason);
+
+                    ButtonBase closeButton = Assert.IsType<ButtonBase>(
+                        infoBar.Template.FindName("PART_CloseButton", infoBar), exactMatch: false);
+                    closeButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal([InfoBarCloseReason.CloseButton], closed);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
         /// Closing carries the same reason its matching Closed will, so a handler deciding
         /// whether to cancel can see what triggered the close.
         /// </summary>
