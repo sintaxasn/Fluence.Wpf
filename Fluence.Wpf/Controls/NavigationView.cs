@@ -1205,9 +1205,36 @@ defaultValue: null,
         /// </summary>
         private void UpdateHostTitleBarState()
         {
-            FluenceWindow? window = _titleBarExtensionWindow;
+            // Only the window's own shell pane answers to the window's title bar. A NavigationView
+            // nested inside page content (a gallery sample, say) is a control on the page, not the
+            // window's navigation surface, so the window's title bar neither hosts its chrome nor
+            // sets its pane height; it keeps drawing its own back and pane toggle buttons.
+            FluenceWindow? window = IsShellNavigationView() ? _titleBarExtensionWindow : null;
             SetValue(HostExtendsContentIntoTitleBarPropertyKey, window?.ExtendsContentIntoTitleBar is true);
             SetValue(HostHasTitleBarPropertyKey, window?.TitleBar is not null);
+        }
+
+        /// <summary>
+        /// Reports whether this is the window's shell navigation pane rather than one nested in the
+        /// content of another. Nesting is the test because the shell pane hosts the content every
+        /// other pane on screen sits inside, so an ancestor NavigationView means this one belongs
+        /// to a page rather than to the window.
+        /// </summary>
+        /// <returns><see langword="true"/> when no ancestor is a <see cref="NavigationView"/>.</returns>
+        private bool IsShellNavigationView()
+        {
+            DependencyObject? ancestor = VisualTreeHelper.GetParent(this);
+            while (ancestor is not null)
+            {
+                if (ancestor is NavigationView)
+                {
+                    return false;
+                }
+
+                ancestor = VisualTreeHelper.GetParent(ancestor);
+            }
+
+            return true;
         }
 
         /// <summary>

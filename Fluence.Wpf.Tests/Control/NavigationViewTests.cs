@@ -174,6 +174,71 @@ namespace Fluence.Wpf.Tests.Control
 
 
         [Fact]
+        public Task NavigationView_NestedInContent_KeepsItsOwnPaneChromeAsync()
+        {
+            // A window whose title bar hosts the navigation chrome suppresses the shell pane's own
+            // back and pane toggle buttons, so the two are not drawn twice. That rule is about the
+            // window's own pane: a NavigationView nested in page content is a control on the page
+            // and has to keep its buttons, or a sample with IsPaneToggleButtonVisible="True" shows
+            // no toggle at all.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FluenceWindow window = new()
+                {
+                    ExtendsContentIntoTitleBar = true,
+                    TitleBar = new TitleBar(),
+                    Width = 640,
+                    Height = 400,
+                };
+
+                NavigationView shell = new()
+                {
+                    PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                    IsPaneToggleButtonVisible = true,
+                };
+                _ = shell.Items.Add(new NavigationViewItem { Content = "Home" });
+
+                NavigationView nested = new()
+                {
+                    PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                    IsPaneToggleButtonVisible = true,
+                    Width = 320,
+                    Height = 200,
+                };
+                _ = nested.Items.Add(new NavigationViewItem { Content = "Dashboard" });
+
+                shell.Content = nested;
+                window.Content = shell;
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = shell.ApplyTemplate();
+                    _ = nested.ApplyTemplate();
+
+                    System.Windows.Controls.Button shellToggle = Assert.IsType<System.Windows.Controls.Button>(shell.Template.FindName(NavigationView.PART_PaneToggleButton, shell));
+                    System.Windows.Controls.Button nestedToggle = Assert.IsType<System.Windows.Controls.Button>(nested.Template.FindName(NavigationView.PART_PaneToggleButton, nested));
+
+                    Assert.Equal(Visibility.Collapsed, shellToggle.Visibility);
+                    Assert.Equal(Visibility.Visible, nestedToggle.Visibility);
+
+                    // The mirror is what the template reads, so assert it directly too.
+                    Assert.True(shell.HostHasTitleBar);
+                    Assert.False(nested.HostHasTitleBar);
+                    Assert.True(shell.HostExtendsContentIntoTitleBar);
+                    Assert.False(nested.HostExtendsContentIntoTitleBar);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task NavigationView_MirrorsHostTitleBarState_AndReleasesItOnUnloadAsync()
         {
             // The pane's triggers need the owning window's title bar state. Read through a
