@@ -63,6 +63,20 @@ namespace Fluence.Wpf.Controls
                 typeof(TabViewItem),
                 new PropertyMetadata(propertyChangedCallback: null));
 
+        private static readonly DependencyPropertyKey LeadingSeparatorVisibilityPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(LeadingSeparatorVisibility),
+                typeof(Visibility),
+                typeof(TabViewItem),
+                new FrameworkPropertyMetadata(Visibility.Visible));
+
+        /// <summary>
+        /// Identifies the <see cref="LeadingSeparatorVisibility"/> dependency property. Internal:
+        /// this is an implementation detail of the default template, not a consumer-facing DP.
+        /// </summary>
+        internal static readonly DependencyProperty LeadingSeparatorVisibilityProperty =
+            LeadingSeparatorVisibilityPropertyKey.DependencyProperty;
+
         /// <summary>
         /// Identifies the <see cref="CloseRequested"/> routed event.
         /// </summary>
@@ -102,6 +116,21 @@ namespace Fluence.Wpf.Controls
         {
             get => GetValue(IconProperty);
             set => SetValue(IconProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the visibility of the hairline separator drawn at the leading edge of this tab,
+        /// between it and its previous sibling (WinUI TabViewItemSeparator). Computed by the
+        /// owning <see cref="TabView"/> from selection and position: collapsed for the first tab
+        /// in the strip and for either tab flanking the current selection. Internal: an
+        /// implementation detail of the default template, bound to it via
+        /// <c language="csharp">RelativeSource TemplatedParent</c> rather than
+        /// <c language="csharp">TemplateBinding</c>, and not settable by consumers.
+        /// </summary>
+        internal Visibility LeadingSeparatorVisibility
+        {
+            get => (Visibility)GetValue(LeadingSeparatorVisibilityProperty);
+            set => SetValue(LeadingSeparatorVisibilityPropertyKey, value);
         }
 
         /// <summary>

@@ -268,7 +268,15 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         Assert.True(lefts[i] > lefts[i - 1], "Action row controls should run left to right in WinUI PageHeader order.");
                     }
 
-                    Assert.Equal(32, theme.ActualHeight);
+                    // 31 dip with a 0.5 tolerance: UseLayoutRounding snaps the button to whole
+                    // device pixels, so a 31 dip request renders 46 px at 150% scale, which reads
+                    // back as 30.67 dip. The WinUI 3 Gallery's own action buttons measure 40 x 31.3.
+                    Assert.Equal(31, theme.ActualHeight, 0.5);
+                    Assert.Equal(40, theme.ActualWidth, 0.5);
+                    Assert.Equal(31, copyLink.ActualHeight, 0.5);
+                    Assert.Equal(40, copyLink.ActualWidth, 0.5);
+                    Assert.Equal(31, favorite.ActualHeight, 0.5);
+                    Assert.Equal(40, favorite.ActualWidth, 0.5);
                     Assert.Equal("Copy link", AutomationProperties.GetName(copyLink), StringComparer.Ordinal);
                 }
                 finally

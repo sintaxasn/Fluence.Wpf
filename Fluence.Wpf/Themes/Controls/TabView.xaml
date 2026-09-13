@@ -11,18 +11,41 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+        <!--  WinUI TabViewItemHeaderFontSize = 12 (TabView_themeresources.xaml line 245)  -->
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="IsTabStop" Value="True" />
         <Setter Property="Margin" Value="0,0,6,0" />
         <Setter Property="MaxWidth" Value="240" />
-        <Setter Property="MinHeight" Value="40" />
+        <!--  WinUI TabViewItemMinHeight = 32 (TabView_themeresources.xaml)  -->
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="MinWidth" Value="100" />
-        <Setter Property="Padding" Value="12,0,8,0" />
+        <!--  WinUI TabViewItemHeaderPaddingWithCloseButton = 8,3,4,3 (TabView_themeresources.xaml line 253)  -->
+        <Setter Property="Padding" Value="8,3,4,3" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TabViewItem}">
                     <Grid x:Name="Root" ClipToBounds="False">
+                        <!--
+                            Inter-tab separator (WinUI TabViewItemSeparator /
+                            TabViewItemSeparatorMargin, TabView_themeresources.xaml). Each item
+                            draws only its own leading edge (the seam shared with its previous
+                            sibling); the internal TabViewItem.LeadingSeparatorVisibility DP is
+                            computed by the owning TabView (see TabView.cs.UpdateLeadingSeparators)
+                            from selection and position, matching WinUI's per-item adjacency
+                            booleans. Bound via RelativeSource TemplatedParent rather than
+                            TemplateBinding because the DP is internal (an implementation detail,
+                            not consumer-facing public API).
+                        -->
+                        <Border
+                            x:Name="LeadingSeparator"
+                            Width="1"
+                            Margin="0,8,0,8"
+                            HorizontalAlignment="Left"
+                            Background="{DynamicResource DividerStrokeColorDefaultBrush}"
+                            IsHitTestVisible="False"
+                            Visibility="{Binding LeadingSeparatorVisibility, RelativeSource={RelativeSource TemplatedParent}}" />
+
                         <Border
                             x:Name="HoverBackground"
                             Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
@@ -50,10 +73,11 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
+                            <!--  WinUI TabViewItemHeaderIconMargin = 0,0,10,0  -->
                             <ContentPresenter
                                 x:Name="IconHost"
                                 Grid.Column="0"
-                                Margin="0,0,8,0"
+                                Margin="0,0,10,0"
                                 VerticalAlignment="Center"
                                 Content="{TemplateBinding Icon}"
                                 TextElement.Foreground="{TemplateBinding Foreground}"
@@ -76,12 +100,13 @@
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
 
+                            <!--  WinUI TabViewItemHeaderCloseMargin = 4,0,0,0  -->
                             <Button
                                 x:Name="PART_CloseButton"
                                 Grid.Column="2"
-                                Width="20"
-                                Height="20"
-                                Margin="6,0,0,0"
+                                Width="32"
+                                Height="24"
+                                Margin="4,0,0,0"
                                 Padding="0"
                                 VerticalAlignment="Center"
                                 AutomationProperties.Name="Close tab"
@@ -119,20 +144,6 @@
                                 </Button.Template>
                             </Button>
                         </Grid>
-
-                        <Border
-                            x:Name="SelectionIndicator"
-                            Height="3"
-                            Margin="10,0,10,0"
-                            VerticalAlignment="Bottom"
-                            Background="{DynamicResource AccentFillColorDefaultBrush}"
-                            CornerRadius="2"
-                            Opacity="0"
-                            RenderTransformOrigin="0.5,0.5">
-                            <Border.RenderTransform>
-                                <ScaleTransform x:Name="IndicatorScale" ScaleX="0" ScaleY="1" />
-                            </Border.RenderTransform>
-                        </Border>
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -144,44 +155,6 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                             <Setter TargetName="SelectedBackground" Property="Opacity" Value="1" />
                             <Setter Property="Panel.ZIndex" Value="1" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <!--  Indicator reveal: fade ControlFasterAnimationDuration (83 ms), scale ControlFastAnimationDuration (167 ms)  -->
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectionIndicator"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.083" />
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
-                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <!--  Indicator exit: ControlPressAnimationDuration (100 ms), fade delayed by ControlFasterAnimationDuration (83 ms)  -->
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
-                                                Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimation
-                                            BeginTime="0:0:0.083"
-                                            Storyboard.TargetName="SelectionIndicator"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.1" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -195,8 +168,10 @@
                             <Setter TargetName="IconHost" Property="Visibility" Value="Visible" />
                         </DataTrigger>
 
+                        <!--  WinUI TabViewItemHeaderPaddingWithoutCloseButton = 8,3,8,3 (TabView_themeresources.xaml line 254)  -->
                         <Trigger Property="IsClosable" Value="False">
                             <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Padding" Value="8,3,8,3" />
                         </Trigger>
 
                         <MultiDataTrigger>

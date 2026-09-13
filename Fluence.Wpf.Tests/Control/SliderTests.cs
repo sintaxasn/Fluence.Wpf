@@ -126,6 +126,41 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        // ---------------------------------------------------------------------------
+        // A3  Unfilled track painted exactly once
+        // ---------------------------------------------------------------------------
+
+        [Fact]
+        public Task Slider_UnfilledTrack_PaintedOnceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
+                Window w = new() { Content = slider, Width = 300, Height = 60 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    System.Windows.Controls.Border trackBackground = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(slider, "TrackBackground"), exactMatch: false);
+                    System.Windows.Controls.Primitives.RepeatButton increaseButton = Assert.IsType<System.Windows.Controls.Primitives.RepeatButton>(
+                        FindVisualChildByName<System.Windows.Controls.Primitives.RepeatButton>(slider, "IncreaseButton"), exactMatch: false);
+
+                    // The unfilled track must be painted exactly once: TrackBackground carries
+                    // ControlStrongFillColorDefaultBrush and IncreaseButton stays Transparent, so the
+                    // two partial-alpha fills do not stack into a darker composite than WinUI's single
+                    // HorizontalTrackRect (see the WinUI-authority comment on IncreaseButton in Slider.xaml).
+                    BrushAssert.AssertBrushColor(trackBackground.Background, "ControlStrongFillColorDefaultBrush");
+                    Assert.Equal(Colors.Transparent, BrushAssert.SolidColor(increaseButton.Background));
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
         [Fact]
         public Task Slider_Template_HasTrackAsync()
         {

@@ -47,7 +47,6 @@ WinUI's tooltip fade-out (the exit animation WinUI plays when a tooltip closes) 
 - **`InfoBar`** open and close fade transitions are Fluence motion with no cited WinUI resource; `InfoBar_themeresources.xaml` defines the static visuals only.
 - **`Card` variants** (verified in `Fluence.Wpf/Themes/Controls/Card.xaml`): `Outlined` keys its stroke to `ControlStrokeColorDefaultBrush` rather than `CardStrokeColorDefaultBrush` (line 164); `Subtle` uses `SubtleFillColorSecondaryBrush` as its **rest** background (line 180) even though that token is WinUI's hover fill role elsewhere in the library; `Filled` uses `ControlAltFillColorQuarternaryBrush` per the template's own comment (lines 168-176), not a translucent card fill. None of these are WinUI tokens, because WinUI has no `Card` control to compare against; they are Fluence's own role choices for a control it invented.
 - **`NavigationView` Top mode**: the outer stroke around the content region and its bottom rounding are Fluence additions to the Top pane display mode; WinUI's `NavigationView` Top layout has no equivalent bordered content region in `NavigationView_themeresources.xaml`.
-- **`TabView`** draws a selected-tab accent underline; this is a Fluence addition layered on top of the WinUI selected-tab visuals.
 - **`ListView`** group headers render a coloured band; this is a Fluence addition, not present in `ListViewItem_themeresources.xaml`.
 - **`Image`** control adds a theme-aware 1px stroke and a corner-radius clip around the wrapped bitmap; WinUI has no equivalent `Image` control to compare (it is a bare `Microsoft.UI.Xaml.Controls.Image`).
 
@@ -78,21 +77,28 @@ Values below were read directly from the corresponding template or theme-resourc
 | `ProgressBar` | `MinHeight` 3.2 | `ProgressBarMinHeight` 3 | `ProgressBar\ProgressBar_themeresources.xaml:29` |
 | `RatingControl` | spacing 4, no `PlaceholderValue` | `RatingControlItemSpacing` 8 | `RatingControl\RatingControl_themeresources.xaml:40` |
 | `Expander` | header padding 16,11 | `ExpanderHeaderPadding` 16,0,0,0 | `Expander\Expander_themeresources.xaml:80` |
-| `ContextMenu` | `MinWidth` 180, item margin 2,1, accelerator text 12 | `FlyoutThemeMinWidth` (not defined in this CommonStyles checkout; a core XAML platform default), `MenuFlyoutItemThemePadding` 11,8,11,9, accelerator inherits `ControlContentThemeFontSize` (14) | `CommonStyles\MenuFlyout_themeresources.xaml:260,304` (item margin: see file) |
-| `ComboBox` | item padding 12,8; plate padding 4 | `ComboBoxItemThemePadding` 11,5,11,7; `ComboBoxDropdownBorderPadding` 0 | `ComboBox\ComboBox_themeresources.xaml:335,107` |
-| `ContentDialog` | `MaxHeight` none | `ContentDialogMaxHeight` 756 | `CommonStyles\ContentDialog_themeresources.xaml:15` |
-| `TeachingTip` | padding 16,15,16,17; close 24px, glyph 12; no `MinHeight`/`MaxHeight` | `TeachingTipContentMargin` 12; `TeachingTipAlternateCloseButtonSize` 40, glyph 16 | `TeachingTip\TeachingTip_themeresources.xaml:95-97` |
+| `TeachingTip` content inset | presenter padding 16,15,16,17 | `TeachingTipContentMargin` 12 on the content presenter, with the padding carried by the surface | `TeachingTip\TeachingTip_themeresources.xaml:97` |
+| `TeachingTip` placements | `Auto` plus 5 edge placements | 14 states, including 8 corner aware variants | `TeachingTip\TeachingTip.xaml:116-263` |
+| `ContextMenu` icon column | 20 dp icon column plus an 8 dp gap reserved on every item | reserved only in the `CheckPlaceholder` / `IconPlaceholder` visual states, via `MenuFlyoutItemPlaceholderThemeThickness` 28,0,0,0 | `CommonStyles\MenuFlyout_themeresources_perf2026.xaml:46,342-362` |
+| `ContextMenu` radio items | one checkmark glyph for any checkable item | `RadioMenuFlyoutItem` draws a distinct dot, `E915` | `RadioMenuFlyoutItem\RadioMenuFlyoutItem_themeresources.xaml:94` |
+| `ComboBox` selection pill | fades in, no scale | fades and scales `ComboBoxItemPillMinScale` 0.625 to 1 | `ComboBox\ComboBox_themeresources_perf2026.xaml:326` |
+| `DatePicker` / `TimePicker` highlight | `AccentFillColorDefaultBrush`, height follows the item | `AccentAAFillColorDefaultBrush` (an accent family Fluence does not publish), `DatePickerFlyoutPresenterHighlightHeight` 40 | `CommonStyles\DatePicker_themeresources.xaml:33,114` |
+| `DatePicker` / `TimePicker` accept row | auto height, button margins 0,0,2,0 and 2,0,0,0 | `DatePickerFlyoutPresenterAcceptDismissHostGridHeight` 41, margins 4,4,2,4 and 2,4,4,4 | `CommonStyles\DatePicker_themeresources.xaml:116,123-124` |
+| `CommandBarFlyout` overflow | inline panel that height animates under the bar, no scroll host so no `MaxHeight` | detached popup, the primary bar widens and the corner radii morph by open direction, `MaxHeight` 480 inside a scroll viewer | `CommandBarFlyout\CommandBarFlyout_themeresources_perf2026.xaml:532,697-1007` |
+| `AppBarButton` in a `CommandBarFlyout` | icon and tooltip only | `TextLabel`, `KeyboardAcceleratorTextLabel` and `SubItemChevron` template parts | `CommandBarFlyout\CommandBarFlyout_themeresources_perf2026.xaml:268-278,302-303` |
+| `CommandBarFlyout` more button | 40 wide, glyph rotates 180 degrees on expand | `Width` 44, the glyph does not animate | `CommandBarFlyout\CommandBarFlyout_themeresources_perf2026.xaml:568-569` |
 | `NavigationView` pane toggle | 48x40 | `PaneToggleButtonWidth` 40, `PaneToggleButtonHeight` 36 | `NavigationView\NavigationView_themeresources.xaml:205-206` |
-| `NavigationView` item border | 2 | `NavigationViewItemBorderThickness` 1 | `NavigationView\NavigationView_themeresources.xaml:226` |
+| `NavigationView` footer divider | always drawn when the pane footer holds anything | `VisualItemsSeparator` is revealed only by the `SeparatorVisible` visual state, which WinUI enters while the menu list overflows | `NavigationView\NavigationView.xaml:170-176,375` |
+| `NavigationView` item border | 0 | `NavigationViewItemBorderThickness` 1 | `NavigationView\NavigationView_themeresources.xaml:226` |
 | `NavigationView` header font | 12 | `NavigationViewItemHeaderTextStyle` `FontSize` 14 | `NavigationView\NavigationView_themeresources.xaml:1082` |
 | `NavigationView` separator margin | 12,4,0,4 | `NavigationViewItemSeparatorMargin` 0,3,0,4 | `NavigationView\NavigationView_themeresources.xaml:247` |
-| `NavigationView` indicator x offset | 9 | not independently verified in this pass | see file (`NavigationView.cpp`) |
+| `NavigationView` indicator x offset | 4, flush with the pill's left edge | flush with the pill's left edge, measured on a top level selected item in the WinUI 3 Gallery | see file (`NavigationView.cpp`) |
 | `NavigationView` Top indicator | flush | `SelectionIndicatorGrid` margin 16,0,16,4 (4px bottom lift) | `NavigationView\NavigationView_themeresources.xaml:904` |
-| `TabView` | inter-tab separator absent, corner fillets absent | drawn by the strip template | `TabView\TabView.xaml` (see file) |
+| `TabView` | corner fillets absent | drawn by the strip template | `TabView\TabView.xaml` (see file) |
 | `PipsPager` | pip pitch 20, hover 5, nav buttons collapse | `PipsPagerButtonWidth` 20 (nav button); pip pitch and hover size not pinned to a themed resource | `PipsPager\PipsPager_themeresources.xaml:92` (pip metrics: see file) |
 | `PersonPicture` | badge bottom-right, initials ratio 0.35 | badge position and initials ratio are computed in `PersonPicture.cpp`, not a themed resource | see file |
 | `TitleBar` icon | 20 | `TitleBarIconMaxWidth`/`MaxHeight` 16 | `TitleBar\TitleBar_themeresources.xaml:88-89` |
-| `MenuBar` | height about 34; flyout gutters on bar items | `MenuBarHeight` 40 | `MenuBar\MenuBar_themeresources.xaml:44` |
+| `MenuBar` | `MinHeight` 40, bar items padded 10,4,10,4 with a 4,4,4,4 margin | `MenuBarHeight` 40, `MenuBarItemButtonPadding` 10,4,10,4, `MenuBarItemMargin` 4,4,4,4 | `MenuBar\MenuBar_themeresources.xaml:44` |
 | `Slider` thumb | 20 | `SliderHorizontalThumbWidth`/`Height` 18 | `CommonStyles\Slider_themeresources.xaml:169-170` |
 | `Slider` inner dot | 12, inside the 20 px thumb | 12, inside the 18 px thumb | `CommonStyles\Slider_themeresources.xaml:199-252` (dot diameter: see file) |
 | `ScrollBar` collapsed thumb hit target | 2 | `ScrollBarVerticalThumbMinWidth`/`ScrollBarHorizontalThumbMinHeight` 8 | `CommonStyles\ScrollBar_themeresources.xaml:182,184` |

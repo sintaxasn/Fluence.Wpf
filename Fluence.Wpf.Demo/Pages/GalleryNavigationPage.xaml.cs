@@ -155,7 +155,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "            <fluence:CheckBox\n" +
                                                                "                x:Name=\"BackEnabledToggle\"\n" +
                                                                "                Content=\"Back enabled\"\n" +
-                                                               "                IsChecked=\"True\" />\n" +
+                                                               "                IsChecked=\"False\" />\n" +
                                                                "    </StackPanel>\n");
 
         private const string CompactNavigationViewCSharpSource = "using System.Windows.Controls;\n" +
@@ -303,10 +303,12 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "        </fluence:SelectorBar>\n" +
                                                      "        <fluence:SlideNavigationPresenter\n" +
                                                      "            x:Name=\"SectionHost\"\n" +
-                                                     "            Height=\"48\" />\n" +
+                                                     "            Width=\"360\"\n" +
+                                                     "            Height=\"160\" />\n" +
                                                      "    </fluence:StackPanel>\n");
 
-        private const string SelectorBarCSharpSource = "using System.Windows.Controls;\n" +
+        private const string SelectorBarCSharpSource = "using System.Windows;\n" +
+                                                       "using System.Windows.Controls;\n" +
                                                        "using Fluence.Wpf;\n" +
                                                        "\n" +
                                                        "namespace Fluence.Wpf.Demo.Pages.Navigation\n" +
@@ -329,11 +331,31 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            SectionHost.TransitionEffect = index > _selectedIndex\n" +
                                                        "                ? SlideNavigationTransitionEffect.FromRight\n" +
                                                        "                : SlideNavigationTransitionEffect.FromLeft;\n" +
-                                                       "            SectionHost.Content = new TextBlock\n" +
-                                                       "            {\n" +
-                                                       "                Text = (Sections.SelectedItem as SelectorBarItem)?.Text,\n" +
-                                                       "            };\n" +
+                                                       "            SectionHost.Content = CreateSection(index);\n" +
                                                        "            _selectedIndex = index;\n" +
+                                                       "        }\n" +
+                                                       "\n" +
+                                                       "        // Each peer view carries the section content, not just its name.\n" +
+                                                       "        private static UIElement CreateSection(int index)\n" +
+                                                       "        {\n" +
+                                                       "            string[] titles = index switch\n" +
+                                                       "            {\n" +
+                                                       "                0 => [\"Quarterly review.docx\", \"Launch metrics.xlsx\", \"Design notes.md\"],\n" +
+                                                       "                1 => [\"Roadmap 2027\", \"Release checklist\", \"Budget forecast\"],\n" +
+                                                       "                _ => [\"Team handbook\", \"Support playbook\", \"Brand assets\"],\n" +
+                                                       "            };\n" +
+                                                       "\n" +
+                                                       "            StackPanel panel = new();\n" +
+                                                       "            foreach (string title in titles)\n" +
+                                                       "            {\n" +
+                                                       "                panel.Children.Add(new TextBlock\n" +
+                                                       "                {\n" +
+                                                       "                    Margin = new Thickness(0, 0, 0, 10),\n" +
+                                                       "                    Text = title,\n" +
+                                                       "                });\n" +
+                                                       "            }\n" +
+                                                       "\n" +
+                                                       "            return panel;\n" +
                                                        "        }\n" +
                                                        "    }\n" +
                                                        "}\n";
@@ -402,14 +424,86 @@ namespace Fluence.Wpf.Demo.Pages
                 ? SlideNavigationTransitionEffect.FromRight
                 : SlideNavigationTransitionEffect.FromLeft;
 
-            TextBlock section = new()
+            DemoSelectorBarPresenter.Content = CreateSelectorBarSection(index);
+            _selectedSectionIndex = index;
+        }
+
+        /// <summary>
+        /// Builds the peer view for one SelectorBar section, so the slide carries the kind of
+        /// content a real section holds instead of a single word.
+        /// </summary>
+        /// <param name="index">The zero-based index of the selected section.</param>
+        private static FrameworkElement CreateSelectorBarSection(int index)
+        {
+            (string Glyph, string Title, string Detail)[] rows = index switch
             {
-                Text = (DemoSelectorBar.SelectedItem as Controls.SelectorBarItem)?.Text,
+                0 =>
+                [
+                    ("\uE8A5", "Quarterly review.docx", "Edited 12 minutes ago"),
+                    ("\uE8A5", "Launch metrics.xlsx", "Edited yesterday"),
+                    ("\uE8A5", "Design notes.md", "Edited on Monday"),
+                ],
+                1 =>
+                [
+                    ("\uE77B", "Roadmap 2027", "Shared with the design team"),
+                    ("\uE77B", "Release checklist", "Shared with quality assurance"),
+                    ("\uE77B", "Budget forecast", "Shared with finance"),
+                ],
+                _ =>
+                [
+                    ("\uE735", "Team handbook", "Pinned by you"),
+                    ("\uE735", "Support playbook", "Pinned by you"),
+                    ("\uE735", "Brand assets", "Pinned by you"),
+                ],
+            };
+
+            StackPanel panel = new() { Margin = new Thickness(0, 8, 0, 0) };
+            foreach ((string Glyph, string Title, string Detail) row in rows)
+            {
+                _ = panel.Children.Add(CreateSelectorBarRow(row.Glyph, row.Title, row.Detail));
+            }
+
+            return panel;
+        }
+
+        /// <summary>
+        /// Builds one row of a SelectorBar section: a leading glyph, the item title, and a
+        /// secondary detail line.
+        /// </summary>
+        /// <param name="glyph">The Segoe Fluent Icons glyph for the row.</param>
+        /// <param name="title">The primary text of the row.</param>
+        /// <param name="detail">The secondary text of the row.</param>
+        private static FrameworkElement CreateSelectorBarRow(string glyph, string title, string detail)
+        {
+            Grid row = new() { Margin = new Thickness(0, 0, 0, 10) };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            row.ColumnDefinitions.Add(new ColumnDefinition());
+
+            Controls.FontIcon icon = new()
+            {
+                Glyph = glyph,
+                IconFontSize = 16,
+                Margin = new Thickness(0, 0, 12, 0),
                 VerticalAlignment = VerticalAlignment.Center,
             };
-            section.SetResourceReference(StyleProperty, "BodyTextBlockStyle");
-            DemoSelectorBarPresenter.Content = section;
-            _selectedSectionIndex = index;
+            icon.SetResourceReference(Control.ForegroundProperty, "TextFillColorSecondaryBrush");
+            _ = row.Children.Add(icon);
+
+            StackPanel text = new();
+            Grid.SetColumn(text, 1);
+
+            TextBlock titleBlock = new() { Text = title };
+            titleBlock.SetResourceReference(StyleProperty, "BodyTextBlockStyle");
+            titleBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorPrimaryBrush");
+            _ = text.Children.Add(titleBlock);
+
+            TextBlock detailBlock = new() { Text = detail };
+            detailBlock.SetResourceReference(StyleProperty, "CaptionTextBlockStyle");
+            detailBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+            _ = text.Children.Add(detailBlock);
+
+            _ = row.Children.Add(text);
+            return row;
         }
 
         private void GalleryNavigationPage_Loaded(object sender, RoutedEventArgs e)

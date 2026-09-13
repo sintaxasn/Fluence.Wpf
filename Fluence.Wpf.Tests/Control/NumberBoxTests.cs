@@ -213,9 +213,11 @@ namespace Fluence.Wpf.Tests.Control
         [Fact]
         public Task NumberBox_SpinPanel_HasWinUiCanonicalMarginAsync()
         {
-            // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from
-            // border edge). Before this fix Fluence used "0,1,0,1" which butted the buttons
-            // flush against the right border of the control.
+            // WinUI has no spin panel: NumberBox.xaml places UpSpinButton and DownSpinButton
+            // directly in the template grid with Margin="4" and Margin="0,4,4,4", so the pair
+            // sits 4px inside the field on every edge and the two buttons touch. Fluence keeps
+            // the StackPanel for the compact-mode reveal, so the panel carries no inset of its
+            // own and the two buttons carry WinUI's.
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Window window = new();
@@ -237,10 +239,17 @@ namespace Fluence.Wpf.Tests.Control
                     _ = numberBox.ApplyTemplate();
 
                     StackPanel spinPanel = Assert.IsType<StackPanel>(numberBox.Template.FindName("SpinPanel", numberBox));
-                    Assert.Equal(0.0, spinPanel.Margin.Left);
-                    Assert.Equal(1.0, spinPanel.Margin.Top);
-                    Assert.Equal(2.0, spinPanel.Margin.Right);
-                    Assert.Equal(1.0, spinPanel.Margin.Bottom);
+                    Assert.Equal(new Thickness(0), spinPanel.Margin);
+                    Assert.Equal(VerticalAlignment.Stretch, spinPanel.VerticalAlignment);
+
+                    RepeatButton upButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_UpButton", numberBox));
+                    RepeatButton downButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_DownButton", numberBox));
+                    Assert.Equal(new Thickness(4), upButton.Margin);
+                    Assert.Equal(new Thickness(0, 4, 4, 4), downButton.Margin);
+                    Assert.Equal(VerticalAlignment.Stretch, upButton.VerticalAlignment);
+                    Assert.Equal(VerticalAlignment.Stretch, downButton.VerticalAlignment);
+                    Assert.Equal(32.0, upButton.MinWidth);
+                    Assert.Equal(32.0, downButton.MinWidth);
                 }
                 finally
                 {
@@ -477,6 +486,47 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.NumberBox box = new() { Value = 42.5 };
                 Assert.Equal(42.5, box.Value, 0.001);
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_InlineSpinButtons_AreBorderlessAtRestAsync()
+        {
+            // WinUI 3 renders inline spin buttons as bare chevrons at rest: no border, no fill.
+            // NumberBox_perf2026.xaml remaps RepeatButtonBackground / RepeatButtonBorderBrush to
+            // the TextControlButton* tokens (TextBox_themeresources.xaml), where the border is
+            // ControlFillColorTransparent in every state and the rest fill is transparent too.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    Controls.NumberBox numberBox = new()
+                    {
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                        Width = 160,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton upButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_UpButton", numberBox));
+                    RepeatButton downButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_DownButton", numberBox));
+
+                    BrushAssert.AssertBrushColor(upButton.BorderBrush, "ControlFillColorTransparentBrush");
+                    BrushAssert.AssertBrushColor(upButton.Background, "SubtleFillColorTransparentBrush");
+                    BrushAssert.AssertBrushColor(downButton.BorderBrush, "ControlFillColorTransparentBrush");
+                    BrushAssert.AssertBrushColor(downButton.Background, "SubtleFillColorTransparentBrush");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
             });
         }
     }

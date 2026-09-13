@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
@@ -218,6 +219,63 @@ namespace Fluence.Wpf.Controls
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is TabViewItem;
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+
+            // Containers are generated lazily during layout, after OnItemsChanged has run, so
+            // the freshly prepared container must trigger its own leading-separator refresh.
+            // This also covers ItemsSource-bound items, where the container is not the data item
+            // itself and RelativeSource PreviousData binding has no adjacency information to bind to.
+            UpdateLeadingSeparators();
+        }
+
+        /// <inheritdoc />
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+
+            // Adds, removes, moves, and resets can all change which tab is first or adjacent to
+            // the selection; refresh the realized containers immediately (new containers refresh
+            // again when prepared).
+            UpdateLeadingSeparators();
+        }
+
+        /// <inheritdoc />
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
+            base.OnSelectionChanged(e);
+
+            // The selected tab and its immediate neighbors need their leading separator
+            // recomputed whenever the selection moves.
+            UpdateLeadingSeparators();
+        }
+
+        /// <summary>
+        /// Reapplies <see cref="TabViewItem.LeadingSeparatorVisibility"/> across all realized
+        /// containers: the separator is collapsed for the first tab in the strip and for either
+        /// tab flanking the current selection, matching the WinUI TabViewItemSeparator behavior.
+        /// </summary>
+        private void UpdateLeadingSeparators()
+        {
+            int lastIndex = Items.Count - 1;
+            for (int index = 0; index <= lastIndex; index++)
+            {
+                if (ItemContainerGenerator.ContainerFromIndex(index) is not TabViewItem container)
+                {
+                    continue;
+                }
+
+                bool isFirst = index is 0;
+                bool isSelected = index == SelectedIndex;
+                bool previousIsSelected = index > 0 && index - 1 == SelectedIndex;
+                container.LeadingSeparatorVisibility = isFirst || isSelected || previousIsSelected
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
         }
 
         private void OnAddTabButtonClick(object sender, RoutedEventArgs e)

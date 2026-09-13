@@ -447,10 +447,12 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_MirrorsWinUiGalleryColorSectionsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_TilesArePaintedWithTheirOwnBrushAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ExamplePanelsUseGalleryLayeringAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ContrastSensitiveTiles_PickReadableForegroundInLightThemeAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ControlOnImageFillExample_HostsImageWithSourceAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_TileCopyButtonsCarryBrushKeysAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_BrushKeys_ResolveAcrossThemesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_SourceHasNoLiteralGeometryOrColorsAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_CopyButton_CopiesBrushNameAndShowsFeedbackAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_CopyButton_CueAgreesWithWhetherTheCopyLandedAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_InDarkTheme_StartsWithThemeForegroundAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ContentStretchesToTheShellWidthAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync
@@ -460,6 +462,7 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_ClickingTileSelectsIconAndPopulatesSidebarAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_SidebarGlyphFieldsMatchWinUiGalleryFormatsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_IconCatalogIsScrollableAndVirtualizedAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_IconTileGeometryMatchesWinUiGalleryPitchAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_CompactSamplePaneToggleOpensPaneAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_CompactSourceMatchesLiveInteractionAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryNavigationPageTests.GalleryNavigationPage_CompactSampleShowsBackAndPaneToggleButtonsAsync
@@ -486,6 +489,11 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryTabsPageTests.GalleryTabsPage_TabViewContentUsesLayerFillSurfaceAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryTabsPageTests.GalleryTabsPage_PlacementSampleUsesLeftPlacementOnlyAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_TableUsesCompactRowSpacingAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_ExampleCellLeftInsetMatchesHeaderAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_DataColumnsUseCaptionStyleAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_TableFitsItsCardAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_CopyButton_CarriesTheGlyphAndTooltipItsSuccessCueSwapsAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.DemoClipboard_IgnoresBlankTextWithoutReportingACopyAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryTypographyPageTests.GalleryTypographyPage_TypeRampSampleCarriesSourceAndCopyColumnAsync
   Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_DefaultStyle_AppliesTemplatePartsAsync
   Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_ProgrammaticTextChange_RaisesTextChangedWithProgrammaticReasonAsync
@@ -591,6 +599,7 @@
   Fluence.Wpf.Tests.Control.ComboBoxTests.Stage3_ComboBox_PlaceholderText_RoundtripsAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_SelectionChange_UpdatesDisplayedContentAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ItemTemplate_HasHoverOverlayAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropDownItem_UsesWinUiMetricsAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopenAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_NoSelection_ShowsPlaceholderAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ToggleButton_OpensDropDownAsync
@@ -635,6 +644,7 @@
   Fluence.Wpf.Tests.Control.ContextMenuTests.MenuItem_DefaultStyle_StyleRegisteredAsync
   Fluence.Wpf.Tests.Control.ContextMenuTests.MenuItem_DefaultStyle_HoverBrushResolvesAsync
   Fluence.Wpf.Tests.Control.ContextMenuTests.MenuItem_DefaultStyle_FontSize14Async
+  Fluence.Wpf.Tests.Control.ContextMenuTests.MenuItem_FlyoutItem_UsesMenuFlyoutItemMetricsAsync
   Fluence.Wpf.Tests.Control.ContextMenuTests.ContextMenu_ThemeCycle_BrushesResolveAfterEachSwitchAsync
   Fluence.Wpf.Tests.Control.DatePickerTests.DatePicker_DefaultStyle_AppliesTemplatePartsAsync
   Fluence.Wpf.Tests.Control.DatePickerTests.DatePicker_SelectedDate_UpdatesFieldSegmentsAndPlaceholderAsync
@@ -765,7 +775,9 @@
   Fluence.Wpf.Tests.Control.MenuTests.Menu_StyleApplies_BorderThicknessIsZeroAsync
   Fluence.Wpf.Tests.Control.MenuTests.Menu_AcceptsMenuItemItemsAsync
   Fluence.Wpf.Tests.Control.MenuTests.Menu_ThemeCycle_BackgroundRemainsTransparentAsync
+  Fluence.Wpf.Tests.Control.MenuTests.Menu_TopLevelItem_UsesMenuBarItemMetricsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsedAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_MirrorsHostTitleBarState_AndReleasesItOnUnloadAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneDisplayMode_Left_RendersVerticalPaneAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneDisplayMode_Top_RendersHorizontalPaneAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyleAsync
@@ -825,6 +837,9 @@
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_FooterItem_IconCentered_InLeftCompactClosedAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_Automation_GetSelection_ReportsFooterSelectionAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_AfterUnloadReload_SelectionIndicatorStillUpdatesAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_Left_OuterBorder_MatchesWinUiPillGeometryAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_Left_PaneItemsAndFooterSitSymmetricallyInThePaneAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_Left_SharedSelectionIndicator_IsThreeDipWideAsync
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterIndicator_CentersUnderFooterItemAsync
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterItem_RendersIconOnlyAsync
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterItem_KeepsLabel_InLeftAsync
@@ -852,6 +867,7 @@
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Peer_LargeChange_MatchesControlAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DefaultStyle_LoadsPartsAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Value_RoundtripsAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_InlineSpinButtons_AreBorderlessAtRestAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_ImplicitFluentStyle_AppliesToNativeControlAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_AutomationPeer_ReportsPasswordEditAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_AccessibleName_IsCarriedByTheControlItselfAsync
@@ -1003,6 +1019,7 @@
   Fluence.Wpf.Tests.Control.SliderTests.Slider_StyleApplies_PartTrackFoundAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbTemplate_HasEllipseAndInnerDotAsync
+  Fluence.Wpf.Tests.Control.SliderTests.Slider_UnfilledTrack_PaintedOnceAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_Template_HasTrackAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.Defaults_AreWinUiCanonAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.IsFlyoutOpen_IsReadOnlyDpAsync
@@ -1024,6 +1041,11 @@
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_DefaultIsClosable_IsTrueAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_DefaultIcon_IsNullAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_IconProperty_RoundTripsAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_MinHeight_Is32Async
+  Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_HeaderMetrics_MatchWinUiAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_Template_HasNoSelectionIndicatorAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForDirectlyDeclaredItemsAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForItemsSourceBoundTabsAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_DefaultIsAddTabButtonVisible_IsTrueAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_DefaultTabWidthMode_IsSizeToContentAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_DefaultCloseButtonOverlayMode_IsAutoAsync
@@ -1253,5 +1275,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1253 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 202ms
+Test discovery summary: found 1275 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 204ms

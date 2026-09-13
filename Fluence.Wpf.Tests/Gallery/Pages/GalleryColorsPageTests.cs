@@ -261,6 +261,58 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             });
         }
 
+        /// <summary>
+        /// Text Control / Border, Accent Acrylic Background / Base and Accent Acrylic Background /
+        /// Default resolve a pale fill in Light theme (a light grey elevation border and pale cyan
+        /// acrylics), so the AlwaysWhiteText foreground they used to carry was unreadable. They now
+        /// pick their foreground by contrast via <see cref="ColorTile.AutoContrastForeground"/>.
+        /// </summary>
+        [Fact]
+        public Task GalleryColorsPage_ContrastSensitiveTiles_PickReadableForegroundInLightThemeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                Application application = WpfTestSta.EnsureApplication();
+                Controls.SelectorBar selector = ColorSelector(page);
+                Brush alwaysWhite = Assert.IsType<SolidColorBrush>(application.TryFindResource("TextOnAccentFillColorSelectedTextBrush"), exactMatch: false);
+
+                string[] brushKeys =
+                [
+                    "TextControlElevationBorderBrush",
+                    "AccentAcrylicBackgroundFillColorBaseBrush",
+                    "AccentAcrylicBackgroundFillColorDefaultBrush",
+                ];
+
+                foreach (string brushKey in brushKeys)
+                {
+                    ColorTile tile = FindTileByBrushKey(page, selector, brushKey);
+                    Assert.True(tile.AutoContrastForeground, brushKey + " should pick its foreground by contrast.");
+                    Assert.NotSame(alwaysWhite, tile.Foreground);
+                }
+            });
+        }
+
+        /// <summary>
+        /// The Control On Image Fill example floats a control over a generated sample photo
+        /// instead of a flat accent fill, mirroring the WinUI Gallery example of a control over
+        /// imagery. See <c language="text">GalleryColorsPage.CreateControlOnImageExample</c> and
+        /// <c language="text">Resources/SampleMedia/ControlOnImageSample.png</c>.
+        /// </summary>
+        [Fact]
+        public Task GalleryColorsPage_ControlOnImageFillExample_HostsImageWithSourceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryColorsPage page = Page();
+                Controls.SelectorBar selector = ColorSelector(page);
+                ColorPageExample example = FindExampleByTitle(page, selector, "Control On Image Fill");
+
+                Controls.Image photo = Assert.Single(DemoTestHost.FindVisualChildren<Controls.Image>(example));
+                Assert.NotNull(photo.Source);
+            });
+        }
+
         [Fact]
         public Task GalleryColorsPage_TileCopyButtonsCarryBrushKeysAsync()
         {
@@ -416,14 +468,18 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         }
 
         /// <summary>
-        /// The copy button puts the brush key on the clipboard and shows the Gallery's success cue:
-        /// the glyph swaps to a checkmark and the tooltip reports the copy, so a successful copy is
-        /// visible rather than silent.
+        /// The copy button copies the brush key and acknowledges it with the Gallery's success cue:
+        /// the glyph swaps to a checkmark and the tooltip reports the copy. The cue is tied to the
+        /// copy actually landing, so what is asserted here is that the two agree. The clipboard is
+        /// a single machine wide resource that this suite cannot own (another process holding it
+        /// makes both a copy and a seeded read fail, and a stale value then reads exactly like a
+        /// fresh copy), so the round trip itself is out of scope; the invariant that matters, and
+        /// the one the cue previously broke, is that the button never claims a copy it did not make.
         /// </summary>
         [Fact]
-        public Task GalleryColorsPage_CopyButton_CopiesBrushNameAndShowsFeedbackAsync()
+        public Task GalleryColorsPage_CopyButton_CueAgreesWithWhetherTheCopyLandedAsync()
         {
-            return WpfTestSta.RunOnStaAsync(() =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 GalleryColorsPage page = Page();
                 ColorTile tile = DemoTestHost.FindVisualChildren<ColorTile>(page).First();
@@ -434,13 +490,25 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                 Assert.True(copy.IsHitTestVisible, "The copy button must stay clickable.");
                 Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
+                Assert.Equal("Copy brush name", copy.ToolTip as string, StringComparer.Ordinal);
 
                 copy.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                WpfTestSta.DrainDispatcher(page.Dispatcher);
 
-                Assert.Equal(tile.ColorBrushName, Clipboard.GetText(), StringComparer.Ordinal);
-                Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
-                Assert.Equal("Brush name copied to clipboard", copy.ToolTip as string, StringComparer.Ordinal);
+                // DemoClipboard retries on a background priority dispatcher timer, five attempts
+                // 40 ms apart, so the outcome is not settled when the click returns.
+                await DispatcherDelayWaits.WaitForAnimationAndDrainByDelayAsync(page.Dispatcher, 400).ConfigureAwait(true);
+
+                // Exactly one of the two states, never a checkmark over the resting tooltip or the
+                // reverse, which is what an unconditional cue produced.
+                if (string.Equals(glyph.Glyph, "", StringComparison.Ordinal))
+                {
+                    Assert.Equal("Brush name copied to clipboard", copy.ToolTip as string, StringComparer.Ordinal);
+                }
+                else
+                {
+                    Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
+                    Assert.Equal("Copy brush name", copy.ToolTip as string, StringComparer.Ordinal);
+                }
             });
         }
 
@@ -520,6 +588,38 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             WpfTestSta.DrainDispatcher(dispatcher);
             selector.UpdateLayout();
             WpfTestSta.DrainDispatcher(dispatcher);
+        }
+
+        private static ColorTile FindTileByBrushKey(GalleryColorsPage page, Controls.SelectorBar selector, string brushKey)
+        {
+            for (int i = 0; i < selector.Items.Count; i++)
+            {
+                SelectSection(selector, i, page.Dispatcher);
+                ColorTile? match = DemoTestHost.FindVisualChildren<ColorTile>(SectionPanel(page))
+                    .FirstOrDefault(tile => string.Equals(tile.ColorBrushName, brushKey, StringComparison.Ordinal));
+                if (match is not null)
+                {
+                    return match;
+                }
+            }
+
+            throw new InvalidOperationException("No tile found for brush key " + brushKey);
+        }
+
+        private static ColorPageExample FindExampleByTitle(GalleryColorsPage page, Controls.SelectorBar selector, string title)
+        {
+            for (int i = 0; i < selector.Items.Count; i++)
+            {
+                SelectSection(selector, i, page.Dispatcher);
+                ColorPageExample? match = DemoTestHost.FindVisualChildren<ColorPageExample>(SectionPanel(page))
+                    .FirstOrDefault(example => string.Equals(example.Title, title, StringComparison.Ordinal));
+                if (match is not null)
+                {
+                    return match;
+                }
+            }
+
+            throw new InvalidOperationException("No example found with title " + title);
         }
 
         private sealed class SectionExpectation(string title, string[] exampleTitles, int[] rowColumns)

@@ -5,22 +5,26 @@
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <!--
-        Matches the WinUI 3 NumberBoxSpinButtonStyle (NumberBox.xaml, BasedOn DefaultRepeatButtonStyle):
-        rest/hover/pressed fills are the plain control-fill ramp, the rest/hover border is
-        ControlElevationBorderBrush at NumberBoxSpinButtonBorderThickness (NumberBox_themeresources.xaml
-        Thickness="0,1,1,1"), and pressed/disabled flatten to ControlStrokeColorDefaultBrush.
+        Matches the WinUI 3 NumberBoxSpinButtonStyle (NumberBox_perf2026.xaml, BasedOn
+        DefaultRepeatButtonStyle): the style remaps RepeatButtonBackground /
+        RepeatButtonBorderBrush (and their PointerOver / Pressed / Disabled variants) to the
+        TextControlButton* tokens defined in TextBox_themeresources.xaml, where the border is
+        ControlFillColorTransparent in every state and the rest fill is transparent too, with
+        hover/pressed filled by SubtleFillColorSecondary/SubtleFillColorTertiary.
+        NumberBoxSpinButtonBorderThickness (NumberBox_themeresources.xaml) stays "0,1,1,1".
     -->
     <Style x:Key="NumberBoxSpinButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
         <Setter Property="BorderThickness" Value="0,1,1,1" />
         <!--  Fire Click immediately on MouseDown so a quick press-release registers  -->
         <!--  (default Release mode waits for the internal timer's first tick).  -->
         <Setter Property="ClickMode" Value="Press" />
         <Setter Property="Focusable" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Height" Value="30" />
         <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -34,16 +38,16 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
-                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter TargetName="SpinBorder" Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+                            <Setter TargetName="SpinBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -51,7 +55,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Width" Value="32" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
     <Style TargetType="{x:Type controls:NumberBox}">
@@ -127,15 +131,20 @@
                                         SelectionBrush="{DynamicResource AccentFillColorSelectedTextBackgroundBrush}"
                                         Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <!--  WI-3 A7: WinUI canonical right inset = 2px; was 0,1,0,1.  -->
+                                    <!--
+                                        WinUI insets each spin button rather than the panel that holds
+                                        them: NumberBox.xaml gives UpSpinButton Margin="4" and
+                                        DownSpinButton Margin="0,4,4,4", so the pair sits 4px inside
+                                        the field on every edge and the two buttons touch.
+                                    -->
                                     <StackPanel
                                         x:Name="SpinPanel"
                                         Grid.Column="1"
-                                        Margin="0,1,2,1"
-                                        VerticalAlignment="Center"
+                                        VerticalAlignment="Stretch"
                                         Orientation="Horizontal">
                                         <RepeatButton
                                             x:Name="PART_UpButton"
+                                            Margin="4"
                                             AutomationProperties.Name="Increase"
                                             Style="{StaticResource NumberBoxSpinButton}"
                                             ToolTip="Increase">
@@ -151,6 +160,7 @@
                                         </RepeatButton>
                                         <RepeatButton
                                             x:Name="PART_DownButton"
+                                            Margin="0,4,4,4"
                                             AutomationProperties.Name="Decrease"
                                             Style="{StaticResource NumberBoxSpinButton}"
                                             ToolTip="Decrease">
@@ -171,7 +181,7 @@
                                 <Border
                                     x:Name="FocusLine"
                                     Grid.Row="1"
-                                    Height="2"
+                                    Height="1.5"
                                     HorizontalAlignment="Stretch"
                                     Background="{DynamicResource AccentFillColorDefaultBrush}"
                                     CornerRadius="0,0,4,4"

@@ -252,7 +252,7 @@
                                                 HorizontalAlignment="Stretch"
                                                 AutomationProperties.Name="Accept"
                                                 ToolTip="Accept">
-                                                <controls:FontIcon Glyph="&#xE73E;" IconFontSize="12" />
+                                                <controls:FontIcon Glyph="&#xE8FB;" IconFontSize="16" />
                                             </controls:Button>
                                             <controls:Button
                                                 x:Name="PART_CancelButton"
@@ -262,7 +262,7 @@
                                                 HorizontalAlignment="Stretch"
                                                 AutomationProperties.Name="Cancel"
                                                 ToolTip="Cancel">
-                                                <controls:FontIcon Glyph="&#xE711;" IconFontSize="12" />
+                                                <controls:FontIcon Glyph="&#xE711;" IconFontSize="16" />
                                             </controls:Button>
                                         </Grid>
                                     </Grid>

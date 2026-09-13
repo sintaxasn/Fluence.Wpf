@@ -323,9 +323,19 @@
                                         Height="1"
                                         Margin="4,2"
                                         Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                    <!--
+                                        WinUI caps the overflow list at MaxWidth 440
+                                        (CommandBarFlyout_themeresources_perf2026.xaml line 531) so a long
+                                        command label wraps or ellipsises instead of widening the whole bar.
+                                        WinUI's matching MaxHeight of 480 (line 532) is not set here: it caps
+                                        a list that WinUI scrolls inside its own ScrollViewer, and this
+                                        template has no scroll host, so the cap alone would clip commands
+                                        out of reach rather than scroll to them.
+                                    -->
                                     <ItemsControl
                                         x:Name="PART_SecondaryItemsControl"
                                         MinWidth="180"
+                                        MaxWidth="440"
                                         Margin="2,0,2,2"
                                         Focusable="False">
                                         <ItemsControl.Resources>

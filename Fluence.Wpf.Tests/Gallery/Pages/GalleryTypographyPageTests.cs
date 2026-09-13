@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -81,11 +82,115 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                 TextBlock firstBodyCell = Assert.IsType<TextBlock>(table.Children
                     .OfType<TextBlock>().FirstOrDefault(static textBlock => Grid.GetRow(textBlock) is 1 && Grid.GetColumn(textBlock) is 0), exactMatch: false);
-                Assert.Equal(new Thickness(24, 8, 16, 8), firstBodyCell.Margin);
+                Assert.Equal(new Thickness(12, 8, 16, 8), firstBodyCell.Margin);
 
                 Border firstShadedRow = Assert.IsType<Border>(table.Children
                     .OfType<Border>().FirstOrDefault(static border => Grid.GetRow(border) is 1), exactMatch: false);
                 Assert.Equal(new Thickness(0, 2, 0, 2), firstShadedRow.Margin);
+            });
+        }
+
+        [Fact]
+        public Task GalleryTypographyPage_ExampleCellLeftInsetMatchesHeaderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryTypographyPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+
+                Grid table = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
+
+                TextBlock headerCell = Assert.IsType<TextBlock>(table.Children
+                    .OfType<TextBlock>().FirstOrDefault(static textBlock => Grid.GetRow(textBlock) is 0 && Grid.GetColumn(textBlock) is 0), exactMatch: false);
+                TextBlock exampleCell = Assert.IsType<TextBlock>(table.Children
+                    .OfType<TextBlock>().FirstOrDefault(static textBlock => Grid.GetRow(textBlock) is 1 && Grid.GetColumn(textBlock) is 0), exactMatch: false);
+
+                Assert.Equal(headerCell.Margin.Left, exampleCell.Margin.Left);
+            });
+        }
+
+        [Fact]
+        public Task GalleryTypographyPage_DataColumnsUseCaptionStyleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryTypographyPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+
+                Grid table = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
+
+                for (int column = 1; column <= 3; column++)
+                {
+                    int capturedColumn = column;
+                    TextBlock dataCell = Assert.IsType<TextBlock>(table.Children
+                        .OfType<TextBlock>().FirstOrDefault(textBlock => Grid.GetRow(textBlock) is 1 && Grid.GetColumn(textBlock) == capturedColumn), exactMatch: false);
+                    object? resolvedStyle = dataCell.TryFindResource("CaptionTextBlockStyle");
+                    Assert.NotNull(resolvedStyle);
+                    Assert.Same(resolvedStyle, dataCell.Style);
+                }
+            });
+        }
+
+        [Fact]
+        public Task GalleryTypographyPage_TableFitsItsCardAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryTypographyPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+
+                Grid table = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
+
+                // The star columns give way before the row can grow past the card. With the
+                // Display example in column 0 and the copy button in column 4 the two Auto
+                // columns take about 330 dip of the Gallery's 789 dip card, so the three star
+                // minimums have to leave room inside the rest or the last column is clipped.
+                double starMinimums = table.ColumnDefinitions[1].MinWidth
+                    + table.ColumnDefinitions[2].MinWidth
+                    + table.ColumnDefinitions[3].MinWidth;
+                Assert.True(starMinimums <= 340.0,
+                    "The star column minimums total " + starMinimums.ToString(System.Globalization.CultureInfo.InvariantCulture) + " dip, which pushes the copy button past the card.");
+
+                Controls.Button copyButton = Assert.IsType<Controls.Button>(table.Children
+                    .OfType<Controls.Button>().FirstOrDefault(static button => Grid.GetRow(button) is 1), exactMatch: false);
+                Assert.Equal(new Thickness(12, 8, 16, 8), copyButton.Margin);
+            });
+        }
+
+        [Fact]
+        public Task GalleryTypographyPage_CopyButton_CarriesTheGlyphAndTooltipItsSuccessCueSwapsAsync()
+        {
+            // The copy button acknowledges a copy by swapping its FontIcon glyph for a checkmark
+            // and its tooltip for a copied message, the way the WinUI Gallery's own CopyButton
+            // does. Both halves of that swap need the button to hold a FontIcon and a string
+            // tooltip, so lock the rest state here: with plain string content the copy would work
+            // and still look like nothing happened, which is the defect this replaced.
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                GalleryTypographyPage page = _page ?? throw new InvalidOperationException("Page was not initialized.");
+
+                Grid table = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "TypographyTable"), exactMatch: false);
+
+                Controls.Button copyButton = Assert.IsType<Controls.Button>(table.Children
+                    .OfType<Controls.Button>().FirstOrDefault(static button => Grid.GetRow(button) is 1), exactMatch: false);
+
+                Controls.FontIcon glyph = Assert.IsType<Controls.FontIcon>(copyButton.Content, exactMatch: false);
+                Assert.Equal("\uE8C8", glyph.Glyph);
+                Assert.Equal("Copy style key", copyButton.ToolTip);
+            });
+        }
+
+        [Fact]
+        public Task DemoClipboard_IgnoresBlankTextWithoutReportingACopyAsync()
+        {
+            // A blank copy is ignored outright, so the completion callback must not fire: a caller
+            // that shows a success cue on true would otherwise claim a copy that never happened.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                int callbacks = 0;
+
+                DemoClipboard.SetText(text: null, _ => callbacks++);
+                DemoClipboard.SetText(string.Empty, _ => callbacks++);
+                DemoClipboard.SetText("   ", _ => callbacks++);
+
+                Assert.Equal(0, callbacks);
             });
         }
 

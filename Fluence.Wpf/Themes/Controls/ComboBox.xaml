@@ -25,14 +25,17 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Padding" Value="12,8" />
+        <!--  WinUI ComboBoxItemThemePadding = 11,5,11,7 (ComboBox_themeresources_perf2026.xaml line 335)  -->
+        <Setter Property="Padding" Value="11,5,11,7" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                    <!--  WinUI LayoutRoot Margin = 5,2,5,2 and ComboBoxItemCornerRadius = 3 (ComboBox_themeresources_perf2026.xaml lines 568 and 345)  -->
                     <Border
                         x:Name="OuterBorder"
+                        Margin="5,2,5,2"
                         Background="Transparent"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        CornerRadius="3">
                         <Grid>
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
@@ -41,14 +44,16 @@
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
+                            <!--  WinUI ComboBoxItemPillWidth 3, ComboBoxItemPillHeight 16, ComboBoxItemPillCornerRadius 1.5, pill Margin 1,0,0,0 (ComboBox_themeresources_perf2026.xaml lines 325, 324, 346 and 526)  -->
                             <Border
                                 x:Name="SelectionIndicator"
-                                Width="3.5"
+                                Width="3"
                                 Height="16"
+                                Margin="1,0,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                CornerRadius="2"
+                                CornerRadius="1.5"
                                 Opacity="0" />
                         </Grid>
                     </Border>
@@ -118,7 +123,8 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemStyle}" />
-        <Setter Property="MaxDropDownHeight" Value="480" />
+        <!--  WinUI ComboBox MaxDropDownHeight = 504 (ComboBox_themeresources_perf2026.xaml line 361)  -->
+        <Setter Property="MaxDropDownHeight" Value="504" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
@@ -289,13 +295,13 @@
                                             Background="{DynamicResource AcrylicNoiseBrush}"
                                             CornerRadius="{TemplateBinding DropdownCornerRadius}"
                                             Opacity="0.04" />
+                                        <!--  WinUI ComboBoxDropdownBorderPadding is 0 and the items presenter carries ComboBoxDropdownContentMargin = 0,4; the horizontal inset comes from each item's own 5,2,5,2 margin (ComboBox_themeresources_perf2026.xaml lines 107, 339 and 546).  -->
                                         <ScrollViewer
-                                            Margin="4"
                                             CanContentScroll="True"
                                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                             Style="{DynamicResource ScrollViewerStyle}"
                                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                            <ItemsPresenter Margin="0,4" KeyboardNavigation.DirectionalNavigation="Contained" />
                                         </ScrollViewer>
                                     </Grid>
                                 </Border>

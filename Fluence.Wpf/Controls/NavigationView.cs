@@ -171,10 +171,11 @@ namespace Fluence.Wpf.Controls
         }
 
         // Margins and offsets used in indicator and top overflow positioning calculations.
-        // The indicator sits just inside the selected item's rounded OuterBorder (Margin 4 + 2px
-        // stroke), flush against the inner edge with no padding gap, rather than floating in the
-        // pane to the left of the item.
-        private const double NavigationItemOuterHorizontalMargin = 9.0;
+        // The indicator sits flush with the left edge of the selected item's painted pill, drawn
+        // over the pill fill, which is where WinUI puts it: a top-level selected item in the WinUI
+        // 3 Gallery measures its indicator's left edge at the same x as the pill's. The pill starts
+        // at the item's own origin plus NavigationViewItemButtonMargin (4), so this is that 4.
+        private const double NavigationItemOuterHorizontalMargin = 4.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
         private const double TopOverflowReservedEndPadding = 12.0;
 
@@ -270,7 +271,7 @@ propertyChangedCallback: null,
             "PaneFooter",
             typeof(object),
             typeof(NavigationView),
-            new PropertyMetadata(propertyChangedCallback: null));
+            new PropertyMetadata(OnPaneFooterChanged));
 
         /// <summary>
         /// Identifies the <see cref="ContentBackground"/> dependency property.
@@ -312,6 +313,48 @@ defaultValue: null,
         /// </summary>
         public static readonly DependencyProperty FooterMenuItemsProperty = FooterMenuItemsPropertyKey.DependencyProperty;
 
+        private static readonly DependencyPropertyKey PaneFooterSeparatorVisibilityPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(PaneFooterSeparatorVisibility),
+                typeof(Visibility),
+                typeof(NavigationView),
+                new FrameworkPropertyMetadata(Visibility.Collapsed));
+
+        /// <summary>
+        /// Identifies the <see cref="PaneFooterSeparatorVisibility"/> dependency property. Internal:
+        /// this is an implementation detail of the default template, not a consumer-facing DP.
+        /// </summary>
+        internal static readonly DependencyProperty PaneFooterSeparatorVisibilityProperty =
+            PaneFooterSeparatorVisibilityPropertyKey.DependencyProperty;
+
+        private static readonly DependencyPropertyKey HostExtendsContentIntoTitleBarPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(HostExtendsContentIntoTitleBar),
+                typeof(bool),
+                typeof(NavigationView),
+                new FrameworkPropertyMetadata(defaultValue: false));
+
+        /// <summary>
+        /// Identifies the <see cref="HostExtendsContentIntoTitleBar"/> dependency property. Internal:
+        /// this is an implementation detail of the default template, not a consumer-facing DP.
+        /// </summary>
+        internal static readonly DependencyProperty HostExtendsContentIntoTitleBarProperty =
+            HostExtendsContentIntoTitleBarPropertyKey.DependencyProperty;
+
+        private static readonly DependencyPropertyKey HostHasTitleBarPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(HostHasTitleBar),
+                typeof(bool),
+                typeof(NavigationView),
+                new FrameworkPropertyMetadata(defaultValue: false));
+
+        /// <summary>
+        /// Identifies the <see cref="HostHasTitleBar"/> dependency property. Internal: this is an
+        /// implementation detail of the default template, not a consumer-facing DP.
+        /// </summary>
+        internal static readonly DependencyProperty HostHasTitleBarProperty =
+            HostHasTitleBarPropertyKey.DependencyProperty;
+
         /// <summary>
         /// Initializes static members of the NavigationView class and overrides the default style metadata.
         /// </summary>
@@ -332,6 +375,7 @@ defaultValue: null,
         {
             SetValue(FooterMenuItemsPropertyKey, new ObservableCollection<object>());
             FooterMenuItems.CollectionChanged += OnFooterMenuItemsChanged;
+            UpdatePaneFooterSeparatorVisibility();
             Loaded += OnLoaded;
             SizeChanged += OnSizeChanged;
             Unloaded += OnUnloaded;
@@ -472,6 +516,36 @@ defaultValue: null,
         /// WinUI <c language="xaml">NavigationView.FooterMenuItems</c> region.
         /// </summary>
         public ObservableCollection<object> FooterMenuItems => (ObservableCollection<object>)GetValue(FooterMenuItemsProperty);
+
+        /// <summary>
+        /// Gets the visibility of the divider drawn between the scrolling menu items and the pane
+        /// footer (WinUI's VisualItemsSeparator). Visible only while the footer holds something to
+        /// divide from, which is pinned footer menu items, free-form <see cref="PaneFooter"/>
+        /// content, or both. Internal: an implementation detail of the default template, bound to
+        /// it via <c language="csharp">RelativeSource TemplatedParent</c> rather than exposed to
+        /// consumers.
+        /// </summary>
+        internal Visibility PaneFooterSeparatorVisibility => (Visibility)GetValue(PaneFooterSeparatorVisibilityProperty);
+
+        /// <summary>
+        /// Gets a value indicating whether the owning <see cref="FluenceWindow"/> extends its
+        /// content into the title bar. Mirrored onto this control so the default template can read
+        /// it through <c language="csharp">RelativeSource TemplatedParent</c>. A
+        /// <c language="csharp">FindAncestor</c> binding would read the same value, but WPF
+        /// re-evaluates one while the window is tearing the visual tree down, when the ancestor is
+        /// already unreachable, and logs a binding error per trigger for every NavigationView on
+        /// the way out. Internal: an implementation detail of the template.
+        /// </summary>
+        internal bool HostExtendsContentIntoTitleBar => (bool)GetValue(HostExtendsContentIntoTitleBarProperty);
+
+        /// <summary>
+        /// Gets a value indicating whether the owning <see cref="FluenceWindow"/> carries title bar
+        /// content of its own, which the pane uses to decide whether to draw its own back and pane
+        /// toggle buttons. Mirrored for the same reason as
+        /// <see cref="HostExtendsContentIntoTitleBar"/>. Internal: an implementation detail of the
+        /// template.
+        /// </summary>
+        internal bool HostHasTitleBar => (bool)GetValue(HostHasTitleBarProperty);
 
         /// <summary>
         /// Gets the currently selected footer item, or <see langword="null"/> when the active
@@ -782,7 +856,26 @@ defaultValue: null,
                 }
             }
 
+            UpdatePaneFooterSeparatorVisibility();
             ScheduleIndicatorPosition(animate: false);
+        }
+
+        private static void OnPaneFooterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NavigationView)d).UpdatePaneFooterSeparatorVisibility();
+        }
+
+        /// <summary>
+        /// Shows the divider above the pane footer only when there is something below it to divide
+        /// from: pinned footer menu items, free-form <see cref="PaneFooter"/> content, or both. A
+        /// pane with an empty footer would otherwise draw a rule against nothing.
+        /// </summary>
+        private void UpdatePaneFooterSeparatorVisibility()
+        {
+            bool hasFooterContent = FooterMenuItems.Count > 0 || PaneFooter is not null;
+            SetValue(
+                PaneFooterSeparatorVisibilityPropertyKey,
+                hasFooterContent ? Visibility.Visible : Visibility.Collapsed);
         }
 
         private void HookFooterItem(NavigationViewItem footerItem)
@@ -1075,7 +1168,13 @@ defaultValue: null,
                     FluenceWindow.ExtendsContentIntoTitleBarProperty,
                     typeof(FluenceWindow));
                 _titleBarExtensionDescriptor?.AddValueChanged(_titleBarExtensionWindow, OnTitleBarExtensionChanged);
+                _titleBarContentDescriptor ??= DependencyPropertyDescriptor.FromProperty(
+                    FluenceWindow.TitleBarProperty,
+                    typeof(FluenceWindow));
+                _titleBarContentDescriptor?.AddValueChanged(_titleBarExtensionWindow, OnTitleBarExtensionChanged);
             }
+
+            UpdateHostTitleBarState();
         }
 
         private void DetachTitleBarWindowWatcher()
@@ -1083,13 +1182,32 @@ defaultValue: null,
             if (_titleBarExtensionWindow is not null)
             {
                 _titleBarExtensionDescriptor?.RemoveValueChanged(_titleBarExtensionWindow, OnTitleBarExtensionChanged);
+                _titleBarContentDescriptor?.RemoveValueChanged(_titleBarExtensionWindow, OnTitleBarExtensionChanged);
                 _titleBarExtensionWindow = null;
             }
+
+            UpdateHostTitleBarState();
         }
 
         private void OnTitleBarExtensionChanged(object? sender, EventArgs e)
         {
+            UpdateHostTitleBarState();
             UpdateTitleBarExtensionForPaneMode();
+        }
+
+        /// <summary>
+        /// Copies the owning window's title bar state onto this control so the default template can
+        /// read it from the templated parent instead of walking up to the window itself. The walk
+        /// is the problem: during shutdown WPF re-evaluates the template's triggers after the
+        /// control has left the visual tree, the ancestor is no longer reachable, and each one logs
+        /// a "cannot find source" binding error. Mirroring the two values here keeps the triggers
+        /// on a source that is always resolvable.
+        /// </summary>
+        private void UpdateHostTitleBarState()
+        {
+            FluenceWindow? window = _titleBarExtensionWindow;
+            SetValue(HostExtendsContentIntoTitleBarPropertyKey, window?.ExtendsContentIntoTitleBar is true);
+            SetValue(HostHasTitleBarPropertyKey, window?.TitleBar is not null);
         }
 
         /// <summary>
@@ -2284,6 +2402,8 @@ defaultValue: null,
         private FluenceWindow? _titleBarExtensionWindow;
 
         private DependencyPropertyDescriptor? _titleBarExtensionDescriptor;
+
+        private DependencyPropertyDescriptor? _titleBarContentDescriptor;
 
         private ColumnDefinition? _paneColumn;
 

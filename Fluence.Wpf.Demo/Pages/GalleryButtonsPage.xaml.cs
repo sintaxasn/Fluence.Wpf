@@ -66,9 +66,15 @@ namespace Fluence.Wpf.Demo.Pages
                                                                 "            x:Name=\"GraphicalButton\"\n" +
                                                                 "            Width=\"50\"\n" +
                                                                 "            Height=\"50\"\n" +
+                                                                "            MinWidth=\"50\"\n" +
+                                                                "            Padding=\"0\"\n" +
                                                                 "            AutomationProperties.Name=\"Pie\"\n" +
                                                                 "            Click=\"GraphicalButton_Click\">\n" +
-                                                                "            <Image AutomationProperties.Name=\"Slice\" Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/SampleMedia/Slices.png\" />\n" +
+                                                                "            <Image\n" +
+                                                                "                Width=\"36\"\n" +
+                                                                "                Height=\"36\"\n" +
+                                                                "                AutomationProperties.Name=\"Slice\"\n" +
+                                                                "                Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/SampleMedia/Slices.png\" />\n" +
                                                                 "        </fluence:Button>\n" +
                                                                 "        <TextBlock x:Name=\"GraphicalButtonOutputText\" />\n" +
                                                                 "    </StackPanel>\n");

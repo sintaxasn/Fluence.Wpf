@@ -135,15 +135,30 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Controls.NavigationView compact = Assert.IsType<Controls.NavigationView>(FindVisualChildByName<Controls.NavigationView>(window, "CompactNavigationDemo"), exactMatch: false);
                 Controls.CheckBox backEnabled = Assert.IsType<Controls.CheckBox>(FindVisualChildByName<Controls.CheckBox>(window, "BackEnabledToggle"), exactMatch: false);
 
-                Assert.True(backEnabled.IsChecked.GetValueOrDefault(),
-                    "Compact navigation sample should start with the back button enabled.");
+                // The sample starts with back disabled so its own toggle begins in the state its
+                // description describes, rather than already switched on.
+                Assert.False(backEnabled.IsChecked.GetValueOrDefault(),
+                    "Compact navigation sample should start with the back button disabled.");
+                Assert.False(compact.IsBackEnabled,
+                    "The sample's back state follows its Back enabled toggle.");
                 Assert.True(compact.IsPaneToggleButtonVisible,
                     "Compact navigation sample should explicitly show the pane toggle button.");
 
                 Button back = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PART_BackButton, compact));
                 Button paneToggle = Assert.IsType<Button>(compact.Template.FindName(Controls.NavigationView.PART_PaneToggleButton, compact));
-                Assert.Equal(Visibility.Visible, back.Visibility);
+
+                // The pane shows its back button only while it is both visible and enabled, so a
+                // disabled back button is not drawn at all.
+                Assert.Equal(Visibility.Collapsed, back.Visibility);
                 Assert.Equal(Visibility.Visible, paneToggle.Visibility);
+
+                // Ticking the toggle brings it back, which is the point of the sample.
+                backEnabled.SetCurrentValue(ToggleButton.IsCheckedProperty, value: true);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.True(compact.IsBackEnabled);
+                Assert.Equal(Visibility.Visible, back.Visibility);
+                backEnabled.SetCurrentValue(ToggleButton.IsCheckedProperty, value: false);
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.Null(FindVisualChildByName<Controls.Button>(window, "CompactPaneToggleButton"));
 
                 Assert.False(compact.IsPaneOpen,

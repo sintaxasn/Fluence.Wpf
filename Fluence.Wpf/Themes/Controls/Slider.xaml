@@ -282,10 +282,19 @@
                                 <Track.Thumb>
                                     <Thumb x:Name="Thumb" Style="{StaticResource SliderThumbStyle}" />
                                 </Track.Thumb>
+                                <!--
+                                    IncreaseButton stays Transparent (SliderTrackSegmentStyle's default) so the
+                                    unfilled track is painted exactly once, by TrackBackground below. WinUI's
+                                    Slider template has one HorizontalTrackRect for the unfilled track plus
+                                    HorizontalDecreaseRect for the filled part, not two stacked layers
+                                    (Slider_themeresources.xaml). Giving this RepeatButton its own
+                                    Background="{TemplateBinding Background}" would stack a second
+                                    ControlStrongFillColorDefaultBrush layer over TrackBackground: the two
+                                    partial-alpha fills compose to a darker unfilled track than WinUI shows.
+                                -->
                                 <Track.IncreaseRepeatButton>
                                     <RepeatButton
                                         x:Name="IncreaseButton"
-                                        Background="{TemplateBinding Background}"
                                         Command="Slider.IncreaseLarge"
                                         Style="{StaticResource SliderTrackSegmentStyle}" />
                                 </Track.IncreaseRepeatButton>

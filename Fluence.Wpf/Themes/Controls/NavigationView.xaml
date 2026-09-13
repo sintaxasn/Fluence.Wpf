@@ -80,7 +80,7 @@
     <Style TargetType="{x:Type controls:NavigationViewItemSeparator}">
         <Setter Property="Height" Value="1" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="Margin" Value="12,4,0,4" />
+        <Setter Property="Margin" Value="0,4,0,4" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:NavigationViewItemSeparator}">
@@ -134,13 +134,21 @@
                             <Setter Property="TextWrapping" Value="NoWrap" />
                         </Style>
                     </ControlTemplate.Resources>
+                    <!--
+                        WinUI NavigationViewItemButtonMargin = 4,2 (uniform 4,2,4,2 pill inset).
+                        BorderThickness is 0 because WinUI's pill paints Background only, with no
+                        stroke: a Border's Background fills the rect inside BorderThickness, so the
+                        previous BorderThickness="2" with no BorderBrush was invisibly insetting the
+                        painted pill by 2 dip on every edge on top of the Margin.
+                    -->
                     <Border
                         x:Name="OuterBorder"
-                        Margin="4,2,0,2"
+                        Margin="4,2,4,2"
                         Background="{TemplateBinding Background}"
-                        BorderThickness="2"
+                        BorderThickness="0"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
-                        <Grid MinHeight="32">
+                        <!--  WinUI NavigationViewItemOnLeftMinHeight = 36: the painted pill height. Item pitch (40) is this 36 plus the 2+2 dip vertical margin above.  -->
+                        <Grid x:Name="ContentGrid" MinHeight="36">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition x:Name="IconColumn" Width="40" />
                                 <ColumnDefinition x:Name="GapColumn" Width="6" />
@@ -192,6 +200,8 @@
                             <Setter Property="HorizontalAlignment" Value="Left" />
                             <Setter Property="HorizontalContentAlignment" Value="Left" />
                             <Setter TargetName="OuterBorder" Property="Margin" Value="2,4,2,4" />
+                            <!--  Keeps Top mode's own pre-existing 32 dip inner height (item height stays 40, unchanged) instead of inheriting the Left/LeftCompact pill's new NavigationViewItemOnLeftMinHeight = 36.  -->
+                            <Setter TargetName="ContentGrid" Property="MinHeight" Value="32" />
                             <Setter TargetName="IconPresenter" Property="Margin" Value="4,0,2,0" />
                             <Setter TargetName="ContentPresenter" Property="Margin" Value="2,0" />
                             <Setter Property="MinWidth" Value="0" />
@@ -335,6 +345,8 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <!--  The footer divider owns a row of its own rather than sitting inside the footer, so the footer's padding cannot inset it: WinUI keeps VisualItemsSeparator a sibling of the footer for the same reason (NavigationView.xaml:375).  -->
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
@@ -395,7 +407,7 @@
                         <controls:SmoothScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
-                            Padding="0,4,8,4"
+                            Padding="0,4,0,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
                             Style="{DynamicResource ScrollViewerStyle}"
@@ -423,10 +435,17 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375) at NavigationViewItemSeparatorMargin 0,3,0,4 (NavigationView_themeresources.xaml:247). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it is always drawn, which docs/winui-parity.md records.  -->
+                        <controls:NavigationViewItemSeparator
+                            Grid.Row="2"
+                            Margin="0,3,0,4"
+                            HorizontalAlignment="Stretch"
+                            Visibility="{Binding PaneFooterSeparatorVisibility, RelativeSource={RelativeSource TemplatedParent}}" />
+
                         <Border
                             x:Name="PaneFooterHost"
-                            Grid.Row="2"
-                            Padding="0,0,8,8">
+                            Grid.Row="3"
+                            Padding="0">
                             <StackPanel Orientation="Vertical">
                                 <!--  FooterMenuItems: pinned, selectable navigation entries that stretch to the pane width (full-width hover/selection) and share the single-selection model with the main list.  -->
                                 <Grid>
@@ -529,16 +548,17 @@
             <Trigger Property="Header" Value="{x:Null}">
                 <Setter TargetName="HeaderRow" Property="Height" Value="42" />
             </Trigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}" />
-                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
-                </MultiDataTrigger.Conditions>
+            <!--  Property conditions, not bindings: a ControlTemplate trigger has no templated parent to bind against, so a RelativeSource TemplatedParent condition never evaluates. The host title bar state is mirrored onto the control precisely so these can be plain property triggers.  -->
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Header" Value="{x:Null}" />
+                    <Condition Property="HostExtendsContentIntoTitleBar" Value="True" />
+                </MultiTrigger.Conditions>
                 <Setter TargetName="HeaderRow" Property="Height" Value="48" />
-            </MultiDataTrigger>
-            <DataTrigger Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True">
+            </MultiTrigger>
+            <Trigger Property="HostExtendsContentIntoTitleBar" Value="True">
                 <Setter TargetName="PaneChrome" Property="Height" Value="48" />
-            </DataTrigger>
+            </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsBackButtonVisible" Value="True" />
@@ -549,17 +569,17 @@
             <Trigger Property="IsPaneToggleButtonVisible" Value="False">
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
             </Trigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
-                    <Condition Binding="{Binding TitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Converter={x:Static controls:FluenceWindow.IsNotNullConverter}}" Value="True" />
-                </MultiDataTrigger.Conditions>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="HostExtendsContentIntoTitleBar" Value="True" />
+                    <Condition Property="HostHasTitleBar" Value="True" />
+                </MultiTrigger.Conditions>
                 <Setter TargetName="PART_BackButton" Property="Visibility" Value="Collapsed" />
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
-            </MultiDataTrigger>
+            </MultiTrigger>
             <Trigger Property="IsPaneOpen" Value="False">
                 <Setter TargetName="PART_PaneItemsScrollViewer" Property="Padding" Value="0,4,0,4" />
-                <Setter TargetName="PaneFooterHost" Property="Padding" Value="0,0,0,8" />
+                <Setter TargetName="PaneFooterHost" Property="Padding" Value="0" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -594,6 +614,8 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <!--  The footer divider owns a row of its own rather than sitting inside the footer, so the footer's padding cannot inset it: WinUI keeps VisualItemsSeparator a sibling of the footer for the same reason (NavigationView.xaml:375).  -->
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
@@ -682,10 +704,17 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375) at NavigationViewItemSeparatorMargin 0,3,0,4 (NavigationView_themeresources.xaml:247). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it is always drawn, which docs/winui-parity.md records.  -->
+                        <controls:NavigationViewItemSeparator
+                            Grid.Row="2"
+                            Margin="0,3,0,4"
+                            HorizontalAlignment="Stretch"
+                            Visibility="{Binding PaneFooterSeparatorVisibility, RelativeSource={RelativeSource TemplatedParent}}" />
+
                         <Border
                             x:Name="PaneFooterHost"
-                            Grid.Row="2"
-                            Padding="0,0,0,8">
+                            Grid.Row="3"
+                            Padding="0">
                             <StackPanel Orientation="Vertical">
                                 <!--  FooterMenuItems: pinned, selectable navigation entries that stretch to the pane width (full-width hover/selection) and share the single-selection model with the main list.  -->
                                 <Grid>
@@ -788,16 +817,17 @@
             <Trigger Property="Header" Value="{x:Null}">
                 <Setter TargetName="HeaderRow" Property="Height" Value="42" />
             </Trigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}" />
-                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
-                </MultiDataTrigger.Conditions>
+            <!--  Property conditions, not bindings: a ControlTemplate trigger has no templated parent to bind against, so a RelativeSource TemplatedParent condition never evaluates. The host title bar state is mirrored onto the control precisely so these can be plain property triggers.  -->
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="Header" Value="{x:Null}" />
+                    <Condition Property="HostExtendsContentIntoTitleBar" Value="True" />
+                </MultiTrigger.Conditions>
                 <Setter TargetName="HeaderRow" Property="Height" Value="42" />
-            </MultiDataTrigger>
-            <DataTrigger Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True">
+            </MultiTrigger>
+            <Trigger Property="HostExtendsContentIntoTitleBar" Value="True">
                 <Setter TargetName="PaneChrome" Property="Height" Value="42" />
-            </DataTrigger>
+            </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsBackButtonVisible" Value="True" />
@@ -808,14 +838,14 @@
             <Trigger Property="IsPaneToggleButtonVisible" Value="False">
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
             </Trigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
-                    <Condition Binding="{Binding TitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Converter={x:Static controls:FluenceWindow.IsNotNullConverter}}" Value="True" />
-                </MultiDataTrigger.Conditions>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="HostExtendsContentIntoTitleBar" Value="True" />
+                    <Condition Property="HostHasTitleBar" Value="True" />
+                </MultiTrigger.Conditions>
                 <Setter TargetName="PART_BackButton" Property="Visibility" Value="Collapsed" />
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
-            </MultiDataTrigger>
+            </MultiTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 

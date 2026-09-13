@@ -40,7 +40,12 @@ namespace Fluence.Wpf.Demo.Pages
     /// </summary>
     public partial class GallerySettingsPage : Page
     {
-        private const double PageHorizontalMargin = 72.0;
+        // The page-level horizontal inset (DemoPageContentMargin) now lives on the outer
+        // PageContentGrid via GalleryPageContentGridStyle, so SettingsScrollViewer.ActualWidth
+        // is already net of that margin, and the host borrows the scrollbar rail back out of it
+        // (DemoPageScrollHostMargin). This constant only needs the scrolling StackPanel's own
+        // right-hand gutter (DemoPageScrollContentMargin = 0,0,12,0).
+        private const double PageHorizontalMargin = 12.0;
         private const double PageMaxWidth = 1064.0;
         private const double CompactSettingsWidth = 640.0;
         private const double RegularPickerWidth = 240.0;

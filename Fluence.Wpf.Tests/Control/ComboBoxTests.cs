@@ -520,6 +520,54 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task ComboBox_DropDownItem_UsesWinUiMetricsAsync()
+        {
+            // ComboBox_themeresources_perf2026.xaml: ComboBoxItemThemePadding 11,5,11,7 (line 335),
+            // ComboBoxItemCornerRadius 3 (line 345), the item LayoutRoot margin 5,2,5,2 (line 568),
+            // and the selection pill at ComboBoxItemPillWidth 3 with
+            // ComboBoxItemPillCornerRadius 1.5 (lines 325 and 346).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    combo.IsDropDownOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(504.0, combo.MaxDropDownHeight);
+
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(combo.ItemContainerGenerator.ContainerFromIndex(0));
+                    _ = item.ApplyTemplate();
+                    Assert.Equal(new Thickness(11, 5, 11, 7), item.Padding);
+
+                    Border outer = Assert.IsType<Border>(item.Template.FindName("OuterBorder", item), exactMatch: false);
+                    Assert.Equal(new Thickness(5, 2, 5, 2), outer.Margin);
+                    Assert.Equal(new CornerRadius(3), outer.CornerRadius);
+
+                    Border pill = Assert.IsType<Border>(item.Template.FindName("SelectionIndicator", item), exactMatch: false);
+                    Assert.Equal(3.0, pill.Width);
+                    Assert.Equal(16.0, pill.Height);
+                    Assert.Equal(new CornerRadius(1.5), pill.CornerRadius);
+
+                    combo.IsDropDownOpen = false;
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopenAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>

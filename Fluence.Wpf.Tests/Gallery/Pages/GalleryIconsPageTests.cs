@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Assert.Equal(new Thickness(0), catalogCard.Padding);
                     Assert.Equal(new CornerRadius(8), catalogCard.CornerRadius);
                     Assert.Equal(new Thickness(1), catalogCard.BorderThickness);
-                    AssertBrushColor(catalogCard.Background, "CardBackgroundFillColorTertiaryBrush");
+                    AssertBrushColor(catalogCard.Background, "SolidBackgroundFillColorBaseBrush");
                     AssertBrushColor(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush");
                     Assert.Equal(new Thickness(0), list.BorderThickness);
 
@@ -206,6 +206,40 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.NotNull(list.ItemContainerGenerator.ContainerFromIndex(list.Items.Count - 1));
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
+            });
+        }
+
+        // This test measures the realized icon tile geometry against the WinUI 3 Gallery's
+        // measured pitch, so it builds its own instance rather than mutating the shared one.
+        [Fact]
+        public Task GalleryIconsPage_IconTileGeometryMatchesWinUiGalleryPitchAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                GalleryIconsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    Controls.ListView list = Assert.IsType<Controls.ListView>(DemoTestHost.FindByName<Controls.ListView>(page, "IconCatalogList"), exactMatch: false);
+                    List<Button> tiles = [.. DemoTestHost.FindVisualChildren<Button>(list)
+                        .Where(static tile => tile.DataContext is GalleryIconsPage.IconCatalogItem)];
+                    Assert.True(tiles.Count > 0, "The initial viewport should realize icon tiles.");
+
+                    Button tile = tiles[0];
+                    Assert.Equal(93.0, tile.Width, 0.1);
+                    Assert.Equal(92.0, tile.Height, 0.1);
+                    Assert.Equal(new Thickness(0, 0, 10, 11), tile.Margin);
+
+                    // Pitch (tile size plus gutter) must land at 103 dip in both directions,
+                    // matching the WinUI 3 Gallery's measured 140x138 px tile at a 103 dip
+                    // pitch, 150% DPI, so four tiles fit the catalog's left column.
+                    Assert.Equal(103.0, tile.Width + tile.Margin.Right, 0.1);
+                    Assert.Equal(103.0, tile.Height + tile.Margin.Bottom, 0.1);
                 }
                 finally
                 {

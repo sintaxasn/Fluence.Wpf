@@ -7,6 +7,7 @@
     <!--
         Fluent Design TeachingTip style.
         Authority: WinUI 3 TeachingTip_themeresources.xaml (TeachingTipMinWidth 320 /
+        TeachingTipMinHeight 40 / TeachingTipMaxHeight 520 /
         TeachingTipMaxWidth 336; SemiBold 14px title over a wrapped secondary subtitle;
         a 20x10 tail on the edge facing the target, matching the WinUI TailPolygon points).
         Surface treatment: SolidBackgroundFillColorTertiaryBrush is the WinUI TeachingTip's own
@@ -47,7 +48,9 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Height" Value="24" />
+        <!--  WinUI TeachingTipAlternateCloseButtonSize = 40 (TeachingTip_themeresources_perf2026.xaml line 95)  -->
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="40" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -124,6 +127,8 @@
                             Grid.Column="1"
                             MaxWidth="336"
                             MinWidth="320"
+                            MaxHeight="520"
+                            MinHeight="40"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
@@ -257,7 +262,7 @@
                             <controls:FontIcon
                                 Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                 Glyph="&#xE711;"
-                                IconFontSize="12"
+                                IconFontSize="16"
                                 IsHitTestVisible="False" />
                         </Button>
                     </Grid>

@@ -41,6 +41,7 @@ using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
+using static Fluence.Wpf.Tests.Infrastructure.VisualGeometry;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
@@ -168,6 +169,61 @@ namespace Fluence.Wpf.Tests.Control
                     mw.Close();
                     WpfTestSta.DrainDispatcher(mw.Dispatcher);
                 }
+            });
+        }
+
+
+        [Fact]
+        public Task NavigationView_MirrorsHostTitleBarState_AndReleasesItOnUnloadAsync()
+        {
+            // The pane's triggers need the owning window's title bar state. Read through a
+            // FindAncestor binding they re-evaluate while the window is tearing the visual tree
+            // down, when the ancestor is already gone, and WPF logs a "cannot find source" binding
+            // error per trigger for every NavigationView on the way out. The state is mirrored
+            // onto the control instead, so the triggers bind to a source that always resolves.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FluenceWindow window = new()
+                {
+                    ExtendsContentIntoTitleBar = true,
+                    Width = 480,
+                    Height = 320,
+                };
+
+                NavigationView navigation = new() { PaneDisplayMode = NavigationViewPaneDisplayMode.Left };
+                _ = navigation.Items.Add(new NavigationViewItem { Content = "Home" });
+                window.Content = navigation;
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(navigation.HostExtendsContentIntoTitleBar);
+
+                    // Top mode drives the window the other way (UpdateTitleBarExtensionForPaneMode),
+                    // so this exercises the change notification rather than only the initial read.
+                    // Setting the window property directly would not: Left mode forces it back to
+                    // true on the spot.
+                    navigation.SetCurrentValue(NavigationView.PaneDisplayModeProperty, NavigationViewPaneDisplayMode.Top);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(window.ExtendsContentIntoTitleBar);
+                    Assert.False(navigation.HostExtendsContentIntoTitleBar);
+
+                    navigation.SetCurrentValue(NavigationView.PaneDisplayModeProperty, NavigationViewPaneDisplayMode.Left);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(window.ExtendsContentIntoTitleBar);
+                    Assert.True(navigation.HostExtendsContentIntoTitleBar);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+
+                // Out of the tree the mirror reports the default rather than a stale reading of a
+                // window that is on its way out.
+                Assert.False(navigation.HostExtendsContentIntoTitleBar);
+                Assert.False(navigation.HostHasTitleBar);
             });
         }
 
@@ -1009,16 +1065,16 @@ namespace Fluence.Wpf.Tests.Control
 
                     FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.Equal(9.0, iconItemX, 0.5);
+                    Assert.Equal(4.0, iconItemX, 0.5);
 
                     nav.SelectedIndex = 1;
                     // Settle until the indicator slide reaches the asserted child-item offset.
-                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 53.0) <= 0.5).ConfigureAwait(true);
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 48.0) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     double childItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.Equal(53.0, childItemX, 0.5);
+                    Assert.Equal(48.0, childItemX, 0.5);
                 }
                 finally
                 {
@@ -1230,10 +1286,10 @@ topMode: false,
                     Assert.True(
                         await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
-                            return Math.Abs(translate.X - 53.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                            return Math.Abs(translate.X - 48.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }).ConfigureAwait(true),
                         "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
-                    Assert.Equal(53.0, translate.X, 0.5);
+                    Assert.Equal(48.0, translate.X, 0.5);
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
@@ -1295,10 +1351,10 @@ topMode: false,
                     Assert.True(
                         await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
-                            return Math.Abs(translate.X - 9.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                            return Math.Abs(translate.X - 4.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }).ConfigureAwait(true),
                         "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
-                    Assert.Equal(9.0, translate.X, 0.5);
+                    Assert.Equal(4.0, translate.X, 0.5);
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally
@@ -2692,6 +2748,144 @@ topMode: false,
                     double filesY = GetSelectionIndicatorTranslate(indicator).Y;
                     Assert.NotEqual(homeY, filesY, 0.5);
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationViewItem_Left_OuterBorder_MatchesWinUiPillGeometryAsync()
+        {
+            // Regression: OuterBorder used to carry Margin="4,2,0,2" with BorderThickness="2" inside
+            // the item's MinHeight="36", which lost 4 dip of painted height to the margin and 2 dip of
+            // left inset to the invisible (BorderBrush-less) border band, while the 0 right margin left
+            // the pill off-centre in the pane. WinUI NavigationViewItemButtonMargin = 4,2 and
+            // NavigationViewItemOnLeftMinHeight = 36 require a symmetric 4,2,4,2 margin, no border
+            // thickness, and a 36 dip painted pill (with the 2+2 dip margin keeping the 40 dip pitch).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 200,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true,
+                    };
+                    NavigationViewItem item = new() { Content = "Item" };
+                    _ = nav.Items.Add(item);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(item, "OuterBorder"), exactMatch: false);
+
+                    Assert.Equal(new Thickness(4, 2, 4, 2), outerBorder.Margin);
+                    Assert.Equal(new Thickness(0), outerBorder.BorderThickness);
+                    Assert.Equal(36.0, outerBorder.ActualHeight, 0.5);
+                    Assert.Equal(40.0, item.ActualHeight, 0.5);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_Left_PaneItemsAndFooterSitSymmetricallyInThePaneAsync()
+        {
+            // Regression: the open Left pane gave its items scroller Padding="0,4,8,4" and its
+            // footer Padding="0,0,8,0", a right-only gutter reserving room for the overlay
+            // scrollbar. Every item then sat 4 dip from the pane's left edge (its own
+            // NavigationViewItemButtonMargin) but 12 from the right, which reads as an off-centre
+            // selection pill. WinUI keeps the pane symmetric and lets the overlay rail ride over
+            // the items, so the two gaps have to match. The footer divider is measured too: it
+            // spans the pane rather than stopping short at the footer's inset.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 400,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true,
+                    };
+
+                    NavigationViewItem item = new() { Content = "Item" };
+                    _ = nav.Items.Add(item);
+                    nav.FooterMenuItems.Add(new NavigationViewItem { Content = "Settings" });
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border pane = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder"), exactMatch: false);
+                    System.Windows.Controls.Border outerBorder = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(item, "OuterBorder"), exactMatch: false);
+
+                    double left = GetVisualX(outerBorder, pane);
+                    double right = pane.ActualWidth - (left + outerBorder.ActualWidth);
+                    Assert.Equal(left, right, 1.0);
+
+                    // The divider reaches both pane edges, so it is not inset by the footer.
+                    NavigationViewItemSeparator divider = Assert.IsType<NavigationViewItemSeparator>(
+                        FindVisualChild<NavigationViewItemSeparator>(pane), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, divider.Visibility);
+                    Assert.Equal(0.0, GetVisualX(divider, pane), 1.0);
+                    Assert.Equal(pane.ActualWidth, divider.ActualWidth, 1.0);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_Left_SharedSelectionIndicator_IsThreeDipWideAsync()
+        {
+            // WinUI NavigationViewSelectionIndicatorWidth = 3 (Height = 16, already correct). Locks the
+            // pane-level indicator's geometry so a future edit cannot silently narrow the pill marker.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 200,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true,
+                    };
+                    NavigationViewItem item = new() { Content = "Item" };
+                    _ = nav.Items.Add(item);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = nav.ApplyTemplate();
+                    FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
+
+                    Assert.Equal(3.0, indicator.Width, 0.01);
+                    Assert.Equal(16.0, indicator.Height, 0.01);
                 }
                 finally
                 {

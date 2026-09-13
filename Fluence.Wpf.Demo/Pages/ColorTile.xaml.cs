@@ -27,7 +27,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -131,7 +130,10 @@ namespace Fluence.Wpf.Demo.Pages
         /// disabled and selected-text tiles) with a literal black foreground. Fluence has no brush
         /// that is dark in every theme, so when this is set the tile picks whichever of the primary
         /// and on-accent text brushes contrasts more with its <see cref="Control.Background"/>, and
-        /// re-evaluates whenever a theme change republishes that background.
+        /// re-evaluates whenever a theme change republishes that background. A
+        /// <see cref="GradientBrush"/> background (for example a tile documenting an elevation
+        /// border) is reduced to the equally weighted average of its gradient stops first, since
+        /// there is no single tile color to compare against.
         /// </remarks>
         public bool AutoContrastForeground
         {
@@ -159,17 +161,56 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void ApplyAutoContrastForeground()
         {
-            if (Background is not SolidColorBrush tileBrush)
+            Color tileColor;
+            if (Background is SolidColorBrush tileBrush)
+            {
+                tileColor = tileBrush.Color;
+            }
+            else if (Background is GradientBrush gradientBrush)
+            {
+                // A gradient tile (for example TextControlElevationBorderBrush) has no single
+                // color; average its stops with equal weighting to get a representative color
+                // for the contrast comparison below.
+                tileColor = AverageGradientStopColor(gradientBrush);
+            }
+            else
             {
                 return;
             }
 
             Color surface = TryFindResource(BaseSurfaceKey) is SolidColorBrush surfaceBrush ? surfaceBrush.Color : Colors.White;
-            double tileLuminance = Luminance(Composite(tileBrush.Color, surface));
+            double tileLuminance = Luminance(Composite(tileColor, surface));
             double primaryLuminance = TryFindResource(PrimaryTextKey) is SolidColorBrush primary ? Luminance(Composite(primary.Color, surface)) : 0;
             double onAccentLuminance = TryFindResource(OnAccentTextKey) is SolidColorBrush onAccent ? Luminance(Composite(onAccent.Color, surface)) : 1;
             string key = Math.Abs(primaryLuminance - tileLuminance) >= Math.Abs(onAccentLuminance - tileLuminance) ? PrimaryTextKey : OnAccentTextKey;
             SetResourceReference(ForegroundProperty, key);
+        }
+
+        private static Color AverageGradientStopColor(GradientBrush gradient)
+        {
+            GradientStopCollection stops = gradient.GradientStops;
+            if (stops.Count is 0)
+            {
+                return Colors.Transparent;
+            }
+
+            double a = 0;
+            double r = 0;
+            double g = 0;
+            double b = 0;
+            foreach (GradientStop stop in stops)
+            {
+                a += stop.Color.A;
+                r += stop.Color.R;
+                g += stop.Color.G;
+                b += stop.Color.B;
+            }
+
+            return Color.FromArgb(
+                (byte)Math.Round(a / stops.Count, MidpointRounding.AwayFromZero),
+                (byte)Math.Round(r / stops.Count, MidpointRounding.AwayFromZero),
+                (byte)Math.Round(g / stops.Count, MidpointRounding.AwayFromZero),
+                (byte)Math.Round(b / stops.Count, MidpointRounding.AwayFromZero));
         }
 
         private static Color Composite(Color color, Color surface)
@@ -241,20 +282,22 @@ namespace Fluence.Wpf.Demo.Pages
 
             try
             {
-                DemoClipboard.SetText(brushName);
-            }
-            catch (ExternalException)
-            {
-                System.Diagnostics.Debug.WriteLine("Clipboard was unavailable while copying a brush name.");
-                return;
+                // The success cue waits for the callback rather than firing here: the clipboard
+                // retry runs on a dispatcher timer, so a copy that another process is blocking has
+                // not failed yet at this point and a cue shown now would claim a success that may
+                // never happen.
+                DemoClipboard.SetText(brushName, copied =>
+                {
+                    if (copied)
+                    {
+                        ShowCopiedFeedback();
+                    }
+                });
             }
             catch (ThreadStateException)
             {
                 System.Diagnostics.Debug.WriteLine("Clipboard access requires an STA thread.");
-                return;
             }
-
-            ShowCopiedFeedback();
         }
 
         /// <summary>

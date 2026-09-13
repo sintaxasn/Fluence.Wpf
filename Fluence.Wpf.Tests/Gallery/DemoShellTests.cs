@@ -58,6 +58,10 @@ namespace Fluence.Wpf.Tests.Gallery
     /// </summary>
     public sealed class DemoShellTests : IAsyncLifetime
     {
+        // The four TreeView samples the Trees page hosts, all deliberately borderless.
+        private static readonly string[] BorderlessTreeSampleNames =
+            ["HierarchyTreeView", "SelectionTreeView", "MultiSelectTreeView", "ExpansionTreeView"];
+
         public ValueTask InitializeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
@@ -805,12 +809,17 @@ namespace Fluence.Wpf.Tests.Gallery
                 AssertControlHasThemedBorder(Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "DataTemplateListView"), exactMatch: false));
             }).ConfigureAwait(true);
 
+            // The tree samples carry no card of their own: the WinUI 3 Gallery's TreeView page
+            // shows the control directly on the sample surface, and the library default is a
+            // transparent, borderless TreeView. Collection samples on the Data pages above keep
+            // their themed border, which is what the Gallery's own list samples show.
             await DemoTestHost.RunDemoPageTestAsync(static () => new GalleryTreesPage(), static window =>
             {
-                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "HierarchyTreeView"), exactMatch: false));
-                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "SelectionTreeView"), exactMatch: false));
-                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"), exactMatch: false));
-                AssertControlHasThemedBorder(Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, "ExpansionTreeView"), exactMatch: false));
+                foreach (string name in BorderlessTreeSampleNames)
+                {
+                    Controls.TreeView tree = Assert.IsType<Controls.TreeView>(FindVisualChildByName<Controls.TreeView>(window, name), exactMatch: false);
+                    Assert.Equal(new Thickness(0), tree.BorderThickness);
+                }
             }).ConfigureAwait(true);
         }
 
@@ -1292,7 +1301,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
                             Grid pageContent = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageContent"), exactMatch: false);
                             Assert.Same(contentGridStyle, pageContent.Style);
-                            Assert.Equal(new Thickness(36, 24, 36, 48), pageContent.Margin);
+                            Assert.Equal(new Thickness(45, 24, 44, 48), pageContent.Margin);
                             Assert.True(double.IsPositiveInfinity(pageContent.MaxWidth),
                                 "Icons should stretch instead of keeping the old max content width.");
                             Assert.Equal(HorizontalAlignment.Stretch, pageContent.HorizontalAlignment);
@@ -1309,7 +1318,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
                             Grid colorsContent = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageContent"), exactMatch: false);
                             Assert.Same(contentGridStyle, colorsContent.Style);
-                            Assert.Equal(new Thickness(36, 24, 36, 48), colorsContent.Margin);
+                            Assert.Equal(new Thickness(45, 24, 44, 48), colorsContent.Margin);
                             Assert.Equal(5, colorsContent.RowDefinitions.Count);
                             Assert.Equal(GridLength.Auto, colorsContent.RowDefinitions[0].Height);
                             Assert.Equal(new GridLength(1, GridUnitType.Star), colorsContent.RowDefinitions[4].Height);
@@ -1329,15 +1338,49 @@ namespace Fluence.Wpf.Tests.Gallery
                             continue;
                         }
 
+                        if (page is GalleryHomePage)
+                        {
+                            // Home has no page header to lock, so it keeps the plain scroll host
+                            // over a stack panel that carries the shared page content margin.
+                            Controls.SmoothScrollViewer homeScroll = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
+                            Assert.Same(scrollStyle, homeScroll.Style);
+
+                            StackPanel homeContent = Assert.IsType<StackPanel>(homeScroll.Content);
+                            Assert.Same(contentStyle, homeContent.Style);
+                            Assert.Equal(new Thickness(45, 24, 44, 48), homeContent.Margin);
+                            Assert.Equal(HorizontalAlignment.Stretch, homeContent.HorizontalAlignment);
+                            continue;
+                        }
+
+                        // Every other page follows the WinUI Gallery shape: a content Grid whose
+                        // header (and description, where there is one) rows are locked, with the
+                        // scroll host in the trailing star row.
+                        Grid pageContentGrid = Assert.IsType<Grid>(
+                            DemoTestHost.FindVisualChildren<Grid>(page).FirstOrDefault(grid => ReferenceEquals(grid.Style, contentGridStyle)),
+                            exactMatch: false);
+                        Assert.Equal(new Thickness(45, 24, 44, 48), pageContentGrid.Margin);
+                        Assert.True(double.IsPositiveInfinity(pageContentGrid.MaxWidth),
+                            page.GetType().Name + " should stretch instead of keeping the old max content width.");
+                        Assert.Equal(HorizontalAlignment.Stretch, pageContentGrid.HorizontalAlignment);
+                        Assert.Equal(
+                            new GridLength(1, GridUnitType.Star),
+                            pageContentGrid.RowDefinitions[^1].Height);
+
                         Controls.SmoothScrollViewer scrollViewer = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
                         Assert.Same(scrollStyle, scrollViewer.Style);
+                        Assert.Equal(pageContentGrid.RowDefinitions.Count - 1, Grid.GetRow(scrollViewer));
+
+                        // The locking invariant: the page header never scrolls with the samples.
+                        Assert.Empty(DemoTestHost.FindVisualChildren<GalleryPageHeader>(scrollViewer));
+
+                        // WinUI Gallery geometry: the scroll host borrows the scrollbar rail back
+                        // out of the page's right margin and the content pays it again as a gutter,
+                        // so the cards line up with the page title on the left and reach the
+                        // Gallery's right edge, with the rail clear of both.
+                        Assert.Equal(new Thickness(0, 0, -12, 0), scrollViewer.Margin);
 
                         StackPanel content = Assert.IsType<StackPanel>(scrollViewer.Content);
-                        Assert.Same(contentStyle, content.Style);
-                        Assert.Equal(new Thickness(36, 24, 36, 48), content.Margin);
-                        Assert.True(double.IsPositiveInfinity(content.MaxWidth),
-                            page.GetType().Name + " should stretch instead of keeping the old max content width.");
-                        Assert.Equal(HorizontalAlignment.Stretch, content.HorizontalAlignment);
+                        Assert.Equal(new Thickness(0, 0, 12, 0), content.Margin);
                     }
                     finally
                     {
@@ -1391,12 +1434,12 @@ namespace Fluence.Wpf.Tests.Gallery
 
                     Controls.TitleBar shellTitleBar = Assert.IsType<Controls.TitleBar>(DemoTestHost.FindByName<Controls.TitleBar>(window, "ShellTitleBar"), exactMatch: false);
                     Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
-                    Assert.Equal(300.0, search.Width, 0.01);
-                    Assert.Equal(300.0, search.MinWidth, 0.01);
+                    Assert.Equal(320.0, search.Width, 0.01);
+                    Assert.Equal(320.0, search.MinWidth, 0.01);
                     Assert.Equal(475.0, search.MaxWidth, 0.01);
-                    Assert.Equal(300.0, search.ActualWidth, 0.5);
+                    Assert.Equal(320.0, search.ActualWidth, 0.5);
                     Assert.Equal(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0);
-                    Assert.Equal(GetVisualCenterY(shellTitleBar, window) + 4.0, GetVisualCenterY(search, window), 1.0);
+                    Assert.Equal(GetVisualCenterY(shellTitleBar, window) + 0.5, GetVisualCenterY(search, window), 1.0);
 
                     // AutoSuggestBox forwards keyboard focus to its inner PART_TextBox, so
                     // Focus() reports false while focus genuinely lands within the control.
@@ -1406,7 +1449,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Assert.Equal(300.0, search.ActualWidth, 0.5);
+                    Assert.Equal(320.0, search.ActualWidth, 0.5);
                     Assert.Equal(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0);
                 }
                 finally
@@ -1457,8 +1500,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     ContentPresenter titleIcon = Assert.IsType<ContentPresenter>(DemoTestHost.FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, titleIcon.Visibility);
                     Image titleIconImage = Assert.IsType<Image>(DemoTestHost.FindVisualChildren<Image>(titleIcon).FirstOrDefault(), exactMatch: false);
-                    Assert.Equal(20.0, titleIconImage.ActualWidth, 0.5);
-                    Assert.Equal(20.0, titleIconImage.ActualHeight, 0.5);
+                    Assert.Equal(16.0, titleIconImage.ActualWidth, 0.5);
+                    Assert.Equal(16.0, titleIconImage.ActualHeight, 0.5);
                     Assert.True(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
                         "Title identity should start after the title-bar navigation slot.");
 

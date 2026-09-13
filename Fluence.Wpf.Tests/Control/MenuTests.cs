@@ -26,12 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
@@ -127,6 +130,62 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.Equal(
                     Colors.Transparent,
                     bg.Color);
+                w.Close();
+            });
+        }
+
+        [Fact]
+        public Task Menu_TopLevelItem_UsesMenuBarItemMetricsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MenuItem fileItem = new() { Header = "File" };
+                MenuItem viewItem = new() { Header = "View" };
+                Menu menu = new();
+                _ = menu.Items.Add(fileItem);
+                _ = menu.Items.Add(viewItem);
+                Window w = new() { Content = menu, Width = 400, Height = 100 };
+                w.Show();
+                WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                // A direct child of Menu with no submenu resolves to TopLevelItem, not
+                // SubmenuItem, so the new label-only metrics apply.
+                Assert.Equal(System.Windows.Controls.MenuItemRole.TopLevelItem, fileItem.Role);
+
+                System.Windows.Controls.Border bd = FindVisualChildByName<System.Windows.Controls.Border>(fileItem, "Bd")
+                    ?? throw new InvalidOperationException("Bd template part not found.");
+                System.Windows.Controls.Grid contentGrid = FindVisualChildByName<System.Windows.Controls.Grid>(fileItem, "ContentGrid")
+                    ?? throw new InvalidOperationException("ContentGrid template part not found.");
+
+                // MenuBarItemButtonPadding = 10,4,10,4 and MenuBarItemMargin = 4,4,4,4
+                // (WinUI 3 MenuBar_themeresources.xaml), applied directly on Bd.
+                Assert.Equal(new Thickness(10, 4, 10, 4), bd.Padding);
+                Assert.Equal(new Thickness(4, 4, 4, 4), bd.Margin);
+
+                // The flyout item's own 4,0 margin is neutralized for a top-level item so it
+                // does not add hidden width on top of Bd's own padding.
+                Assert.Equal(new Thickness(0), contentGrid.Margin);
+
+                // Icon/checkmark, gap, input-gesture and chevron columns collapse to zero width.
+                Assert.Equal(new GridLength(0), contentGrid.ColumnDefinitions[0].Width);
+                Assert.Equal(new GridLength(0), contentGrid.ColumnDefinitions[1].Width);
+                Assert.Equal(new GridLength(0), contentGrid.ColumnDefinitions[3].Width);
+                Assert.Equal(new GridLength(0), contentGrid.ColumnDefinitions[4].Width);
+
+                // Rendered width tracks the label plus 20 dip of padding (10 left + 10 right),
+                // not the 100-plus dip a flyout-style item would carry for the same label.
+                Assert.True(
+                    fileItem.ActualWidth is > 20 and < 100,
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Expected a label-sized top-level item, got ActualWidth={0}.",
+                        fileItem.ActualWidth));
+
+                // The Menu bar itself floors at WinUI's MenuBarHeight (MinHeight, not Height,
+                // per WinUI 3 MenuBar.xaml DefaultMenuBarStyle) so taller consumer content is
+                // not clipped.
+                Assert.Equal(40d, menu.MinHeight);
+
                 w.Close();
             });
         }

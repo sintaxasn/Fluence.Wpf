@@ -33,6 +33,7 @@ using System.Windows;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
@@ -153,6 +154,59 @@ namespace Fluence.Wpf.Tests.Control
                     Style = Assert.IsType<Style>(app.TryFindResource(typeof(MenuItem))),
                 };
                 Assert.Equal(14.0, mi.FontSize, 0.01);
+            });
+        }
+
+        [Fact]
+        public Task MenuItem_FlyoutItem_UsesMenuFlyoutItemMetricsAsync()
+        {
+            // MenuFlyout_themeresources_perf2026.xaml: MenuFlyoutItemMargin 4,2,4,2 (line 259) and
+            // MenuFlyoutItemThemePaddingNarrow 11,4,11,5 (line 261), the padding WinUI applies for
+            // pen, mouse and keyboard. MenuFlyoutPresenterThemePadding is 0,2,0,2 (line 255).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ContextMenu menu = new();
+                MenuItem item = new() { Header = "Cut" };
+                _ = menu.Items.Add(item);
+
+                Window owner = new() { Width = 200, Height = 120, ContextMenu = menu };
+
+                try
+                {
+                    owner.Show();
+                    menu.PlacementTarget = owner;
+                    menu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(owner.Dispatcher);
+
+                    System.Windows.Controls.Border surface = FindVisualChildByName<System.Windows.Controls.Border>(menu, "MenuSurface")
+                        ?? throw new InvalidOperationException("MenuSurface template part not found.");
+                    Assert.Equal(new Thickness(0, 2, 0, 2), surface.Padding);
+
+                    System.Windows.Controls.Border bd = FindVisualChildByName<System.Windows.Controls.Border>(item, "Bd")
+                        ?? throw new InvalidOperationException("Bd template part not found.");
+                    System.Windows.Controls.Grid contentGrid = FindVisualChildByName<System.Windows.Controls.Grid>(item, "ContentGrid")
+                        ?? throw new InvalidOperationException("ContentGrid template part not found.");
+
+                    Assert.Equal(new Thickness(4, 2, 4, 2), bd.Margin);
+                    Assert.Equal(new Thickness(11, 4, 11, 5), contentGrid.Margin);
+
+                    // The separator is full-bleed: its negative horizontal margin has to cancel
+                    // the item margin exactly, or it stops short of the plate edge. WinUI ships
+                    // the same relationship as MenuFlyoutSeparatorThemePadding -4,1,-4,1
+                    // (MenuFlyout_themeresources_perf2026.xaml line 258). Asserted against
+                    // bd.Margin rather than a literal so the two cannot drift apart.
+                    Style separatorStyle = Assert.IsType<Style>(menu.TryFindResource(System.Windows.Controls.MenuItem.SeparatorStyleKey));
+                    Thickness separatorMargin = Assert.IsType<Thickness>(
+                        separatorStyle.Setters.OfType<Setter>()
+                            .First(static setter => setter.Property == FrameworkElement.MarginProperty).Value);
+                    Assert.Equal(-bd.Margin.Left, separatorMargin.Left);
+                    Assert.Equal(-bd.Margin.Right, separatorMargin.Right);
+                }
+                finally
+                {
+                    menu.IsOpen = false;
+                    owner.Close();
+                }
             });
         }
 

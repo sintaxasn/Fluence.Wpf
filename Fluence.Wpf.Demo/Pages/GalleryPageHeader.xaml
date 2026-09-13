@@ -117,7 +117,8 @@
                 <fluence:Button
                     x:Name="ThemeToggleButton"
                     Height="{DynamicResource DemoPageHeaderButtonHeight}"
-                    MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
+                    MinHeight="{DynamicResource DemoPageHeaderButtonHeight}"
+                    MinWidth="{DynamicResource DemoPageHeaderActionButtonMinWidth}"
                     Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                     AutomationProperties.Name="Toggle theme"
                     Click="ThemeToggleButton_Click"
@@ -134,7 +135,8 @@
                 <fluence:Button
                     x:Name="CopyLinkButton"
                     Height="{DynamicResource DemoPageHeaderButtonHeight}"
-                    MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
+                    MinHeight="{DynamicResource DemoPageHeaderButtonHeight}"
+                    MinWidth="{DynamicResource DemoPageHeaderActionButtonMinWidth}"
                     Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                     AutomationProperties.Name="Copy link"
                     Click="CopyLinkButton_Click"
@@ -146,7 +148,8 @@
                 <fluence:ToggleButton
                     x:Name="FavoriteToggleButton"
                     Height="{DynamicResource DemoPageHeaderButtonHeight}"
-                    MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
+                    MinHeight="{DynamicResource DemoPageHeaderButtonHeight}"
+                    MinWidth="{DynamicResource DemoPageHeaderActionButtonMinWidth}"
                     Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                     AutomationProperties.Name="Add to favorites"
                     Checked="FavoriteToggleButton_CheckedChanged"

@@ -29,9 +29,11 @@
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -52,11 +54,14 @@ namespace Fluence.Wpf.Demo.Pages
         private const string InverseText = "TextFillColorInverseBrush";
         private const string OnAccentText = "TextOnAccentFillColorPrimaryBrush";
 
-        // The Gallery paints its accent and elevation-border tiles with a foreground that is white
-        // in every theme (its TextOnAccentFillColorDefaultBrush); the published token with that
-        // shape here is TextOnAccentFillColorSelectedText, which ColorMap seeds white for both
-        // themes. The tiles below are dark in both themes, so a theme-following foreground would
-        // render black-on-dark in Light.
+        // The Gallery paints its accent tiles with a foreground that is white in every theme (its
+        // TextOnAccentFillColorDefaultBrush); the published token with that shape here is
+        // TextOnAccentFillColorSelectedText, which ColorMap seeds white for both themes. Only the
+        // accent fill tiles below are dark in both themes, so a theme-following foreground would
+        // render black-on-dark in Light for those. The text-control border and accent-acrylic
+        // tiles are not dark in both themes (in Light the acrylic fills resolve pale and the
+        // border reads as a light grey), so those pick their foreground by contrast instead; see
+        // ColorTile.AutoContrastForeground.
         private const string AlwaysWhiteText = "TextOnAccentFillColorSelectedTextBrush";
         private const string QuarternarySurface = "SolidBackgroundFillColorQuarternaryBrush";
         private const string CardStroke = "CardStrokeColorDefaultBrush";
@@ -65,6 +70,11 @@ namespace Fluence.Wpf.Demo.Pages
         private const string OverlayRadius = "OverlayCornerRadius";
         private const string SurfaceWidth = "DemoColorExampleSurfaceWidth";
         private const string SurfaceHeight = "DemoColorExampleSurfaceHeight";
+
+        // A generated abstract image standing in for photography the Control On Image Fill
+        // example floats a control over; see CreateControlOnImageExample and FrozenBitmap.
+        private static readonly BitmapImage ControlOnImageSample =
+            FrozenBitmap("Resources/SampleMedia/ControlOnImageSample.png");
 
         private static readonly ColorSectionData[] Sections =
         [
@@ -268,7 +278,7 @@ namespace Fluence.Wpf.Demo.Pages
                             [
                                 new("Control / Border", "Rest", "ControlElevationBorderBrush", PrimaryText),
                                 new("Circle / Border", "Rest", "CircleElevationBorderBrush", PrimaryText),
-                                new("Text Control / Border", "Rest", "TextControlElevationBorderBrush", AlwaysWhiteText),
+                                new("Text Control / Border", "Rest", "TextControlElevationBorderBrush", foregroundKey: null),
                             ]),
                             new(rows: 1,
                             [
@@ -462,8 +472,8 @@ namespace Fluence.Wpf.Demo.Pages
                         [
                             new(rows: 1,
                             [
-                                new("Accent Acrylic Background / Base", "Used for the bottom most layer of an acrylic surface only when the surface will use layers", "AccentAcrylicBackgroundFillColorBaseBrush", AlwaysWhiteText),
-                                new("Accent Acrylic Background / Default", "Default acrylic recipe used for control flyouts and surfaces that live with in the context of an app", "AccentAcrylicBackgroundFillColorDefaultBrush", AlwaysWhiteText),
+                                new("Accent Acrylic Background / Base", "Used for the bottom most layer of an acrylic surface only when the surface will use layers", "AccentAcrylicBackgroundFillColorBaseBrush", foregroundKey: null),
+                                new("Accent Acrylic Background / Default", "Default acrylic recipe used for control flyouts and surfaces that live with in the context of an app", "AccentAcrylicBackgroundFillColorDefaultBrush", foregroundKey: null),
                             ]),
                         ]),
                 ]),
@@ -701,6 +711,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Focusable = true,
             };
             scroll.SetResourceReference(StyleProperty, "GalleryPageScrollViewerStyle");
+            scroll.SetResourceReference(MarginProperty, "DemoPageScrollHostMargin");
             return scroll;
         }
 
@@ -889,20 +900,47 @@ namespace Fluence.Wpf.Demo.Pages
             return panel;
         }
 
-        // The Gallery places a control over a photo; Fluence has no sample image asset, so the accent fill stands in for the imagery.
-        private static Controls.Border CreateControlOnImageExample()
+        // The Gallery places a control over a photo. This repo is BSD 3-Clause and cannot ship
+        // third party stock photography, so ControlOnImageSample.png is a generated abstract
+        // image (a soft diagonal gradient plus a few blurred translucent shapes) that reads as
+        // imagery rather than a flat UI surface.
+        private static Grid CreateControlOnImageExample()
         {
+            Controls.Image photo = new() { Source = ControlOnImageSample, Stretch = Stretch.UniformToFill };
+            photo.SetResourceReference(Controls.Image.CornerRadiusProperty, ControlRadius);
+            AutomationProperties.SetName(photo, "Sample photograph");
+
             Controls.Border badge = CreateSurface("ControlOnImageFillColorDefaultBrush", "ControlStrongStrokeColorDefaultBrush", ControlRadius, "DemoColorExampleOnImageBadgeSize", "DemoColorExampleOnImageBadgeSize");
             badge.HorizontalAlignment = HorizontalAlignment.Right;
             badge.VerticalAlignment = VerticalAlignment.Top;
             badge.SetResourceReference(MarginProperty, "DemoColorExampleOnImageBadgeMargin");
 
-            Controls.Border image = new() { Child = badge };
-            image.SetResourceReference(BackgroundProperty, "AccentFillColorDefaultBrush");
-            image.SetResourceReference(Border.CornerRadiusProperty, ControlRadius);
+            Grid image = new();
             image.SetResourceReference(WidthProperty, "DemoColorExampleImageWidth");
             image.SetResourceReference(HeightProperty, "DemoColorExampleImageHeight");
+            _ = image.Children.Add(photo);
+            _ = image.Children.Add(badge);
             return image;
+        }
+
+        /// <summary>
+        /// Loads a frozen, cached <see cref="BitmapImage"/> for a demo asset embedded as a
+        /// resource in this assembly.
+        /// </summary>
+        /// <param name="assemblyRelativePath">The resource path, relative to this assembly.</param>
+        /// <returns>The frozen bitmap, safe to share across every instance of the example.</returns>
+        private static BitmapImage FrozenBitmap(string assemblyRelativePath)
+        {
+            // Composed rather than a literal absolute pack URI (S1075): a relative Uri resolves
+            // against Application.ResourceAssembly, which defaults to the entry assembly, so it
+            // would miss the resource under the test host, whose entry assembly is not
+            // Fluence.Wpf.Demo. Naming this assembly explicitly by its own name keeps the pack URI
+            // correct in both the shipped demo executable and the test host process.
+            string assemblyName = typeof(GalleryColorsPage).Assembly.GetName().Name ?? "Fluence.Wpf.Demo";
+            string packUri = $"pack://application:,,,/{assemblyName};component/{assemblyRelativePath}";
+            BitmapImage bitmap = new(new Uri(packUri, UriKind.Absolute));
+            bitmap.Freeze();
+            return bitmap;
         }
 
         private static Controls.Border CreateDividerExample()

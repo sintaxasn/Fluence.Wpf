@@ -89,6 +89,181 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        // ---- TabViewItem WinUI parity chrome ----
+
+        [Fact]
+        public Task TabViewItem_MinHeight_Is32Async()
+        {
+            // WinUI TabViewItemMinHeight = 32 (TabView_themeresources.xaml).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabViewItem item = new() { Header = "Tab" };
+                Window window = new() { Content = item, Width = 240, Height = 80 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(32.0, item.MinHeight);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TabViewItem_HeaderMetrics_MatchWinUiAsync()
+        {
+            // TabView_themeresources.xaml: TabViewItemHeaderFontSize 12 (line 245),
+            // TabViewItemHeaderPaddingWithCloseButton 8,3,4,3 (line 253),
+            // TabViewItemHeaderPaddingWithoutCloseButton 8,3,8,3 (line 254),
+            // TabViewItemHeaderCloseButtonWidth 32 and Height 24 (lines 249 and 248).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabViewItem item = new() { Header = "Tab" };
+                Window window = new() { Content = item, Width = 240, Height = 80 };
+
+                try
+                {
+                    window.Show();
+                    _ = item.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(12.0, item.FontSize);
+                    Assert.Equal(new Thickness(8, 3, 4, 3), item.Padding);
+
+                    FrameworkElement closeButton = Assert.IsType<FrameworkElement>(item.Template.FindName("PART_CloseButton", item), exactMatch: false);
+                    Assert.Equal(32.0, closeButton.Width);
+                    Assert.Equal(24.0, closeButton.Height);
+
+                    item.IsClosable = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(new Thickness(8, 3, 8, 3), item.Padding);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TabViewItem_Template_HasNoSelectionIndicatorAsync()
+        {
+            // Regression: the accent underline that used to sit under the selected tab has no
+            // WinUI counterpart and was removed, so the selected tab now reads through its plate
+            // fill and border alone.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                TabViewItem item = new() { Header = "Tab", IsSelected = true };
+                Window window = new() { Content = item, Width = 240, Height = 80 };
+
+                try
+                {
+                    window.Show();
+                    _ = item.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    FrameworkElement? indicator = FindVisualChildByName<FrameworkElement>(item, "SelectionIndicator");
+                    Assert.Null(indicator);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TabViewItem_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForDirectlyDeclaredItemsAsync()
+        {
+            // WinUI TabViewItemSeparator: a hairline divider between adjacent tabs, hidden next
+            // to the selected plate on both sides and before the first tab in the strip. Driven
+            // by TabView.UpdateLeadingSeparators via TabViewItem.LeadingSeparatorVisibility (a
+            // code-computed, read-only DP), not by a declarative RelativeSource PreviousData
+            // binding: PreviousData only carries adjacency data when items are TabViewItems
+            // themselves, which is what this test exercises. The ItemsSource-bound shape, where
+            // that assumption does not hold, is covered separately below.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 640, Height = 200 };
+                TabView tabs = new() { Width = 600, Height = 200 };
+                TabViewItem first = new() { Header = "A" };
+                TabViewItem second = new() { Header = "B" };
+                TabViewItem third = new() { Header = "C" };
+                TabViewItem fourth = new() { Header = "D" };
+                _ = tabs.Items.Add(first);
+                _ = tabs.Items.Add(second);
+                _ = tabs.Items.Add(third);
+                _ = tabs.Items.Add(fourth);
+                second.IsSelected = true;
+
+                try
+                {
+                    window.Content = tabs;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(Visibility.Collapsed, first.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Collapsed, second.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Collapsed, third.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Visible, fourth.LeadingSeparatorVisibility);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TabView_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForItemsSourceBoundTabsAsync()
+        {
+            // Regression: an ItemsSource-bound TabView generates its TabViewItem containers from
+            // plain data objects (here, strings), so a RelativeSource PreviousData binding in the
+            // template would have no IsSelected to read from the previous data item and would
+            // silently never hide the separator. TabView.UpdateLeadingSeparators computes the
+            // same adjacency in code from ItemContainerGenerator.ContainerFromIndex, so it holds
+            // for this shape too.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 640, Height = 200 };
+                TabView tabs = new()
+                {
+                    Width = 600,
+                    Height = 200,
+                    ItemsSource = (IReadOnlyList<string>)["Alpha", "Beta", "Gamma", "Delta"],
+                    SelectedIndex = 1,
+                };
+
+                try
+                {
+                    window.Content = tabs;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TabViewItem first = Assert.IsType<TabViewItem>(tabs.ItemContainerGenerator.ContainerFromIndex(0), exactMatch: false);
+                    TabViewItem second = Assert.IsType<TabViewItem>(tabs.ItemContainerGenerator.ContainerFromIndex(1), exactMatch: false);
+                    TabViewItem third = Assert.IsType<TabViewItem>(tabs.ItemContainerGenerator.ContainerFromIndex(2), exactMatch: false);
+                    TabViewItem fourth = Assert.IsType<TabViewItem>(tabs.ItemContainerGenerator.ContainerFromIndex(3), exactMatch: false);
+
+                    Assert.Equal(Visibility.Collapsed, first.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Collapsed, second.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Collapsed, third.LeadingSeparatorVisibility);
+                    Assert.Equal(Visibility.Visible, fourth.LeadingSeparatorVisibility);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
         // ---- TabView defaults ----
 
         [Fact]
