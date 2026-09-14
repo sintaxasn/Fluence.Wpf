@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -187,6 +188,13 @@ namespace Fluence.Wpf.Controls
         /// <see cref="FrameworkElement.DataContext"/> for the lifetime of the popup so
         /// bindings inside the flyout content resolve against the anchor's view model.
         /// </summary>
+        /// <remarks>
+        /// The popup is open by the time this returns. When another element holds the mouse
+        /// capture, which is the case inside a button's Click handler, the flyout takes the
+        /// light-dismiss capture a second time once that gesture is over: a popup that took it
+        /// mid-gesture loses it again the moment the button lets go, which closes the flyout as it
+        /// appears.
+        /// </remarks>
         /// <param name="placementTarget">The element to anchor the flyout to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="placementTarget"/> is <see langword="null"/>.</exception>
         public void ShowAt(FrameworkElement placementTarget)
@@ -212,12 +220,47 @@ namespace Fluence.Wpf.Controls
             }
 
             Opening?.Invoke(this, EventArgs.Empty);
+
+            // A Button raises Click from its mouse-up handler while it still holds the mouse
+            // capture, and only releases that capture after the handler returns. A light-dismiss
+            // popup takes the capture for itself when it opens, so a flyout opened from a Click
+            // took it mid-gesture and then lost it again the moment the button let go, which read
+            // as the flyout vanishing the instant it appeared. When something else holds the
+            // capture the open waits for the gesture to finish; a programmatic show, where nothing
+            // has the capture, still opens synchronously.
             popup.IsOpen = true;
+
+            // The popup took its light-dismiss capture just now, but a button raises Click from
+            // its mouse-up handler while it still holds that capture and only lets go once the
+            // handler returns. The flyout would lose the capture it had just taken and close as it
+            // appeared, so the capture is taken again once the gesture is over. Toggling StaysOpen
+            // is what re-establishes it; a flyout that has been hidden meanwhile is left alone.
+            if (Mouse.Captured is not null)
+            {
+                _ = popup.Dispatcher.BeginInvoke(new Action(() => RecaptureAfterGesture(popup)), DispatcherPriority.Input);
+            }
+
             Opened?.Invoke(this, EventArgs.Empty);
             if (Presenter is not null)
             {
                 _ = Presenter.Focus();
             }
+        }
+
+        /// <summary>
+        /// Takes the light-dismiss capture again once the gesture that opened the flyout has
+        /// finished with it. See <see cref="ShowAt"/> for why it has to be taken twice.
+        /// </summary>
+        /// <param name="popup">The popup to re-establish capture for.</param>
+        private static void RecaptureAfterGesture(Popup popup)
+        {
+            if (!popup.IsOpen || Mouse.Captured is not null)
+            {
+                return;
+            }
+
+            popup.SetCurrentValue(Popup.StaysOpenProperty, value: true);
+            popup.SetCurrentValue(Popup.StaysOpenProperty, value: false);
         }
 
         /// <summary>

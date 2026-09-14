@@ -272,6 +272,47 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300 };
+                Button owner = new() { Content = "Owner" };
+                Controls.Flyout flyout = new() { Content = "Attached" };
+
+                try
+                {
+                    window.Content = owner;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Controls.FlyoutBase.SetAttachedFlyout(owner, flyout);
+
+                    // A Button raises Click from its mouse-up handler while it still holds the
+                    // mouse capture and releases that capture once the handler returns. Opening a
+                    // light-dismiss popup in that window used to hand it a capture it lost again
+                    // immediately, so the flyout vanished as it appeared.
+                    Assert.True(System.Windows.Input.Mouse.Capture(owner), "The owner must take the capture the gesture would give it.");
+                    Controls.FlyoutBase.ShowAttachedFlyout(owner);
+
+                    // The popup opens before the call returns, capture or no capture.
+                    Assert.True(flyout.IsOpen, "ShowAt must open the flyout synchronously.");
+                    _ = System.Windows.Input.Mouse.Capture(element: null);
+
+                    // And stay open: a dismissal arriving late would close it a frame later.
+                    _ = await WaitUntilAsync(window.Dispatcher, 300, () => !flyout.IsOpen).ConfigureAwait(true);
+                    Assert.True(flyout.IsOpen, "The flyout must survive the button releasing its capture.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyoutAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
