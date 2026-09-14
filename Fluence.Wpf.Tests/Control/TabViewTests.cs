@@ -178,6 +178,53 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task TabViewItem_LeadingSeparator_SitsInTheMiddleOfTheGapAsync()
+        {
+            // The seam is drawn on each tab's leading edge, and the 6 dip gap between tabs belongs
+            // to the previous tab's own margin, so without an offset the line lands against this
+            // tab rather than between the two. WinUI has no gap to centre in: it draws the seam on
+            // the trailing edge of tabs that sit flush (TabView.xaml:553).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 640, Height = 200 };
+                TabView tabs = new() { Width = 600, Height = 200 };
+                TabViewItem first = new() { Header = "A" };
+                TabViewItem second = new() { Header = "B" };
+                TabViewItem third = new() { Header = "C" };
+                _ = tabs.Items.Add(first);
+                _ = tabs.Items.Add(second);
+                _ = tabs.Items.Add(third);
+                first.IsSelected = true;
+
+                try
+                {
+                    window.Content = tabs;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // Third carries the only visible seam here: first is the first tab, and second
+                    // sits next to the selection.
+                    Assert.Equal(Visibility.Visible, third.LeadingSeparatorVisibility);
+                    System.Windows.Controls.Border seam = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(third, "LeadingSeparator"), exactMatch: false);
+
+                    double secondRight = second.TransformToAncestor(tabs).Transform(new Point(second.ActualWidth, 0)).X;
+                    double thirdLeft = third.TransformToAncestor(tabs).Transform(new Point(0, 0)).X;
+                    double seamCentre = seam.TransformToAncestor(tabs).Transform(new Point(seam.ActualWidth / 2, 0)).X;
+
+                    // The gap is the previous tab's right margin, and the seam halves it.
+                    Assert.Equal(6.0, thirdLeft - secondRight, 0.5);
+                    Assert.Equal((secondRight + thirdLeft) / 2, seamCentre, 0.6);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task TabViewItem_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForDirectlyDeclaredItemsAsync()
         {
             // WinUI TabViewItemSeparator: a hairline divider between adjacent tabs, hidden next

@@ -777,5 +777,52 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        [Fact]
+        public Task ComboBoxItem_CornerRadius_ComesFromTheKeyedResourceAsync()
+        {
+            // WinUI's ComboBoxItemCornerRadius is 3, deliberately distinct from ControlCornerRadius
+            // (4). It used to be a literal in the item template, which put it out of reach of an
+            // application that retunes corner radii; keying it is what makes it reachable.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 320, Height = 200 };
+                Controls.ComboBox comboBox = new();
+                _ = comboBox.Items.Add("Alpha");
+                _ = comboBox.Items.Add("Beta");
+                comboBox.SelectedIndex = 0;
+
+                try
+                {
+                    window.Content = comboBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(new CornerRadius(3), Assert.IsType<CornerRadius>(Application.Current.TryFindResource("ComboBoxItemCornerRadius")));
+
+                    comboBox.SetCurrentValue(System.Windows.Controls.ComboBox.IsDropDownOpenProperty, value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ComboBoxItem item = Assert.IsType<ComboBoxItem>(
+                        comboBox.ItemContainerGenerator.ContainerFromIndex(0), exactMatch: false);
+                    Border outer = Assert.IsType<Border>(FindVisualChildByName<Border>(item, "OuterBorder"), exactMatch: false);
+                    Assert.Equal(new CornerRadius(3), outer.CornerRadius);
+
+                    // The key is the single source: overriding it reaches the realized item.
+                    Application.Current.Resources["ComboBoxItemCornerRadius"] = new CornerRadius(1);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal(new CornerRadius(1), outer.CornerRadius);
+                }
+                finally
+                {
+                    Application.Current.Resources.Remove("ComboBoxItemCornerRadius");
+                    comboBox.SetCurrentValue(System.Windows.Controls.ComboBox.IsDropDownOpenProperty, value: false);
+                    window.Close();
+                }
+            });
+        }
     }
 }

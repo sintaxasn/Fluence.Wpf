@@ -605,6 +605,7 @@
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ToggleButton_OpensDropDownAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ToggleButton_UsesReleaseClickModeAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropDownSelection_UpdatesSelectedIndexAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBoxItem_CornerRadius_ComesFromTheKeyedResourceAsync
   Fluence.Wpf.Tests.Control.CommandBarFlyoutTests.AppBarButton_DefaultStyle_AppliesCompactChromeAndLabelTooltipAsync
   Fluence.Wpf.Tests.Control.CommandBarFlyoutTests.CommandBarFlyout_ShowAt_PresentsPrimaryCommandsAsync
   Fluence.Wpf.Tests.Control.CommandBarFlyoutTests.CommandBarFlyout_MoreButton_TracksSecondaryCommandsAsync
@@ -1062,6 +1063,7 @@
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_MinHeight_Is32Async
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_HeaderMetrics_MatchWinUiAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_Template_HasNoSelectionIndicatorAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_LeadingSeparator_SitsInTheMiddleOfTheGapAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabViewItem_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForDirectlyDeclaredItemsAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_LeadingSeparator_HiddenAroundSelectionAndFirstItem_ForItemsSourceBoundTabsAsync
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_DefaultIsAddTabButtonVisible_IsTrueAsync
@@ -1293,5 +1295,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1293 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 199ms
+Test discovery summary: found 1295 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 194ms
