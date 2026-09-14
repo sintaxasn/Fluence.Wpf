@@ -316,9 +316,9 @@
 
                         <!--
                             Checked + Pressed. The dot shrank here by a stamped setter, where WinUI
-                            animates it (RadioButton_themeresources.xaml:301,304) over
-                            ControlFastAnimationDuration. Releasing over the control re-enters the hover
-                            trigger above, which grows the dot back to its hover size.
+                            animates its CheckGlyph (RadioButton_themeresources.xaml:292,295) over
+                            ControlNormalAnimationDuration. Releasing over the control re-enters the
+                            hover trigger above, which grows the dot back to its hover size.
                         -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -334,13 +334,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="6.67" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Height">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="6.67" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -352,13 +352,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="8" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Height">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="8" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
