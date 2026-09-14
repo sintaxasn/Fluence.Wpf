@@ -26,10 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -177,6 +182,82 @@ namespace Fluence.Wpf.Tests.Control
                     window.UpdateLayout();
 
                     Assert.NotNull(slider.Template.FindName("PART_Track", slider));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Slider_ThumbScale_TakesTheDurationOfTheStateItEntersAsync()
+        {
+            // WinUI gives each thumb state its own duration rather than one shared value:
+            // Normal and Disabled take ControlFastAnimationDuration (167 ms), PointerOver and
+            // Pressed take ControlNormalAnimationDuration (250 ms), all on the 0,0,0,1 spline
+            // (Slider_themeresources.xaml:206-251). Every transition here used to run at 100 ms.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Slider slider = new() { Width = 200 };
+                Window window = new() { Content = slider, Width = 260, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Thumb thumb = Assert.IsType<Thumb>(FindVisualChild<Thumb>(slider), exactMatch: false);
+                    System.Windows.Controls.ControlTemplate template = Assert.IsType<System.Windows.Controls.ControlTemplate>(thumb.Template);
+
+                    Dictionary<string, TimeSpan> expected = new(StringComparer.Ordinal)
+                    {
+                        ["1.167"] = TimeSpan.FromMilliseconds(250),
+                        ["0.71"] = TimeSpan.FromMilliseconds(250),
+                        ["0.86"] = TimeSpan.FromMilliseconds(167),
+                    };
+
+                    List<string> mismatches = [];
+                    foreach (TriggerBase triggerBase in template.Triggers)
+                    {
+                        if (triggerBase is not Trigger trigger)
+                        {
+                            continue;
+                        }
+
+                        foreach (TriggerAction action in trigger.EnterActions.Concat(trigger.ExitActions))
+                        {
+                            if (action is not BeginStoryboard begin || begin.Storyboard is null)
+                            {
+                                continue;
+                            }
+
+                            foreach (Timeline timeline in begin.Storyboard.Children)
+                            {
+                                if (timeline is not DoubleAnimationUsingKeyFrames frames)
+                                {
+                                    continue;
+                                }
+
+                                foreach (DoubleKeyFrame frame in frames.KeyFrames)
+                                {
+                                    string value = frame.Value.ToString(CultureInfo.InvariantCulture);
+                                    if (expected.TryGetValue(value, out TimeSpan want) && frame.KeyTime.TimeSpan != want)
+                                    {
+                                        mismatches.Add(string.Format(
+                                            CultureInfo.InvariantCulture,
+                                            "scale {0} runs for {1} ms, expected {2} ms",
+                                            value,
+                                            frame.KeyTime.TimeSpan.TotalMilliseconds,
+                                            want.TotalMilliseconds));
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Assert.Empty(mismatches);
                 }
                 finally
                 {

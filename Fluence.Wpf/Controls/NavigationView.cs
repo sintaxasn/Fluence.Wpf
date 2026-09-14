@@ -112,7 +112,12 @@ namespace Fluence.Wpf.Controls
         private const string PartPaneColumn = "PaneColumn";
         private const double PaneClosedWidth = 48.0;
         private const double PaneOpenWidth = 320.0;
-        private const double PaneAnimationMilliseconds = 167.0;
+        // WinUI's SplitView opens its pane over 350 ms and closes it over 120 ms, both on the
+        // 0.1,0.9 0.2,1.0 key spline (SplitView_themeresources.xaml:65,236). The asymmetry is the
+        // point: the pane leaves quickly and arrives unhurried. WinUI translates an overlay pane
+        // where this animates an inline column's width, but the curve and the timings carry.
+        private const double PaneOpenAnimationMilliseconds = 350.0;
+        private const double PaneCloseAnimationMilliseconds = 120.0;
 
         private static readonly DependencyProperty IsTopOverflowCollapsedProperty =
             DependencyProperty.RegisterAttached(
@@ -1293,12 +1298,14 @@ defaultValue: null,
 
             ColumnDefinition paneColumn = _paneColumn;
             int animationGeneration = ++_paneColumnAnimationGeneration;
+            bool opening = targetWidth > currentWidth;
             GridLengthAnimation animation = new()
             {
                 From = new GridLength(currentWidth),
                 To = new GridLength(targetWidth),
-                Duration = new Duration(TimeSpan.FromMilliseconds(PaneAnimationMilliseconds)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+                Duration = new Duration(TimeSpan.FromMilliseconds(
+                    opening ? PaneOpenAnimationMilliseconds : PaneCloseAnimationMilliseconds)),
+                EasingFunction = new KeySplineEase(0.1, 0.9, 0.2, 1.0),
                 FillBehavior = FillBehavior.Stop,
             };
 

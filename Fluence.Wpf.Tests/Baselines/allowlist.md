@@ -121,7 +121,7 @@ tests the pane chrome fixes brought with them. Both are new names that never
 appeared in an earlier capture, so neither needed an entry of its own; this
 section is the record of the regeneration.
 
-### Additions: 21 lines
+### Additions: 22 lines
 
 | Method | Occurrences | Source |
 | ------ | ----------: | ------ |
@@ -146,8 +146,9 @@ section is the record of the regeneration.
 | `ComboBoxItem_CornerRadius_ComesFromTheKeyedResourceAsync` | 1 | `Control/ComboBoxTests.cs` |
 | `InfoBadge_ValueText_FitsThePillAndIsCentredAsync` | 1 | `Control/InfoBadgeTests.cs` |
 | `MainWindow_TitleBarSearch_IsNotClippedAsync` | 1 | `Gallery/DemoShellTests.cs` |
+| `Slider_ThumbScale_TakesTheDurationOfTheStateItEntersAsync` | 1 | `Control/SliderTests.cs` |
 
-Zero removals and zero renames. 1275 cases to 1297 on net10, 1273 to 1295 on
+Zero removals and zero renames. 1275 cases to 1298 on net10, 1273 to 1296 on
 net472.
 
 ### Status

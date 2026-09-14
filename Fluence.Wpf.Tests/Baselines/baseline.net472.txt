@@ -1040,6 +1040,7 @@
   Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbTemplate_HasEllipseAndInnerDotAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_UnfilledTrack_PaintedOnceAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_Template_HasTrackAsync
+  Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbScale_TakesTheDurationOfTheStateItEntersAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.Defaults_AreWinUiCanonAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.IsFlyoutOpen_IsReadOnlyDpAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.Template_ExposesPrimarySecondaryAndPopupPartsAsync
@@ -1295,5 +1296,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1295 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 333ms
+Test discovery summary: found 1296 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 285ms

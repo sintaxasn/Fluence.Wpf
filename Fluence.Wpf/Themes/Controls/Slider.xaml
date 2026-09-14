@@ -37,7 +37,7 @@
                         </Ellipse>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!--  WI-3 B11: WinUI canonical thumb inner-dot scale - rest 0.86, hover 1.167, pressed 0.71, disabled 1.167, ControlFastOutSlowIn (0,0,0,1)  -->
+                        <!--  WinUI canonical thumb inner-dot scale: rest 0.86, hover 1.167, pressed 0.71, disabled 1.167, all on ControlFastOutSlowIn (0,0,0,1). The duration is the one the target state calls for, as WinUI's own states do (Slider_themeresources.xaml:206-251): Normal and Disabled take ControlFastAnimationDuration (167 ms), PointerOver and Pressed take ControlNormalAnimationDuration (250 ms).  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ThumbInnerDot" Property="Fill" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
                             <Trigger.EnterActions>
@@ -46,13 +46,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="1.167" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="1.167" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -64,13 +64,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.167"
                                                 Value="0.86" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.167"
                                                 Value="0.86" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -85,13 +85,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="0.71" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="0.71" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -103,13 +103,13 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="1.167" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.1"
+                                                KeyTime="0:0:0.25"
                                                 Value="1.167" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -121,16 +121,32 @@
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX" To="1.167" Duration="0" />
-                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY" To="1.167" Duration="0" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbScale"
+                                            Storyboard.TargetProperty="ScaleX"
+                                            To="1.167"
+                                            Duration="0:0:0.167" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbScale"
+                                            Storyboard.TargetProperty="ScaleY"
+                                            To="1.167"
+                                            Duration="0:0:0.167" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX" To="0.86" Duration="0" />
-                                        <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY" To="0.86" Duration="0" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbScale"
+                                            Storyboard.TargetProperty="ScaleX"
+                                            To="0.86"
+                                            Duration="0:0:0.167" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbScale"
+                                            Storyboard.TargetProperty="ScaleY"
+                                            To="0.86"
+                                            Duration="0:0:0.167" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
