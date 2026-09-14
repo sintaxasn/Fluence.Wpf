@@ -348,7 +348,53 @@ namespace Fluence.Wpf.Tests.Control
                     Rectangle pill = FindVisualChildByName<Rectangle>(item, "PART_SelectionVisual")
                         ?? throw new System.InvalidOperationException("The SelectorBarItem template has no PART_SelectionVisual.");
                     Assert.NotNull(pill.Fill);
-                    BrushAssert.AssertBrushColor(pill.Fill, "AccentFillColorDefaultBrush");
+
+                    // The key, not a colour that happens to match it: the pill takes the library's
+                    // shared selection accent, which is the key that carries the high contrast
+                    // override. AccentFillColorDefaultBrush has the same value in Light and Dark,
+                    // so asserting that one would pass on coincidence and miss a regression here.
+                    BrushAssert.AssertBrushColor(pill.Fill, "NavigationViewSelectionIndicatorForeground");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task SelectorBar_EmptiedSelection_PutsThePreviousItemBackAsync()
+        {
+            // WPF's ListBox honours Ctrl+Click and Ctrl+Space deselection even in Single mode, which
+            // left the bar with no pill and SelectedItem null, contradicting the control's own
+            // single-select contract. SelectorBarItem swallows those two gestures; this is the net
+            // under everything else that empties the selection.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 400, Height = 120 };
+                Controls.SelectorBar bar = new();
+                Controls.SelectorBarItem first = new() { Text = "Recent" };
+                Controls.SelectorBarItem second = new() { Text = "Shared" };
+                _ = bar.Items.Add(first);
+                _ = bar.Items.Add(second);
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    bar.SetCurrentValue(System.Windows.Controls.Primitives.Selector.SelectedItemProperty, second);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(second, bar.SelectedItem);
+
+                    // The shape every deselect path ends in, whatever raised it.
+                    second.SetCurrentValue(ListBoxItem.IsSelectedProperty, value: false);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Same(second, bar.SelectedItem);
+                    Assert.True(second.IsSelected, "The bar must not be left without a selected item.");
                 }
                 finally
                 {

@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Fluence.Wpf.Automation;
@@ -157,6 +158,41 @@ namespace Fluence.Wpf.Controls
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new SelectorBarItemAutomationPeer(this);
+        }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// Swallows the Ctrl+Click deselect gesture on the item that already carries the pill.
+        /// WPF's <see cref="ListBox"/> honours it even in <see cref="SelectionMode.Single"/>,
+        /// which would leave the bar with no selection at all; WinUI's SelectorBar has no
+        /// deselect gesture, and the pill is the page's current destination. Ctrl+Click on any
+        /// other item still moves the selection there.
+        /// </remarks>
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (IsSelected && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPreviewMouseLeftButtonDown(e);
+        }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// The keyboard half of the same gesture: Ctrl+Space toggles selection on a WPF
+        /// <see cref="ListBoxItem"/>, and toggling off is what WinUI does not offer.
+        /// </remarks>
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (IsSelected && e.Key is Key.Space && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPreviewKeyDown(e);
         }
 
         /// <inheritdoc />

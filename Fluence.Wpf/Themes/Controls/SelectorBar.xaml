@@ -22,10 +22,12 @@
         item containers carry (docs/winui-parity.md section 8). Every SelectorBarItem background
         in WinUI's own theme dictionary is SystemControlTransparentBrush in all states, so the
         item paints no plate at all and only the label colour and the pill move.
-        The pill is AccentFillColorDefaultBrush (SelectorBarItemPillFill) and
-        AccentFillColorDisabledBrush while disabled (SelectorBarItemDisabledPillFill); in high
-        contrast both resolve through the published accent keys, whose high contrast values are
-        the live SystemColors, matching WinUI's SystemColorHighlightColor mapping.
+        The pill is NavigationViewSelectionIndicatorForeground, the library's shared selection
+        accent (WinUI's SelectorBarItemPillFill is AccentFillColorDefaultBrush, the same colour in
+        Light and Dark), and AccentFillColorDisabledBrush while disabled
+        (SelectorBarItemDisabledPillFill). The shared key is what carries a high contrast override
+        to the live SystemColors.HighlightColor, matching WinUI's SystemColorHighlightColor
+        mapping; AccentFillColorDefaultBrush has no such override.
     -->
 
     <Style TargetType="{x:Type controls:SelectorBarItem}">

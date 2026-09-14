@@ -262,5 +262,55 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        [Fact]
+        public Task SlideNavigationPresenter_OutgoingContent_KeepsTheContentTemplateAsync()
+        {
+            // Regression: only PART_CurrentPresenter carried the template contract, so a data item
+            // with a ContentTemplate left through the exit slide as its own ToString(). Every other
+            // test in this class uses UIElement content, which presents identically either way.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 500, Height = 300 };
+                DataTemplate template = new()
+                {
+                    VisualTree = new FrameworkElementFactory(typeof(TextBlock)),
+                };
+                template.VisualTree.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("."));
+                template.Seal();
+
+                Controls.SlideNavigationPresenter presenter = new()
+                {
+                    ContentTemplate = template,
+                    Content = "First",
+                };
+
+                try
+                {
+                    window.Content = presenter;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter previous = Assert.IsType<ContentPresenter>(presenter.Template.FindName("PART_PreviousPresenter", presenter));
+                    ContentPresenter current = Assert.IsType<ContentPresenter>(presenter.Template.FindName("PART_CurrentPresenter", presenter));
+                    Assert.Same(template, current.ContentTemplate);
+
+                    presenter.SetCurrentValue(ContentControl.ContentProperty, "Second");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // The outgoing item is mid-slide here, and it has to be presented through the
+                    // same template the incoming one uses.
+                    Assert.Same("First", previous.Content);
+                    Assert.Same(template, previous.ContentTemplate);
+                    Assert.NotNull(FindVisualChild<TextBlock>(previous));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
     }
 }

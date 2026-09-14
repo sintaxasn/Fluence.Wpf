@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Controls
 {
@@ -59,6 +60,12 @@ namespace Fluence.Wpf.Controls
     /// </remarks>
     public class SelectorBar : ListBox
     {
+        /// <summary>
+        /// Guards the re-entrant selection write in <see cref="OnSelectionChanged"/>, so putting
+        /// the previous item back does not recurse through the change it raises.
+        /// </summary>
+        private bool _restoringSelection;
+
         /// <summary>
         /// Initializes static members of the SelectorBar class, overrides the default style
         /// metadata so the control picks up its themed template from Generic.xaml, and pins
@@ -144,6 +151,40 @@ namespace Fluence.Wpf.Controls
 
         /// <inheritdoc />
         /// <remarks>
+        /// The bar never settles with nothing selected. <see cref="SelectorBarItem"/> already
+        /// swallows the two deselect gestures WPF's <see cref="ListBox"/> honours in
+        /// <see cref="SelectionMode.Single"/>, so this is the net under anything else that empties
+        /// the selection: the item that just left is put back, because the pill is the page's
+        /// current destination and WinUI's SelectorBar has no state without one.
+        /// </remarks>
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
+            base.OnSelectionChanged(e);
+
+            if (_restoringSelection || SelectedItem is not null || Items.Count is 0 || e.RemovedItems.Count is 0)
+            {
+                return;
+            }
+
+            object? previous = e.RemovedItems[0];
+            if (previous is null || !Items.Contains(previous))
+            {
+                return;
+            }
+
+            _restoringSelection = true;
+            try
+            {
+                SetCurrentValue(SelectedItemProperty, previous);
+            }
+            finally
+            {
+                _restoringSelection = false;
+            }
+        }
+
+        /// <inheritdoc />
+        /// <remarks>
         /// WinUI's SelectorBar selects the current item, or the first one, when the bar takes
         /// focus with nothing selected (SelectorBar.cpp OnGotFocus), so a keyboard user never
         /// lands on a bar with no pill.
@@ -152,10 +193,63 @@ namespace Fluence.Wpf.Controls
         {
             base.OnGotKeyboardFocus(e);
 
-            if (SelectedIndex < 0 && Items.Count > 0)
+            if (SelectedIndex >= 0 || Items.Count is 0)
             {
-                SetCurrentValue(SelectedIndexProperty, 0);
+                return;
             }
+
+            // The item focus actually landed on comes first, as WinUI's does; index 0 is only the
+            // fallback, and a disabled item is skipped rather than selected.
+            object? target = ItemFromFocusedContainer(e.NewFocus as DependencyObject)
+                ?? FirstSelectableItem();
+
+            if (target is not null)
+            {
+                SetCurrentValue(SelectedItemProperty, target);
+            }
+        }
+
+        /// <summary>
+        /// Walks up from the newly focused element to the item container it belongs to and returns
+        /// the item that container carries, when the container can take the selection.
+        /// </summary>
+        /// <param name="focused">The element that took focus.</param>
+        /// <returns>The item to select, or <see langword="null"/> when there is none.</returns>
+        private object? ItemFromFocusedContainer(DependencyObject? focused)
+        {
+            DependencyObject? current = focused;
+            while (current is not null && !ReferenceEquals(current, this))
+            {
+                if (current is SelectorBarItem container && container.IsEnabled)
+                {
+                    object item = ItemContainerGenerator.ItemFromContainer(container);
+                    return ReferenceEquals(item, DependencyProperty.UnsetValue) ? container : item;
+                }
+
+                current = VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the first item whose container is enabled, so keyboard focus never parks the
+        /// pill on a disabled destination.
+        /// </summary>
+        /// <returns>The first selectable item, or <see langword="null"/> when every item is disabled.</returns>
+        private object? FirstSelectableItem()
+        {
+            foreach (object? item in Items)
+            {
+                if (ItemContainerGenerator.ContainerFromItem(item) is SelectorBarItem container && !container.IsEnabled)
+                {
+                    continue;
+                }
+
+                return item;
+            }
+
+            return null;
         }
 
         /// <summary>

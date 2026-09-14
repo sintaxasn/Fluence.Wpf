@@ -34,24 +34,32 @@ namespace Fluence.Wpf
     /// <c language="csharp">SlideNavigationTransitionEffect</c>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// WinUI's enumeration also carries <c language="text">FromBottom</c>, which its own
     /// implementation animates with a different curve family (an exponential ease over the
     /// vertical axis rather than the two horizontal key splines). Only the two horizontal
     /// effects are ported, so the enumeration does not advertise a value the presenter cannot
     /// play. The gap is recorded in docs/winui-parity.md.
+    /// </para>
+    /// <para>
+    /// The numbers are WinUI's own: <c language="text">FromBottom</c> keeps 0 even though it is
+    /// not declared here, so the two ported values sit on the numbers WinUI gives them. Code or
+    /// XAML ported from WinUI that touches the numeric value maps across unchanged, and
+    /// <c language="text">FromBottom</c> can be added later without moving anything.
+    /// </para>
     /// </remarks>
     public enum SlideNavigationTransitionEffect
     {
-        /// <summary>
-        /// The incoming content enters from the right and the outgoing content leaves to the
-        /// left, the effect WinUI uses when moving forward through a set of peers.
-        /// </summary>
-        FromRight = 0,
-
         /// <summary>
         /// The incoming content enters from the left and the outgoing content leaves to the
         /// right, the effect WinUI uses when moving backward through a set of peers.
         /// </summary>
         FromLeft = 1,
+
+        /// <summary>
+        /// The incoming content enters from the right and the outgoing content leaves to the
+        /// left, the effect WinUI uses when moving forward through a set of peers.
+        /// </summary>
+        FromRight = 2,
     }
 }

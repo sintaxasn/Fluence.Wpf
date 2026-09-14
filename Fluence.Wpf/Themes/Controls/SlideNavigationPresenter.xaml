@@ -38,11 +38,15 @@
                                 <TranslateTransform x:Name="PART_CurrentTranslate" />
                             </ContentPresenter.RenderTransform>
                         </ContentPresenter>
+                        <!--  The outgoing item is presented with the same template contract as the incoming one. Without these three bindings a data item with a ContentTemplate falls back to ContentPresenter's default template and renders its ToString() for the whole exit slide.  -->
                         <ContentPresenter
                             x:Name="PART_PreviousPresenter"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Content="{x:Null}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                             IsHitTestVisible="False"
                             Opacity="0">
                             <ContentPresenter.RenderTransform>
