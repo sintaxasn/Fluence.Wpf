@@ -370,17 +370,24 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_SecondaryHost" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
                                         </ObjectAnimationUsingKeyFrames>
+                                        <!--
+                                            The expand takes ControlNormalAnimationDuration where the
+                                            collapse below takes the fast one, which is WinUI's own
+                                            asymmetry: CommandBarFlyout_themeresources.xaml:699 gives the
+                                            Collapsed to ExpandedUp transition 250 ms and :737 gives the
+                                            return 167 ms, so the overflow opens unhurried and leaves quickly.
+                                        -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SecondaryHostScale" Storyboard.TargetProperty="ScaleY">
                                             <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MoreButtonIconRotation" Storyboard.TargetProperty="Angle">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
+                                                KeyTime="0:0:0.25"
                                                 Value="180" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>

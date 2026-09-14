@@ -278,11 +278,25 @@
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard x:Name="SwitchThumbKeyPressedStoryboard">
                                     <Storyboard>
+                                        <!--
+                                            The knob eases into the pressed extent over
+                                            ControlFasterAnimationDuration, as WinUI's own Pressed state does
+                                            (ToggleSwitch_themeresources.xaml:311,314, where the 12 dip knob
+                                            takes Width 17 and Height 14 on the fast out slow in spline). It
+                                            was stamped here, so a keyboard press jumped where a pointer
+                                            press glides.
+                                        -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1.4167" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="1.4167" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1.1667" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="1.1667" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -369,6 +383,37 @@
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </MultiTrigger>
+
+                        <!--
+                            Disabled returns the knob to its resting size over
+                            ControlNormalAnimationDuration, which is what WinUI's Disabled state does
+                            (ToggleSwitch_themeresources.xaml:357,360, animating the knob back to 12 on
+                            both axes). Without it a switch disabled while the pointer was over it kept
+                            the hover extent for as long as it stayed disabled.
+                        -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="SwitchThumbDisabledStoryboard">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0,0,0,1"
+                                                KeyTime="0:0:0.25"
+                                                Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0,0,0,1"
+                                                KeyTime="0:0:0.25"
+                                                Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <RemoveStoryboard BeginStoryboardName="SwitchThumbDisabledStoryboard" />
+                            </Trigger.ExitActions>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
