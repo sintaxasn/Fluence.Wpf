@@ -7,9 +7,9 @@
     <Style TargetType="{x:Type controls:InfoBadge}">
         <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <!--  WinUI InfoBadgeValueFontSize = 11 (InfoBadge_themeresources.xaml:10). The weight is WPF's own: WinUI's value text inherits the default body weight at 11, which reads thin against an accent fill here, so SemiBold holds the small numeral legible.  -->
+        <!--  WinUI InfoBadgeValueFontSize = 11 (InfoBadge_themeresources.xaml:10), on a ValueTextBlock that sets no weight (InfoBadge.xaml:82) and so inherits the default body Normal. Fluence stamped SemiBold to hold the numeral legible on an accent fill; at 11 dip that reads as a heavier and visibly larger numeral than WinUI's, so the weight follows WinUI instead.  -->
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontWeight" Value="Normal" />
         <!--  WinUI keys the badge's own foreground (InfoBadgeForeground, InfoBadge_themeresources.xaml:5) rather than reusing a text token, because the numeral sits on a filled capsule and has to pair with whatever that plate is. Outside high contrast all five severities resolve to the on-accent text colour, as WinUI's does; in high contrast they split, because the Attention plate is the system highlight and the other four are the window text colour.  -->
         <Setter Property="Foreground" Value="{DynamicResource InfoBadgeAttentionForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />

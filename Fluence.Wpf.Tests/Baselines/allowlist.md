@@ -186,3 +186,23 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: teaching tip motion and the title bar search box
+
+Two more regression tests: one pins WinUI's expand and contract on `TeachingTip`,
+the other pins the title bar search box to the centre of the bar on both axes,
+which is what the unused helper row inside the field used to spoil.
+
+### Additions: 2 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `TeachingTip_ExpandAndContract_ScaleFromTheTailEdgeAsync` | 1 | `Control/TeachingTipTests.cs` |
+| `MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync` | 1 | `Gallery/DemoShellTests.cs` |
+
+Net: 2 added, none removed. 1298 cases to 1300 on net10, 1296 to 1298 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

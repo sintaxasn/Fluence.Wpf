@@ -94,8 +94,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TeachingTip}">
                     <Grid x:Name="TipRoot" Margin="16" UseLayoutRounding="True">
+                        <!--  The expand and contract scale this group; the translate rests at (0,0) and is kept for a consumer storyboard.  -->
                         <Grid.RenderTransform>
-                            <TranslateTransform x:Name="TipTranslate" />
+                            <TransformGroup>
+                                <ScaleTransform x:Name="TipScale" />
+                                <TranslateTransform x:Name="TipTranslate" />
+                            </TransformGroup>
                         </Grid.RenderTransform>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />

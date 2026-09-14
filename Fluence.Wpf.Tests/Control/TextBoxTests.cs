@@ -190,8 +190,13 @@ namespace Fluence.Wpf.Tests.Control
                 TextBlock helper = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(tb, "PART_HelperText"), exactMatch: false);
                 TextBlock icon = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(tb, "PART_ValidationIcon"), exactMatch: false);
 
+                // The 9 dip gap above the helper row rides on the children rather than the panel,
+                // so a field with nothing to say measures exactly the height it draws instead of
+                // reserving the gap; see TextBox.xaml for why.
                 StackPanel helperRow = Assert.IsType<StackPanel>(VisualTreeHelper.GetParent(helper));
-                Assert.Equal(new Thickness(12, 9, 12, 0), helperRow.Margin);
+                Assert.Equal(new Thickness(12, 0, 12, 0), helperRow.Margin);
+                Assert.Equal(new Thickness(0, 9, 0, 0), helper.Margin);
+                Assert.Equal(new Thickness(0, 9, 6, 0), icon.Margin);
                 Assert.Equal(VerticalAlignment.Center, helper.VerticalAlignment);
                 Assert.Equal(VerticalAlignment.Center, icon.VerticalAlignment);
 

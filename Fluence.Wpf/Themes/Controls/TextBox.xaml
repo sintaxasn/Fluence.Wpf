@@ -186,19 +186,26 @@
                             CornerRadius="0,0,4,4"
                             Opacity="0" />
 
+                        <!--
+                            The helper and validation row. Its top inset rides on the children, not
+                            on the panel: a panel margin reserves 9 dip under every field even when
+                            both children are collapsed, which made the control measure taller than
+                            it draws and left it sitting high wherever a parent centred it.
+                        -->
                         <StackPanel
                             Grid.Row="1"
-                            Margin="12,9,12,0"
+                            Margin="12,0,12,0"
                             Orientation="Horizontal">
                             <TextBlock
                                 x:Name="PART_ValidationIcon"
-                                Margin="0,0,6,0"
+                                Margin="0,9,6,0"
                                 VerticalAlignment="Center"
                                 FontFamily="Segoe Fluent Icons"
                                 FontSize="12"
                                 Visibility="Collapsed" />
                             <TextBlock
                                 x:Name="PART_HelperText"
+                                Margin="0,9,0,0"
                                 VerticalAlignment="Center"
                                 AutomationProperties.LiveSetting="Assertive"
                                 FontFamily="{TemplateBinding FontFamily}"

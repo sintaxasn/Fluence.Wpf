@@ -73,6 +73,54 @@ namespace Fluence.Wpf.Tests.Gallery
         }
 
         [Fact]
+        public Task MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MainWindow? window = null;
+
+                try
+                {
+                    window = new MainWindow
+                    {
+                        Width = 1200,
+                        Height = 800,
+                    };
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Controls.TitleBar titleBar = FindVisualChild<Controls.TitleBar>(window)
+                        ?? throw new InvalidOperationException("The shell title bar is missing.");
+                    FrameworkElement search = FindVisualChildByName<FrameworkElement>(window, "NavSearchBox")
+                        ?? throw new InvalidOperationException("The title bar search box is missing.");
+
+                    double searchCentre = search.TransformToAncestor(titleBar).Transform(new Point(0, 0)).X
+                        + (search.ActualWidth / 2.0);
+
+                    // The title bar spans the window, so its centre is the window's centre; the
+                    // caption buttons overlay the right end rather than shortening it.
+                    // The title bar spans the window, so its centre is the window's centre; the
+                    // caption buttons overlay the right end rather than shortening it.
+                    Assert.Equal(titleBar.ActualWidth / 2.0, searchCentre, 1.0);
+
+                    // Vertically the box must both sit centred and measure what it draws: while the
+                    // field reserved a helper row it never showed, its layout box ran 9 dip taller
+                    // than its chrome and the visible field sat high in the bar.
+                    Point searchTopLeft = search.TransformToAncestor(titleBar).Transform(new Point(0, 0));
+                    Assert.Equal(titleBar.ActualHeight / 2.0, searchTopLeft.Y + (search.ActualHeight / 2.0), 0.5);
+                    Assert.True(
+                        search.ActualHeight < 40.0,
+                        string.Format(CultureInfo.InvariantCulture, "The search box must not reserve an unused helper row; it measured {0}.", search.ActualHeight));
+                }
+                finally
+                {
+                    window?.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task MainWindow_AccentColorButtons_UseButtonControlAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

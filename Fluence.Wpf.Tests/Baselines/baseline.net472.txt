@@ -377,6 +377,7 @@
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_SourceRendererPreservesIndentationAsync
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTabAsync
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_SourceExpander_ReopensAfterCollapseAsync
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_AccentColorButtons_UseButtonControlAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_SettingsSelectors_UseExpectedControlsAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_AppThemeComboBox_UpdatesStateLabelAsync
@@ -1098,6 +1099,7 @@
   Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_Escape_ClosesTipAsync
   Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_OpenReveal_SettlesAtRestForEachPlacementAsync
   Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_OpenReveal_CenterTipFadesWithoutSlideAsync
+  Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_ExpandAndContract_ScaleFromTheTailEdgeAsync
   Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_ThemeCycle_SurfaceBrushesResolveAsync
   Fluence.Wpf.Tests.Control.TeachingTipTests.TeachingTip_HasPolite_LiveSettingAsync
   Fluence.Wpf.Tests.Control.TeachingTipTests.Closed_CloseButtonClicked_ReportsCloseButtonReasonAsync
@@ -1296,5 +1298,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1296 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 344ms
+Test discovery summary: found 1298 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 310ms

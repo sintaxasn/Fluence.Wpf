@@ -855,6 +855,63 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task TeachingTip_ExpandAndContract_ScaleFromTheTailEdgeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Scaled",
+                    Target = target,
+                    PreferredPlacement = TeachingTipPlacementMode.Bottom,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded).ConfigureAwait(true),
+                        "The tip must open and load inside its popup.");
+
+                    System.Windows.Media.ScaleTransform scale =
+                        Assert.IsType<System.Windows.Media.ScaleTransform>(tip.Template.FindName("TipScale", tip));
+                    Grid tipRoot = Assert.IsType<Grid>(tip.Template.FindName("TipRoot", tip));
+
+                    // A tip below its target grows out of its own top edge, the WPF stand in for
+                    // the composition CenterPoint WinUI puts beside the tail.
+                    Assert.Equal(new Point(0.5, 0.0), tipRoot.RenderTransformOrigin);
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                            () => Math.Abs(scale.ScaleX - 1.0) < 0.001 && Math.Abs(scale.ScaleY - 1.0) < 0.001 &&
+                                !scale.HasAnimatedProperties).ConfigureAwait(true),
+                        "The expand must settle at full scale and release its clocks.");
+
+                    // The contract runs before the popup closes, so the popup is still open on the
+                    // frame the close is requested.
+                    tip.IsOpen = false;
+                    Assert.True(tip.HostPopup is { IsOpen: true },
+                        "The contract must play before the popup closes.");
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }).ConfigureAwait(true),
+                        "The popup must close once the contract finishes.");
+                    Assert.Equal(1.0, scale.ScaleX, 0.001);
+                    Assert.Equal(1.0, scale.ScaleY, 0.001);
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task TeachingTip_ThemeCycle_SurfaceBrushesResolveAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

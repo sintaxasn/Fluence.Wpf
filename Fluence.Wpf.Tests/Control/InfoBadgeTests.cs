@@ -173,7 +173,9 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(11.0, TextElement.GetFontSize(content), 0.1);
                     Assert.Equal(HorizontalAlignment.Center, content.HorizontalAlignment);
                     Assert.Equal(VerticalAlignment.Center, content.VerticalAlignment);
-                    Assert.Equal(FontWeights.SemiBold, TextElement.GetFontWeight(content));
+                    // WinUI's ValueTextBlock sets no weight (InfoBadge.xaml:82), so the numeral
+                    // inherits the default body Normal rather than the SemiBold Fluence stamped.
+                    Assert.Equal(FontWeights.Normal, TextElement.GetFontWeight(content));
                 }
                 finally
                 {
