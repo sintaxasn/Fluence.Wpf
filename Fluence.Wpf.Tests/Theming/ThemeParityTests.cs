@@ -57,13 +57,13 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightDerivedBrushKeys = new(StringComparer.Ordinal)
         {
+            "AccentAcrylicBackgroundFillColorBaseBrush",
+            "AccentAcrylicBackgroundFillColorDefaultBrush",
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
             "LayerOnAccentAcrylicFillColorDefaultBrush",
             "NavigationViewSelectionIndicatorForeground",
-            "SystemFillColorAttentionBackgroundBrush",
             "SystemFillColorAttentionBrush",
-            "SystemFillColorSolidAttentionBackgroundBrush",
             "TextControlElevationBorderFocusedBrush",
             "WindowCloseButtonBackgroundPointerOverBrush",
             "WindowCloseButtonBackgroundPressedBrush",

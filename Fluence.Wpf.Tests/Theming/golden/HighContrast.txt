@@ -1,3 +1,5 @@
+AccentAcrylicBackgroundFillColorBase|#FF8DCDFF|#00000000
+AccentAcrylicBackgroundFillColorDefault|#FF8DCDFF|#00000000
 AccentFillBackdrop|#FFFFFFFF|#00000000
 AccentFillBackdropBrush|#00000000|#FFFFFFFF
 AccentFillColorDefault|#FF005BA1|#00000000
@@ -170,6 +172,7 @@ SystemAccentColorTertiary|#FF00213B|#00000000
 SystemAccentColorTertiaryBrush|#00000000|#FF005BA1
 SystemFillColorAttention|#FF1AEBFF|#00000000
 SystemFillColorAttentionBackground|#FF1AEBFF|#00000000
+SystemFillColorAttentionBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorCaution|#FFFFFFFF|#00000000
 SystemFillColorCautionBackground|#FF000000|#00000000
 SystemFillColorCautionBackgroundBrush|#00000000|#FFFFFFFF
@@ -183,6 +186,7 @@ SystemFillColorNeutralBackground|#FF000000|#00000000
 SystemFillColorNeutralBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorNeutralBrush|#00000000|#FF000000
 SystemFillColorSolidAttentionBackground|#FF1AEBFF|#00000000
+SystemFillColorSolidAttentionBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorSolidNeutral|#FFFFFFFF|#00000000
 SystemFillColorSolidNeutralBackground|#FF000000|#00000000
 SystemFillColorSolidNeutralBackgroundBrush|#00000000|#FFF0F0F0

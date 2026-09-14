@@ -1,3 +1,7 @@
+AccentAcrylicBackgroundFillColorBase|#FF003E6E|#00000000
+AccentAcrylicBackgroundFillColorBaseBrush|#00000000|#FF003E6E
+AccentAcrylicBackgroundFillColorDefault|#FF005BA1|#00000000
+AccentAcrylicBackgroundFillColorDefaultBrush|#00000000|#FF005BA1
 AccentFillBackdrop|#FF202020|#00000000
 AccentFillBackdropBrush|#00000000|#FF202020
 AccentFillColorDefault|#FF4FB3FF|#00000000

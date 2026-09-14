@@ -82,7 +82,7 @@ namespace Fluence.Wpf.Theming
 
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
-            // Shared selection-pill accent for NavigationView, ListView, ListBox, and TreeView.
+            // Shared selection-pill accent for NavigationView, ListView, ListBox, TreeView, and SelectorBar.
             // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
             // uses the same accent fill for its Default/Light/Dark dictionaries); HighContrast is
             // overridden below with the live SystemColors.HighlightColor (HighlightText would be
@@ -483,6 +483,14 @@ namespace Fluence.Wpf.Theming
             dict["AcrylicBackgroundFillColorDefaultBrush"] = Solid(window);
             dict["AcrylicBackgroundFillColorBaseBrush"] = Solid(window);
 
+            // Accent acrylic background fill. ColorMap computes these from the accent ramp and its
+            // dark flag is Dark only, so high contrast would otherwise publish the light theme's
+            // raw accent tint here while every acrylic sibling above maps to a system colour. The
+            // accent surface's high contrast counterpart is the highlight, as
+            // LayerOnAccentAcrylicFillColorDefaultBrush already uses.
+            dict["AccentAcrylicBackgroundFillColorDefaultBrush"] = Solid(highlight);
+            dict["AccentAcrylicBackgroundFillColorBaseBrush"] = Solid(highlight);
+
             // Scroll bar track. WinUI resolves ScrollBarTrackFill to AcrylicInAppFillColorDefaultBrush,
             // which the high contrast dictionary redefines as a solid SystemColorWindowColor brush.
             // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the HC table, so
@@ -496,12 +504,16 @@ namespace Fluence.Wpf.Theming
             dict["SystemFillColorCriticalBrush"] = Solid(windowText);
             dict["SystemFillColorNeutralBrush"] = Solid(windowText);
             dict["SystemFillColorSolidNeutralBrush"] = Solid(windowText);
-            dict["SystemFillColorAttentionBackgroundBrush"] = Solid(highlight);
+            // WinUI maps every severity background to the window colour in high contrast
+            // (Common_themeresources_any.xaml:499-505), so a severity reads from its icon and its
+            // border rather than from a coloured plate. Attention was the one that did not: an
+            // InfoBar at Informational severity painted the system highlight behind window text.
+            dict["SystemFillColorAttentionBackgroundBrush"] = Solid(window);
             dict["SystemFillColorSuccessBackgroundBrush"] = Solid(window);
             dict["SystemFillColorCautionBackgroundBrush"] = Solid(window);
             dict["SystemFillColorCriticalBackgroundBrush"] = Solid(window);
             dict["SystemFillColorNeutralBackgroundBrush"] = Solid(window);
-            dict["SystemFillColorSolidAttentionBackgroundBrush"] = Solid(highlight);
+            dict["SystemFillColorSolidAttentionBackgroundBrush"] = Solid(window);
             dict["SystemFillColorSolidNeutralBackgroundBrush"] = Solid(control);
 
             // Window chrome close button (hover/pressed track HC accent in HC). FluenceWindow.xaml
