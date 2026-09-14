@@ -259,3 +259,26 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the slider theory and the tree rail
+
+Four more regression cases from three test methods: a theory pinning snap to
+tick on both slider orientations, and two pinning where the TreeView selection
+rail stands. The theory counts as two cases on net10, where `--list-tests`
+expands its `InlineData`, and as one line on net472, where the listing does not;
+both frameworks run both cases.
+
+### Additions: 3 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `Slider_SnapToTick_LandsOnATickWhenDraggedAsync` | 2 on net10, 1 line on net472 | `Control/SliderTests.cs` |
+| `TreeView_SelectionIndicator_StaysInOneColumnAtEveryDepthAsync` | 1 | `Control/TreeViewTests.cs` |
+| `TreeView_MultipleSelection_HidesTheSelectionIndicatorAsync` | 1 | `Control/TreeViewTests.cs` |
+
+Net: 4 added on net10, 3 lines on net472, none removed. 1310 cases to 1314 on
+net10, 1308 to 1311 on net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

@@ -1042,6 +1042,7 @@
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_RapidChanges_KeepOnlyTheNewestContentAsync
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_OutgoingContent_KeepsTheContentTemplateAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_StyleApplies_PartTrackFoundAsync
+  Fluence.Wpf.Tests.Control.SliderTests.Slider_SnapToTick_LandsOnATickWhenDraggedAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbTemplate_HasEllipseAndInnerDotAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_UnfilledTrack_PaintedOnceAsync
@@ -1191,6 +1192,8 @@
   Fluence.Wpf.Tests.Control.ToolTipTests.ToolTip_OpenFade_SettlesAtFullOpacityAsync
   Fluence.Wpf.Tests.Control.ToolTipTests.ToolTip_SystemPopupFade_IsSuppressedByThemeResourceAsync
   Fluence.Wpf.Tests.Control.ToolTipTests.ToolTip_ThemeCycle_BrushesResolveAfterEachSwitchAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_SelectionIndicator_StaysInOneColumnAtEveryDepthAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_HidesTheSelectionIndicatorAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_DefaultStyle_AppliesAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeViewItem_TemplateParts_PresentAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeViewItem_Expander_VisibleWhenHasChildrenAsync
