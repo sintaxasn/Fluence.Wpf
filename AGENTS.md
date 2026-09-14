@@ -114,7 +114,7 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 - Use `DynamicResource` for any brush, color, corner radius, or typography value that must react to theme, accent, or high contrast at runtime.
 - Use `StaticResource` only for immutable assets (glyphs, fixed icon paths, constant geometries).
 - Never inline hard-coded hex colors in production templates; always go through a canonical WinUI-style key.
-- Animation timings: **~100-167 ms** typical transitions (WinUI `ControlFastAnimationDuration`, `ControlNormalAnimationDuration`). Easing curves consistent with existing templates (`{StaticResource ControlFastOutSlowInKeySpline}` where present).
+- Animation timings: **~100-167 ms** typical transitions (WinUI `ControlFastAnimationDuration`, `ControlNormalAnimationDuration`). Easing curves consistent with existing templates (`{StaticResource ControlFastOutSlowInKeySpline}` where present). That range is for a control changing appearance in place. Motion that carries something across a distance takes WinUI's own longer timing instead, and the two in the library are the `NavigationView` selection indicator travelling between items (600 ms, `NavigationView.cpp`) and its pane opening and closing (350 ms open, 120 ms close, `SplitView_themeresources.xaml`). A code-built animation that needs one of WinUI's key splines rather than a WPF easing mode uses `KeySplineEase`.
 - Focus visual: default WPF focus rectangles off; use FluentControl focus brush tokens instead, as in the existing Button / Card templates.
 
 #### XAML formatting and text policy

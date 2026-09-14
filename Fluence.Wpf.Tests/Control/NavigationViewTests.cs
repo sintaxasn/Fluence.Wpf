@@ -1392,8 +1392,13 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndentAsync()
+        public Task NavigationView_LeftMode_IndicatorTravelsWithoutFadingOutAsync()
         {
+            // Replaces the two tests that pinned the old slide-out and slide-in: the indicator used
+            // to fade to nothing, jump the gap and fade back in, so it never visibly crossed the
+            // space between two items. WinUI holds opacity at 1 for a move inside one list and plays
+            // a stretch-and-settle instead (NavigationView.cpp:2185-2234), which is what this now
+            // asserts: the bar stays visible throughout and stretches past its own length mid-flight.
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Window window = new();
@@ -1406,16 +1411,9 @@ namespace Fluence.Wpf.Tests.Control
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                     };
-                    _ = nav.Items.Add(new NavigationViewItem
-                    {
-                        Content = "Parent",
-                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 },
-                    });
-                    _ = nav.Items.Add(new NavigationViewItem
-                    {
-                        Content = "Child",
-                        IsChildItem = true,
-                    });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Three" });
                     window.Content = nav;
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -1424,94 +1422,41 @@ namespace Fluence.Wpf.Tests.Control
                     nav.SelectedIndex = 0;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
-                    TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
-                    double parentX = translate.X;
-                    double parentY = translate.Y;
-                    NavigationViewItem parentItem = Assert.IsType<NavigationViewItem>(nav.Items[0]);
-                    Point departPosition = nav.CalculateDepartPositionForTesting(
-                        new Point(parentX, parentY),
-                        parentItem,
-topMode: false,
-                        1.0);
-                    Assert.Equal(parentX, departPosition.X, 0.5);
-                    Assert.True(departPosition.Y > parentY, "The downward depart leg should move below the parent before the child inset X is applied.");
+                    System.Windows.Controls.Border indicator = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(nav, "PART_SelectionIndicator"), exactMatch: false);
+                    TransformGroup group = Assert.IsType<TransformGroup>(indicator.RenderTransform);
+                    ScaleTransform scale = Assert.IsType<ScaleTransform>(group.Children[0]);
+                    TranslateTransform translate = Assert.IsType<TranslateTransform>(group.Children[1]);
 
-                    nav.SelectedIndex = 1;
+                    double startY = translate.Y;
+
+                    // Travel two items down, sampling while the animation runs.
+                    nav.SelectedIndex = 2;
+
+                    double minimumOpacity = 1.0;
+                    double peakScale = 1.0;
+                    for (int sample = 0; sample < 40; sample++)
+                    {
+                        minimumOpacity = Math.Min(minimumOpacity, indicator.Opacity);
+                        peakScale = Math.Max(peakScale, scale.ScaleY);
+                        await Task.Delay(10, TestContext.Current.CancellationToken).ConfigureAwait(true);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    }
+
+                    Assert.True(
+                        minimumOpacity > 0.99,
+                        "The indicator must stay at full opacity while it travels; it used to fade out and back in.");
+                    Assert.True(
+                        peakScale > 1.05,
+                        "The indicator must stretch across the gap mid-flight rather than keeping its rest length.");
+
                     Assert.True(
                         await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
-                            return Math.Abs(translate.X - 48.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                            return Math.Abs(scale.ScaleY - 1.0) <= 0.01 && translate.Y > startY;
                         }).ConfigureAwait(true),
-                        "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
-                    Assert.Equal(48.0, translate.X, 0.5);
-                    Assert.Equal(1.0, indicator.Opacity, 0.01);
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
-            });
-        }
-
-        [Fact]
-        public Task NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAboveAsync()
-        {
-            return WpfTestSta.RunOnStaAsync(static async () =>
-            {
-                Window window = new();
-
-                try
-                {
-                    NavigationView nav = new()
-                    {
-                        Width = 400,
-                        Height = 320,
-                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
-                    };
-                    _ = nav.Items.Add(new NavigationViewItem
-                    {
-                        Content = "Parent",
-                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 },
-                    });
-                    _ = nav.Items.Add(new NavigationViewItem
-                    {
-                        Content = "Child",
-                        IsChildItem = true,
-                    });
-                    window.Content = nav;
-                    window.Show();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    nav.SelectedIndex = 1;
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-
-                    FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
-                    TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
-                    double childX = translate.X;
-                    double childY = translate.Y;
-                    NavigationViewItem childItem = Assert.IsType<NavigationViewItem>(nav.Items[1]);
-                    Point departPosition = nav.CalculateDepartPositionForTesting(
-                        new Point(childX, childY),
-                        childItem,
-topMode: false,
-                        -1.0);
-                    Assert.Equal(childX, departPosition.X, 0.5);
-                    Assert.True(departPosition.Y < childY, "The upward depart leg should move above the child before the parent X is applied.");
-
-                    nav.SelectedIndex = 0;
-                    Assert.True(
-                        await WaitUntilAsync(window.Dispatcher, 3000, delegate
-                        {
-                            return Math.Abs(translate.X - 4.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
-                        }).ConfigureAwait(true),
-                        "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
-                    Assert.Equal(4.0, translate.X, 0.5);
+                        "The indicator should settle at its rest length on the new item.");
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally

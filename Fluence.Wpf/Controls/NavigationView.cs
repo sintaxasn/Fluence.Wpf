@@ -629,7 +629,7 @@ defaultValue: null,
                 SelectedFooterItem.IsSelected = false;
                 SelectedFooterItem = null;
             }
-            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate: true, previousItem)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate: true)), DispatcherPriority.Loaded);
         }
 
         /// <inheritdoc />
@@ -744,15 +744,6 @@ defaultValue: null,
         internal double GetPaneColumnWidthForTesting()
         {
             return _paneColumn?.Width.Value ?? double.NaN;
-        }
-
-        internal Point CalculateDepartPositionForTesting(
-            Point fromPosition,
-            NavigationViewItem? previousItem,
-            bool topMode,
-            double direction)
-        {
-            return CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
         }
 
         /// <summary>
@@ -1351,7 +1342,7 @@ defaultValue: null,
 
         private void ScheduleIndicatorPosition(bool animate)
         {
-            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate, previousItem: null)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate)), DispatcherPriority.Loaded);
         }
 
         /// <summary>
@@ -1359,10 +1350,9 @@ defaultValue: null,
         /// at most one region (main menu or footer) owns the selection, so at most one indicator shows.
         /// </summary>
         /// <param name="animate">Indicates whether to animate the indicator movement.</param>
-        /// <param name="previousItem">The previously selected item, if any.</param>
-        private void RefreshIndicators(bool animate, NavigationViewItem? previousItem)
+        private void RefreshIndicators(bool animate)
         {
-            PositionIndicator(animate, previousItem);
+            PositionIndicator(animate);
             PositionFooterIndicator(animate);
         }
 
@@ -1552,7 +1542,7 @@ defaultValue: null,
             }
         }
 
-        private void PositionIndicator(bool animate, NavigationViewItem? previousItem)
+        private void PositionIndicator(bool animate)
         {
             if (_selectionIndicator is null || _indicatorHost is null)
             {
@@ -1582,7 +1572,7 @@ defaultValue: null,
             }
 
             Point currentPosition = GetCurrentIndicatorPosition();
-            AnimateIndicator(currentPosition, targetPosition, topMode, previousItem, nvi);
+            AnimateIndicator(currentPosition, targetPosition, topMode);
         }
 
         /// <summary>
@@ -1670,9 +1660,7 @@ defaultValue: null,
         private void AnimateIndicator(
             Point fromPosition,
             Point toPosition,
-            bool topMode,
-            NavigationViewItem? previousItem,
-            NavigationViewItem targetItem)
+            bool topMode)
         {
             if (_selectionIndicator is null)
             {
@@ -1729,206 +1717,71 @@ defaultValue: null,
                 scale.ScaleX = 1.0;
             }
 
-            Point departPosition = CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
-            Point arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem, topMode, direction);
-            double departAxis = topMode ? departPosition.X : departPosition.Y;
-            Duration departDuration = new(TimeSpan.FromMilliseconds(90));
-            Duration arriveDuration = new(TimeSpan.FromMilliseconds(140));
-            CubicEase departEase = new() { EasingMode = EasingMode.EaseIn };
-            CubicEase arriveEase = new() { EasingMode = EasingMode.EaseOut };
+            // WinUI's indicator never blinks out between items: for a move inside one list it holds
+            // opacity at 1 and plays a stretch-and-settle (NavigationView.cpp:2185-2234). The bar
+            // elongates to span the gap, then contracts onto the destination. WinUI gets there with
+            // two per-item indicators animating Offset, Scale and CenterPoint together; this port
+            // has a single pane-level bar, so the same read comes from one continuous translate
+            // plus a scale that peaks mid-flight.
+            double axisLength = GetIndicatorLength(topMode);
+            double distance = Math.Abs(toAxis - fromAxis);
+            double peakScale = axisLength > 0 ? (distance / axisLength) + 1.0 : 1.0;
 
-            // To-only animations (no From): each begins from the live base value seeded above, so a
-            // retarget mid-flight hands off smoothly instead of snapping back to the old slot.
-            DoubleAnimation departAxisAnimation = new()
+            // 600 ms is WinUI's own duration for this move (NavigationView.cpp:1991-1994, the
+            // c_frame1/c_frame2 bezier pair below with it). It is longer than the 100 to 167 ms the
+            // handbook gives for state transitions, which is the right guidance for a control
+            // changing appearance in place and the wrong one for a bar travelling between items.
+            Duration travelDuration = new(TimeSpan.FromMilliseconds(600));
+            DoubleAnimation axisAnimation = new()
             {
-                To = departAxis,
-                Duration = departDuration,
-                EasingFunction = departEase,
-                FillBehavior = FillBehavior.Stop,
-            };
-            DoubleAnimation departOpacityAnimation = new()
-            {
-                To = 0.0,
-                Duration = departDuration,
-                EasingFunction = departEase,
-                FillBehavior = FillBehavior.Stop,
-            };
-            DoubleAnimation departScaleAnimation = new()
-            {
-                To = 0.72,
-                Duration = departDuration,
-                EasingFunction = departEase,
+                To = toAxis,
+                Duration = travelDuration,
+                EasingFunction = new KeySplineEase(0.1, 0.9, 0.2, 1.0),
                 FillBehavior = FillBehavior.Stop,
             };
 
-            departAxisAnimation.Completed += delegate
+            // The stretch: out to the peak on WinUI's accelerating ramp by the 33 percent mark, back
+            // to rest on its decelerating settle.
+            DoubleAnimationUsingKeyFrames scaleAnimation = new()
+            {
+                Duration = travelDuration,
+                FillBehavior = FillBehavior.Stop,
+            };
+            _ = scaleAnimation.KeyFrames.Add(new SplineDoubleKeyFrame(
+                peakScale,
+                KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
+                new KeySpline(0.9, 0.1, 1.0, 0.2)));
+            _ = scaleAnimation.KeyFrames.Add(new SplineDoubleKeyFrame(
+                1.0,
+                KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(600)),
+                new KeySpline(0.1, 0.9, 0.2, 1.0)));
+
+            // The bar stays at full opacity for the whole journey: any clock left over from an
+            // interrupted move is released so it cannot fade the travel out underneath this one.
+            _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
+            _selectionIndicator.Opacity = 1.0;
+
+            axisAnimation.Completed += delegate
             {
                 if (animationId != _indicatorAnimationGeneration)
                 {
                     return;
                 }
+
                 translate.BeginAnimation(axisProperty, animation: null);
                 scale.BeginAnimation(scaleProperty, animation: null);
-                _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
-                if (topMode)
-                {
-                    translate.X = arriveStartPosition.X;
-                    translate.Y = toPosition.Y;
-                    scale.ScaleX = 0.72;
-                    scale.ScaleY = 1.0;
-                }
-                else
-                {
-                    translate.X = toPosition.X;
-                    translate.Y = arriveStartPosition.Y;
-                    scale.ScaleX = 1.0;
-                    scale.ScaleY = 0.72;
-                }
-                _selectionIndicator.Opacity = 0.0;
 
-                DoubleAnimation arriveAxisAnimation = new()
-                {
-                    To = toAxis,
-                    Duration = arriveDuration,
-                    EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop,
-                };
-                DoubleAnimation arriveOpacityAnimation = new()
-                {
-                    To = 1.0,
-                    Duration = arriveDuration,
-                    EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop,
-                };
-                DoubleAnimation arriveScaleAnimation = new()
-                {
-                    To = 1.0,
-                    Duration = arriveDuration,
-                    EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop,
-                };
-
-                arriveAxisAnimation.Completed += delegate
-                {
-                    if (animationId != _indicatorAnimationGeneration)
-                    {
-                        return;
-                    }
-
-                    translate.BeginAnimation(axisProperty, animation: null);
-                    scale.BeginAnimation(scaleProperty, animation: null);
-                    _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
-
-                    translate.X = toPosition.X;
-                    translate.Y = toPosition.Y;
-                    scale.ScaleX = 1.0;
-                    scale.ScaleY = 1.0;
-                    _selectionIndicator.Opacity = 1.0;
-                    _indicatorPositioned = true;
-                };
-                translate.BeginAnimation(axisProperty, arriveAxisAnimation, HandoffBehavior.SnapshotAndReplace);
-                scale.BeginAnimation(scaleProperty, arriveScaleAnimation, HandoffBehavior.SnapshotAndReplace);
-                _selectionIndicator.BeginAnimation(OpacityProperty, arriveOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
+                translate.X = toPosition.X;
+                translate.Y = toPosition.Y;
+                scale.ScaleX = 1.0;
+                scale.ScaleY = 1.0;
+                _selectionIndicator.Opacity = 1.0;
+                _indicatorPositioned = true;
             };
+
             _indicatorPositioned = true;
-            translate.BeginAnimation(axisProperty, departAxisAnimation, HandoffBehavior.SnapshotAndReplace);
-            scale.BeginAnimation(scaleProperty, departScaleAnimation, HandoffBehavior.SnapshotAndReplace);
-            _selectionIndicator.BeginAnimation(OpacityProperty, departOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
-        }
-
-        private Point CalculateDepartPosition(
-            Point fromPosition,
-            NavigationViewItem? previousItem,
-            bool topMode,
-            double direction)
-        {
-            double length = GetIndicatorLength(topMode);
-            if (topMode)
-            {
-                double x = fromPosition.X + (direction * length);
-                if ((previousItem?.IsVisible) is true && previousItem.ActualWidth > 0)
-                {
-                    try
-                    {
-                        GeneralTransform transform = previousItem.TransformToAncestor(_indicatorHost);
-                        Point itemPos = transform.Transform(new Point(0, 0));
-                        x = direction > 0 ? itemPos.X + previousItem.ActualWidth : itemPos.X - length;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
-                        return new Point(x, fromPosition.Y);
-                        throw;
-                    }
-                }
-                return new Point(x, fromPosition.Y);
-            }
-
-            double y = fromPosition.Y + (direction * length);
-            if ((previousItem?.IsVisible) is true && previousItem.ActualHeight > 0)
-            {
-                try
-                {
-                    GeneralTransform transform = previousItem.TransformToAncestor(_indicatorHost);
-                    Point itemPos = transform.Transform(new Point(0, 0));
-                    y = direction > 0 ? itemPos.Y + previousItem.ActualHeight : itemPos.Y - length;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
-                    return new Point(fromPosition.X, y);
-                    throw;
-                }
-            }
-            return new Point(fromPosition.X, y);
-        }
-
-        private Point CalculateArriveStartPosition(
-            Point toPosition,
-            NavigationViewItem targetItem,
-            bool topMode,
-            double direction)
-        {
-            double length = GetIndicatorLength(topMode);
-            if (topMode)
-            {
-                double x = toPosition.X - (direction * length);
-                if ((targetItem?.IsVisible) is true && targetItem.ActualWidth > 0)
-                {
-                    try
-                    {
-                        GeneralTransform transform = targetItem.TransformToAncestor(_indicatorHost);
-                        Point itemPos = transform.Transform(new Point(0, 0));
-                        x = direction > 0 ? itemPos.X - length : itemPos.X + targetItem.ActualWidth;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
-                        return new Point(x, toPosition.Y);
-                        throw;
-                    }
-                }
-
-                return new Point(x, toPosition.Y);
-            }
-
-            double y = toPosition.Y - (direction * length);
-            if ((targetItem?.IsVisible) is true && targetItem.ActualHeight > 0)
-            {
-                try
-                {
-                    GeneralTransform transform = targetItem.TransformToAncestor(_indicatorHost);
-                    Point itemPos = transform.Transform(new Point(0, 0));
-                    y = direction > 0 ? itemPos.Y - length : itemPos.Y + targetItem.ActualHeight;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
-                    return new Point(toPosition.X, y);
-                    throw;
-                }
-            }
-            return new Point(toPosition.X, y);
+            translate.BeginAnimation(axisProperty, axisAnimation, HandoffBehavior.SnapshotAndReplace);
+            scale.BeginAnimation(scaleProperty, scaleAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
         private double GetIndicatorLength(bool topMode)

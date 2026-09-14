@@ -816,8 +816,7 @@
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacementAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelectionsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_RapidReselection_IndicatorSettlesOnFinalTargetAsync
-  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_IndicatorExitsVerticallyBeforeChangingParentChildIndentAsync
-  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAboveAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_IndicatorTravelsWithoutFadingOutAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndentAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_FocusVisual_StaysInsideItemBoundsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_SharedIndicator_HidesWhenSelectionClearedAsync
@@ -1296,5 +1295,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1296 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 285ms
+Test discovery summary: found 1295 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 281ms
