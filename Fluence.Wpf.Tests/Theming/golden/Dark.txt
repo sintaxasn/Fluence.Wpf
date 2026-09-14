@@ -101,6 +101,11 @@ FocusStrokeColorInner|#B3000000|#00000000
 FocusStrokeColorInnerBrush|#00000000|#B3000000
 FocusStrokeColorOuter|#FFFFFFFF|#00000000
 FocusStrokeColorOuterBrush|#00000000|#FFFFFFFF
+InfoBadgeAttentionForegroundBrush|#00000000|#FF000000
+InfoBadgeCautionForegroundBrush|#00000000|#FF000000
+InfoBadgeCriticalForegroundBrush|#00000000|#FF000000
+InfoBadgeInformationalForegroundBrush|#00000000|#FF000000
+InfoBadgeSuccessForegroundBrush|#00000000|#FF000000
 LayerFillColorAlt|#0DFFFFFF|#00000000
 LayerFillColorAltBrush|#00000000|#0DFFFFFF
 LayerFillColorDefault|#4C3A3A3A|#00000000

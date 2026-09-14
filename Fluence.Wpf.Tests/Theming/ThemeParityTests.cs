@@ -79,6 +79,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightTextDerivedBrushKeys = new(StringComparer.Ordinal)
         {
+            "InfoBadgeAttentionForegroundBrush",
             "WindowCloseButtonForegroundPointerOverBrush",
         };
 

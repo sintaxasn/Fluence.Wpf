@@ -80,6 +80,19 @@ namespace Fluence.Wpf.Theming
             dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
             dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
+            // InfoBadge foregrounds, one per severity plate. WinUI keys the badge's own foreground
+            // (InfoBadgeForeground) rather than reusing a text token, because the pair has to move
+            // with the plate: a badge is a filled capsule, so the numeral's legibility depends on
+            // what it sits on. Outside high contrast every plate is an accent or status fill and
+            // the on-accent text token is right for all five; AddHighContrastBrushes splits them,
+            // because there the Attention plate is the system highlight and the other four are the
+            // window text colour.
+            dict["InfoBadgeAttentionForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+            dict["InfoBadgeInformationalForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+            dict["InfoBadgeSuccessForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+            dict["InfoBadgeCautionForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+            dict["InfoBadgeCriticalForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
             // Shared selection-pill accent for NavigationView, ListView, ListBox, TreeView, and SelectorBar.
@@ -496,6 +509,16 @@ namespace Fluence.Wpf.Theming
             // The computed AcrylicBackgroundFillColorDefault token is a fixed black in the HC table, so
             // the seed assigned in Add would ignore the white on black variants.
             dict["ScrollBarTrackFillBrush"] = Solid(window);
+
+            // InfoBadge foregrounds follow whichever plate the severity selected. Attention paints
+            // the live highlight, whose guaranteed partner is the highlight text colour; the other
+            // four paint window text, whose partner is the window colour. A single fixed value
+            // cannot serve both, which is what left a black numeral on a window text plate.
+            dict["InfoBadgeAttentionForegroundBrush"] = Solid(highlightText);
+            dict["InfoBadgeInformationalForegroundBrush"] = Solid(window);
+            dict["InfoBadgeSuccessForegroundBrush"] = Solid(window);
+            dict["InfoBadgeCautionForegroundBrush"] = Solid(window);
+            dict["InfoBadgeCriticalForegroundBrush"] = Solid(window);
 
             // System fill (SystemFillColorAttention skipped by Build in HC; brush -> Highlight)
             dict["SystemFillColorAttentionBrush"] = Solid(highlight);

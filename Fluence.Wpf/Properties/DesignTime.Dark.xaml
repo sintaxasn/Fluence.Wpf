@@ -176,6 +176,11 @@
     <SolidColorBrush x:Key="DividerStrokeColorDefaultBrush" Color="#15FFFFFF" />
     <SolidColorBrush x:Key="FocusStrokeColorInnerBrush" Color="#B3000000" />
     <SolidColorBrush x:Key="FocusStrokeColorOuterBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="InfoBadgeAttentionForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="InfoBadgeCautionForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="InfoBadgeCriticalForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="InfoBadgeInformationalForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="InfoBadgeSuccessForegroundBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="LayerFillColorAltBrush" Color="#0DFFFFFF" />
     <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#4C3A3A3A" />
     <SolidColorBrush x:Key="LayerOnAccentAcrylicFillColorDefaultBrush" Color="#09FFFFFF" />

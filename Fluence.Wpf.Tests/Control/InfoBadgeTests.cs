@@ -220,9 +220,11 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Application app = WpfTestSta.EnsureApplication();
 
-                // WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is
-                // TextOnAccentFillColorPrimaryBrush, matching the accent-derived default
-                // background, not TextFillColorInverseBrush.
+                // WinUI keys the badge's own foreground (InfoBadgeForeground,
+                // InfoBadge_themeresources.xaml:5) rather than reusing a text token, because the
+                // numeral has to pair with the plate it sits on. Outside high contrast that key
+                // resolves to the on-accent text colour, which is the accent-derived default
+                // background's partner, and not TextFillColorInverseBrush.
                 InfoBadge badge = new() { Value = 5 };
                 Window w = new() { Content = badge, Width = 60, Height = 60 };
                 try
@@ -230,8 +232,8 @@ namespace Fluence.Wpf.Tests.Control
                     w.Show();
                     WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                    object? expected = app.TryFindResource("TextOnAccentFillColorPrimaryBrush");
-                    Assert.Equal(expected, badge.Foreground);
+                    Assert.Equal(app.TryFindResource("InfoBadgeAttentionForegroundBrush"), badge.Foreground);
+                    BrushAssert.AssertBrushColor(badge.Foreground, "TextOnAccentFillColorPrimaryBrush");
                 }
                 finally
                 {

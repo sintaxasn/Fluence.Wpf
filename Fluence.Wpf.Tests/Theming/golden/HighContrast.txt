@@ -100,6 +100,10 @@ DividerStrokeColorDefaultBrush|#00000000|#FFA0A0A0
 FocusStrokeColorInner|#FF000000|#00000000
 FocusStrokeColorInnerBrush|#00000000|#FFFFFFFF
 FocusStrokeColorOuter|#FF1AEBFF|#00000000
+InfoBadgeCautionForegroundBrush|#00000000|#FFFFFFFF
+InfoBadgeCriticalForegroundBrush|#00000000|#FFFFFFFF
+InfoBadgeInformationalForegroundBrush|#00000000|#FFFFFFFF
+InfoBadgeSuccessForegroundBrush|#00000000|#FFFFFFFF
 LayerFillColorAlt|#FF000000|#00000000
 LayerFillColorAltBrush|#00000000|#FFFFFFFF
 LayerFillColorDefault|#FF000000|#00000000

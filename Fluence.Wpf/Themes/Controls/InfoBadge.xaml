@@ -10,8 +10,8 @@
         <!--  WinUI InfoBadgeValueFontSize = 11 (InfoBadge_themeresources.xaml:10). The weight is WPF's own: WinUI's value text inherits the default body weight at 11, which reads thin against an accent fill here, so SemiBold holds the small numeral legible.  -->
         <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <!--  WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is TextOnAccentFillColorPrimaryBrush, matching the accent-derived default Background, not TextFillColorInverseBrush.  -->
-        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+        <!--  WinUI keys the badge's own foreground (InfoBadgeForeground, InfoBadge_themeresources.xaml:5) rather than reusing a text token, because the numeral sits on a filled capsule and has to pair with whatever that plate is. Outside high contrast all five severities resolve to the on-accent text colour, as WinUI's does; in high contrast they split, because the Attention plate is the system highlight and the other four are the window text colour.  -->
+        <Setter Property="Foreground" Value="{DynamicResource InfoBadgeAttentionForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <!--  WinUI InfoBadge is IsTabStop False (InfoBadge_themeresources.xaml:54). WPF's Control also defaults Focusable to true, which WinUI's does not, so a badge inside a NavigationViewItem would otherwise be Tab reachable and take focus on click.  -->
         <Setter Property="Focusable" Value="False" />
@@ -84,18 +84,22 @@
                         <Trigger Property="BadgeStyle" Value="{x:Static fluence:InfoBadgeStyle.Informational}">
                             <Setter TargetName="BadgeBorder" Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBrush}" />
                             <Setter TargetName="DotIndicator" Property="Fill" Value="{DynamicResource SystemFillColorSolidNeutralBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource InfoBadgeInformationalForegroundBrush}" />
                         </Trigger>
                         <Trigger Property="BadgeStyle" Value="{x:Static fluence:InfoBadgeStyle.Success}">
                             <Setter TargetName="BadgeBorder" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
                             <Setter TargetName="DotIndicator" Property="Fill" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource InfoBadgeSuccessForegroundBrush}" />
                         </Trigger>
                         <Trigger Property="BadgeStyle" Value="{x:Static fluence:InfoBadgeStyle.Critical}">
                             <Setter TargetName="BadgeBorder" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
                             <Setter TargetName="DotIndicator" Property="Fill" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource InfoBadgeCriticalForegroundBrush}" />
                         </Trigger>
                         <Trigger Property="BadgeStyle" Value="{x:Static fluence:InfoBadgeStyle.Caution}">
                             <Setter TargetName="BadgeBorder" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" />
                             <Setter TargetName="DotIndicator" Property="Fill" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource InfoBadgeCautionForegroundBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
