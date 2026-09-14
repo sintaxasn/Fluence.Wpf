@@ -716,6 +716,8 @@
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_Foreground_IsTextOnAccentFillColorPrimaryAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_Value_RoundtripsAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_Template_AppliesAsync
+  Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_DisplayKind_PrefersValueOverIconAndFallsBackAsync
+  Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_ValueBadge_IsNeverNarrowerThanItIsTallAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_StyleApplies_RootBorderFoundAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_TwoLayerIcon_GlyphAndBackgroundPerSeverityAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_CloseButton_UsesFluentSubtlePlateAsync
@@ -735,6 +737,12 @@
   Fluence.Wpf.Tests.Control.InfoBarTests.ClosingCancel_IsOpenSetFalse_ReopensAndRaisesNoClosedAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.Closed_ClosingHandlerSetsIsOpenFalse_RaisedOnceWithStartingReasonAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.Closing_CloseButtonClicked_ReportsCloseButtonReasonAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_CloseButton_RaisesClickAndRunsTheCommandBeforeClosingAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_CloseButtonStyle_ReachesTheButtonAndRestoresOnClearAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_Content_RendersUnderTheBannerAndTakesItWhenThereIsNoneAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_Banner_LaysOutOnOneLineUntilItStopsFittingAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_Opened_RaisesOnTheOpenTransitionButNotOnACancelledCloseRevertAsync
+  Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_CustomIcon_IsClampedToTheIconBoxAsync
   Fluence.Wpf.Tests.Control.LayoutPrimitiveTests.Stage3_Border_Variant_DefaultIsNoneAsync
   Fluence.Wpf.Tests.Control.LayoutPrimitiveTests.Stage3_StackPanel_Spacing_DefaultZeroAsync
   Fluence.Wpf.Tests.Control.LayoutPrimitiveTests.Stage3_DockPanel_LastChildFill_DefaultTrueAsync
@@ -777,6 +785,8 @@
   Fluence.Wpf.Tests.Control.MenuTests.Menu_ThemeCycle_BackgroundRemainsTransparentAsync
   Fluence.Wpf.Tests.Control.MenuTests.Menu_TopLevelItem_UsesMenuBarItemMetricsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsedAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_CompactRailWidth_DoesNotFollowTheBackButtonAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_NestedInContent_KeepsItsOwnPaneChromeAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_MirrorsHostTitleBarState_AndReleasesItOnUnloadAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneDisplayMode_Left_RendersVerticalPaneAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneDisplayMode_Top_RendersHorizontalPaneAsync
@@ -840,6 +850,9 @@
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_Left_OuterBorder_MatchesWinUiPillGeometryAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_Left_PaneItemsAndFooterSitSymmetricallyInThePaneAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_Left_SharedSelectionIndicator_IsThreeDipWideAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_InfoBadge_StaysOnAClosedPaneAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_ClosedPane_GivesTheIconItsFullColumnAsync(mode: Left)
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_ClosedPane_GivesTheIconItsFullColumnAsync(mode: LeftCompact)
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterIndicator_CentersUnderFooterItemAsync
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterItem_RendersIconOnlyAsync
   Fluence.Wpf.Tests.Control.NavigationViewTopModeTests.NavigationView_TopFooterItem_KeepsLabel_InLeftAsync
@@ -1006,6 +1019,7 @@
   Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_ReducedMotion_StampsPillWithoutAnimatingAsync
   Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBarItem_AutomationPeer_ReportsTextAsNameAsync
   Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_ThemeCycle_KeepsPillAndLabelBrushesResolvableAsync
+  Fluence.Wpf.Tests.Control.SelectorBarTests.SelectorBar_EmptiedSelection_PutsThePreviousItemBackAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_DefaultStyle_AppliesAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_Height_IsOneAsync
   Fluence.Wpf.Tests.Control.SeparatorTests.Separator_Background_UsesDividerStrokeColorDefaultBrushAsync
@@ -1016,6 +1030,7 @@
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_MidTransition_KeepsOutgoingContentHiddenAsync
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_ReducedMotion_SwapsWithoutSlidingAsync
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_RapidChanges_KeepOnlyTheNewestContentAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_OutgoingContent_KeepsTheContentTemplateAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_StyleApplies_PartTrackFoundAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_ThumbTemplate_HasEllipseAndInnerDotAsync
@@ -1275,5 +1290,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1275 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 204ms
+Test discovery summary: found 1290 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 194ms

@@ -265,6 +265,12 @@ Status controls cover severity, closable state, determinate and indeterminate pr
 
 Both helpers stay in sync with the `InfoBar` control template; use them instead of hardcoding glyph or brush values.
 
+`InfoBar` lays its title, message and action button out on one line while all three fit and stacks them when they do not, the same rule WinUI's `InfoBarPanel` applies, so a short bar is one 48 dip line and a long one grows. Free-form `Content` sits under that row, or takes the row itself when the bar carries neither title nor message.
+
+`InfoBar`'s close button carries WinUI's own contract: `CloseButtonClick` fires first, then `CloseButtonCommand` runs with `CloseButtonCommandParameter`, and only then does the close pipeline start, so a cancel still belongs in `Closing` rather than in the click. `CloseButtonStyle` replaces the button's style and clearing it puts the template's own style back.
+
+`InfoBar.Opened` fires from the same `IsOpen` transition, so a bar opened in code or by a binding reports it; a cancelled close reverts `IsOpen` without raising it. Note that `IsOpen` defaults to `true` here where WinUI's defaults to `false`; `docs/winui-parity.md` records that.
+
 `InfoBar` raises `Closing` and `Closed` from the `IsOpen` transition, so both fire whether the bar is dismissed by its close button or by `IsOpen = false` in code, and `InfoBarCloseReason` says which. Setting `InfoBarClosingEventArgs.Cancel` in a `Closing` handler keeps the bar open: `IsOpen` returns to `true` and no `Closed` follows. A `Closing` handler may set `IsOpen` itself without producing a second `Closed`.
 
 ### Accessibility
@@ -751,9 +757,9 @@ Every control below overrides `OnCreateAutomationPeer` and reports its own class
 | `NumberBoxAutomationPeer` | `NumberBox` | a spinner with the range value pattern |
 | `PersonPictureAutomationPeer` | `PersonPicture` | the display name or initials |
 | `PipsPagerAutomationPeer` | `PipsPager` | the page count and current page |
-| `SelectorBarItemAutomationPeer` | `SelectorBarItem` | the item label, which lives on `Text` rather than the unused content |
 | `ProgressRingAutomationPeer` | `ProgressRing` | a progress bar with the range value pattern |
 | `RatingControlAutomationPeer` | `RatingControl` | the rating with the range value pattern |
+| `SelectorBarItemAutomationPeer` | `SelectorBarItem` | the item label, which lives on `Text` rather than the unused content |
 | `SplitButtonAutomationPeer` | `SplitButton` | a split button with the invoke and expand and collapse patterns |
 | `TeachingTipAutomationPeer` | `TeachingTip` | the tip content and its close affordance |
 | `TextBlockAutomationPeer` | `TextBlock` | the text as the Text control type, excluded from the control view unless an explicit `AutomationProperties.Name` is set |

@@ -113,3 +113,36 @@ multiset is the rename source above.
 
 Consumed. This is the branch's last baseline regeneration; there is no further
 task after this one that touches `Baselines/`.
+
+## Branch `fix/gallery-visual-defects`: NavigationView pane chrome regeneration
+
+The baseline files were regenerated again on this branch, for the two regression
+tests the pane chrome fixes brought with them. Both are new names that never
+appeared in an earlier capture, so neither needed an entry of its own; this
+section is the record of the regeneration.
+
+### Additions: 14 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `NavigationView_NestedInContent_KeepsItsOwnPaneChromeAsync` | 1 | `Control/NavigationViewTests.cs` |
+| `NavigationView_CompactRailWidth_DoesNotFollowTheBackButtonAsync` | 1 | `Control/NavigationViewTests.cs` |
+| `NavigationViewItem_InfoBadge_StaysOnAClosedPaneAsync` | 1 | `Control/NavigationViewTests.cs` |
+| `SlideNavigationPresenter_OutgoingContent_KeepsTheContentTemplateAsync` | 1 | `Control/SlideNavigationPresenterTests.cs` |
+| `SelectorBar_EmptiedSelection_PutsThePreviousItemBackAsync` | 1 | `Control/SelectorBarTests.cs` |
+| `InfoBar_CloseButton_RaisesClickAndRunsTheCommandBeforeClosingAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBar_CloseButtonStyle_ReachesTheButtonAndRestoresOnClearAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBar_Content_RendersUnderTheBannerAndTakesItWhenThereIsNoneAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBadge_DisplayKind_PrefersValueOverIconAndFallsBackAsync` | 1 | `Control/InfoBadgeTests.cs` |
+| `InfoBar_Banner_LaysOutOnOneLineUntilItStopsFittingAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBadge_ValueBadge_IsNeverNarrowerThanItIsTallAsync` | 1 | `Control/InfoBadgeTests.cs` |
+| `NavigationViewItem_ClosedPane_GivesTheIconItsFullColumnAsync` | 2 | `Control/NavigationViewTests.cs`, one `[Theory]` with `[InlineData]` for Left and LeftCompact |
+| `InfoBar_Opened_RaisesOnTheOpenTransitionButNotOnACancelledCloseRevertAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBar_CustomIcon_IsClampedToTheIconBoxAsync` | 1 | `Control/InfoBarTests.cs` |
+
+Zero removals and zero renames. 1275 cases to 1290 on net10, 1273 to 1288 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
