@@ -73,6 +73,15 @@ jobs:
         run: Fluence.Wpf.Tests\bin\Release\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-class Fluence.Wpf.Tests.Gallery.DemoShellTests Fluence.Wpf.Tests.Gallery.DemoSampleContractTests Fluence.Wpf.Tests.Control.NavigationViewTests Fluence.Wpf.Tests.Control.ProgressBarTests Fluence.Wpf.Tests.Control.ContentDialogTests Fluence.Wpf.Tests.Control.ColorPickerTests Fluence.Wpf.Tests.Control.TimePickerTests --filter-not-trait "Category=Screenshots" --report-xunit-trx --report-xunit-trx-filename net10.laneB.trx --results-directory TestResults/net10 --no-ansi --progress off
         shell: cmd
 
+      # The library ships three target frameworks and the suite above covers two of them. This
+      # lane loads the third, which is the one AGENTS.md designates for PowerShell 7 in-process
+      # consumption and the only one carrying WinRT.Runtime.dll, so the shipped binary is
+      # exercised rather than only built and packed. It is a smoke lane by design: the behaviour
+      # coverage lives in the two full lanes, where the source is identical.
+      - name: Test (.NET 8, smoke lane)
+        run: Fluence.Wpf.Tests.Smoke\bin\Release\net8.0-windows10.0.26100.0\Fluence.Wpf.Tests.Smoke.exe --report-xunit-trx --report-xunit-trx-filename net8.smoke.trx --results-directory TestResults/net8 --no-ansi --progress off
+        shell: cmd
+
       # The lanes are complements, so their case counts must sum to the whole assembly. This
       # catches a typo that makes one filter diverge from the other, since the split then goes
       # out of balance. It does not catch the same typo repeated identically in both filters:
@@ -88,7 +97,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1249; 'net10' = 1250 }
+          $floor = @{ 'net472' = 1306; 'net10' = 1307 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
