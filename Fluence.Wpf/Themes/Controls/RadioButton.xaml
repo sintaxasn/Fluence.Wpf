@@ -277,7 +277,7 @@
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipseHover" Property="Opacity" Value="1" />
                             <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
+                                <BeginStoryboard x:Name="RadioDotHoverStoryboard">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
                                             <SplineDoubleKeyFrame
@@ -295,22 +295,7 @@
                                 </BeginStoryboard>
                             </MultiTrigger.EnterActions>
                             <MultiTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.25"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.25"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
+                                <RemoveStoryboard BeginStoryboardName="RadioDotHoverStoryboard" />
                             </MultiTrigger.ExitActions>
                         </MultiTrigger>
 
@@ -329,7 +314,7 @@
                             <Setter TargetName="CheckedEllipseHover" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipsePressed" Property="Opacity" Value="1" />
                             <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
+                                <BeginStoryboard x:Name="RadioDotPressedStoryboard">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
                                             <SplineDoubleKeyFrame
@@ -347,22 +332,7 @@
                                 </BeginStoryboard>
                             </MultiTrigger.EnterActions>
                             <MultiTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.25"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.25"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
+                                <RemoveStoryboard BeginStoryboardName="RadioDotPressedStoryboard" />
                             </MultiTrigger.ExitActions>
                         </MultiTrigger>
 
@@ -404,7 +374,7 @@
                                 <Condition Property="IsChecked" Value="True" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
+                                <BeginStoryboard x:Name="RadioDotDisabledStoryboard">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
                                             <SplineDoubleKeyFrame
@@ -422,22 +392,7 @@
                                 </BeginStoryboard>
                             </MultiTrigger.EnterActions>
                             <MultiTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="InnerDot" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="8" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
+                                <RemoveStoryboard BeginStoryboardName="RadioDotDisabledStoryboard" />
                             </MultiTrigger.ExitActions>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>

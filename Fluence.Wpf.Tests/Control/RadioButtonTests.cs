@@ -27,8 +27,10 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Automation;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -53,6 +55,66 @@ namespace Fluence.Wpf.Tests.Control
         public ValueTask DisposeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        [Fact]
+        public Task RadioButton_StateSizeStoryboards_ReleaseRatherThanStampOnExitAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.RadioButton radio = new() { Content = "Option" };
+                Window window = new() { Content = radio, Width = 240, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    // Hover, press and disabled each resize the dot while they hold. Their exits must
+                    // remove that animation and let the check state decide the size again: an exit
+                    // that stamped the checked size of its own could land on an unchecked button,
+                    // which is what left a white dot sitting in an empty ring.
+                    int inspected = 0;
+                    foreach (TriggerBase trigger in radio.Template.Triggers)
+                    {
+                        if (trigger is not MultiTrigger multi || !StartsADotResize(multi.EnterActions))
+                        {
+                            continue;
+                        }
+
+                        inspected++;
+                        Assert.All(multi.ExitActions, static action => Assert.IsType<RemoveStoryboard>(action, exactMatch: false));
+                        Assert.NotEmpty(multi.ExitActions);
+                    }
+
+                    Assert.Equal(3, inspected);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        private static bool StartsADotResize(IEnumerable<TriggerAction> actions)
+        {
+            foreach (TriggerAction action in actions)
+            {
+                if (action is not BeginStoryboard begin || begin.Storyboard is null)
+                {
+                    continue;
+                }
+
+                foreach (Timeline timeline in begin.Storyboard.Children)
+                {
+                    if (string.Equals(Storyboard.GetTargetName(timeline), "InnerDot", StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         // ---------------------------------------------------------------------------
