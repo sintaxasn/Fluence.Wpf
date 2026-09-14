@@ -7,19 +7,25 @@
     <Style TargetType="{x:Type controls:InfoBadge}">
         <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+        <!--  WinUI InfoBadgeValueFontSize = 11 (InfoBadge_themeresources.xaml:10). The weight is WPF's own: WinUI's value text inherits the default body weight at 11, which reads thin against an accent fill here, so SemiBold holds the small numeral legible.  -->
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <!--  WinUI parity: InfoBadgeForeground (InfoBadge_themeresources.xaml:5) is TextOnAccentFillColorPrimaryBrush, matching the accent-derived default Background, not TextFillColorInverseBrush.  -->
         <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="MaxHeight" Value="24" />
-        <Setter Property="MinHeight" Value="24" />
-        <Setter Property="MinWidth" Value="34" />
-        <Setter Property="Padding" Value="0,2,0,2" />
+        <!--  WinUI InfoBadge is IsTabStop False (InfoBadge_themeresources.xaml:54). WPF's Control also defaults Focusable to true, which WinUI's does not, so a badge inside a NavigationViewItem would otherwise be Tab reachable and take focus on click.  -->
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <!--  WinUI InfoBadgeMaxHeight = 16, InfoBadgeMinHeight = InfoBadgeMinWidth = 4, InfoBadgePadding = 0 (InfoBadge_themeresources.xaml:7-13). The 4 dip floor is the dot; the 16 dip ceiling is the value and icon pill.  -->
+        <Setter Property="MaxHeight" Value="16" />
+        <Setter Property="MinHeight" Value="4" />
+        <Setter Property="MinWidth" Value="4" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:InfoBadge}">
                     <Grid>
+                        <!--  The radius follows the measured height: InfoBadge recomputes it as half the height on every size change, the way WinUI feeds TemplateSettings.InfoBadgeCornerRadius (InfoBadge.cpp OnSizeChanged), so the capsule stays a capsule at any height between the 4 dip dot and the 16 dip pill.  -->
                         <Border
                             x:Name="BadgeBorder"
                             MinWidth="{TemplateBinding MinWidth}"
@@ -27,9 +33,11 @@
                             MaxHeight="{TemplateBinding MaxHeight}"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="12">
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <!--  The inset is per display kind, which is why it is not on this element: WinUI gives a value or a font glyph ValueInfoBadgeTextMargin / IconInfoBadgeFontIconMargin 4,0,4,2 and a drawn icon the uniform IconInfoBadgeIconMargin 4,4,4,4 (InfoBadge_themeresources.xaml:14-16). The states below apply whichever one the kind calls for.  -->
                             <ContentPresenter
                                 x:Name="ContentArea"
+                                Margin="4,0,4,2"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Content="{TemplateBinding Content}"
@@ -38,11 +46,11 @@
                                 TextElement.FontWeight="{TemplateBinding FontWeight}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Border>
-                        <!--  Dot mode: 8x8 circle when no content  -->
+                        <!--  Dot mode: the 4 dip floor WinUI's InfoBadgeMinHeight / InfoBadgeMinWidth leave when the badge has neither a value nor an icon.  -->
                         <Ellipse
                             x:Name="DotIndicator"
-                            Width="8"
-                            Height="8"
+                            Width="4"
+                            Height="4"
                             Fill="{TemplateBinding Background}"
                             Visibility="Collapsed" />
                         <VisualStateManager.VisualStateGroups>
@@ -58,8 +66,14 @@
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                <!--  Icon / FontIcon / Value: show pill badge  -->
-                                <VisualState x:Name="Icon" />
+                                <!--  Icon / FontIcon / Value: show the pill. A drawn icon takes WinUI's uniform 4,4,4,4; a font glyph and a value keep the 4,0,4,2 the presenter already carries.  -->
+                                <VisualState x:Name="Icon">
+                                    <Storyboard>
+                                        <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentArea" Storyboard.TargetProperty="Margin">
+                                            <DiscreteThicknessKeyFrame KeyTime="0" Value="4,4,4,4" />
+                                        </ThicknessAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
                                 <VisualState x:Name="FontIcon" />
                                 <VisualState x:Name="Value" />
                             </VisualStateGroup>

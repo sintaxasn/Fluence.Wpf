@@ -8,6 +8,8 @@ Fluence.Wpf.Automation.SelectorBarItemAutomationPeer
 Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.SelectorBarItemAutomationPeer(Fluence.Wpf.Controls.SelectorBarItem! owner) -> void
 Fluence.Wpf.Automation.TitleBarAutomationPeer
 Fluence.Wpf.Automation.TitleBarAutomationPeer.TitleBarAutomationPeer(Fluence.Wpf.Controls.TitleBar! owner) -> void
+Fluence.Wpf.Controls.InfoBadge.CornerRadius.get -> System.Windows.CornerRadius
+Fluence.Wpf.Controls.InfoBadge.CornerRadius.set -> void
 Fluence.Wpf.Controls.InfoBar.CloseButtonClick -> System.EventHandler?
 Fluence.Wpf.Controls.InfoBar.CloseButtonCommand.get -> System.Windows.Input.ICommand?
 Fluence.Wpf.Controls.InfoBar.CloseButtonCommand.set -> void
@@ -47,7 +49,9 @@ override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetAutomationControlTypeC
 override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetClassNameCore() -> string!
 override Fluence.Wpf.Automation.TitleBarAutomationPeer.GetNameCore() -> string!
 override Fluence.Wpf.Controls.FlyoutPresenter.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+override Fluence.Wpf.Controls.InfoBadge.MeasureOverride(System.Windows.Size constraint) -> System.Windows.Size
 override Fluence.Wpf.Controls.InfoBadge.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+override Fluence.Wpf.Controls.InfoBadge.OnRenderSizeChanged(System.Windows.SizeChangedInfo! sizeInfo) -> void
 override Fluence.Wpf.Controls.SelectorBar.GetContainerForItemOverride() -> System.Windows.DependencyObject!
 override Fluence.Wpf.Controls.SelectorBar.IsItemItsOwnContainerOverride(object! item) -> bool
 override Fluence.Wpf.Controls.SelectorBar.OnGotKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs! e) -> void
@@ -65,6 +69,7 @@ override Fluence.Wpf.Controls.TabView.OnItemsChanged(System.Collections.Speciali
 override Fluence.Wpf.Controls.TabView.OnSelectionChanged(System.Windows.Controls.SelectionChangedEventArgs! e) -> void
 override Fluence.Wpf.Controls.TabView.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+static readonly Fluence.Wpf.Controls.InfoBadge.CornerRadiusProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameterProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonStyleProperty -> System.Windows.DependencyProperty!

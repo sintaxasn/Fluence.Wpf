@@ -107,6 +107,10 @@ namespace Fluence.Wpf.Tests.Control
                     System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, dot.Visibility);
                     Assert.Equal(Visibility.Collapsed, border.Visibility);
+
+                    // WinUI leaves a dot badge at its 4 dip minimum (InfoBadge_themeresources.xaml:7-8).
+                    Assert.Equal(4.0, dot.Width, 0.1);
+                    Assert.Equal(4.0, dot.Height, 0.1);
                 }
                 finally
                 {
@@ -154,13 +158,16 @@ namespace Fluence.Wpf.Tests.Control
 
                     System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
                     ContentPresenter content = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(badge, "ContentArea"), exactMatch: false);
-                    Assert.Equal(34.0, border.MinWidth, 0.1);
-                    Assert.Equal(24.0, border.MinHeight, 0.1);
-                    Assert.Equal(24.0, border.MaxHeight, 0.1);
-                    Assert.Equal(border.Padding.Left, border.Padding.Right, 0.01);
-                    Assert.Equal(border.Padding.Top, border.Padding.Bottom, 0.01);
-                    Assert.True(border.Padding.Top > border.Padding.Left,
-                        "Value badge vertical padding should be taller than the horizontal padding.");
+                    // WinUI InfoBadge metrics (InfoBadge_themeresources.xaml:7-15): a 4 dip floor for
+                    // the dot, a 16 dip ceiling for the pill, no padding, and the capsule's
+                    // breathing room carried by the content margin instead.
+                    Assert.Equal(4.0, border.MinWidth, 0.1);
+                    Assert.Equal(4.0, border.MinHeight, 0.1);
+                    Assert.Equal(16.0, border.MaxHeight, 0.1);
+                    Assert.Equal(new Thickness(0), border.Padding);
+                    Assert.Equal(new Thickness(4, 0, 4, 2), content.Margin);
+                    Assert.Equal(16.0, badge.ActualHeight, 0.5);
+                    Assert.Equal(11.0, TextElement.GetFontSize(content), 0.1);
                     Assert.Equal(HorizontalAlignment.Center, content.HorizontalAlignment);
                     Assert.Equal(VerticalAlignment.Center, content.VerticalAlignment);
                     Assert.Equal(FontWeights.SemiBold, TextElement.GetFontWeight(content));
@@ -257,6 +264,91 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     _ = badge.ApplyTemplate();
                     Assert.NotNull(badge.Template);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBadge_DisplayKind_PrefersValueOverIconAndFallsBackAsync()
+        {
+            // WinUI resolves the display kind value first, then icon, then dot (InfoBadge.cpp
+            // OnPropertyChanged tests Value() >= 0 before IconSource). Fluence had it the other way
+            // round, and a value set on a badge that already had an icon was dropped on the floor.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 120, Height = 80 };
+                InfoBadge badge = new() { IconSource = new FontIcon { Glyph = "" } };
+
+                try
+                {
+                    window.Content = badge;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = Assert.IsType<FontIcon>(badge.Content);
+
+                    badge.SetCurrentValue(InfoBadge.ValueProperty, 7);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal("7", badge.Content);
+
+                    // Clearing the value falls back to the icon rather than leaving the badge blank.
+                    badge.SetCurrentValue(InfoBadge.ValueProperty, -1);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = Assert.IsType<FontIcon>(badge.Content);
+
+                    // And with neither, the dot.
+                    badge.ClearValue(InfoBadge.IconSourceProperty);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Null(badge.Content);
+                    Ellipse dot = Assert.IsType<Ellipse>(FindVisualChildByName<Ellipse>(badge, "DotIndicator"), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, dot.Visibility);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBadge_ValueBadge_IsNeverNarrowerThanItIsTallAsync()
+        {
+            // WinUI squares the badge up when its natural width comes out under its height
+            // (InfoBadge.cpp MeasureOverride), which is what makes a single digit a circle rather
+            // than a squashed oval, and it recomputes the radius as half the height on every size
+            // change (OnSizeChanged). With WinUI's own 4 dip minimum width, nothing else holds that
+            // shape; the old 34 dip minimum width had been masking it.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 120, Height = 80 };
+                InfoBadge badge = new() { Value = 3, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+
+                try
+                {
+                    window.Content = badge;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(16.0, badge.ActualHeight, 0.5);
+                    Assert.True(
+                        badge.ActualWidth >= badge.ActualHeight - 0.5,
+                        "A one digit badge must be at least as wide as it is tall.");
+                    Assert.Equal(badge.ActualHeight / 2, badge.CornerRadius.TopLeft, 0.5);
+
+                    // A radius the consumer pins is left alone, as WinUI leaves a local value alone.
+                    badge.SetCurrentValue(InfoBadge.CornerRadiusProperty, new CornerRadius(2));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal(2.0, badge.CornerRadius.TopLeft, 0.01);
                 }
                 finally
                 {
