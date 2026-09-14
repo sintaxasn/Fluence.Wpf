@@ -222,23 +222,17 @@ namespace Fluence.Wpf.Controls
             Opening?.Invoke(this, EventArgs.Empty);
 
             // A Button raises Click from its mouse-up handler while it still holds the mouse
-            // capture, and only releases that capture after the handler returns. A light-dismiss
-            // popup takes the capture for itself when it opens, so a flyout opened from a Click
-            // took it mid-gesture and then lost it again the moment the button let go, which read
-            // as the flyout vanishing the instant it appeared. When something else holds the
-            // capture the open waits for the gesture to finish; a programmatic show, where nothing
-            // has the capture, still opens synchronously.
+            // capture, and only lets go once the handler returns. A light-dismiss popup takes that
+            // capture for itself as it opens, so a flyout opened from a Click took it mid-gesture
+            // and lost it again a moment later, which read as the flyout vanishing as it appeared.
+            //
+            // The popup therefore opens pinned, and the pin comes off once the gesture has been
+            // processed. Clearing StaysOpen is what makes the popup take the capture, so it takes
+            // it at a point where nothing is about to hand the capture back. The open itself stays
+            // synchronous: IsOpen is true before this returns, as it was before.
+            popup.SetCurrentValue(Popup.StaysOpenProperty, value: true);
             popup.IsOpen = true;
-
-            // The popup took its light-dismiss capture just now, but a button raises Click from
-            // its mouse-up handler while it still holds that capture and only lets go once the
-            // handler returns. The flyout would lose the capture it had just taken and close as it
-            // appeared, so the capture is taken again once the gesture is over. Toggling StaysOpen
-            // is what re-establishes it; a flyout that has been hidden meanwhile is left alone.
-            if (Mouse.Captured is not null)
-            {
-                _ = popup.Dispatcher.BeginInvoke(new Action(() => RecaptureAfterGesture(popup)), DispatcherPriority.Input);
-            }
+            _ = popup.Dispatcher.BeginInvoke(new Action(() => TakeDismissCapture(popup)), DispatcherPriority.Input);
 
             Opened?.Invoke(this, EventArgs.Empty);
             if (Presenter is not null)
@@ -248,19 +242,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Takes the light-dismiss capture again once the gesture that opened the flyout has
-        /// finished with it. See <see cref="ShowAt"/> for why it has to be taken twice.
+        /// Hands dismissal back to the popup once the gesture that opened the flyout is over. See
+        /// <see cref="ShowAt"/> for why the popup opens pinned.
         /// </summary>
-        /// <param name="popup">The popup to re-establish capture for.</param>
-        private static void RecaptureAfterGesture(Popup popup)
+        /// <param name="popup">The popup to hand dismissal back to.</param>
+        private static void TakeDismissCapture(Popup popup)
         {
-            if (!popup.IsOpen || Mouse.Captured is not null)
+            if (popup.IsOpen)
             {
-                return;
+                popup.SetCurrentValue(Popup.StaysOpenProperty, value: false);
             }
-
-            popup.SetCurrentValue(Popup.StaysOpenProperty, value: true);
-            popup.SetCurrentValue(Popup.StaysOpenProperty, value: false);
         }
 
         /// <summary>
