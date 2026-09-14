@@ -125,7 +125,13 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.True(openedRaised, "ShowAt should raise Opened after the popup opens.");
 
                     Popup popup = Assert.IsType<Popup>(flyout.HostPopup, exactMatch: false);
-                    Assert.False(popup.StaysOpen, "Flyout popups must be light-dismiss (StaysOpen=false).");
+                    // Light dismiss is run from the owning window rather than from the popup's own
+                    // mouse capture, because a capture taken inside a button's Click handler is
+                    // handed straight back when the button releases and the flyout closes as it
+                    // appears. The popup therefore stays pinned and FlyoutBase watches for a press
+                    // outside it; FlyoutBase_LightDismiss_ClosesOnAPressOutside covers the
+                    // behaviour that replaced the flag.
+                    Assert.True(popup.StaysOpen, "The popup is pinned; FlyoutBase owns the dismissal.");
                     Assert.True(popup.AllowsTransparency, "Flyout popups must allow transparency for the rounded surface.");
                     Assert.Equal(PopupAnimation.None, popup.PopupAnimation);
                     Assert.Same(target, popup.PlacementTarget);
@@ -262,6 +268,48 @@ namespace Fluence.Wpf.Tests.Control
                     flyout.Content = "Second";
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal("Second", presenter.Content);
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task FlyoutBase_LightDismiss_ClosesOnAPressOutsideAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300 };
+                Button owner = new() { Content = "Owner" };
+                Controls.Flyout flyout = new() { Content = "Attached" };
+
+                try
+                {
+                    window.Content = owner;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(owner);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
+                        "The flyout must open.");
+
+                    // A press anywhere in the owning window closes the flyout. The flyout's own
+                    // content lives in the popup's separate window, so a press inside it never
+                    // reaches this handler and never closes it.
+                    MouseButtonEventArgs press = new(System.Windows.Input.Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseDownEvent,
+                        Source = owner,
+                    };
+                    window.RaiseEvent(press);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true),
+                        "A press outside the flyout must dismiss it.");
                 }
                 finally
                 {

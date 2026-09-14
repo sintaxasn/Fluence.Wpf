@@ -123,7 +123,10 @@ namespace Fluence.Wpf.Tests.Control
                         "ShowAt should open the command bar flyout popup.");
 
                     Popup popup = Assert.IsType<Popup>(flyout.HostPopup, exactMatch: false);
-                    Assert.False(popup.StaysOpen, "CommandBarFlyout popups must be light-dismiss (StaysOpen=false).");
+                    // The popup is pinned and FlyoutBase runs the dismissal from the owning window
+                    // instead; see FlyoutBase.ShowAt for why the popup's own capture cannot be
+                    // trusted when the flyout is opened from a button's Click.
+                    Assert.True(popup.StaysOpen, "The popup is pinned; FlyoutBase owns the dismissal.");
 
                     Controls.CommandBarFlyoutPresenter presenter = Assert.IsType<Controls.CommandBarFlyoutPresenter>(popup.Child);
 

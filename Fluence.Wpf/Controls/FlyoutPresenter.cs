@@ -176,11 +176,16 @@ namespace Fluence.Wpf.Controls
             DependencyProperty slideProperty = slidesHorizontally ? TranslateTransform.XProperty : TranslateTransform.YProperty;
             DependencyProperty restProperty = slidesHorizontally ? TranslateTransform.YProperty : TranslateTransform.XProperty;
 
-            // Seed the discrete start so the first rendered frame never flashes the rest
-            // position: the offset on the chosen axis, 0 on the other, fully transparent.
-            translate.SetCurrentValue(slideProperty, startOffset);
+            // The base values are the rest state, not the start of the reveal. Each animation
+            // stamps its own start with a discrete keyframe at time zero, so the first rendered
+            // frame is still the offset and transparent one; what the base values decide is where
+            // the property lands when a FillBehavior.Stop clock ends. Seeding them with the start
+            // of the reveal instead leaves the surface transparent if the completion handler that
+            // stamps the rest value does not run, which is how a flyout could open and then turn
+            // invisible while the popup itself stayed open.
+            translate.SetCurrentValue(slideProperty, 0.0);
             translate.SetCurrentValue(restProperty, 0.0);
-            root.SetCurrentValue(OpacityProperty, 0.0);
+            root.SetCurrentValue(OpacityProperty, 1.0);
 
             DoubleAnimationUsingKeyFrames slideAnimation = CreateRevealAnimation(startOffset, 0.0);
             slideAnimation.Completed += (_, _) =>

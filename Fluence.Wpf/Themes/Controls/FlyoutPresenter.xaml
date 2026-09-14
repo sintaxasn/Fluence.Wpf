@@ -47,14 +47,17 @@
                 <ControlTemplate TargetType="{x:Type controls:FlyoutPresenter}">
                     <!--
                         The reveal fades this root, not the presenter surface alone, so the opaque
-                        ShadowCaster behind the surface fades with it. The root starts hidden so no
-                        frame composites at rest before FlyoutPresenter.OnLoaded seeds the start
-                        pose.
+                        ShadowCaster behind the surface fades with it. The root rests visible: the
+                        reveal's own discrete keyframe at time zero starts it transparent, and its
+                        clock runs with FillBehavior.Stop, so whatever the template declares here is
+                        where the surface lands when that clock ends. Declaring it hidden left the
+                        flyout invisible on .NET Framework the moment the reveal finished, with the
+                        popup still open, which read as the flyout vanishing as it appeared.
                     -->
                     <Grid
                         x:Name="PART_PresenterRoot"
                         Margin="16"
-                        Opacity="0">
+                        Opacity="1">
                         <Border
                             x:Name="ShadowCaster"
                             Background="{TemplateBinding Background}"

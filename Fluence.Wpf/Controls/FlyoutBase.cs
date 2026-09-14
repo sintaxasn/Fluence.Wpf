@@ -30,7 +30,6 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -221,36 +220,21 @@ namespace Fluence.Wpf.Controls
 
             Opening?.Invoke(this, EventArgs.Empty);
 
-            // A Button raises Click from its mouse-up handler while it still holds the mouse
-            // capture, and only lets go once the handler returns. A light-dismiss popup takes that
-            // capture for itself as it opens, so a flyout opened from a Click took it mid-gesture
-            // and lost it again a moment later, which read as the flyout vanishing as it appeared.
-            //
-            // The popup therefore opens pinned, and the pin comes off once the gesture has been
-            // processed. Clearing StaysOpen is what makes the popup take the capture, so it takes
-            // it at a point where nothing is about to hand the capture back. The open itself stays
-            // synchronous: IsOpen is true before this returns, as it was before.
+            // Dismissal is watched for on the owning window rather than left to the popup's own
+            // mouse capture. A Button raises Click from its mouse-up handler while it still holds
+            // that capture and lets go only once the handler returns, so a light-dismiss popup
+            // opened from a Click takes the capture mid-gesture and loses it again a moment later.
+            // On .NET Framework that closes the flyout as it appears. Pinning the popup and
+            // listening for a click outside it is the same behaviour without the race, and it
+            // behaves identically on every target framework.
             popup.SetCurrentValue(Popup.StaysOpenProperty, value: true);
             popup.IsOpen = true;
-            _ = popup.Dispatcher.BeginInvoke(new Action(() => TakeDismissCapture(popup)), DispatcherPriority.Input);
+            HookDismiss(placementTarget);
 
             Opened?.Invoke(this, EventArgs.Empty);
             if (Presenter is not null)
             {
                 _ = Presenter.Focus();
-            }
-        }
-
-        /// <summary>
-        /// Hands dismissal back to the popup once the gesture that opened the flyout is over. See
-        /// <see cref="ShowAt"/> for why the popup opens pinned.
-        /// </summary>
-        /// <param name="popup">The popup to hand dismissal back to.</param>
-        private static void TakeDismissCapture(Popup popup)
-        {
-            if (popup.IsOpen)
-            {
-                popup.SetCurrentValue(Popup.StaysOpenProperty, value: false);
             }
         }
 
@@ -418,9 +402,61 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         private void OnPopupClosed(object? sender, EventArgs e)
         {
+            UnhookDismiss();
             _ = HostPopup?.PlacementTarget = null;
             Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, value: null);
             Closed?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Starts watching the window the flyout is anchored in, so a press anywhere outside the
+        /// flyout closes it. Window deactivation is deliberately not a signal: moving focus to the
+        /// presenter activates the popup's own window, which would close the flyout as it opens. See <see cref="ShowAt"/> for why
+        /// dismissal is watched for here rather than left to the popup's own mouse capture.
+        /// </summary>
+        /// <param name="placementTarget">The element the flyout is anchored to.</param>
+        private void HookDismiss(FrameworkElement placementTarget)
+        {
+            UnhookDismiss();
+            _dismissWindow = Window.GetWindow(placementTarget);
+            if (_dismissWindow is null)
+            {
+                return;
+            }
+
+            // handledEventsToo, because a control that handles its own press would otherwise keep
+            // the flyout open behind it.
+            _dismissWindow.AddHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown), handledEventsToo: true);
+        }
+
+        /// <summary>
+        /// Stops watching the window. Safe to call when nothing is hooked.
+        /// </summary>
+        private void UnhookDismiss()
+        {
+            if (_dismissWindow is null)
+            {
+                return;
+            }
+
+            _dismissWindow.RemoveHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown));
+            _dismissWindow = null;
+        }
+
+        /// <summary>
+        /// Closes the flyout on a press in the owning window. The flyout's own content lives in the
+        /// popup's separate window, so a press inside it never reaches this handler.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnWindowPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hide();
+        }
+
+        /// <summary>
+        /// The window whose presses close this flyout while it is open.
+        /// </summary>
+        private Window? _dismissWindow;
     }
 }
