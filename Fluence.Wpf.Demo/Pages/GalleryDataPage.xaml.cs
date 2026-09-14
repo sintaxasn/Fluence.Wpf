@@ -314,6 +314,42 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
+        private static readonly string ListViewGridStateXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.ListViewGridStateSample",
+                                                     "    <fluence:ListView\n" +
+                                                     "        x:Name=\"GridViewListView\"\n" +
+                                                     "        Height=\"230\"\n" +
+                                                     "        ViewState=\"GridView\">\n" +
+                                                     "        <ListViewItem Content=\"Ana Bowman\" />\n" +
+                                                     "        <ListViewItem Content=\"Shawn Hughes\" />\n" +
+                                                     "        <ListViewItem Content=\"Oscar Ward\" />\n" +
+                                                     "    </fluence:ListView>\n");
+
+        private const string ListViewGridStateCSharpSource = "using System.Windows;\n" +
+                                                             "using System.Windows.Controls;\n" +
+                                                             "using Fluence.Wpf;\n" +
+                                                             "\n" +
+                                                             "namespace Fluence.Wpf.Demo.Pages.Data\n" +
+                                                             "{\n" +
+                                                             "    public partial class ListViewGridStateSample : UserControl\n" +
+                                                             "    {\n" +
+                                                             "        public ListViewGridStateSample()\n" +
+                                                             "        {\n" +
+                                                             "            InitializeComponent();\n" +
+                                                             "        }\n" +
+                                                             "\n" +
+                                                             "        private void GridViewState_Click(object sender, RoutedEventArgs e)\n" +
+                                                             "        {\n" +
+                                                             "            GridViewListView.ViewState = ListViewState.GridView;\n" +
+                                                             "        }\n" +
+                                                             "\n" +
+                                                             "        private void ListViewState_Click(object sender, RoutedEventArgs e)\n" +
+                                                             "        {\n" +
+                                                             "            GridViewListView.ViewState = ListViewState.Default;\n" +
+                                                             "        }\n" +
+                                                             "    }\n" +
+                                                             "}\n";
+
         private static readonly string ImageXamlSource = DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Data.ImageSample",
                                                "    <WrapPanel\n" +
@@ -426,7 +462,18 @@ namespace Fluence.Wpf.Demo.Pages
                 new DemoSampleSource(3, ListBoxSelectionXamlSource, ListBoxSelectionCSharpSource),
                 new DemoSampleSource(4, PersonPictureXamlSource, PersonPictureCSharpSource),
                 new DemoSampleSource(5, CardVariantsXamlSource, CardVariantsCSharpSource),
-                new DemoSampleSource(6, ImageXamlSource, ImageCSharpSource));
+                new DemoSampleSource(6, ImageXamlSource, ImageCSharpSource),
+                new DemoSampleSource(7, ListViewGridStateXamlSource, ListViewGridStateCSharpSource));
+        }
+
+        private void GridViewState_Click(object sender, RoutedEventArgs e)
+        {
+            _ = GridViewListView?.ViewState = ListViewState.GridView;
+        }
+
+        private void ListViewState_Click(object sender, RoutedEventArgs e)
+        {
+            _ = GridViewListView?.ViewState = ListViewState.Default;
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

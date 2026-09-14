@@ -301,6 +301,40 @@
                         </WrapPanel>
                     </ContentControl>
                     <local:DemoSampleControl SampleDescription="Use Image to present pictures with a theme-aware stroke; CornerRadius drives the rounded clip from square to circular." />
+
+                    <ContentControl x:Name="DemoSampleSlot07DemoContentHost" Visibility="Collapsed">
+                        <fluence:ListView
+                            x:Name="GridViewListView"
+                            Height="230"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            ViewState="GridView">
+                            <ListViewItem Content="Ana Bowman" />
+                            <ListViewItem Content="Shawn Hughes" />
+                            <ListViewItem Content="Oscar Ward" />
+                            <ListViewItem Content="Madison Butler" />
+                            <ListViewItem Content="Graham Barnes" />
+                            <ListViewItem Content="Priya Kapoor" />
+                            <ListViewItem Content="Mateo Rivera" />
+                            <ListViewItem Content="Nina Alvarez" />
+                        </fluence:ListView>
+                    </ContentControl>
+                    <ContentControl x:Name="DemoSampleSlot07RightRailContentHost" Visibility="Collapsed">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <fluence:RadioButton
+                                x:Name="GridViewStateOption"
+                                Click="GridViewState_Click"
+                                Content="Grid view"
+                                IsChecked="True" />
+                            <fluence:RadioButton
+                                x:Name="ListViewStateOption"
+                                Margin="{DynamicResource DemoTextTopGapMargin}"
+                                Click="ListViewState_Click"
+                                Content="Default" />
+                        </StackPanel>
+                    </ContentControl>
+                    <local:DemoSampleControl SampleDescription="Set ViewState to GridView when items read better as tiles that wrap across the list; Default keeps one item per row." />
                 </StackPanel>
             </fluence:SmoothScrollViewer>
         </Grid>
