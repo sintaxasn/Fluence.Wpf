@@ -55,6 +55,87 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task ProgressBar_ShowStepMarkers_NotchesTheBarAtEveryBoundaryAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ProgressBar bar = new()
+                {
+                    Width = 300,
+                    ProgressMode = ProgressBarMode.StepProgress,
+                    Steps = 4,
+                    CurrentStep = 2,
+                };
+                Window window = new() { Content = bar, Width = 400, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Grid host = Assert.IsType<System.Windows.Controls.Grid>(
+                        FindVisualChildByName<System.Windows.Controls.Grid>(bar, "ProgressBarIndicatorHost"), exactMatch: false);
+                    System.Windows.Controls.Border track = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(bar, "PART_Track"), exactMatch: false);
+
+                    // Four steps leave three interior boundaries, and the notch at each is cut out of
+                    // the fill and the track alike, so the gaps show what is behind the bar.
+                    _ = Assert.IsType<CombinedGeometry>(host.Clip, exactMatch: false);
+                    _ = Assert.IsType<CombinedGeometry>(track.Clip, exactMatch: false);
+
+                    double quarter = track.ActualWidth / 4.0;
+                    Assert.False(host.Clip.FillContains(new Point(quarter, host.ActualHeight / 2.0)),
+                        "The bar must be cut at the first step boundary.");
+                    Assert.True(host.Clip.FillContains(new Point(quarter / 2.0, host.ActualHeight / 2.0)),
+                        "The bar must be solid in the middle of a segment.");
+
+                    // Turning the markers off returns the plain rounded bar.
+                    bar.ShowStepMarkers = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = Assert.IsType<RectangleGeometry>(host.Clip, exactMatch: false);
+                    Assert.True(host.Clip.FillContains(new Point(quarter, host.ActualHeight / 2.0)),
+                        "Without markers the bar must be continuous.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ProgressBar_ShowStepMarkers_LeavesANonStepBarWholeAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ProgressBar bar = new() { Width = 300, Value = 40 };
+                Window window = new() { Content = bar, Width = 400, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Grid host = Assert.IsType<System.Windows.Controls.Grid>(
+                        FindVisualChildByName<System.Windows.Controls.Grid>(bar, "ProgressBarIndicatorHost"), exactMatch: false);
+
+                    // The property defaults to true, but a determinate bar has no step boundaries to
+                    // notch, so it must render as one continuous bar.
+                    Assert.True(bar.ShowStepMarkers);
+                    _ = Assert.IsType<RectangleGeometry>(host.Clip, exactMatch: false);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task ProgressBar_PausedMode_UsesCautionBrushAsync()
         {
             return AssertProgressBarModeBrushAsync(ProgressBarMode.Paused, "SystemFillColorCautionBrush");
