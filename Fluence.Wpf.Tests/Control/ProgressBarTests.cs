@@ -63,6 +63,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     Width = 300,
                     ProgressMode = ProgressBarMode.StepProgress,
+                    ShowStepMarkers = true,
                     Steps = 4,
                     CurrentStep = 2,
                 };
@@ -123,9 +124,8 @@ namespace Fluence.Wpf.Tests.Control
                     System.Windows.Controls.Grid host = Assert.IsType<System.Windows.Controls.Grid>(
                         FindVisualChildByName<System.Windows.Controls.Grid>(bar, "ProgressBarIndicatorHost"), exactMatch: false);
 
-                    // The property defaults to true, but a determinate bar has no step boundaries to
-                    // notch, so it must render as one continuous bar.
-                    Assert.True(bar.ShowStepMarkers);
+                    // The notches are opt-in, so a bar that asks for nothing draws continuous.
+                    Assert.False(bar.ShowStepMarkers);
                     _ = Assert.IsType<RectangleGeometry>(host.Clip, exactMatch: false);
                 }
                 finally

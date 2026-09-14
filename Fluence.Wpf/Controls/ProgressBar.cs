@@ -210,11 +210,12 @@ namespace Fluence.Wpf.Controls
                 nameof(ShowStepMarkers),
                 typeof(bool),
                 typeof(ProgressBar),
-                new FrameworkPropertyMetadata(defaultValue: true, OnLayoutPropertyChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, OnLayoutPropertyChanged));
 
         /// <summary>
         /// Gets or sets whether the bar is notched at each step boundary while it is in step
-        /// progress mode. The notches cut through the track and the fill alike, so a step bar reads
+        /// progress mode. Off by default: a step bar reads as one travelling fill unless a consumer
+        /// asks for the segmented look. The notches cut through the track and the fill alike, so a step bar reads
         /// as a row of segments rather than one continuous bar. Ignored outside step progress mode,
         /// and by a bar with fewer than two steps, which has no interior boundary to mark.
         /// </summary>
