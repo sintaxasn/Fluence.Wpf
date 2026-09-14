@@ -201,6 +201,7 @@
                                     <fluence:Slider
                                         x:Name="VerticalTickSlider"
                                         Height="210"
+                                        IsSnapToTickEnabled="True"
                                         Maximum="100"
                                         Minimum="0"
                                         Orientation="Vertical"

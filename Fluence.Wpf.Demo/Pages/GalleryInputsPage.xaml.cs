@@ -218,6 +218,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "                <TextBlock HorizontalAlignment=\"Center\" Text=\"Vertical\" />\n" +
                                                      "                <fluence:Slider\n" +
                                                      "                    Height=\"210\"\n" +
+                                                     "                    IsSnapToTickEnabled=\"True\"\n" +
                                                      "                    Maximum=\"100\"\n" +
                                                      "                    Minimum=\"0\"\n" +
                                                      "                    Orientation=\"Vertical\"\n" +

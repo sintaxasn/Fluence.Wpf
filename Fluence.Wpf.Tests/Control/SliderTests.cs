@@ -79,6 +79,53 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        [Theory]
+        [InlineData(System.Windows.Controls.Orientation.Horizontal)]
+        [InlineData(System.Windows.Controls.Orientation.Vertical)]
+        public Task Slider_SnapToTick_LandsOnATickWhenDraggedAsync(System.Windows.Controls.Orientation orientation)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Controls.Slider slider = new()
+                {
+                    Orientation = orientation,
+                    Width = orientation is System.Windows.Controls.Orientation.Horizontal ? 240 : 40,
+                    Height = orientation is System.Windows.Controls.Orientation.Horizontal ? 40 : 240,
+                    Minimum = 0,
+                    Maximum = 100,
+                    TickFrequency = 10,
+                    IsSnapToTickEnabled = true,
+                    Value = 40,
+                };
+                Window window = new() { Content = slider, Width = 320, Height = 320 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Thumb thumb = Assert.IsType<Thumb>(FindVisualChild<Thumb>(slider), exactMatch: false);
+
+                    // A drag the length of a third of a tick must still settle on a tick: the
+                    // snapping is the Slider's own, and it has to hold on both axes.
+                    DragDeltaEventArgs drag = new(horizontalChange: 8, verticalChange: -8)
+                    {
+                        RoutedEvent = Thumb.DragDeltaEvent,
+                        Source = thumb,
+                    };
+                    thumb.RaiseEvent(drag);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(0.0, slider.Value % slider.TickFrequency, 0.001);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         [Fact]
         public Task Slider_DefaultState_ThumbInnerDotScaleIsRestValueAsync()
         {
