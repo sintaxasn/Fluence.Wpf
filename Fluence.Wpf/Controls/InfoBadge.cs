@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -75,10 +76,14 @@ namespace Fluence.Wpf.Controls
                 nameof(Value),
                 typeof(int),
                 typeof(InfoBadge),
-                new FrameworkPropertyMetadata(-1, OnValueChanged));
+                new FrameworkPropertyMetadata(-1, OnValueChanged),
+                IsValueInRange);
 
         /// <summary>
-        /// Gets or sets the numeric value displayed. Set to -1 to show a dot instead.
+        /// Gets or sets the numeric value displayed. Set to -1, the default, to show a dot instead.
+        /// Anything below -1 is rejected: WinUI throws for it
+        /// (<c language="text">InfoBadge.cpp</c>), because a negative count has no badge to render
+        /// and folding it into the dot would hide the bug instead of reporting it.
         /// </summary>
         public int Value
         {
@@ -124,6 +129,50 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IconSourceProperty, value);
         }
 
+        /// <summary>
+        /// Returns the canonical Segoe Fluent glyph for a badge severity, so a consumer can build
+        /// the icon form of a badge without hardcoding codepoints, in the same shape as
+        /// <see cref="InfoBar.GetSeverityGlyph(Fluence.Wpf.InfoBarSeverity)"/>.
+        /// </summary>
+        /// <remarks>
+        /// WinUI ships a dot, a value and an icon style per severity, and only the icon styles
+        /// carry a glyph (<c language="text">InfoBadge_themeresources.xaml</c>). Fluence expresses
+        /// severity as one <see cref="BadgeStyle"/> property, so the badge cannot pick the icon form
+        /// for you without taking the dot form away: assign the glyph to
+        /// <see cref="IconSource"/> when you want it. The values are WinUI's own, and the icon
+        /// styles for Attention and Informational also inset the glyph by 0,4,0,2.
+        /// </remarks>
+        /// <param name="badgeStyle">The severity to return the glyph for.</param>
+        /// <returns>The glyph character for <paramref name="badgeStyle"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="badgeStyle"/> is not a defined <see cref="InfoBadgeStyle"/> value.
+        /// </exception>
+        public static string GetStyleGlyph(InfoBadgeStyle badgeStyle)
+        {
+            return badgeStyle switch
+            {
+                InfoBadgeStyle.Attention => "",
+                InfoBadgeStyle.Informational => "",
+                InfoBadgeStyle.Success => "",
+                InfoBadgeStyle.Caution => "",
+                InfoBadgeStyle.Critical => "",
+                _ => throw new ArgumentOutOfRangeException(nameof(badgeStyle), badgeStyle, message: null),
+            };
+        }
+
+        /// <summary>
+        /// Rejects a <see cref="Value"/> below -1. WinUI throws
+        /// <c language="text">hresult_out_of_bounds</c> for the same range
+        /// (<c language="text">InfoBadge.cpp</c>); -1 is the dot, and anything under it has no
+        /// rendering of its own, so accepting it would render as a dot and hide the mistake.
+        /// </summary>
+        /// <param name="value">The proposed value.</param>
+        /// <returns><see langword="true"/> when the value is -1 or greater.</returns>
+        private static bool IsValueInRange(object value)
+        {
+            return value is int number && number >= -1;
+        }
+
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
         {
@@ -145,6 +194,12 @@ namespace Fluence.Wpf.Controls
         /// height, staying a capsule at any size; set locally it is honoured as given, which is
         /// what WinUI's own <c language="text">InfoBadge.cpp</c> does with a local value.
         /// </summary>
+        /// <remarks>
+        /// This preserves parity rather than adding to it. WinUI's InfoBadge inherits
+        /// <c language="csharp">CornerRadius</c> from its own <c language="csharp">Control</c> base
+        /// and reads it to honour a local value; WPF's <see cref="System.Windows.Controls.Control"/>
+        /// has no such property, so the badge declares it.
+        /// </remarks>
         public CornerRadius CornerRadius
         {
             get => (CornerRadius)GetValue(CornerRadiusProperty);

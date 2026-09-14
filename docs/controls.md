@@ -265,6 +265,8 @@ Status controls cover severity, closable state, determinate and indeterminate pr
 
 Both helpers stay in sync with the `InfoBar` control template; use them instead of hardcoding glyph or brush values.
 
+`InfoBadge.GetStyleGlyph(InfoBadgeStyle)` is the same idea for badges: it returns the Segoe Fluent glyph WinUI puts on that severity's icon badge, for assigning to `IconSource`. It is opt-in because Fluence expresses severity as one `BadgeStyle` property where WinUI ships a dot, a value and an icon style per severity; supplying the glyph automatically would take the dot and value forms away. `Value` always wins over an icon, so a badge with both shows the number.
+
 `InfoBar` lays its title, message and action button out on one line while all three fit and stacks them when they do not, the same rule WinUI's `InfoBarPanel` applies, so a short bar is one 48 dip line and a long one grows. Free-form `Content` sits under that row, or takes the row itself when the bar carries neither title nor message.
 
 `InfoBar`'s close button carries WinUI's own contract: `CloseButtonClick` fires first, then `CloseButtonCommand` runs with `CloseButtonCommandParameter`, and only then does the close pipeline start, so a cancel still belongs in `Closing` rather than in the click. `CloseButtonStyle` replaces the button's style and clearing it puts the template's own style back.

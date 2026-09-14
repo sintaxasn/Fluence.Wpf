@@ -121,7 +121,7 @@ tests the pane chrome fixes brought with them. Both are new names that never
 appeared in an earlier capture, so neither needed an entry of its own; this
 section is the record of the regeneration.
 
-### Additions: 14 lines
+### Additions: 17 lines
 
 | Method | Occurrences | Source |
 | ------ | ----------: | ------ |
@@ -139,8 +139,11 @@ section is the record of the regeneration.
 | `NavigationViewItem_ClosedPane_GivesTheIconItsFullColumnAsync` | 2 | `Control/NavigationViewTests.cs`, one `[Theory]` with `[InlineData]` for Left and LeftCompact |
 | `InfoBar_Opened_RaisesOnTheOpenTransitionButNotOnACancelledCloseRevertAsync` | 1 | `Control/InfoBarTests.cs` |
 | `InfoBar_CustomIcon_IsClampedToTheIconBoxAsync` | 1 | `Control/InfoBarTests.cs` |
+| `InfoBadge_Value_RejectsAnythingBelowMinusOneAsync` | 1 | `Control/InfoBadgeTests.cs` |
+| `InfoBadge_GetStyleGlyph_ReturnsWinUiGlyphPerSeverity` | 1 | `Control/InfoBadgeTests.cs` |
+| `InfoBadge_SeverityWithAValue_ShowsTheValueNotAGlyphAsync` | 1 | `Control/InfoBadgeTests.cs` |
 
-Zero removals and zero renames. 1275 cases to 1290 on net10, 1273 to 1288 on
+Zero removals and zero renames. 1275 cases to 1293 on net10, 1273 to 1291 on
 net472.
 
 ### Status

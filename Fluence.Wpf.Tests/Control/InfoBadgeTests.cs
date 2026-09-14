@@ -358,5 +358,68 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        [Fact]
+        public Task InfoBadge_Value_RejectsAnythingBelowMinusOneAsync()
+        {
+            // WinUI throws hresult_out_of_bounds for a value under -1 (InfoBadge.cpp). -1 is the
+            // dot; anything below it has no rendering of its own, so accepting it would draw a dot
+            // and hide the mistake. WPF's ValidateValueCallback surfaces as ArgumentException.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                InfoBadge badge = new();
+
+                _ = Assert.Throws<ArgumentException>(() => badge.Value = -2);
+                _ = Assert.Throws<ArgumentException>(() => badge.SetValue(InfoBadge.ValueProperty, -17));
+
+                badge.Value = -1;
+                Assert.Equal(-1, badge.Value);
+                badge.Value = 0;
+                Assert.Equal(0, badge.Value);
+            });
+        }
+
+        [Fact]
+        public static void InfoBadge_GetStyleGlyph_ReturnsWinUiGlyphPerSeverity()
+        {
+            // WinUI carries these on its per-severity icon styles
+            // (InfoBadge_themeresources.xaml:99,111,122,133,144). The helper hands them to a
+            // consumer who wants the icon form, in the same shape as InfoBar.GetSeverityGlyph.
+            Assert.Equal("", InfoBadge.GetStyleGlyph(InfoBadgeStyle.Attention));
+            Assert.Equal("", InfoBadge.GetStyleGlyph(InfoBadgeStyle.Informational));
+            Assert.Equal("", InfoBadge.GetStyleGlyph(InfoBadgeStyle.Success));
+            Assert.Equal("", InfoBadge.GetStyleGlyph(InfoBadgeStyle.Caution));
+            Assert.Equal("", InfoBadge.GetStyleGlyph(InfoBadgeStyle.Critical));
+
+            _ = Assert.Throws<ArgumentOutOfRangeException>(static () => InfoBadge.GetStyleGlyph((InfoBadgeStyle)99));
+        }
+
+        [Fact]
+        public Task InfoBadge_SeverityWithAValue_ShowsTheValueNotAGlyphAsync()
+        {
+            // The glyph is opt-in precisely so it cannot pre-empt a value: WinUI's severity comes
+            // in a dot, a value and an icon style, and Fluence has one BadgeStyle property, so
+            // supplying the glyph automatically would take the dot and value forms away.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 120, Height = 80 };
+                InfoBadge badge = new() { BadgeStyle = InfoBadgeStyle.Critical, Value = 2 };
+
+                try
+                {
+                    window.Content = badge;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal("2", badge.Content);
+                    Assert.Null(badge.IconSource);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

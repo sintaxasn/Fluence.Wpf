@@ -69,6 +69,7 @@ override Fluence.Wpf.Controls.TabView.OnItemsChanged(System.Collections.Speciali
 override Fluence.Wpf.Controls.TabView.OnSelectionChanged(System.Windows.Controls.SelectionChangedEventArgs! e) -> void
 override Fluence.Wpf.Controls.TabView.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+static Fluence.Wpf.Controls.InfoBadge.GetStyleGlyph(Fluence.Wpf.InfoBadgeStyle badgeStyle) -> string!
 static readonly Fluence.Wpf.Controls.InfoBadge.CornerRadiusProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameterProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandProperty -> System.Windows.DependencyProperty!
