@@ -22,8 +22,13 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf/             Control library (multi-TFM: net472 + net8.0-windows10.0.26100.0 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
-└── Fluence.Wpf.Tests/       xunit.v3 suite (multi-TFM)
+├── Fluence.Wpf.Tests/       xunit.v3 suite (net472 + net10.0-windows10.0.26100.0)
+└── Fluence.Wpf.Tests.Smoke/ xunit.v3 smoke lane (net8.0-windows10.0.26100.0)
 ```
+
+`Fluence.Wpf.Demo.PowerShell/` sits beside these with no project of its own: it holds the four
+PowerShell samples `docs/powershell.md` walks through, plus the window they load, so it is not part
+of the solution.
 
 ### CLR namespaces
 
@@ -263,7 +268,7 @@ When adding a new control or materially changing an existing one:
 ## 6. Testing
 
 - **Framework**: xunit.v3 4.0.0 (`xunit.v3` / `xunit.runner.visualstudio`) via `Microsoft.NET.Test.Sdk` 18.9.0, running under Microsoft Testing Platform.
-- **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
+- **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass. The library's third target framework, `net8.0-windows10.0.26100.0`, is covered by `Fluence.Wpf.Tests.Smoke`, a separate project that references the library alone, because the demo projects it would otherwise drag in do not target it. That lane is deliberately shallow (theme pipeline, accent, a window of controls, a `FluenceWindow`): it exists so the third shipped binary is loaded rather than only built and packed, and behaviour coverage stays with the two full lanes, where the source is identical. It is not baselined, and adding a case to it needs no allowlist entry.
 - **Invocation**: run the built executable, not `dotnet test`. The SDK 10 VSTest bridge is gone.
 
   ```powershell
@@ -310,6 +315,7 @@ When adding a new control or materially changing an existing one:
 dotnet restore Fluence.Wpf.sln
 dotnet build   Fluence.Wpf.sln -c Debug
 Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
+Fluence.Wpf.Tests.Smoke\bin\Debug\net8.0-windows10.0.26100.0\Fluence.Wpf.Tests.Smoke.exe --no-ansi --progress off
 ```
 
 The suite runs on Microsoft Testing Platform: run the built executable, not `dotnet test`. On `net472`, a single-process whole-assembly run aborts non-deterministically, so run that TFM as the two complementary lanes described in section 6 instead of one combined run.

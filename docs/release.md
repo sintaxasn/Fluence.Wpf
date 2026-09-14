@@ -15,7 +15,7 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
        ForEach-Object { '{0}: {1} lines' -f $_.Directory.Name, (Get-Content $_.FullName).Count }
    ```
 
-   One line, `#nullable enable`, means empty. To fold the additions in, append each `PublicAPI.Unshipped.txt` to its sibling `PublicAPI.Shipped.txt`, sort the result, and reset the unshipped file to `#nullable enable`.
+   One line, `#nullable enable`, means empty. To fold the additions in, fold each `PublicAPI.Unshipped.txt` into its sibling `PublicAPI.Shipped.txt`, sort the result, and reset the unshipped file to `#nullable enable`. Folding in is not a plain append. A `*REMOVED*` line is an instruction to delete the named member from `PublicAPI.Shipped.txt`, so apply it and drop the marker rather than carrying it across, or the shipped baseline ends up holding an entry form that does not belong in it. Both files also begin with `#nullable enable`, so keep one and drop the duplicate.
 4. **`docs/migration-guide.md` has an entry for every breaking change in the section.** The release policy in [the roadmap](roadmap.md) promises this. After 1.0 there should be none in a minor release.
 5. **Screenshots are current.** If gallery visuals changed, regenerate `docs/screenshots/` before tagging:
 

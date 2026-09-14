@@ -61,7 +61,7 @@ Two exceptions are supported and are meant to be reused: `DefaultControlFocusVis
 
 What is supported is everything published into the computed dictionary at slot `[0]`, which is every canonical Color token and its `*Brush` twin plus the special brushes, together with the keys in `Themes/Typography/Typography.xaml`. `Fluence.Wpf.Tests/Theming/golden/PublicKeys.txt` is the frozen inventory of that set, and `ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync` fails the build on an unrecorded addition or removal, which is the XAML counterpart of `PublicApiAnalyzers` on the CLR surface.
 
-There are no per-control override keys. WinUI publishes roughly 3,100 of them, for example `ButtonBackgroundPointerOver` and `CheckBoxCheckBackgroundFillChecked`; Fluence publishes none, because its templates bind the global palette directly. The consequence is concrete: **restyling one control means replacing that control's template**, not setting a key. Per-control override keys are additive and are on the roadmap.
+There are no per-control override keys. WinUI publishes roughly 3,100 of them, for example `ButtonBackgroundPointerOver` and `CheckBoxCheckBackgroundFillChecked`; Fluence publishes none, because its templates bind the global palette directly. The consequence is concrete: **restyling one control means replacing that control's template**, not setting a key. Per-control override keys are additive, so they can arrive in any minor release; none is scheduled.
 
 ## Elevation
 
