@@ -230,3 +230,32 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the two implemented properties and the flyout gesture
+
+Five more regression tests, and the raw captures beside this file lose their
+trailing summary line: it carried the absolute path of whoever generated it and
+a duration in milliseconds, so every regeneration diffed even on the same
+machine in a different worktree. The `.methods.txt` captures are unchanged in
+shape.
+
+The net8.0-windows smoke lane added in the same batch is not baselined. It is a
+separate assembly with its own four cases, covering that the third shipped
+target framework loads at all; a case added there needs no entry here.
+
+### Additions: 5 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync` | 1 | `Control/FlyoutTests.cs` |
+| `ProgressBar_ShowStepMarkers_NotchesTheBarAtEveryBoundaryAsync` | 1 | `Control/ProgressBarTests.cs` |
+| `ProgressBar_ShowStepMarkers_LeavesANonStepBarWholeAsync` | 1 | `Control/ProgressBarTests.cs` |
+| `ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync` | 1 | `Control/ListViewTests.cs` |
+| `ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync` | 1 | `Control/ListViewTests.cs` |
+
+Net: 5 added, none removed. 1305 cases to 1310 on net10, 1303 to 1308 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

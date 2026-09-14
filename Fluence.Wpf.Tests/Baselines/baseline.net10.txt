@@ -1,5 +1,4 @@
-﻿
-  Fluence.Wpf.Tests.Windowing.CaptionButtonTests.FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommandsAsync
+﻿  Fluence.Wpf.Tests.Windowing.CaptionButtonTests.FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommandsAsync
   Fluence.Wpf.Tests.Windowing.CaptionButtonTests.FluenceWindow_CaptionButtons_ReflowIntoRightAlignedSlotsAsync
   Fluence.Wpf.Tests.Windowing.CaptionButtonTests.FluenceWindow_MinimizeCommand_TransitionsToMinimizedAsync
   Fluence.Wpf.Tests.Windowing.CaptionButtonTests.FluenceWindow_MaximizeCommand_TransitionsToMaximizedAsync
@@ -685,6 +684,7 @@
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_Hide_ClosesPopupAndRaisesClosingThenClosedAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ClosingCancel_KeepsFlyoutOpenAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ContentChange_FlowsToPresenterAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyoutAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_PlacementModes_MapToPopupPlacementAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ShowAt_StampsRevealPlacementWithMappedSideAsync
@@ -757,6 +757,8 @@
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_SelectionIndicator_CanonicalGeometryAndCenteredAsync
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_SelectionIndicator_FadesInAtFullSizeWhenSelectedAsync
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_GetContainerForItemOverride_ReturnsFluentListBoxItemAsync
+  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync
+  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_PresentInItemTemplateAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_WidthIsCanonicalAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_CornerRadiusIsCanonicalAsync
@@ -939,6 +941,8 @@
   Fluence.Wpf.Tests.Control.PipsPagerTests.PipsPager_PipFills_UseNeutralStrongFillRolesAsync
   Fluence.Wpf.Tests.Control.PipsPagerTests.PipsPager_PipSizeMorph_AnimatesSelectionAcrossTheViewportAsync
   Fluence.Wpf.Tests.Control.PipsPagerTests.PipsPager_AutomationPeer_ReportsGroupClassNameAndNameAsync
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_ShowStepMarkers_NotchesTheBarAtEveryBoundaryAsync
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_ShowStepMarkers_LeavesANonStepBarWholeAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_PausedMode_UsesCautionBrushAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_PausedMode_TracksCautionBrushAcrossThemeChangeAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_ErrorMode_UsesCriticalBrushAsync
@@ -1304,6 +1308,3 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocksAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
-
-Test discovery summary: found 1305 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 212ms
