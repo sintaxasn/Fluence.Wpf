@@ -71,7 +71,7 @@
                                 x:Name="SelectionIndicator"
                                 Width="3"
                                 Height="16"
-                                Margin="4,0,0,0"
+                                Margin="2,0,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 Background="{DynamicResource NavigationViewSelectionIndicatorForeground}"

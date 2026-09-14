@@ -55,9 +55,21 @@
                                 Margin="1,0,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                Background="{DynamicResource NavigationViewSelectionIndicatorForeground}"
                                 CornerRadius="1.5"
-                                Opacity="0" />
+                                Opacity="0"
+                                RenderTransformOrigin="0.5,0.5">
+                                <!--
+                                    The pill takes the shared indicator brush rather than the accent fill
+                                    directly. WinUI keys it separately (ComboBoxItemPillFillBrush, the accent
+                                    fill in light and dark at ComboBox_themeresources.xaml:106,316) but swaps
+                                    it in high contrast (:211), and the shared key is where Fluence keeps that
+                                    swap for every other selection indicator in the library.
+                                -->
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="SelectionIndicatorScale" />
+                                </Border.RenderTransform>
+                            </Border>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -80,13 +92,66 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
+                            <!--  The pill keeps full strength while the item is selected and disabled, as WinUI's SelectedDisabled state does (ComboBox_themeresources.xaml:689-692); only the row fill and the text take disabled tokens.  -->
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
+
+                        <!--
+                            Pressing a selected row squashes its pill to ComboBoxItemPillMinScale 0.625 over
+                            ComboBoxItemScaleAnimationDuration 167 ms on the fast out slow in spline, which is
+                            WinUI's SelectedPressed state (ComboBox_themeresources.xaml:726-727, constants
+                            :326 and :330). WPF's ComboBoxItem carries no IsPressed property, so the press is
+                            read from the mouse button events the item already receives.
+                        -->
+                        <EventTrigger RoutedEvent="UIElement.PreviewMouseLeftButtonDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="SelectionIndicatorScale"
+                                        Storyboard.TargetProperty="ScaleY"
+                                        To="0.625"
+                                        Duration="0:0:0.167">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.PreviewMouseLeftButtonUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="SelectionIndicatorScale"
+                                        Storyboard.TargetProperty="ScaleY"
+                                        To="1"
+                                        Duration="0:0:0.167">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="SelectionIndicatorScale"
+                                        Storyboard.TargetProperty="ScaleY"
+                                        To="1"
+                                        Duration="0:0:0.167">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

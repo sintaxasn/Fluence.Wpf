@@ -180,8 +180,6 @@ namespace Fluence.Wpf.Controls
         // 3 Gallery measures its indicator's left edge at the same x as the pill's. The pill starts
         // at the item's own origin plus NavigationViewItemButtonMargin (4), so this is that 4.
         private const double NavigationItemOuterHorizontalMargin = 4.0;
-        private const double NavigationItemChildIndicatorOffset = 44.0;
-
         // Gap between the bottom edge of a top-mode item and the indicator under it. WinUI's top
         // item template gives its indicator a 4 dip bottom margin inside the item.
         private const double TopIndicatorBottomInset = 4.0;
@@ -1573,7 +1571,7 @@ defaultValue: null,
         /// <param name="host">The host element containing the indicator.</param>
         /// <param name="topMode">Indicates whether the navigation view is in top mode.</param>
         /// <returns>The calculated position for the indicator.</returns>
-        private Point CalculateIndicatorPosition(NavigationViewItem item, FrameworkElement indicator, FrameworkElement host, bool topMode)
+        private static Point CalculateIndicatorPosition(NavigationViewItem item, FrameworkElement indicator, FrameworkElement host, bool topMode)
         {
             try
             {
@@ -1590,24 +1588,22 @@ defaultValue: null,
                     return new Point(itemPos.X + ((item.ActualWidth - indicator.Width) / 2.0), y);
                 }
 
+                // Depth never moves the indicator. WinUI applies Depth() * c_itemIndentation (31,
+                // NavigationViewItemBase.h:63) to the presenter's ContentGrid alone
+                // (NavigationViewItemPresenter.cpp:264-276), and the indicator sits in a sibling
+                // wrapper grid nothing writes to (NavigationView_themeresources.xaml:601-604), so
+                // the selection rail stays one straight column down the pane at any tree depth.
                 double x = itemPos.X + NavigationItemOuterHorizontalMargin;
-                if (ShouldIndentSelectionIndicator(item, topMode))
-                {
-                    x += NavigationItemChildIndicatorOffset;
-                }
                 return new Point(x, itemPos.Y + ((item.ActualHeight - indicator.Height) / 2.0));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
+                // TransformToAncestor throws this when the item is not under the host yet, which
+                // happens while a pane template is being swapped; the indicator is repositioned on
+                // the next pass, so the fallback offset is only ever seen for one frame.
                 Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                 return new Point(0, 0);
-                throw;
             }
-        }
-
-        private bool ShouldIndentSelectionIndicator(NavigationViewItem item, bool topMode)
-        {
-            return !topMode && (item?.IsChildItem) is true && (IsPaneOpen || (PaneDisplayMode is not (NavigationViewPaneDisplayMode.Left or NavigationViewPaneDisplayMode.LeftCompact)));
         }
 
         private Point GetCurrentIndicatorPosition()

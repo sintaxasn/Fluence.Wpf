@@ -201,6 +201,22 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource SubtleFillColorDisabledBrush}" />
                         </Trigger>
+
+                        <!--
+                            A selected row that is disabled dims its indicator, which WinUI's
+                            SelectedDisabled state does through TreeViewItemSelectionIndicatorForegroundDisabled
+                            (TreeViewItem.xaml:88, resolved to TextFillColorDisabledBrush at
+                            TreeView_themeresources.xaml:36) while holding its opacity at 1 (:92). The token is
+                            deliberately outside the accent family that ListBox and ListView take for the same
+                            state: WinUI drops the indicator out of accent entirely while the row cannot be acted on.
+                        -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsEnabled" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="SelectionIndicator" Property="Background" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

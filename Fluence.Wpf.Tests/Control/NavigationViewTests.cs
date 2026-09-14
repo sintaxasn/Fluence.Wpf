@@ -1225,13 +1225,16 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(4.0, iconItemX, 0.5);
 
                     nav.SelectedIndex = 1;
-                    // Settle until the indicator slide reaches the asserted child-item offset.
-                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 48.0) <= 0.5).ConfigureAwait(true);
+                    // Settle until the indicator finishes travelling to the child item.
+                    _ = await WaitUntilAsync(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - iconItemX) <= 0.5).ConfigureAwait(true);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
+                    // A child item's indicator sits at the same x as a top-level item's. WinUI gives
+                    // depth indentation to the presenter's ContentGrid alone, never to the indicator
+                    // wrapper beside it, so the rail stays one straight column down the pane.
                     double childItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.Equal(48.0, childItemX, 0.5);
+                    Assert.Equal(iconItemX, childItemX, 0.5);
                 }
                 finally
                 {
