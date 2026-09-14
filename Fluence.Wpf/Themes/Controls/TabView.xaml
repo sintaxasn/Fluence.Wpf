@@ -37,10 +37,11 @@
                             TemplateBinding because the DP is internal (an implementation detail,
                             not consumer-facing public API).
                         -->
+                        <!--  The 3 dip left offset centres the seam in the 6 dip gap the item's own Margin leaves between tabs. WinUI draws its TabSeparator on the trailing edge (TabView.xaml:553, HorizontalAlignment Right) of tabs that sit flush against one another, so there is no gap to centre in there; drawn at this item's left edge with no offset the line would sit against this tab rather than between the two.  -->
                         <Border
                             x:Name="LeadingSeparator"
                             Width="1"
-                            Margin="0,8,0,8"
+                            Margin="-3,8,0,8"
                             HorizontalAlignment="Left"
                             Background="{DynamicResource DividerStrokeColorDefaultBrush}"
                             IsHitTestVisible="False"

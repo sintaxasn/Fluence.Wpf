@@ -3,6 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
+    <!--  WinUI ComboBoxItemCornerRadius = 3 (ComboBox_themeresources_perf2026.xaml line 345), which is deliberately not ControlCornerRadius (4). Keyed rather than written into the template so an application overriding corner radii can still reach the drop-down item.  -->
+    <CornerRadius x:Key="ComboBoxItemCornerRadius">3</CornerRadius>
+
     <Style x:Key="ComboBoxToggleStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -30,12 +33,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                    <!--  WinUI LayoutRoot Margin = 5,2,5,2 and ComboBoxItemCornerRadius = 3 (ComboBox_themeresources_perf2026.xaml lines 568 and 345)  -->
+                    <!--  WinUI LayoutRoot Margin = 5,2,5,2 (ComboBox_themeresources_perf2026.xaml line 568)  -->
                     <Border
                         x:Name="OuterBorder"
                         Margin="5,2,5,2"
                         Background="Transparent"
-                        CornerRadius="3">
+                        CornerRadius="{DynamicResource ComboBoxItemCornerRadius}">
                         <Grid>
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
@@ -102,6 +105,7 @@
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
                             CornerRadius="{DynamicResource ControlCornerRadius}" />
+                        <!--  The inner focus ring sits 1 dip inside the outer one, so its radius is the control radius less that inset rather than a token of its own.  -->
                         <Border
                             Margin="-2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
