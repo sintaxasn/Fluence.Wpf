@@ -181,6 +181,10 @@ namespace Fluence.Wpf.Controls
         // at the item's own origin plus NavigationViewItemButtonMargin (4), so this is that 4.
         private const double NavigationItemOuterHorizontalMargin = 4.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
+
+        // Gap between the bottom edge of a top-mode item and the indicator under it. WinUI's top
+        // item template gives its indicator a 4 dip bottom margin inside the item.
+        private const double TopIndicatorBottomInset = 4.0;
         private const double TopOverflowReservedEndPadding = 12.0;
 
         // Width an item must clear beyond the fitting limit before the overflow pass brings it back
@@ -1377,31 +1381,17 @@ defaultValue: null,
 
             if (!shouldShow)
             {
-                if (topMode)
-                {
-                    // Animate the indicator out when leaving a selected footer item (e.g. navigating
-                    // away from Settings); snap to hidden when nothing was showing or animation is off.
-                    bool wasVisible = _footerSelectionIndicator.Opacity > 0.01;
-                    AnimateFooterIndicatorVisibility(appearing: false, topMode: true, animate && wasVisible);
-                }
-                else
-                {
-                    // Left / LeftCompact keep the historical instant hide.
-                    StopFooterAnimation();
-                    _footerSelectionIndicator.Opacity = 0.0;
-                }
+                // Animate the indicator out when leaving a selected footer item (e.g. navigating
+                // away from Settings); snap to hidden when nothing was showing or animation is off.
+                // Every pane mode fades it, as WinUI does: the indicator is one element whose
+                // appearance is animated by NavigationViewItemPresenter regardless of orientation,
+                // and only the axis it scales along follows the pane mode.
+                bool wasVisible = _footerSelectionIndicator.Opacity > 0.01;
+                AnimateFooterIndicatorVisibility(appearing: false, topMode, animate && wasVisible);
                 return;
             }
 
             Point targetPosition = CalculateIndicatorPosition(SelectedFooterItem!, _footerSelectionIndicator, _footerIndicatorHost, topMode);
-
-            if (!topMode)
-            {
-                // Left / LeftCompact keep the historical snap (no fade/scale flight).
-                StopFooterAnimation();
-                SnapIndicatorCore(_footerSelectionIndicator, targetPosition);
-                return;
-            }
 
             bool wasHidden = _footerSelectionIndicator.Opacity < 0.01;
             StopFooterAnimation();
@@ -1413,7 +1403,7 @@ defaultValue: null,
 
             // Fade + scale the indicator in when it first appears on a footer item; a reflow while it
             // is already shown just repositions it at full opacity.
-            AnimateFooterIndicatorVisibility(appearing: true, topMode: true, animate && wasHidden);
+            AnimateFooterIndicatorVisibility(appearing: true, topMode, animate && wasHidden);
         }
 
         /// <summary>
@@ -1591,7 +1581,13 @@ defaultValue: null,
                 Point itemPos = transform.Transform(new Point(0, 0));
                 if (topMode)
                 {
-                    return new Point(itemPos.X + ((item.ActualWidth - indicator.Width) / 2.0), 0.0);
+                    // The indicator is bottom aligned inside a host that spans the whole 48 dip bar,
+                    // while the items are centred in it, so at rest the indicator lies on the bar's
+                    // bottom edge rather than under the item it marks. WinUI makes the indicator a
+                    // child of the top item itself, inset from the item's own bottom edge, so the
+                    // translate here lifts it by the difference.
+                    double y = itemPos.Y + item.ActualHeight - TopIndicatorBottomInset - host.ActualHeight;
+                    return new Point(itemPos.X + ((item.ActualWidth - indicator.Width) / 2.0), y);
                 }
 
                 double x = itemPos.X + NavigationItemOuterHorizontalMargin;

@@ -1616,6 +1616,52 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task NavigationView_TopMode_Indicator_SitsUnderTheSelectedItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 600,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    NavigationViewItem alpha = new() { Content = "Alpha" };
+                    NavigationViewItem beta = new() { Content = "Beta" };
+                    _ = nav.Items.Add(alpha);
+                    _ = nav.Items.Add(beta);
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 700).ConfigureAwait(true);
+
+                    FrameworkElement indicator = Assert.IsType<FrameworkElement>(nav.GetSelectionIndicatorForTesting(), exactMatch: false);
+
+                    // The indicator is bottom aligned in a host that spans the whole 48 dip bar, so
+                    // without the lift applied in CalculateIndicatorPosition it lands on the bar's
+                    // bottom edge instead of under the item. WinUI insets it 4 dip from the item's
+                    // own bottom edge.
+                    double indicatorBottom = indicator.TransformToAncestor(nav).Transform(new Point(0, indicator.ActualHeight)).Y;
+                    double itemBottom = beta.TransformToAncestor(nav).Transform(new Point(0, beta.ActualHeight)).Y;
+                    Assert.Equal(itemBottom - 4.0, indicatorBottom, 0.5);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task NavigationView_FullThemeCycle_NoExceptionsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
@@ -2692,7 +2738,7 @@ namespace Fluence.Wpf.Tests.Control
         [Fact]
         public Task NavigationView_FooterSelectionIndicator_BecomesVisibleOnFooterSelectionAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Window window = new();
                 try
@@ -2710,6 +2756,11 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    // The indicator now fades in over 140 ms in every pane mode, so the assertion
+                    // samples opacity once that flight has landed rather than on the frame the
+                    // selection was made.
+                    await WaitForAnimationAndDrainAsync(window.Dispatcher, 300).ConfigureAwait(true);
 
                     Assert.True(footerIndicator.Opacity >= 0.9, "Selecting a footer item should reveal the footer selection indicator.");
                 }

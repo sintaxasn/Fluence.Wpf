@@ -821,6 +821,7 @@
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationViewItem_FocusVisual_StaysInsideItemBoundsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_SharedIndicator_HidesWhenSelectionClearedAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_TopMode_SharedIndicator_VisibleWhenSelectedAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_TopMode_Indicator_SitsUnderTheSelectedItemAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_FullThemeCycle_NoExceptionsAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneModeSwitch_IndicatorSurvivesAsync
   Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_PaneCollapse_IndicatorSurvivesAsync
@@ -1295,5 +1296,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1295 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 281ms
+Test discovery summary: found 1296 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 344ms

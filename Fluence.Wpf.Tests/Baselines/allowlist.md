@@ -167,3 +167,22 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: top-mode indicator placement
+
+One more regeneration on the same branch, for the regression test that pins
+where the top-mode selection indicator lands now that it is lifted out of the
+navigation bar's bottom edge and under the item it marks.
+
+### Additions: 1 line
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `NavigationView_TopMode_Indicator_SitsUnderTheSelectedItemAsync` | 1 | `Control/NavigationViewTests.cs` |
+
+Net: 1 added, none removed. 1297 cases to 1298 on net10, 1295 to 1296 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
