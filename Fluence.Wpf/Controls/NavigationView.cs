@@ -1717,31 +1717,36 @@ defaultValue: null,
                 scale.ScaleX = 1.0;
             }
 
-            // WinUI's indicator never blinks out between items: for a move inside one list it holds
-            // opacity at 1 and plays a stretch-and-settle (NavigationView.cpp:2185-2234). The bar
-            // elongates to span the gap, then contracts onto the destination. WinUI gets there with
-            // two per-item indicators animating Offset, Scale and CenterPoint together; this port
-            // has a single pane-level bar, so the same read comes from one continuous translate
-            // plus a scale that peaks mid-flight.
+            // WinUI's indicator never blinks out between items, and it does not glide across the
+            // gap either: for a move inside one list it plays a rubber band (NavigationView.cpp,
+            // PlayIndicatorAnimations). The bar holds its old position and stretches until it spans
+            // both items, then its offset and its scale origin snap together at the one third mark,
+            // so the same stretched bar is now anchored at the destination and contracts into it.
+            // The snap is invisible because the bar covers both positions at that instant.
+            //
+            // WinUI animates Offset, Scale and CenterPoint on two per-item indicators. This port has
+            // one pane-level bar, so the three animations run on its own transform, and the scale
+            // origin stands in for CenterPoint.
             double axisLength = GetIndicatorLength(topMode);
             double distance = Math.Abs(toAxis - fromAxis);
             double peakScale = axisLength > 0 ? (distance / axisLength) + 1.0 : 1.0;
+            bool forward = toAxis > fromAxis;
 
-            // 600 ms is WinUI's own duration for this move (NavigationView.cpp:1991-1994, the
-            // c_frame1/c_frame2 bezier pair below with it). It is longer than the 100 to 167 ms the
-            // handbook gives for state transitions, which is the right guidance for a control
-            // changing appearance in place and the wrong one for a bar travelling between items.
             Duration travelDuration = new(TimeSpan.FromMilliseconds(600));
-            DoubleAnimation axisAnimation = new()
+            TimeSpan snapTime = TimeSpan.FromMilliseconds(200);
+
+            // Offset: held, then stepped to the destination at the snap. WinUI uses a step easing
+            // function for the same reason; the stretch is what carries the eye across the gap.
+            DoubleAnimationUsingKeyFrames axisAnimation = new()
             {
-                To = toAxis,
                 Duration = travelDuration,
-                EasingFunction = new KeySplineEase(0.1, 0.9, 0.2, 1.0),
                 FillBehavior = FillBehavior.Stop,
             };
+            _ = axisAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(fromAxis, KeyTime.FromTimeSpan(TimeSpan.Zero)));
+            _ = axisAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(toAxis, KeyTime.FromTimeSpan(snapTime)));
 
-            // The stretch: out to the peak on WinUI's accelerating ramp by the 33 percent mark, back
-            // to rest on its decelerating settle.
+            // Scale: out to span the gap on WinUI's accelerating ramp, back to rest on its
+            // decelerating settle.
             DoubleAnimationUsingKeyFrames scaleAnimation = new()
             {
                 Duration = travelDuration,
@@ -1749,15 +1754,32 @@ defaultValue: null,
             };
             _ = scaleAnimation.KeyFrames.Add(new SplineDoubleKeyFrame(
                 peakScale,
-                KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)),
+                KeyTime.FromTimeSpan(snapTime),
                 new KeySpline(0.9, 0.1, 1.0, 0.2)));
             _ = scaleAnimation.KeyFrames.Add(new SplineDoubleKeyFrame(
                 1.0,
                 KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(600)),
                 new KeySpline(0.1, 0.9, 0.2, 1.0)));
 
-            // The bar stays at full opacity for the whole journey: any clock left over from an
-            // interrupted move is released so it cannot fade the travel out underneath this one.
+            // The scale origin is WinUI's CenterPoint: it sits on the edge the bar grows from, and
+            // snaps to the opposite edge as the offset lands, so the stretch that grew toward the
+            // destination becomes the stretch that contracts into it.
+            Point growOrigin = topMode
+                ? new Point(forward ? 0.0 : 1.0, 0.5)
+                : new Point(0.5, forward ? 0.0 : 1.0);
+            Point settleOrigin = topMode
+                ? new Point(forward ? 1.0 : 0.0, 0.5)
+                : new Point(0.5, forward ? 1.0 : 0.0);
+            PointAnimationUsingKeyFrames originAnimation = new()
+            {
+                Duration = travelDuration,
+                FillBehavior = FillBehavior.Stop,
+            };
+            _ = originAnimation.KeyFrames.Add(new DiscretePointKeyFrame(growOrigin, KeyTime.FromTimeSpan(TimeSpan.Zero)));
+            _ = originAnimation.KeyFrames.Add(new DiscretePointKeyFrame(settleOrigin, KeyTime.FromTimeSpan(snapTime)));
+
+            // Full opacity throughout: any clock left from an interrupted move is released so it
+            // cannot fade this one out underneath.
             _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
             _selectionIndicator.Opacity = 1.0;
 
@@ -1770,16 +1792,19 @@ defaultValue: null,
 
                 translate.BeginAnimation(axisProperty, animation: null);
                 scale.BeginAnimation(scaleProperty, animation: null);
+                _selectionIndicator.BeginAnimation(RenderTransformOriginProperty, animation: null);
 
                 translate.X = toPosition.X;
                 translate.Y = toPosition.Y;
                 scale.ScaleX = 1.0;
                 scale.ScaleY = 1.0;
+                _selectionIndicator.RenderTransformOrigin = new Point(0.5, 0.5);
                 _selectionIndicator.Opacity = 1.0;
                 _indicatorPositioned = true;
             };
 
             _indicatorPositioned = true;
+            _selectionIndicator.BeginAnimation(RenderTransformOriginProperty, originAnimation, HandoffBehavior.SnapshotAndReplace);
             translate.BeginAnimation(axisProperty, axisAnimation, HandoffBehavior.SnapshotAndReplace);
             scale.BeginAnimation(scaleProperty, scaleAnimation, HandoffBehavior.SnapshotAndReplace);
         }

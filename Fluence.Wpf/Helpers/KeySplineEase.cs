@@ -70,6 +70,12 @@ namespace Fluence.Wpf.Helpers
             _y1 = y1;
             _x2 = x2;
             _y2 = y2;
+
+            // A key spline already describes the whole curve, ease-in through ease-out. WPF's
+            // default EasingMode is EaseOut, which evaluates 1 - EaseInCore(1 - t) and so mirrors
+            // whatever it is given: a decelerating spline would come out accelerating. EaseIn is
+            // what passes the curve through untouched.
+            EasingMode = EasingMode.EaseIn;
         }
 
         /// <inheritdoc />
