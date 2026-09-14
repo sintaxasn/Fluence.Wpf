@@ -56,6 +56,91 @@ namespace Fluence.Wpf.Tests.Control
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
 
+        [Fact]
+        public Task ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ListView view = new() { Width = 300, Height = 200 };
+                for (int index = 0; index < 6; index++)
+                {
+                    _ = view.Items.Add(new System.Windows.Controls.Border { Width = 80, Height = 40 });
+                }
+
+                Window window = new() { Content = view, Width = 400, Height = 300 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // The default state keeps WPF's vertical panel, so nothing is pinned on the control.
+                    Assert.Equal(ListViewState.Default, view.ViewState);
+                    Assert.Equal(DependencyProperty.UnsetValue, view.ReadLocalValue(ItemsControl.ItemsPanelProperty));
+
+                    view.ViewState = ListViewState.GridView;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    WrapPanel panel = Assert.IsType<WrapPanel>(FindVisualChild<WrapPanel>(view), exactMatch: false);
+                    Assert.Equal(Orientation.Horizontal, panel.Orientation);
+
+                    // Six 80 dip items across a 300 dip list means the run wraps rather than
+                    // running off the edge, which is the whole point of the state.
+                    System.Windows.Controls.Border first = Assert.IsType<System.Windows.Controls.Border>(view.Items[0], exactMatch: false);
+                    System.Windows.Controls.Border last = Assert.IsType<System.Windows.Controls.Border>(view.Items[5], exactMatch: false);
+                    double firstTop = first.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
+                    double lastTop = last.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
+                    Assert.True(lastTop > firstTop, "A grid view must wrap its items onto further rows.");
+
+                    view.ViewState = ListViewState.Default;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Null(FindVisualChild<WrapPanel>(view));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FrameworkElementFactory factory = new(typeof(System.Windows.Controls.Primitives.UniformGrid));
+                ItemsPanelTemplate consumerPanel = new(factory);
+                consumerPanel.Seal();
+
+                Controls.ListView view = new() { Width = 300, Height = 200, ItemsPanel = consumerPanel };
+                _ = view.Items.Add(new System.Windows.Controls.Border { Width = 80, Height = 40 });
+                Window window = new() { Content = view, Width = 400, Height = 300 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    view.ViewState = ListViewState.GridView;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // A panel the consumer pinned outranks the view state.
+                    Assert.Same(consumerPanel, view.ItemsPanel);
+                    _ = Assert.IsType<System.Windows.Controls.Primitives.UniformGrid>(FindVisualChild<System.Windows.Controls.Primitives.UniformGrid>(view), exactMatch: false);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         // ---------------------------------------------------------------------------
         // WI-3 C20  ListView SelectionIndicator
         // ---------------------------------------------------------------------------
