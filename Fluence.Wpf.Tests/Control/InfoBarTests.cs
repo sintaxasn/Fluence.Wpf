@@ -123,8 +123,15 @@ namespace Fluence.Wpf.Tests.Control
 
                     System.Windows.Controls.Button close =
                         Assert.IsType<System.Windows.Controls.Button>(FindVisualChildByName<System.Windows.Controls.Button>(bar, "PART_CloseButton"), exactMatch: false);
-                    Assert.Equal(28.0, close.Width, 0.01);
-                    Assert.Equal(28.0, close.Height, 0.01);
+                    // WinUI InfoBarCloseButtonSize 38 (InfoBar_themeresources.xaml:67). With the
+                    // style's 5 dip margin the button fills the bar's 48 dip minimum height exactly,
+                    // which is why the affordance reads as the same weight as the text beside it.
+                    Assert.Equal(38.0, close.Width, 0.01);
+                    Assert.Equal(38.0, close.Height, 0.01);
+
+                    // WinUI InfoBarCloseButtonGlyphSize 16 (:68).
+                    FontIcon closeGlyph = Assert.IsType<FontIcon>(close.Content, exactMatch: false);
+                    Assert.Equal(16.0, closeGlyph.IconFontSize, 0.01);
 
                     // The subtle plate (TeachingTip / PipsPager pattern): a rounded Border
                     // owned by the button's own template, not the OS default chrome.

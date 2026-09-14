@@ -206,3 +206,27 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the declared font size rule
+
+Five more regression tests. One pins the `InfoBadge` numeral centred inside its
+pill; the other four are a new cross-control rule class, which pins the size a
+control declares actually reaching the text a `ContentPresenter` generates for
+it.
+
+### Additions: 5 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `InfoBadge_ValueText_SitsCentredInsideThePillAsync` | 1 | `Control/InfoBadgeTests.cs` |
+| `InfoBadge_ValueText_RendersAtTheDeclaredSizeAsync` | 1 | `Control/Rules/DeclaredFontSizeTests.cs` |
+| `NavigationViewItemHeader_RendersAtTheDeclaredSizeAsync` | 1 | `Control/Rules/DeclaredFontSizeTests.cs` |
+| `TabViewItem_Header_RendersAtTheDeclaredSizeAsync` | 1 | `Control/Rules/DeclaredFontSizeTests.cs` |
+| `ToolTip_RendersAtTheDeclaredSizeAsync` | 1 | `Control/Rules/DeclaredFontSizeTests.cs` |
+
+Net: 5 added, none removed. 1300 cases to 1305 on net10, 1298 to 1303 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

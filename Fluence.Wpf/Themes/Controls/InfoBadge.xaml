@@ -26,10 +26,20 @@
                 <ControlTemplate TargetType="{x:Type controls:InfoBadge}">
                     <Grid>
                         <!--  The radius follows the measured height: InfoBadge recomputes it as half the height on every size change, the way WinUI feeds TemplateSettings.InfoBadgeCornerRadius (InfoBadge.cpp OnSizeChanged), so the capsule stays a capsule at any height between the 4 dip dot and the 16 dip pill.  -->
+                        <!--
+                            The pill stands 16 dip tall, WinUI's InfoBadgeMaxHeight
+                            (InfoBadge_themeresources.xaml:9), for a value and for an icon alike. WinUI
+                            gets there from the 2 dip bottom inset on its text and icon margins, which
+                            also nudges its glyphs optically upward; WPF's 11 dip line box is 14.67 and
+                            centres in the pill without that nudge, so the height is asked for here
+                            instead and the numeral keeps an even 0.67 dip above and below it. The
+                            control's own MinHeight stays WinUI's 4 dip floor, which belongs to the dot
+                            beside this border rather than to the capsule.
+                        -->
                         <Border
                             x:Name="BadgeBorder"
                             MinWidth="{TemplateBinding MinWidth}"
-                            MinHeight="{TemplateBinding MinHeight}"
+                            MinHeight="16"
                             MaxHeight="{TemplateBinding MaxHeight}"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
@@ -56,7 +66,26 @@
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}">
+                                <ContentPresenter.Resources>
+                                    <!--
+                                        The value arrives as a string, so the presenter generates the
+                                        TextBlock that draws it, and an implicit TextBlock style beats
+                                        the inherited TextElement values above: Typography.xaml:43-47
+                                        sizes every unstyled TextBlock at 14, which drew the numeral at
+                                        14 dip in a 16 dip pill. Its line box measured 18.67, so the
+                                        digits overflowed the capsule and sat low in it. A style scoped
+                                        to this presenter wins that contest and hands the numeral the
+                                        badge's own typography back.
+                                    -->
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
+                                        <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
+                                        <Setter Property="FontWeight" Value="{Binding FontWeight, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
                         </Border>
                         <!--  Dot mode: the 4 dip floor WinUI's InfoBadgeMinHeight / InfoBadgeMinWidth leave when the badge has neither a value nor an icon.  -->
                         <Ellipse

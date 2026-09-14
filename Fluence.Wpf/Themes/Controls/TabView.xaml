@@ -99,7 +99,22 @@
                                 RecognizesAccessKey="True"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}">
+                                <!--
+                                Styling scoped to this presenter, because the content arrives as a
+                                string and the TextBlock that draws it is generated here: the implicit
+                                TextBlock style in Typography.xaml:43-47 sizes every unstyled TextBlock
+                                at 14 and beats the inherited TextElement values above, so the declared
+                                size never reached the text.
+                            -->
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
+                                        <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
 
                             <!--  WinUI TabViewItemHeaderCloseMargin = 4,0,0,0  -->
                             <Button

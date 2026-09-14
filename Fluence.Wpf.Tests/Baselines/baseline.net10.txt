@@ -714,6 +714,7 @@
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_DisplayKindStates_GroupExistsAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_DefaultState_IsDotAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_ValueSet_ShowsBadgeBorderAsync
+  Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_ValueText_SitsCentredInsideThePillAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_ValueBadge_UsesStableScreenshotPillMetricsAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_DisplayKindStates_HasAllFourStatesAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_Foreground_IsTextOnAccentFillColorPrimaryAsync
@@ -1238,6 +1239,10 @@
   Fluence.Wpf.Tests.Control.Rules.CrispRenderingTests.ThemedButton_HasCrispLayoutRoundingSettersAsync
   Fluence.Wpf.Tests.Control.Rules.CrispRenderingTests.ThemedTextBox_HasCrispLayoutRoundingSettersAsync
   Fluence.Wpf.Tests.Control.Rules.CrispRenderingTests.CrispRendering_PreservedAcrossThemeSwitchesAsync
+  Fluence.Wpf.Tests.Control.Rules.DeclaredFontSizeTests.InfoBadge_ValueText_RendersAtTheDeclaredSizeAsync
+  Fluence.Wpf.Tests.Control.Rules.DeclaredFontSizeTests.NavigationViewItemHeader_RendersAtTheDeclaredSizeAsync
+  Fluence.Wpf.Tests.Control.Rules.DeclaredFontSizeTests.TabViewItem_Header_RendersAtTheDeclaredSizeAsync
+  Fluence.Wpf.Tests.Control.Rules.DeclaredFontSizeTests.ToolTip_RendersAtTheDeclaredSizeAsync
   Fluence.Wpf.Tests.Control.Rules.FluentStrokeTests.RadioButton_OuterRing_UsesControlStrongStrokeBrushAsync
   Fluence.Wpf.Tests.Control.Rules.FluentStrokeTests.RadioButton_OuterRing_SwitchesToDisabledStrokeWhenDisabledAsync
   Fluence.Wpf.Tests.Control.Rules.FluentStrokeTests.CheckBox_CheckedGlyph_UsesIndeterminateDashStrokeWeightAsync
@@ -1300,5 +1305,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1300 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
-  duration: 205ms
+Test discovery summary: found 1305 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.dll (net10.0|x64)
+  duration: 212ms

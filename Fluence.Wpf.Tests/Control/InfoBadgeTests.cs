@@ -145,6 +145,54 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task InfoBadge_ValueText_SitsCentredInsideThePillAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                InfoBadge badge = new()
+                {
+                    Value = 12,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                };
+                Window w = new() { Content = badge, Width = 200, Height = 120 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    w.UpdateLayout();
+
+                    System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
+                    System.Windows.Controls.TextBlock text = Assert.IsType<System.Windows.Controls.TextBlock>(
+                        FindVisualChild<System.Windows.Controls.TextBlock>(border), exactMatch: false);
+
+                    // The value arrives as a string, so the presenter generates this TextBlock, and the
+                    // implicit TextBlock style in Typography.xaml beats any inherited TextElement value.
+                    // Unscoped it sized the numeral at 14 in a 16 dip pill, whose 18.67 line box spilled
+                    // out of the capsule and sat low in it.
+                    Assert.Equal(11.0, text.FontSize, 0.01);
+
+                    // WinUI InfoBadgeMaxHeight 16 (InfoBadge_themeresources.xaml:9), kept a capsule by
+                    // the half-height radius InfoBadge recomputes on every size change.
+                    Assert.Equal(16.0, border.ActualHeight, 0.01);
+                    Assert.Equal(8.0, badge.CornerRadius.TopLeft, 0.01);
+
+                    double textTop = text.TransformToAncestor(border).Transform(new Point(0, 0)).Y;
+                    double textBottom = border.ActualHeight - textTop - text.ActualHeight;
+                    Assert.True(
+                        text.ActualHeight <= border.ActualHeight,
+                        string.Format(CultureInfo.InvariantCulture, "The numeral must fit the pill; it measured {0} in {1}.", text.ActualHeight, border.ActualHeight));
+                    Assert.Equal(textTop, textBottom, 0.1);
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task InfoBadge_ValueBadge_UsesStableScreenshotPillMetricsAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
@@ -163,11 +211,18 @@ namespace Fluence.Wpf.Tests.Control
                     // the dot, a 16 dip ceiling for the pill, no padding, and the capsule's
                     // breathing room carried by the content margin instead.
                     Assert.Equal(4.0, border.MinWidth, 0.1);
-                    Assert.Equal(4.0, border.MinHeight, 0.1);
                     Assert.Equal(16.0, border.MaxHeight, 0.1);
                     Assert.Equal(new Thickness(0), border.Padding);
+
+                    // The capsule stands at WinUI's 16 dip ceiling rather than floating at the height
+                    // of its own text: WinUI reaches 16 through the 2 dip bottom inset on the text
+                    // margin, which WPF's line box does not need, so the pill asks for the height and
+                    // the control's own 4 dip MinHeight stays with the dot beside it.
+                    Assert.Equal(16.0, border.MinHeight, 0.1);
+                    Assert.Equal(4.0, badge.MinHeight, 0.1);
+
                     // The horizontal 4s are WinUI's; the vertical 2 is not carried, because WPF's
-                    // line box at 11 dip already fills the pill and the inset clipped the text.
+                    // line box at 11 dip already centres in the pill without it.
                     Assert.Equal(new Thickness(4, 0, 4, 0), content.Margin);
                     Assert.Equal(16.0, badge.ActualHeight, 0.5);
                     Assert.Equal(11.0, TextElement.GetFontSize(content), 0.1);

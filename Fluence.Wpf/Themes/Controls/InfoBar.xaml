@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="clr-namespace:Fluence.Wpf">
 
     <Style x:Key="InfoBarCloseButtonFocusVisual">
@@ -25,6 +26,10 @@
         </Setter>
     </Style>
 
+    <!--  WinUI InfoBarCloseButtonSize 38 and InfoBarCloseButtonGlyphSize 16 (InfoBar_themeresources.xaml:67-68). The button was a 28 dip square carrying a 12 dip glyph, which read as a smaller affordance than the 14 dip text beside it.  -->
+    <sys:Double x:Key="InfoBarCloseButtonSize">38</sys:Double>
+    <sys:Double x:Key="InfoBarCloseButtonGlyphSize">16</sys:Double>
+
     <!--
         Subtle plate for the close button. WinUI InfoBar.xaml swaps the close button's
         brushes to the AppBarButton set: transparent rest plate, SubtleFillColorSecondary
@@ -38,7 +43,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource InfoBarCloseButtonFocusVisual}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Height" Value="28" />
+        <Setter Property="Height" Value="{StaticResource InfoBarCloseButtonSize}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -64,7 +69,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Width" Value="28" />
+        <Setter Property="Width" Value="{StaticResource InfoBarCloseButtonSize}" />
     </Style>
 
     <Style TargetType="{x:Type controls:InfoBar}">
@@ -93,10 +98,10 @@
                         CornerRadius="{TemplateBinding CornerRadius}">
                         <!--  Content area. WinUI has no separate indicator-bar column (InfoBar.xaml upstream); the severity read comes entirely from the icon and background. The inset is WinUI's InfoBarContentRootPadding 16,0,0,0 over InfoBarMinHeight 48 (InfoBar_themeresources.xaml:66,75): every other edge inset is carried by the icon margin, the panel's own orientation padding and the close button's margin, so the bar can collapse to one 48 dip line.  -->
                         <Grid MinHeight="48" Margin="{TemplateBinding Padding}">
+                            <!--  Icon, then title / message / action, then the close button: WinUI's own three columns (InfoBar.xaml:95-101).  -->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -230,7 +235,7 @@
                             <!--  WinUI's InfoBarCloseButtonStyle is VerticalAlignment Top with Margin 5 (InfoBar_themeresources.xaml:88-94), so the close button sits at the top right of a tall bar rather than halfway down it.  -->
                             <Button
                                 x:Name="PART_CloseButton"
-                                Grid.Column="3"
+                                Grid.Column="2"
                                 Margin="5"
                                 VerticalAlignment="Top"
                                 AutomationProperties.Name="Close"
@@ -239,7 +244,7 @@
                                 <controls:FontIcon
                                     Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                     Glyph="&#xE711;"
-                                    IconFontSize="12"
+                                    IconFontSize="{StaticResource InfoBarCloseButtonGlyphSize}"
                                     IsHitTestVisible="False" />
                             </Button>
                         </Grid>
