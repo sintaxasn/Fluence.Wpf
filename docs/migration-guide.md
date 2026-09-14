@@ -90,6 +90,12 @@ The caption button colours remain published under their WinUI names: `WindowClos
 
 **This also fails silently.** A `DynamicResource` reference to a key that no longer exists produces no error and no build failure, the target simply keeps its default, so a selection indicator painted with the old key renders transparent. Search your XAML for the old name.
 
+### Property defaults changed
+
+`InfoBar.IsOpen` defaults to `false`, matching WinUI. A bar declared without it used to be visible as soon as its page loaded; it is now closed until something opens it. Add `IsOpen="True"` to any bar that should show from the start. There is no build error for this one, so search your XAML for `InfoBar` declarations that do not set `IsOpen`.
+
+`SlideNavigationTransitionEffect.FromRight` is 2 rather than 0, leaving 0 where WinUI has `FromBottom`. The names are unchanged, so only code or XAML that reads or writes the numeric value is affected.
+
 ### Visual defaults changed
 
 Four template changes alter how existing markup renders, with nothing to fix at build time.

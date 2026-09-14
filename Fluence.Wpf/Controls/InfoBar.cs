@@ -169,10 +169,12 @@ namespace Fluence.Wpf.Controls
                 nameof(IsOpen),
                 typeof(bool),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(defaultValue: true, propertyChangedCallback: OnIsOpenChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, propertyChangedCallback: OnIsOpenChanged));
 
         /// <summary>
-        /// Gets or sets a value indicating whether the info bar is visible.
+        /// Gets or sets a value indicating whether the info bar is visible. The default is
+        /// <see langword="false"/>, as WinUI's is: a bar is declared closed and opened when the
+        /// condition it reports actually arises.
         /// </summary>
         public bool IsOpen
         {

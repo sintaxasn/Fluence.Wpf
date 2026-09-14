@@ -232,7 +232,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 // --- InfoBar PART_CloseButton ---
-                Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
+                Controls.InfoBar infoBar = new() { Message = "Test", Width = 400, IsOpen = true };
                 Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
 
                 try
