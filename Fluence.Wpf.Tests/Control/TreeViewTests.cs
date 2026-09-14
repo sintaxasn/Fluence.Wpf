@@ -60,6 +60,81 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task TreeView_SelectionIndicator_StaysInOneColumnAtEveryDepthAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem child = new() { Header = "Child" };
+                Controls.TreeViewItem root = new() { Header = "Root", IsExpanded = true };
+                _ = root.Items.Add(child);
+
+                Controls.TreeView tree = new() { Width = 260, Height = 200 };
+                _ = tree.Items.Add(root);
+                Window window = new() { Content = tree, Width = 320, Height = 260 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border rootRail = FindIndicator(root);
+                    System.Windows.Controls.Border childRail = FindIndicator(child);
+
+                    // Each level nests one item template inside a 20 dip indent, so the child's rail
+                    // would step right with it. The rail is pulled back by its own depth instead, and
+                    // the selection column stays straight however deep the tree runs.
+                    double rootX = rootRail.TransformToAncestor(tree).Transform(new Point(0, 0)).X;
+                    double childX = childRail.TransformToAncestor(tree).Transform(new Point(0, 0)).X;
+                    Assert.Equal(rootX, childX, 0.5);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task TreeView_MultipleSelection_HidesTheSelectionIndicatorAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem item = new() { Header = "Item" };
+                Controls.TreeView tree = new() { Width = 260, Height = 200, SelectionMode = TreeViewSelectionMode.Multiple };
+                _ = tree.Items.Add(item);
+                Window window = new() { Content = tree, Width = 320, Height = 260 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    // The checkbox carries the selection read in Multiple mode, so the rail would be
+                    // a second answer to the same question.
+                    Assert.Equal(Visibility.Collapsed, FindIndicator(item).Visibility);
+
+                    tree.SelectionMode = TreeViewSelectionMode.Single;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(Visibility.Visible, FindIndicator(item).Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        private static System.Windows.Controls.Border FindIndicator(Controls.TreeViewItem item)
+        {
+            return Assert.IsType<System.Windows.Controls.Border>(
+                FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
+        }
+
+        [Fact]
         public Task TreeView_DefaultStyle_AppliesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
