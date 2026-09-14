@@ -282,3 +282,24 @@ net10, 1308 to 1311 on net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the flyout dismissal and the radio dot
+
+Two regression cases for the two defects fixed in the same batch: one pinning
+that a flyout stays on screen through the gesture that opened it and closes on
+the next press outside, and one pinning that a radio button's state storyboards
+release on exit rather than stamping a dot into an unchecked ring.
+
+### Additions: 2 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `FlyoutBase_LightDismiss_ClosesOnAPressOutsideAsync` | 1 | `Control/FlyoutTests.cs` |
+| `RadioButton_StateSizeStoryboards_ReleaseRatherThanStampOnExitAsync` | 1 | `Control/RadioButtonTests.cs` |
+
+Net: 2 added, none removed. 1314 cases to 1316 on net10, 1311 to 1313 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

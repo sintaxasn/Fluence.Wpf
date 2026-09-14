@@ -684,6 +684,7 @@
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_Hide_ClosesPopupAndRaisesClosingThenClosedAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ClosingCancel_KeepsFlyoutOpenAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ContentChange_FlowsToPresenterAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesOnAPressOutsideAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyoutAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_PlacementModes_MapToPopupPlacementAsync
@@ -989,6 +990,7 @@
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_DeclaresPoliteLiveSettingAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Determinate_UpdatesArcAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Indeterminate_CaterpillarArcBecomesVisibleAsync
+  Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_StateSizeStoryboards_ReleaseRatherThanStampOnExitAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_Description_SetsAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_DescriptionChanges_UpdatesAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_NullDescription_ClearsAutomationHelpTextAsync
