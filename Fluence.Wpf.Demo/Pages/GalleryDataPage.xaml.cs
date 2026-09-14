@@ -324,21 +324,21 @@ namespace Fluence.Wpf.Demo.Pages
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
                                                "            CornerRadius=\"0\"\n" +
-                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleDawnRidge.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
                                                "        <fluence:Image\n" +
                                                "            Width=\"96\"\n" +
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
                                                "            CornerRadius=\"8\"\n" +
-                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleHarbourNight.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
                                                "        <fluence:Image\n" +
                                                "            Width=\"96\"\n" +
                                                "            Height=\"96\"\n" +
                                                "            Margin=\"0,0,12,12\"\n" +
                                                "            CornerRadius=\"48\"\n" +
-                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleAurora.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
                                                "    </WrapPanel>\n");
         private const string ImageCSharpSource = "using System.Windows.Controls;\n" +

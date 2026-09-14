@@ -282,21 +282,21 @@
                                 Height="96"
                                 Margin="{DynamicResource DemoControlGroupItemMargin}"
                                 CornerRadius="0"
-                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"
+                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleDawnRidge.png"
                                 Stretch="UniformToFill" />
                             <fluence:Image
                                 Width="96"
                                 Height="96"
                                 Margin="{DynamicResource DemoControlGroupItemMargin}"
                                 CornerRadius="8"
-                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png"
+                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleHarbourNight.png"
                                 Stretch="UniformToFill" />
                             <fluence:Image
                                 Width="96"
                                 Height="96"
                                 Margin="{DynamicResource DemoControlGroupItemMargin}"
                                 CornerRadius="48"
-                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"
+                                Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ImageSampleAurora.png"
                                 Stretch="UniformToFill" />
                         </WrapPanel>
                     </ContentControl>
