@@ -422,6 +422,7 @@
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_NavigationCatalog_RemovesWindowingPage
   Fluence.Wpf.Tests.Gallery.DemoShellTests.GalleryPages_UseSharedWinUiGalleryPageLayoutAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearch_StaysVisibleWhenContentExtendsIntoTitleBarAsync
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearch_IsNotClippedAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearch_IsCenteredInWindowAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChromeAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_ExtendedTitleBar_FirstGlyphTracksBackAvailabilityAsync
@@ -720,6 +721,7 @@
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_Value_RejectsAnythingBelowMinusOneAsync
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_GetStyleGlyph_ReturnsWinUiGlyphPerSeverity
   Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_SeverityWithAValue_ShowsTheValueNotAGlyphAsync
+  Fluence.Wpf.Tests.Control.InfoBadgeTests.InfoBadge_ValueText_FitsThePillAndIsCentredAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_StyleApplies_RootBorderFoundAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_TwoLayerIcon_GlyphAndBackgroundPerSeverityAsync
   Fluence.Wpf.Tests.Control.InfoBarTests.InfoBar_CloseButton_UsesFluentSubtlePlateAsync
@@ -1293,5 +1295,5 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnobAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Override_WinsOverEnvironmentInBothDirectionsAsync
 
-Test discovery summary: found 1293 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
-  duration: 284ms
+Test discovery summary: found 1295 test(s) - F:\Consolidation\Fluence.Wpf\.claude\worktrees\mica-defects\Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe (net472|x64)
+  duration: 333ms

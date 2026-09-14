@@ -1417,6 +1417,39 @@ namespace Fluence.Wpf.Tests.Gallery
         }
 
         [Fact]
+        public Task MainWindow_TitleBarSearch_IsNotClippedAsync()
+        {
+            // Reported from the shell: the search box was cut off along its bottom edge. A fixed
+            // Height under what the box measures arranges its chrome short, and WPF clips at the
+            // layout boundary, taking the bottom border with it.
+            return WpfTestSta.RunOnStaAsync(static delegate
+            {
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
+                try
+                {
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(
+                        search.ActualHeight >= search.DesiredSize.Height - 0.5,
+                        "The search box is arranged shorter than it measured, so its bottom edge is clipped.");
+
+                    // And it sits inside the title bar it lives in, rather than overhanging it.
+                    Controls.TitleBar titleBar = Assert.IsType<Controls.TitleBar>(DemoTestHost.FindByName<Controls.TitleBar>(window, "ShellTitleBar"), exactMatch: false);
+                    Point searchBottom = search.TransformToAncestor(titleBar).Transform(new Point(0, search.ActualHeight));
+                    Assert.True(
+                        searchBottom.Y <= titleBar.ActualHeight + 0.5,
+                        "The search box overhangs the bottom of the title bar.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task MainWindow_TitleBarSearch_IsCenteredInWindowAsync()
         {
             return WpfTestSta.RunOnStaAsync(static delegate

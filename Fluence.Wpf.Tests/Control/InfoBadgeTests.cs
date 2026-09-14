@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -165,7 +166,9 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(4.0, border.MinHeight, 0.1);
                     Assert.Equal(16.0, border.MaxHeight, 0.1);
                     Assert.Equal(new Thickness(0), border.Padding);
-                    Assert.Equal(new Thickness(4, 0, 4, 2), content.Margin);
+                    // The horizontal 4s are WinUI's; the vertical 2 is not carried, because WPF's
+                    // line box at 11 dip already fills the pill and the inset clipped the text.
+                    Assert.Equal(new Thickness(4, 0, 4, 0), content.Margin);
                     Assert.Equal(16.0, badge.ActualHeight, 0.5);
                     Assert.Equal(11.0, TextElement.GetFontSize(content), 0.1);
                     Assert.Equal(HorizontalAlignment.Center, content.HorizontalAlignment);
@@ -420,6 +423,68 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
+        }
+
+        [Fact]
+        public Task InfoBadge_ValueText_FitsThePillAndIsCentredAsync()
+        {
+            // Reported from the gallery: the numeral in a NavigationViewItem badge was clipped and
+            // sat low. WinUI's 4,0,4,2 text margin nudges its own font's digits optically; WPF's
+            // line box for the same 11 dip size is taller, so the bottom inset pushed the text out
+            // of the 16 dip pill instead of seating it.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 160, Height = 100 };
+                InfoBadge badge = new() { Value = 12, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+
+                try
+                {
+                    window.Content = badge;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border pill = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder"), exactMatch: false);
+                    ContentPresenter content = Assert.IsType<ContentPresenter>(
+                        FindVisualChildByName<ContentPresenter>(badge, "ContentArea"), exactMatch: false);
+
+                    // Nothing is cut off: the text's own box fits inside the pill.
+                    Assert.True(
+                        content.ActualHeight <= pill.ActualHeight + 0.5,
+                        FormatFailure("The value text is taller than the pill", content.ActualHeight, pill.ActualHeight));
+                    Assert.True(
+                        content.DesiredSize.Height <= content.ActualHeight + 0.5,
+                        FormatFailure("The value text is arranged shorter than it measured, so it is clipped", content.ActualHeight, content.DesiredSize.Height));
+
+                    // And it is centred in the pill rather than riding low or high.
+                    Point contentTopLeft = content.TransformToAncestor(pill).Transform(new Point(0, 0));
+                    double above = contentTopLeft.Y;
+                    double below = pill.ActualHeight - (contentTopLeft.Y + content.ActualHeight);
+                    Assert.True(
+                        Math.Abs(above - below) <= 1.0,
+                        FormatFailure("The value text is not vertically centred in the pill", above, below));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Builds an assertion message carrying the two measurements that disagree, because a bare
+        /// true/false says nothing about how far out the layout is.
+        /// </summary>
+        /// <param name="what">What went wrong.</param>
+        /// <param name="first">The first measurement.</param>
+        /// <param name="second">The measurement it is compared against.</param>
+        /// <returns>The formatted message.</returns>
+        private static string FormatFailure(string what, double first, double second)
+        {
+            // string.Create with a culture takes an interpolated string handler, which net472 does
+            // not have, so this is the portable spelling.
+            return string.Format(CultureInfo.InvariantCulture, "{0}: {1} against {2}.", what, first, second);
         }
     }
 }

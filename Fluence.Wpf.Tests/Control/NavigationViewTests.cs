@@ -638,8 +638,13 @@ namespace Fluence.Wpf.Tests.Control
 
                     System.Windows.Controls.StackPanel chrome = Assert.IsType<System.Windows.Controls.StackPanel>(FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome"), exactMatch: false);
                     Assert.Equal(Orientation.Horizontal, chrome.Orientation);
-                    Assert.Equal(48.0, back.ActualWidth, 0.5);
-                    Assert.Equal(48.0, paneToggle.ActualWidth, 0.5);
+                    // WinUI's chrome buttons are 40 by 36 inside a 4,2 margin (NavigationBackButton.xaml:8-14,
+                    // PaneToggleButtonWidth/Height 40 and 36), which fills the same 48 by 40 slot the
+                    // rail reserves.
+                    Assert.Equal(40.0, back.ActualWidth, 0.5);
+                    Assert.Equal(36.0, back.ActualHeight, 0.5);
+                    Assert.Equal(40.0, paneToggle.ActualWidth, 0.5);
+                    Assert.Equal(36.0, paneToggle.ActualHeight, 0.5);
 
                     Point backPoint = back.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Point paneTogglePoint = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0));
@@ -954,7 +959,12 @@ namespace Fluence.Wpf.Tests.Control
                     System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
                     System.Windows.Controls.Button paneToggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav));
                     Assert.Equal(Visibility.Collapsed, back.Visibility);
-                    Assert.Equal(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5);
+
+                    // With no back button the toggle takes the chrome's first slot: its own 4 dip
+                    // inset, which is WinUI's (NavigationBackButton.xaml:14, Margin 4,2), leaving the
+                    // 40 dip button centred in the 48 dip rail.
+                    Assert.Equal(4.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5);
+                    Assert.Equal(24.0, paneToggle.TransformToAncestor(nav).Transform(new Point(paneToggle.ActualWidth / 2, 0)).X, 0.5);
                 }
                 finally
                 {

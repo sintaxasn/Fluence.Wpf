@@ -34,10 +34,22 @@
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                            <!--  The inset is per display kind, which is why it is not on this element: WinUI gives a value or a font glyph ValueInfoBadgeTextMargin / IconInfoBadgeFontIconMargin 4,0,4,2 and a drawn icon the uniform IconInfoBadgeIconMargin 4,4,4,4 (InfoBadge_themeresources.xaml:14-16). The states below apply whichever one the kind calls for.  -->
+                            <!--
+                                The inset is per display kind, which is why it is not on this element: WinUI gives a
+                                value or a font glyph ValueInfoBadgeTextMargin / IconInfoBadgeFontIconMargin 4,0,4,2
+                                and a drawn icon the uniform IconInfoBadgeIconMargin 4,4,4,4
+                                (InfoBadge_themeresources.xaml:14-16). The states below apply whichever one the kind
+                                calls for.
+
+                                The horizontal 4s are WinUI's and set the capsule's width. The vertical 2 is not
+                                carried: it nudges WinUI's own digits optically, and WPF's line box for 11 dip Segoe
+                                UI Variable is already the full 16 dip of the pill, so the same inset arranges the
+                                text into 14 and clips it, low in the capsule. Dropping it lets VerticalAlignment
+                                centre the text in the pill, which is where WinUI's lands.
+                            -->
                             <ContentPresenter
                                 x:Name="ContentArea"
-                                Margin="4,0,4,2"
+                                Margin="4,0,4,0"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Content="{TemplateBinding Content}"

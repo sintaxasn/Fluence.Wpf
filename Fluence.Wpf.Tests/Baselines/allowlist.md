@@ -121,7 +121,7 @@ tests the pane chrome fixes brought with them. Both are new names that never
 appeared in an earlier capture, so neither needed an entry of its own; this
 section is the record of the regeneration.
 
-### Additions: 19 lines
+### Additions: 21 lines
 
 | Method | Occurrences | Source |
 | ------ | ----------: | ------ |
@@ -144,8 +144,10 @@ section is the record of the regeneration.
 | `InfoBadge_SeverityWithAValue_ShowsTheValueNotAGlyphAsync` | 1 | `Control/InfoBadgeTests.cs` |
 | `TabViewItem_LeadingSeparator_SitsInTheMiddleOfTheGapAsync` | 1 | `Control/TabViewTests.cs` |
 | `ComboBoxItem_CornerRadius_ComesFromTheKeyedResourceAsync` | 1 | `Control/ComboBoxTests.cs` |
+| `InfoBadge_ValueText_FitsThePillAndIsCentredAsync` | 1 | `Control/InfoBadgeTests.cs` |
+| `MainWindow_TitleBarSearch_IsNotClippedAsync` | 1 | `Gallery/DemoShellTests.cs` |
 
-Zero removals and zero renames. 1275 cases to 1295 on net10, 1273 to 1293 on
+Zero removals and zero renames. 1275 cases to 1297 on net10, 1273 to 1295 on
 net472.
 
 ### Status

@@ -328,15 +328,56 @@
         <Border
             x:Name="BackBorder"
             Background="Transparent"
-            CornerRadius="{DynamicResource ControlCornerRadius}">
+            CornerRadius="{DynamicResource ControlCornerRadius}"
+            RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Border>
+        <!--  Press scale mirrors Button.xaml and BreadcrumbBar.xaml (0.98 over 100 ms on the 0,0,0,1 ControlFastOutSlowIn spline). WinUI animates these two buttons through an AnimatedIcon state machine (NavigationBackButton.xaml:58), a Lottie-backed visual WPF has no equivalent for, so the library's own press motion stands in rather than the buttons staying inert under the pointer.  -->
+        <ControlTemplate.Resources>
+            <Storyboard x:Key="ChromePressedScaleStoryboard">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                    <SplineDoubleKeyFrame
+                        KeySpline="0,0,0,1"
+                        KeyTime="0:0:0.1"
+                        Value="0.98" />
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                    <SplineDoubleKeyFrame
+                        KeySpline="0,0,0,1"
+                        KeyTime="0:0:0.1"
+                        Value="0.98" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="ChromeReleasedScaleStoryboard">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                    <SplineDoubleKeyFrame
+                        KeySpline="0,0,0,1"
+                        KeyTime="0:0:0.1"
+                        Value="1" />
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                    <SplineDoubleKeyFrame
+                        KeySpline="0,0,0,1"
+                        KeyTime="0:0:0.1"
+                        Value="1" />
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+        </ControlTemplate.Resources>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter TargetName="BackBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter TargetName="BackBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource ChromePressedScaleStoryboard}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource ChromeReleasedScaleStoryboard}" />
+                </Trigger.ExitActions>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.4" />
@@ -528,9 +569,9 @@
                     Orientation="Horizontal">
                     <Button
                         x:Name="PART_BackButton"
-                        Width="48"
-                        Height="40"
-                        Margin="0"
+                        Width="40"
+                        Height="36"
+                        Margin="4,2,0,2"
                         Padding="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -549,9 +590,9 @@
                     </Button>
                     <Button
                         x:Name="PART_PaneToggleButton"
-                        Width="48"
-                        Height="40"
-                        Margin="0"
+                        Width="40"
+                        Height="36"
+                        Margin="4,2"
                         Padding="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -821,9 +862,9 @@
                     Orientation="Horizontal">
                     <Button
                         x:Name="PART_BackButton"
-                        Width="48"
-                        Height="40"
-                        Margin="0"
+                        Width="40"
+                        Height="36"
+                        Margin="4,2,0,2"
                         Padding="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -842,9 +883,9 @@
                     </Button>
                     <Button
                         x:Name="PART_PaneToggleButton"
-                        Width="48"
-                        Height="40"
-                        Margin="0"
+                        Width="40"
+                        Height="36"
+                        Margin="4,2"
                         Padding="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
