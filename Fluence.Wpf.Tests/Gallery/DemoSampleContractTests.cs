@@ -41,7 +41,6 @@ using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualGeometry;
-using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery
 {
@@ -468,8 +467,12 @@ namespace Fluence.Wpf.Tests.Gallery
 
         private static double SourceContentRowHeight(Controls.Expander expander)
         {
-            FrameworkElement? clip = FindVisualChildByName<FrameworkElement>(expander, "SourceContentClip");
-            return clip?.ActualHeight ?? 0d;
+            // The sample control hosts the stock Expander now rather than a copy of its template,
+            // so the content tier is the control's own row, which the expand and collapse open and
+            // close. The row is the honest measure: the border inside it keeps its desired height
+            // while the row that hosts it is closed.
+            RowDefinition? row = expander.Template?.FindName("Row1Def", expander) as RowDefinition;
+            return row?.ActualHeight ?? 0d;
         }
 
         private static void AssertSourceTab(Controls.SelectorBar? tabs, string expectedHeader, string expectedSource)

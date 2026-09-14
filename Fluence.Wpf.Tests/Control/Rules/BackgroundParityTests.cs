@@ -227,7 +227,11 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                     RichTextBox sourceViewer = Assert.IsType<RichTextBox>(FindVisualChildByName<RichTextBox>(sourceExpander, "SourceTextViewer"), exactMatch: false);
                     Border copyButtonHost = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "CopySourceButtonHost"), exactMatch: false);
-                    Border sourceContentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "SourceContentBorder"), exactMatch: false);
+
+                    // The content tier is the stock Expander's own PART_ContentBorder now that the
+                    // demo hosts the control instead of a copy of its template. It takes the
+                    // control's Background, which is the card secondary fill the demo sets.
+                    Border sourceContentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(sourceExpander, "PART_ContentBorder"), exactMatch: false);
                     AssertBrushColor(sourceContentBorder.Background, "CardBackgroundFillColorSecondaryBrush");
                     AssertBrushColor(sourceViewer.Background, "SubtleFillColorTransparentBrush");
                     AssertBrushColor(copyButtonHost.Background, "CardBackgroundFillColorDefaultBrush");
