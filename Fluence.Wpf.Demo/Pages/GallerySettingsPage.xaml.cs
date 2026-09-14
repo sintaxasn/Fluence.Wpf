@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Demo.Pages
         // PageContentGrid via GalleryPageContentGridStyle, so SettingsScrollViewer.ActualWidth
         // is already net of that margin, and the host borrows the scrollbar rail back out of it
         // (DemoPageScrollHostMargin). This constant only needs the scrolling StackPanel's own
-        // right-hand gutter (DemoPageScrollContentMargin = 0,0,12,0).
+        // right-hand gutter (DemoPageScrollContentMargin = 0,0,12,48); only its horizontal part matters here.
         private const double PageHorizontalMargin = 12.0;
         private const double PageMaxWidth = 1064.0;
         private const double CompactSettingsWidth = 640.0;

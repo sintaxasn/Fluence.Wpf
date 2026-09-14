@@ -11,8 +11,24 @@
 
     <!--  **** Demo App Layout ****  -->
 
-    <Thickness x:Key="DemoPageContentMargin">36,24,36,0</Thickness>
+    <!--  WinUI 3 Gallery ControlPage content margin parity: left and top match the Gallery's ItemPage.xaml root margin; the right side is trimmed 1px narrower than the left to leave room for the page ScrollViewer's Auto vertical scrollbar gutter (GalleryPageScrollViewerStyle) without shifting the visible card's right edge. The bottom is 0: this margin sits on the content Grid whose last row is the scroll host, so a bottom inset here is dead space under the scroller rather than trailing room after the last card. Trailing room belongs on the scrolling content (DemoPageScrollContentMargin), where it scrolls with the samples.  -->
+    <Thickness x:Key="DemoPageContentMargin">45,24,44,0</Thickness>
+    <!--  The same page margin for a page whose root IS the scroll host (GalleryHomePage), so this margin lands on the scrolling content rather than on a Grid above it. The bottom inset is the Gallery's trailing room after the last card, and here it scrolls with the content, so it is carried rather than dropped.  -->
+    <Thickness x:Key="DemoPageStackContentMargin">45,24,44,48</Thickness>
     <Thickness x:Key="DemoPageDescriptionMargin">0,0,0,24</Thickness>
+    <!--
+        Scroll-host geometry, measured against the WinUI 3 Gallery at 150% DPI. The Gallery puts its
+        page ScrollViewer outside the ItemPage content margin, so the scrollbar rail sits in the page
+        margin and the sample cards run edge to edge with the page title. Here the scroll host lives
+        inside the content Grid, so it borrows the rail width back out of the right page margin
+        (DemoPageScrollHostMargin) and the scrolling content pays it again as a gutter
+        (DemoPageScrollContentMargin). The cards then start at the title's left edge and end at the
+        Gallery's right edge, with the rail clear of both. The scrolling content also carries the
+        Gallery's 48 dip bottom inset, so the trailing room after the last card scrolls with the
+        samples instead of standing as dead space under the scroll host.
+    -->
+    <Thickness x:Key="DemoPageScrollHostMargin">0,0,-12,0</Thickness>
+    <Thickness x:Key="DemoPageScrollContentMargin">0,0,12,48</Thickness>
     <Thickness x:Key="DemoCompactStackSpacingMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoTextTopGapMargin">0,6,0,0</Thickness>
     <!--  Vertical margin is split top/bottom (6+6) rather than bottom-only (0+12) so a control group centered in a demo sample card sits equidistant from the card's top and bottom. Total spacing is unchanged: 12px between wrapped rows, 12px between items horizontally, flush-left.  -->
@@ -33,12 +49,14 @@
     <Thickness x:Key="DemoTabContentMargin">20</Thickness>
     <Thickness x:Key="DemoListItemMargin">0,4</Thickness>
     <Thickness x:Key="DemoNavigationHeaderMargin">12,8</Thickness>
-    <Thickness x:Key="DemoNavigationContentMargin">20</Thickness>
+    <Thickness x:Key="DemoNavigationContentMargin">20,20,20,0</Thickness>
     <Thickness x:Key="DemoNavigationDescriptionMargin">0,6,0,0</Thickness>
-    <!--  GalleryPageHeader (WinUI Gallery Controls/PageHeader.xaml): title row, then an action row at Margin 0,12,0,12 whose buttons are 32 tall with 4px gaps (per-button Margin in WinUI, Spacing here); drop-down content is icon 16 plus text at Spacing 8; the AppBarSeparator between theme and copy-link is 1px wide with 8px vertical inset.  -->
+    <!--  GalleryPageHeader (WinUI Gallery Controls/PageHeader.xaml): title row, then an action row at Margin 0,12,0,12 whose buttons are 31 tall with 4px gaps (per-button Margin in WinUI, Spacing here); drop-down content is icon 16 plus text at Spacing 8; the AppBarSeparator between theme and copy-link is 1px wide with 8px vertical inset.  -->
     <sys:Double x:Key="DemoPageHeaderActionSpacing">4</sys:Double>
     <Thickness x:Key="DemoPageHeaderActionRowMargin">0,12,0,12</Thickness>
-    <sys:Double x:Key="DemoPageHeaderButtonHeight">32</sys:Double>
+    <sys:Double x:Key="DemoPageHeaderButtonHeight">31</sys:Double>
+    <!--  WinUI Gallery PageHeader action row: the icon-only theme toggle, copy-link and favorite buttons measure 40 wide (distinct from DemoCopyButtonMinWidth, which stays 32 for the unrelated code/color copy buttons elsewhere).  -->
+    <sys:Double x:Key="DemoPageHeaderActionButtonMinWidth">40</sys:Double>
     <sys:Double x:Key="DemoPageHeaderIconFontSize">16</sys:Double>
     <sys:Double x:Key="DemoPageHeaderDropDownContentSpacing">8</sys:Double>
     <sys:Double x:Key="DemoPageHeaderFlyoutMinWidth">220</sys:Double>
@@ -77,6 +95,8 @@
     <FontFamily x:Key="DemoMonospaceFontFamily">Cascadia Mono, Consolas</FontFamily>
     <sys:Double x:Key="DemoSampleOutputMinWidth">220</sys:Double>
     <sys:Double x:Key="DemoSampleRightRailMinWidth">220</sys:Double>
+    <!--  WinUI Gallery ControlExample demo area is taller than a bare control needs (93 dip for a single-control sample); DemoRegionGrid's MinHeight makes up the difference (93 minus the 16+16 DemoSampleCardPadding top/bottom margin) without capping taller multi-row samples.  -->
+    <sys:Double x:Key="DemoSampleDemoAreaMinHeight">61</sys:Double>
 
     <!--  **** Demo Colors Page ****  -->
     <!--  WinUI Gallery Color page metrics: App.xaml ColorSectionSpacing (4), ColorPageExample.xaml (Margin 0,36,0,8; Padding 12; RowSpacing 4; content Margin 0,8,0,0), ColorTile.xaml (Padding 12; RowSpacing 6 with the explanation pulled up 4; content row MinHeight 30), and the example element sizes in ColorSections/*Section.xaml.  -->
@@ -227,7 +247,7 @@
 
     <Style x:Key="GalleryPageContentStackStyle" TargetType="{x:Type StackPanel}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
+        <Setter Property="Margin" Value="{DynamicResource DemoPageStackContentMargin}" />
     </Style>
 
     <Style x:Key="GalleryPageContentGridStyle" TargetType="{x:Type Grid}">
@@ -390,19 +410,12 @@
     <!--  WinUI Gallery ColorPage.xaml: the SelectorBar carries Margin -12,0,0,0 so its first label aligns with the text above.  -->
     <Thickness x:Key="DemoColorSelectorBarMargin">-12,4,0,0</Thickness>
     <!--
-        The section content keeps an equal gutter on both sides inside its scroll host, so the
-        vertical scrollbar has the right-hand gutter to sit in instead of running under the cards
-        or riding the window edge.
+        The section content keeps the right-hand gutter its scroll host borrowed back from the page
+        margin (DemoPageScrollHostMargin), so the vertical scrollbar has somewhere to sit instead of
+        running under the cards, and the cards still line up with the page title on the left. The 48 dip
+        bottom is the Gallery's trailing room after the last tile row, scrolling with the section.
     -->
-    <Thickness x:Key="DemoColorSectionContentMargin">12,0,12,0</Thickness>
-    <!--
-        The Gallery's Color page runs in a narrower content column than this shell gives it, so its
-        four-column tile rows land at roughly 200 px per tile and the tile names and usage notes
-        wrap onto a second line. Capping the page content at 800 px reproduces that column width
-        (800 minus the two 12 px gutters, over four columns) so the tiles wrap and stand as tall as
-        the Gallery's. The content stays left-aligned, as the Gallery's does.
-    -->
-    <sys:Double x:Key="DemoColorPageMaxContentWidth">800</sys:Double>
+    <Thickness x:Key="DemoColorSectionContentMargin">0,0,12,48</Thickness>
     <Thickness x:Key="DemoNoMargin">0</Thickness>
 
 </ResourceDictionary>

@@ -1301,7 +1301,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
                             Grid pageContent = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageContent"), exactMatch: false);
                             Assert.Same(contentGridStyle, pageContent.Style);
-                            Assert.Equal(new Thickness(45, 24, 44, 48), pageContent.Margin);
+                            Assert.Equal(new Thickness(45, 24, 44, 0), pageContent.Margin);
                             Assert.True(double.IsPositiveInfinity(pageContent.MaxWidth),
                                 "Icons should stretch instead of keeping the old max content width.");
                             Assert.Equal(HorizontalAlignment.Stretch, pageContent.HorizontalAlignment);
@@ -1318,7 +1318,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
                             Grid colorsContent = Assert.IsType<Grid>(DemoTestHost.FindByName<Grid>(page, "PageContent"), exactMatch: false);
                             Assert.Same(contentGridStyle, colorsContent.Style);
-                            Assert.Equal(new Thickness(45, 24, 44, 48), colorsContent.Margin);
+                            Assert.Equal(new Thickness(45, 24, 44, 0), colorsContent.Margin);
                             Assert.Equal(5, colorsContent.RowDefinitions.Count);
                             Assert.Equal(GridLength.Auto, colorsContent.RowDefinitions[0].Height);
                             Assert.Equal(new GridLength(1, GridUnitType.Star), colorsContent.RowDefinitions[4].Height);
@@ -1341,7 +1341,9 @@ namespace Fluence.Wpf.Tests.Gallery
                         if (page is GalleryHomePage)
                         {
                             // Home has no page header to lock, so it keeps the plain scroll host
-                            // over a stack panel that carries the shared page content margin.
+                            // over a stack panel that carries the page content margin. That margin
+                            // sits on the scrolling content here, so it keeps the trailing bottom
+                            // inset the other pages move onto DemoPageScrollContentMargin.
                             Controls.SmoothScrollViewer homeScroll = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
                             Assert.Same(scrollStyle, homeScroll.Style);
 
@@ -1358,7 +1360,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         Grid pageContentGrid = Assert.IsType<Grid>(
                             DemoTestHost.FindVisualChildren<Grid>(page).FirstOrDefault(grid => ReferenceEquals(grid.Style, contentGridStyle)),
                             exactMatch: false);
-                        Assert.Equal(new Thickness(45, 24, 44, 48), pageContentGrid.Margin);
+                        Assert.Equal(new Thickness(45, 24, 44, 0), pageContentGrid.Margin);
                         Assert.True(double.IsPositiveInfinity(pageContentGrid.MaxWidth),
                             page.GetType().Name + " should stretch instead of keeping the old max content width.");
                         Assert.Equal(HorizontalAlignment.Stretch, pageContentGrid.HorizontalAlignment);
@@ -1380,7 +1382,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         Assert.Equal(new Thickness(0, 0, -12, 0), scrollViewer.Margin);
 
                         StackPanel content = Assert.IsType<StackPanel>(scrollViewer.Content);
-                        Assert.Equal(new Thickness(0, 0, 12, 0), content.Margin);
+                        Assert.Equal(new Thickness(0, 0, 12, 48), content.Margin);
                     }
                     finally
                     {

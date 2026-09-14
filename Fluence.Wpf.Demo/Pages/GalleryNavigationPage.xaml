@@ -136,7 +136,7 @@
                             <fluence:CheckBox
                                 x:Name="BackEnabledToggle"
                                 Content="Back enabled"
-                                IsChecked="True" />
+                                IsChecked="False" />
                         </StackPanel>
                     </ContentControl>
                     <local:DemoSampleControl SampleDescription="Use compact mode to preserve space, and enable the back button when the current view can navigate backward." />

@@ -21,14 +21,14 @@
             Height="{Binding TitleBarHeight, RelativeSource={RelativeSource AncestorType=fluence:FluenceWindow}}"
             BackRequested="ShellTitleBar_BackRequested"
             PaneToggleRequested="ShellTitleBar_PaneToggleRequested"
-            IsBackButtonVisible="True"
             SizeChanged="TitleBarLayout_SizeChanged">
             <fluence:AutoSuggestBox
                 x:Name="NavSearchBox"
                 Width="320"
-                Height="36"
+                Height="33"
                 MinWidth="320"
                 MaxWidth="475"
+                Margin="0,1,0,0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 PlaceholderText="Search controls and samples..."
