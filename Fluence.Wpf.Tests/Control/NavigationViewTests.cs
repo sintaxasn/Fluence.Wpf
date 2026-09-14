@@ -174,6 +174,88 @@ namespace Fluence.Wpf.Tests.Control
 
 
         [Fact]
+        public Task NavigationView_CompactRailWidth_DoesNotFollowTheBackButtonAsync()
+        {
+            // Regression: the closed pane width was 96 while the back button showed and 48 while it
+            // did not, so enabling the back button animated the rail wider and looked as though the
+            // pane had been opened. The back button and the pane toggle share the chrome row above
+            // the rail and that row may run wider than the rail, so the back button moves the
+            // toggle along instead. Only IsPaneOpen changes the rail's width.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneToggleButtonVisible = true,
+                        IsBackButtonVisible = true,
+                        IsBackEnabled = false,
+                    };
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Dashboard" });
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ColumnDefinition paneColumn = Assert.IsType<ColumnDefinition>(
+                        nav.Template.FindName("PaneColumn", nav), exactMatch: false);
+                    double closedWidth = paneColumn.Width.Value;
+
+                    nav.SetCurrentValue(NavigationView.IsBackEnabledProperty, value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(48.0, closedWidth, 0.5);
+                    Assert.Equal(closedWidth, paneColumn.Width.Value, 0.5);
+
+                    // The toggle is still there, pushed along by the back button rather than
+                    // replaced by it, and the chrome row is free to run wider than the rail.
+                    System.Windows.Controls.Button back = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_BackButton, nav));
+                    System.Windows.Controls.Button toggle = Assert.IsType<System.Windows.Controls.Button>(nav.Template.FindName(NavigationView.PART_PaneToggleButton, nav));
+                    Assert.Equal(Visibility.Visible, back.Visibility);
+                    Assert.Equal(Visibility.Visible, toggle.Visibility);
+                    Assert.Equal(48.0, toggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0);
+
+                    // Being laid out at 48 is not enough: the chrome row overhangs the rail and the
+                    // content column is declared after the pane, so without a z-order of its own the
+                    // pane toggle would be painted over and unclickable. Hit-test the point the user
+                    // aims at and require the toggle to be what answers.
+                    Point toggleCentre = toggle.TransformToAncestor(nav).Transform(new Point(toggle.ActualWidth / 2, toggle.ActualHeight / 2));
+                    HitTestResult hit = Assert.IsType<HitTestResult>(VisualTreeHelper.HitTest(nav, toggleCentre), exactMatch: false);
+                    Assert.True(
+                        IsDescendantOf(hit.VisualHit, toggle),
+                        "The pane toggle must be the topmost element at its own centre; the content column is covering it.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        private static bool IsDescendantOf(DependencyObject? candidate, DependencyObject ancestor)
+        {
+            DependencyObject? current = candidate;
+            while (current is not null)
+            {
+                if (ReferenceEquals(current, ancestor))
+                {
+                    return true;
+                }
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return false;
+        }
+
+        [Fact]
         public Task NavigationView_NestedInContent_KeepsItsOwnPaneChromeAsync()
         {
             // A window whose title bar hosts the navigation chrome suppresses the shell pane's own
@@ -2098,8 +2180,14 @@ topMode: false,
                     ContentPresenter presenter = Assert.IsType<ContentPresenter>(FindVisualChildByName<ContentPresenter>(nav, NavigationView.PART_ContentPresenter), exactMatch: false);
                     Assert.Equal(Visibility.Visible, back.Visibility);
                     Assert.Equal(Visibility.Visible, paneToggle.Visibility);
+                    // The back button takes the first chrome slot and pushes the toggle to 48,
+                    // so the chrome row runs wider than the rail it sits above.
                     Assert.Equal(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0);
-                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 96.0).ConfigureAwait(true);
+
+                    // The rail itself stays compact: the content starts at 48, not at the 96 the
+                    // chrome row occupies. Widening the rail for the back button made enabling it
+                    // look like the pane had been opened.
+                    await AssertContentOffsetEventuallyAsync(window, nav, presenter, 48.0).ConfigureAwait(true);
                 }
                 finally
                 {
@@ -2951,6 +3039,125 @@ topMode: false,
 
                     Assert.Equal(3.0, indicator.Width, 0.01);
                     Assert.Equal(16.0, indicator.Height, 0.01);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationViewItem_InfoBadge_StaysOnAClosedPaneAsync()
+        {
+            // WinUI's ClosedCompactAndTopLevelItem state spans the badge across the item and pins it
+            // to the top right corner over the icon (NavigationView_themeresources.xaml:590-594).
+            // Fluence collapsed it instead, which is exactly the pane state a badge is for: a rail
+            // with no labels, where the badge is the only thing reporting the item's state.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = false,
+                    };
+                    NavigationViewItem item = new()
+                    {
+                        Content = "Inbox",
+                        Icon = new FontIcon { Glyph = "" },
+                        InfoBadge = new InfoBadge { Value = 12 },
+                    };
+                    _ = nav.Items.Add(item);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter badgeHost = Assert.IsType<ContentPresenter>(
+                        FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter"), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, badgeHost.Visibility);
+                    Assert.Equal(HorizontalAlignment.Right, badgeHost.HorizontalAlignment);
+                    Assert.Equal(VerticalAlignment.Top, badgeHost.VerticalAlignment);
+
+                    InfoBadge badge = Assert.IsType<InfoBadge>(FindVisualChild<InfoBadge>(item), exactMatch: false);
+                    Assert.True(badge.ActualWidth > 0, "The badge must render on a closed pane.");
+
+                    // Pinned to the item's own top right corner rather than parked in the label column.
+                    Point badgeTopRight = badgeHost.TransformToAncestor(item).Transform(new Point(badgeHost.ActualWidth, 0));
+                    Assert.True(
+                        badgeTopRight.X <= item.ActualWidth,
+                        "The badge must sit inside the rail, not past its right edge.");
+                    Assert.True(
+                        badgeTopRight.X > item.ActualWidth / 2,
+                        "The badge must sit in the right half of the item, over the icon's trailing corner.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(NavigationViewPaneDisplayMode.Left)]
+        [InlineData(NavigationViewPaneDisplayMode.LeftCompact)]
+        public Task NavigationViewItem_ClosedPane_GivesTheIconItsFullColumnAsync(NavigationViewPaneDisplayMode mode)
+        {
+            // Regression: the open pane's 14 dip content inset (WinUI's ContentGrid margin) was
+            // applying on a closed pane too, so the 40 dip icon column was arranged into roughly 26
+            // and every glyph on the rail was clipped. WinUI zeroes the same margin in its
+            // ClosedCompactAndTopLevelItem state (NavigationView_themeresources.xaml:589).
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 320,
+                        Height = 240,
+                        PaneDisplayMode = mode,
+                        IsPaneOpen = false,
+                    };
+                    NavigationViewItem item = new()
+                    {
+                        Content = "Colors",
+                        Icon = new FontIcon { Glyph = "" },
+                    };
+                    _ = nav.Items.Add(item);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Grid contentGrid = Assert.IsType<Grid>(FindVisualChildByName<Grid>(item, "ContentGrid"), exactMatch: false);
+                    ContentPresenter iconPresenter = Assert.IsType<ContentPresenter>(
+                        FindVisualChildByName<ContentPresenter>(item, "IconPresenter"), exactMatch: false);
+
+                    Assert.Equal(new Thickness(0), contentGrid.Margin);
+
+                    // The decisive check: the grid must be arranged at least as wide as the icon
+                    // column it wants, or WPF clips it at the layout boundary and takes the glyph's
+                    // right edge with it. A 14 dip inset here left 26 for a 40 dip column.
+                    Assert.Equal(40.0, contentGrid.ColumnDefinitions[0].ActualWidth, 0.5);
+                    Assert.True(
+                        contentGrid.ActualWidth >= contentGrid.DesiredSize.Width - 0.5,
+                        "The item's content grid must not be arranged narrower than it measured, or the icon is clipped.");
+
+                    // And the glyph itself lands inside the rail.
+                    Point iconRight = iconPresenter.TransformToAncestor(item).Transform(new Point(iconPresenter.ActualWidth, 0));
+                    Assert.True(
+                        iconRight.X <= item.ActualWidth + 0.5,
+                        "The icon must fit inside the item on a closed pane.");
                 }
                 finally
                 {

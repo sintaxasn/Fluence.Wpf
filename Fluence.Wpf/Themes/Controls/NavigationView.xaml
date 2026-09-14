@@ -148,7 +148,11 @@
                         BorderThickness="0"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <!--  WinUI NavigationViewItemOnLeftMinHeight = 36: the painted pill height. Item pitch (40) is this 36 plus the 2+2 dip vertical margin above.  -->
-                        <Grid x:Name="ContentGrid" MinHeight="36">
+                        <!--  WinUI's ContentGrid carries Margin 0,0,14,0 (NavigationView_themeresources.xaml:604), which is where the gap between the item's last column and the pill's right edge comes from. WinUI's own chevron column collapses to nothing for an item with no children, so that margin, not the chevron, is what holds a badge off the edge.  -->
+                        <Grid
+                            x:Name="ContentGrid"
+                            MinHeight="36"
+                            Margin="0,0,14,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition x:Name="IconColumn" Width="40" />
                                 <ColumnDefinition x:Name="GapColumn" Width="6" />
@@ -182,12 +186,12 @@
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
+                            <!--  The badge sizes itself, as WinUI's own InfoBadgePresenter does (NavigationView_themeresources.xaml:627): InfoBadge is 4x4 as a dot and at most 16 tall as a value or icon badge (InfoBadge_themeresources.xaml:7-9). A fixed box here would stretch a dot to the item height.  -->
+                            <!--  No margin of its own, as WinUI's presenter has none (NavigationView_themeresources.xaml:627): the gap to the pill's edge is ContentGrid's 14 dip right margin, and the gap to the label is the label column's own inset.  -->
                             <ContentPresenter
                                 x:Name="InfoBadgePresenter"
                                 Grid.Column="3"
-                                Height="32"
-                                MinWidth="34"
-                                Margin="4,0,8,0"
+                                Margin="4,0,0,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Content="{Binding InfoBadge, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -202,6 +206,8 @@
                             <Setter TargetName="OuterBorder" Property="Margin" Value="2,4,2,4" />
                             <!--  Keeps Top mode's own pre-existing 32 dip inner height (item height stays 40, unchanged) instead of inheriting the Left/LeftCompact pill's new NavigationViewItemOnLeftMinHeight = 36.  -->
                             <Setter TargetName="ContentGrid" Property="MinHeight" Value="32" />
+                            <!--  The 14 dip right inset is the left pane's (NavigationView_themeresources.xaml:604); WinUI's top pane is a template of its own with its own insets, and here the OuterBorder padding below already carries them. Leaving it on would widen every top item by 14 and push the last one into the overflow menu early.  -->
+                            <Setter TargetName="ContentGrid" Property="Margin" Value="0" />
                             <Setter TargetName="IconPresenter" Property="Margin" Value="4,0,2,0" />
                             <Setter TargetName="ContentPresenter" Property="Margin" Value="2,0" />
                             <Setter Property="MinWidth" Value="0" />
@@ -209,6 +215,10 @@
                             <Setter TargetName="IconColumn" Property="Width" Value="Auto" />
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
                             <Setter TargetName="ContentColumn" Property="Width" Value="Auto" />
+                            <!--  WinUI's top pane floats the badge over the item's top right corner rather than letting it widen the item (NavigationView_themeresources.xaml:902, Margin -16,0,2,13): a badged and an un-badged item in the same row then measure the same, and the pane indicator does not re-centre under the wider one. A distinct overflow template must not inherit this: WinUI's overflow presenter is plain, at column 2 with no margin (:1073).  -->
+                            <Setter TargetName="InfoBadgePresenter" Property="Margin" Value="-16,0,2,13" />
+                            <Setter TargetName="InfoBadgePresenter" Property="HorizontalAlignment" Value="Center" />
+                            <Setter TargetName="InfoBadgePresenter" Property="VerticalAlignment" Value="Center" />
                         </DataTrigger>
                         <!--  Footer items (e.g. Settings) render gear-only: hide the label and collapse its column, leaving just the icon. Only the Top pane template sets NavigationView.IsFooterItem on its footer host, and it inherits onto the footer items, so this rule is scoped to Top mode. The pane-level indicator re-centres under the narrowed item via the item's ActualWidth.  -->
                         <Trigger Property="controls:NavigationView.IsFooterItem" Value="True">
@@ -226,8 +236,15 @@
                                 <Condition Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Left}" />
                             </MultiDataTrigger.Conditions>
                             <Setter TargetName="ContentPresenter" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="InfoBadgePresenter" Property="Visibility" Value="Collapsed" />
-                            <!--  IconColumn held at fixed 40 px so the icon center stays at x=24 (4px margin + 40/2) during pane-width animation. Making it * would re-centre in the intermediate item width and slide laterally.  -->
+                            <!--  The 14 dip right inset is for the open pane only. WinUI zeroes it in the same state (NavigationView_themeresources.xaml:589): on a 48 dip rail it would eat into the 40 dip icon column and clip the glyph.  -->
+                            <Setter TargetName="ContentGrid" Property="Margin" Value="0" />
+                            <!--  The badge stays: WinUI's ClosedCompactAndTopLevelItem state spans it across the item and pins it to the top right corner over the icon (NavigationView_themeresources.xaml:590-594) rather than hiding it, which is the whole point of a badge on a rail with no labels.  -->
+                            <Setter TargetName="InfoBadgePresenter" Property="Grid.Column" Value="0" />
+                            <Setter TargetName="InfoBadgePresenter" Property="Grid.ColumnSpan" Value="4" />
+                            <Setter TargetName="InfoBadgePresenter" Property="HorizontalAlignment" Value="Right" />
+                            <Setter TargetName="InfoBadgePresenter" Property="VerticalAlignment" Value="Top" />
+                            <Setter TargetName="InfoBadgePresenter" Property="Margin" Value="0,2,2,0" />
+                            <!--  IconColumn held at fixed 40 px so the icon center stays at x=24 (4px margin + 40/2) during pane-width animation. Making it * would re-centre in the intermediate item width and slide laterally. Zeroing the other three is also what collapses the grid to the icon's own width, which is what puts the badge's right edge inside the rail rather than out at the item's full width.  -->
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
                             <Setter TargetName="ContentColumn" Property="Width" Value="0" />
                             <Setter TargetName="InfoBadgeColumn" Property="Width" Value="0" />
@@ -239,8 +256,15 @@
                                 <Condition Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.LeftCompact}" />
                             </MultiDataTrigger.Conditions>
                             <Setter TargetName="ContentPresenter" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="InfoBadgePresenter" Property="Visibility" Value="Collapsed" />
-                            <!--  IconColumn held at fixed 40 px so the icon center stays at x=24 (4px margin + 40/2) during pane-width animation. Making it * would re-centre in the intermediate item width and slide laterally.  -->
+                            <!--  The 14 dip right inset is for the open pane only. WinUI zeroes it in the same state (NavigationView_themeresources.xaml:589): on a 48 dip rail it would eat into the 40 dip icon column and clip the glyph.  -->
+                            <Setter TargetName="ContentGrid" Property="Margin" Value="0" />
+                            <!--  The badge stays: WinUI's ClosedCompactAndTopLevelItem state spans it across the item and pins it to the top right corner over the icon (NavigationView_themeresources.xaml:590-594) rather than hiding it, which is the whole point of a badge on a rail with no labels.  -->
+                            <Setter TargetName="InfoBadgePresenter" Property="Grid.Column" Value="0" />
+                            <Setter TargetName="InfoBadgePresenter" Property="Grid.ColumnSpan" Value="4" />
+                            <Setter TargetName="InfoBadgePresenter" Property="HorizontalAlignment" Value="Right" />
+                            <Setter TargetName="InfoBadgePresenter" Property="VerticalAlignment" Value="Top" />
+                            <Setter TargetName="InfoBadgePresenter" Property="Margin" Value="0,2,2,0" />
+                            <!--  IconColumn held at fixed 40 px so the icon center stays at x=24 (4px margin + 40/2) during pane-width animation. Making it * would re-centre in the intermediate item width and slide laterally. Zeroing the other three is also what collapses the grid to the icon's own width, which is what puts the badge's right edge inside the rail rather than out at the item's full width.  -->
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
                             <Setter TargetName="ContentColumn" Property="Width" Value="0" />
                             <Setter TargetName="InfoBadgeColumn" Property="Width" Value="0" />
@@ -350,58 +374,17 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel
-                            x:Name="PaneChrome"
+                        <!--
+                            The chrome row's height is reserved here and drawn at the template root
+                            (PaneChrome). WinUI hosts the back button and the pane toggle in
+                            PaneToggleButtonGrid, a root level grid at Canvas.ZIndex="100"
+                            (NavigationView.xaml:180), precisely so a visible back button can push
+                            the toggle past the rail's own width without the pane clipping it.
+                        -->
+                        <Border
+                            x:Name="PaneChromeSpacer"
                             Grid.Row="0"
-                            Height="48"
-                            MinWidth="48"
-                            Margin="0"
-                            HorizontalAlignment="Left"
-                            Orientation="Horizontal">
-                            <Button
-                                x:Name="PART_BackButton"
-                                Width="48"
-                                Height="40"
-                                Margin="0"
-                                Padding="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                AutomationProperties.Name="Back"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Focusable="True"
-                                Template="{StaticResource NavigationViewBackButtonTemplate}"
-                                Visibility="Collapsed">
-                                <controls:FontIcon
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Glyph="&#xE72B;"
-                                    IconFontSize="16" />
-                            </Button>
-                            <Button
-                                x:Name="PART_PaneToggleButton"
-                                Width="48"
-                                Height="40"
-                                Margin="0"
-                                Padding="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                AutomationProperties.Name="Navigation"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Focusable="True"
-                                Template="{StaticResource NavigationViewBackButtonTemplate}">
-                                <controls:FontIcon
-                                    x:Name="PaneToggleGlyph"
-                                    Margin="2,0,0,0"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Glyph="&#xE700;"
-                                    IconFontSize="16" />
-                            </Button>
-                        </StackPanel>
+                            Height="48" />
 
                         <!--  Extra horizontal padding keeps keyboard focus visuals inside the pane viewport.  -->
                         <controls:SmoothScrollViewer
@@ -435,7 +418,7 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
-                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375) at NavigationViewItemSeparatorMargin 0,3,0,4 (NavigationView_themeresources.xaml:247). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it is always drawn, which docs/winui-parity.md records.  -->
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375, Margin 0,0,0,2). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
                         <controls:NavigationViewItemSeparator
                             Grid.Row="2"
                             Margin="0,3,0,4"
@@ -523,6 +506,70 @@
                             IsHitTestVisible="False" />
                     </Grid>
                 </Grid>
+                <!--
+                    Pane chrome, drawn at the root rather than inside the pane column. It is WinUI's
+                    PaneToggleButtonGrid: HorizontalAlignment Left, VerticalAlignment Top and
+                    Canvas.ZIndex="100" at the root of the template (NavigationView.xaml:180), whose
+                    WPF spelling is Panel.ZIndex on a child spanning both columns. Inside the 48 dip
+                    rail the row would be clipped to the column the moment the back button pushed the
+                    pane toggle past 48, which took the toggle off screen entirely. The pane reserves
+                    the row's height through PaneChromeSpacer, so nothing about the items below moves.
+                -->
+                <StackPanel
+                    x:Name="PaneChrome"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Panel.ZIndex="100"
+                    Height="48"
+                    MinWidth="48"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="PART_BackButton"
+                        Width="48"
+                        Height="40"
+                        Margin="0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        AutomationProperties.Name="Back"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="True"
+                        Template="{StaticResource NavigationViewBackButtonTemplate}"
+                        Visibility="Collapsed">
+                        <controls:FontIcon
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Glyph="&#xE72B;"
+                            IconFontSize="16" />
+                    </Button>
+                    <Button
+                        x:Name="PART_PaneToggleButton"
+                        Width="48"
+                        Height="40"
+                        Margin="0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        AutomationProperties.Name="Navigation"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="True"
+                        Template="{StaticResource NavigationViewBackButtonTemplate}">
+                        <controls:FontIcon
+                            x:Name="PaneToggleGlyph"
+                            Margin="2,0,0,0"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Glyph="&#xE700;"
+                            IconFontSize="16" />
+                    </Button>
+                </StackPanel>
             </Grid>
             <!--  WI-3 B15: BackButtonStates VSM group - WinUI NavigationView canonical  -->
             <VisualStateManager.VisualStateGroups>
@@ -558,6 +605,7 @@
             </MultiTrigger>
             <Trigger Property="HostExtendsContentIntoTitleBar" Value="True">
                 <Setter TargetName="PaneChrome" Property="Height" Value="48" />
+                <Setter TargetName="PaneChromeSpacer" Property="Height" Value="48" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -619,58 +667,17 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel
-                            x:Name="PaneChrome"
+                        <!--
+                            The chrome row's height is reserved here and drawn at the template root
+                            (PaneChrome). WinUI hosts the back button and the pane toggle in
+                            PaneToggleButtonGrid, a root level grid at Canvas.ZIndex="100"
+                            (NavigationView.xaml:180), precisely so a visible back button can push
+                            the toggle past the rail's own width without the pane clipping it.
+                        -->
+                        <Border
+                            x:Name="PaneChromeSpacer"
                             Grid.Row="0"
-                            Height="42"
-                            MinWidth="48"
-                            Margin="0"
-                            HorizontalAlignment="Left"
-                            Orientation="Horizontal">
-                            <Button
-                                x:Name="PART_BackButton"
-                                Width="48"
-                                Height="40"
-                                Margin="0"
-                                Padding="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                AutomationProperties.Name="Back"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Focusable="True"
-                                Template="{StaticResource NavigationViewBackButtonTemplate}"
-                                Visibility="Collapsed">
-                                <controls:FontIcon
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Glyph="&#xE72B;"
-                                    IconFontSize="16" />
-                            </Button>
-                            <Button
-                                x:Name="PART_PaneToggleButton"
-                                Width="48"
-                                Height="40"
-                                Margin="0"
-                                Padding="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                AutomationProperties.Name="Navigation"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Focusable="True"
-                                Template="{StaticResource NavigationViewBackButtonTemplate}">
-                                <controls:FontIcon
-                                    x:Name="PaneToggleGlyph"
-                                    Margin="2,0,0,0"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Glyph="&#xE700;"
-                                    IconFontSize="16" />
-                            </Button>
-                        </StackPanel>
+                            Height="42" />
 
                         <!--  Extra horizontal padding keeps keyboard focus visuals inside the pane viewport.  -->
                         <controls:SmoothScrollViewer
@@ -704,7 +711,7 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
-                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375) at NavigationViewItemSeparatorMargin 0,3,0,4 (NavigationView_themeresources.xaml:247). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it is always drawn, which docs/winui-parity.md records.  -->
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375, Margin 0,0,0,2). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
                         <controls:NavigationViewItemSeparator
                             Grid.Row="2"
                             Margin="0,3,0,4"
@@ -792,6 +799,70 @@
                             IsHitTestVisible="False" />
                     </Grid>
                 </Grid>
+                <!--
+                    Pane chrome, drawn at the root rather than inside the pane column. It is WinUI's
+                    PaneToggleButtonGrid: HorizontalAlignment Left, VerticalAlignment Top and
+                    Canvas.ZIndex="100" at the root of the template (NavigationView.xaml:180), whose
+                    WPF spelling is Panel.ZIndex on a child spanning both columns. Inside the 48 dip
+                    rail the row would be clipped to the column the moment the back button pushed the
+                    pane toggle past 48, which took the toggle off screen entirely. The pane reserves
+                    the row's height through PaneChromeSpacer, so nothing about the items below moves.
+                -->
+                <StackPanel
+                    x:Name="PaneChrome"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Panel.ZIndex="100"
+                    Height="42"
+                    MinWidth="48"
+                    Margin="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="PART_BackButton"
+                        Width="48"
+                        Height="40"
+                        Margin="0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        AutomationProperties.Name="Back"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="True"
+                        Template="{StaticResource NavigationViewBackButtonTemplate}"
+                        Visibility="Collapsed">
+                        <controls:FontIcon
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Glyph="&#xE72B;"
+                            IconFontSize="16" />
+                    </Button>
+                    <Button
+                        x:Name="PART_PaneToggleButton"
+                        Width="48"
+                        Height="40"
+                        Margin="0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        AutomationProperties.Name="Navigation"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="True"
+                        Template="{StaticResource NavigationViewBackButtonTemplate}">
+                        <controls:FontIcon
+                            x:Name="PaneToggleGlyph"
+                            Margin="2,0,0,0"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Glyph="&#xE700;"
+                            IconFontSize="16" />
+                    </Button>
+                </StackPanel>
             </Grid>
             <!--  WI-3 B15: BackButtonStates VSM group - WinUI NavigationView canonical  -->
             <VisualStateManager.VisualStateGroups>
@@ -827,6 +898,7 @@
             </MultiTrigger>
             <Trigger Property="HostExtendsContentIntoTitleBar" Value="True">
                 <Setter TargetName="PaneChrome" Property="Height" Value="42" />
+                <Setter TargetName="PaneChromeSpacer" Property="Height" Value="42" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>

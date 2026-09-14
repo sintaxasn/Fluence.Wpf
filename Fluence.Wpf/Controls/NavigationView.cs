@@ -111,7 +111,6 @@ namespace Fluence.Wpf.Controls
 
         private const string PartPaneColumn = "PaneColumn";
         private const double PaneClosedWidth = 48.0;
-        private const double PaneClosedWithBackWidth = 96.0;
         private const double PaneOpenWidth = 320.0;
         private const double PaneAnimationMilliseconds = 167.0;
 
@@ -1120,7 +1119,11 @@ defaultValue: null,
 
         private void UpdateTitleBarExtensionForPaneMode()
         {
-            if (Window.GetWindow(this) is not FluenceWindow window || _updatingTitleBarExtension)
+            // Only the window's own shell pane drives the window's title bar extension. A
+            // NavigationView nested in page content is a control on the page, so letting it write
+            // FluenceWindow.ExtendsContentIntoTitleBar would let a Top mode sample switch the whole
+            // shell's title bar off the moment the page loaded.
+            if (!IsShellNavigationView() || Window.GetWindow(this) is not FluenceWindow window || _updatingTitleBarExtension)
             {
                 return;
             }
@@ -1326,9 +1329,17 @@ defaultValue: null,
                 : GetClosedPaneWidth();
         }
 
-        private double GetClosedPaneWidth()
+        /// <summary>
+        /// The width of the closed pane, which is the compact rail. It does not depend on the back
+        /// button: the back button and the pane toggle share the chrome row above the rail and the
+        /// row is free to run wider than the rail, so showing the back button moves the toggle
+        /// along rather than widening the pane. Widening it here made enabling the back button look
+        /// like the pane had been opened, which is what pressing the toggle is for.
+        /// </summary>
+        /// <returns>The closed pane width in device independent pixels.</returns>
+        private static double GetClosedPaneWidth()
         {
-            return IsBackButtonVisible && IsBackEnabled ? PaneClosedWithBackWidth : PaneClosedWidth;
+            return PaneClosedWidth;
         }
 
         private void ScheduleIndicatorPosition(bool animate)
