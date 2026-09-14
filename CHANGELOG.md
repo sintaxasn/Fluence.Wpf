@@ -35,6 +35,7 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 ### Changed
 
+- `Expander` takes WinUI's box model. The header carries `ExpanderHeaderPadding` 16,0,0,0 and gets its height from `ExpanderMinHeight` 48 rather than from 11 dip of vertical padding; `MinHeight` and `Padding` are set on the control and template-bound into both tiers, so `Padding` now insets the content tier (default `ExpanderContentPadding` 16) instead of being ignored. `Background` paints the content tier, which is where WinUI puts it, and the header takes the card default fill on its own; a consumer who set `Background` to colour the header now colours the content instead.
 - Demo: every gallery page sets the theme text brush on its root. WPF's `Page` resolves its own `Foreground` from `SystemColors` instead of inheriting it, so page text rendered black on the dark theme until a later theme change re-resolved it.
 - Demo: the Colors page content stretches to the shell width, which matters most in Top pane display mode where the pane hands its width back to the content. Tile labels wrap when the column is narrow enough, as the Gallery does at its own width.
 - Demo: the Colors page High Contrast section shows the four contrast themes Windows ships (Aquatic, Desert, Dusk, Night Sky) as fixed palettes under the live system-colour row, as the Gallery's own High Contrast section does. `ColorTile` now accepts a literal colour for those palette tiles; live tiles are unchanged.

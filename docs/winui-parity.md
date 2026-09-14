@@ -85,7 +85,6 @@ Values below were read directly from the corresponding template or theme-resourc
 | `InfoBar` box model | `MinHeight` 48 and `Padding` 16,0,0,0, matching WinUI: the vertical rhythm is carried by the icon margin, the banner panel's per-orientation padding and the close button's inset rather than by control padding | `InfoBarMinHeight` 48, `InfoBarContentRootPadding` 16,0,0,0 | `InfoBar\InfoBar.xaml:94`, `InfoBar_themeresources.xaml:66,75` |
 | `ProgressBar` | `MinHeight` 3.2 | `ProgressBarMinHeight` 3 | `ProgressBar\ProgressBar_themeresources.xaml:29` |
 | `RatingControl` | spacing 4, no `PlaceholderValue` | `RatingControlItemSpacing` 8 | `RatingControl\RatingControl_themeresources.xaml:40` |
-| `Expander` | header padding 16,11 | `ExpanderHeaderPadding` 16,0,0,0 | `Expander\Expander_themeresources.xaml:80` |
 | `TeachingTip` content inset | presenter padding 16,15,16,17 | `TeachingTipContentMargin` 12 on the content presenter, with the padding carried by the surface | `TeachingTip\TeachingTip_themeresources.xaml:97` |
 | `TeachingTip` placements | `Auto` plus 5 edge placements | 14 states, including 8 corner aware variants | `TeachingTip\TeachingTip.xaml:116-263` |
 | `ContextMenu` icon column | 20 dp icon column plus an 8 dp gap reserved on every item | reserved only in the `CheckPlaceholder` / `IconPlaceholder` visual states, via `MenuFlyoutItemPlaceholderThemeThickness` 28,0,0,0 | `CommonStyles\MenuFlyout_themeresources_perf2026.xaml:46,342-362` |
