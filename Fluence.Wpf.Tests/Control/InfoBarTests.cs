@@ -35,6 +35,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -671,6 +672,332 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
+        }
+
+        [Fact]
+        public Task InfoBar_CloseButton_RaisesClickAndRunsTheCommandBeforeClosingAsync()
+        {
+            // WinUI's InfoBar carries CloseButtonClick, CloseButtonCommand and
+            // CloseButtonCommandParameter alongside the close pipeline (InfoBar.idl:87-99). The
+            // click reports the button, not the close: Closing is where a close is cancelled.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 420, Height = 200 };
+                List<string> order = [];
+                RelayTestCommand command = new(parameter => order.Add("command:" + parameter));
+
+                InfoBar infoBar = new()
+                {
+                    Title = "Update",
+                    Message = "A restart is needed.",
+                    IsOpen = true,
+                    IsClosable = true,
+                    CloseButtonCommand = command,
+                    CloseButtonCommandParameter = "bar",
+                };
+                infoBar.CloseButtonClick += (_, _) => order.Add("click");
+                infoBar.Closing += (_, _) => order.Add("closing");
+                infoBar.Closed += (_, _) => order.Add("closed");
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = infoBar.ApplyTemplate();
+                    System.Windows.Controls.Button closeButton = Assert.IsType<System.Windows.Controls.Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
+                    ButtonAutomationPeer peer = new(closeButton);
+                    IInvokeProvider invokeProvider = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+
+                    invokeProvider.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(["click", "command:bar", "closing", "closed"], order);
+                    Assert.False(infoBar.IsOpen);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_CloseButtonStyle_ReachesTheButtonAndRestoresOnClearAsync()
+        {
+            // WinUI's InfoBar.CloseButtonStyle (InfoBar.idl:87). Clearing it has to put the
+            // template's own style back rather than leave the button unstyled.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 420, Height = 200 };
+                Style custom = new(typeof(System.Windows.Controls.Button));
+                custom.Setters.Add(new Setter(FrameworkElement.WidthProperty, 64.0));
+
+                InfoBar infoBar = new()
+                {
+                    Title = "Update",
+                    IsOpen = true,
+                    IsClosable = true,
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = infoBar.ApplyTemplate();
+                    System.Windows.Controls.Button closeButton = Assert.IsType<System.Windows.Controls.Button>(infoBar.Template.FindName("PART_CloseButton", infoBar));
+                    Style templateStyle = Assert.IsType<Style>(closeButton.Style);
+
+                    infoBar.SetCurrentValue(InfoBar.CloseButtonStyleProperty, custom);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(custom, closeButton.Style);
+
+                    infoBar.ClearValue(InfoBar.CloseButtonStyleProperty);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(templateStyle, closeButton.Style);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_Content_RendersUnderTheBannerAndTakesItWhenThereIsNoneAsync()
+        {
+            // InfoBar is a ContentControl, so Content is its XAML content property, and the template
+            // had no presenter for it: anything nested in the bar compiled and rendered nothing.
+            // WinUI keeps the same presenter in a second row and promotes it to the first when the
+            // bar carries neither title nor message (InfoBar.xaml:84-91,126).
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 460, Height = 240 };
+                System.Windows.Controls.TextBlock content = new() { Text = "Restart when convenient." };
+                InfoBar infoBar = new()
+                {
+                    Title = "Update",
+                    Message = "A restart is needed.",
+                    IsOpen = true,
+                    Content = content,
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.ContentPresenter contentArea = Assert.IsType<System.Windows.Controls.ContentPresenter>(
+                        FindVisualChildByName<System.Windows.Controls.ContentPresenter>(infoBar, "ContentArea"), exactMatch: false);
+                    Assert.Equal(Visibility.Visible, contentArea.Visibility);
+                    Assert.Same(content, contentArea.Content);
+                    Assert.Equal(1, System.Windows.Controls.Grid.GetRow(contentArea));
+                    Assert.True(content.ActualHeight > 0, "The bar's own content must render.");
+
+                    // It sits below the banner text, not beside it.
+                    System.Windows.Controls.TextBlock title = Assert.IsType<System.Windows.Controls.TextBlock>(
+                        FindVisualChildByName<System.Windows.Controls.TextBlock>(infoBar, "TitleTextBlock"), exactMatch: false);
+                    double titleBottom = title.TransformToAncestor(infoBar).Transform(new Point(0, title.ActualHeight)).Y;
+                    double contentTop = contentArea.TransformToAncestor(infoBar).Transform(new Point(0, 0)).Y;
+                    Assert.True(contentTop >= titleBottom, "Content belongs under the banner row.");
+
+                    // With no banner text at all, the content takes the banner row itself.
+                    infoBar.ClearValue(InfoBar.TitleProperty);
+                    infoBar.ClearValue(InfoBar.MessageProperty);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal(0, System.Windows.Controls.Grid.GetRow(contentArea));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_Banner_LaysOutOnOneLineUntilItStopsFittingAsync()
+        {
+            // WinUI's InfoBarPanel picks its own orientation: title, message and action on one line
+            // while they fit, stacked when they do not (InfoBarPanel.cpp MeasureOverride). Fluence
+            // always stacked, so the single line bar the Gallery shows by default was unreachable.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 700, Height = 220 };
+                InfoBar infoBar = new()
+                {
+                    Title = "Update",
+                    Message = "A restart is needed.",
+                    IsOpen = true,
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.TextBlock title = Assert.IsType<System.Windows.Controls.TextBlock>(
+                        FindVisualChildByName<System.Windows.Controls.TextBlock>(infoBar, "TitleTextBlock"), exactMatch: false);
+                    System.Windows.Controls.TextBlock message = Assert.IsType<System.Windows.Controls.TextBlock>(
+                        FindVisualChildByName<System.Windows.Controls.TextBlock>(infoBar, "MessageTextBlock"), exactMatch: false);
+
+                    Assert.False(infoBar.IsBannerStacked, "A short title and message must share one line at 700 wide.");
+                    double titleY = title.TransformToAncestor(infoBar).Transform(new Point(0, 0)).Y;
+                    double messageY = message.TransformToAncestor(infoBar).Transform(new Point(0, 0)).Y;
+                    Assert.Equal(titleY, messageY, 0.5);
+
+                    // Narrow enough that they cannot, and the panel stacks them.
+                    window.Width = 260;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(infoBar.IsBannerStacked, "They must stack once the bar is too narrow for one line.");
+                    messageY = message.TransformToAncestor(infoBar).Transform(new Point(0, 0)).Y;
+                    titleY = title.TransformToAncestor(infoBar).Transform(new Point(0, 0)).Y;
+                    Assert.True(messageY > titleY, "Stacked, the message sits under the title.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_Opened_RaisesOnTheOpenTransitionButNotOnACancelledCloseRevertAsync()
+        {
+            // WinUI's InfoBar raises Opened from the IsOpen transition (InfoBar.idl:105). A cancelled
+            // close puts IsOpen back without the bar ever having closed, which is not a fresh open,
+            // so it must stay silent there for the same reason it does not re-announce.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 420, Height = 200 };
+                int opened = 0;
+                // IsOpen defaults to true here (WinUI's defaults to false, recorded in
+                // docs/winui-parity.md), so the bar has to be closed before there is an open to see.
+                InfoBar infoBar = new() { Title = "Update", Message = "A restart is needed.", IsOpen = false };
+                infoBar.Opened += (_, _) => opened++;
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    infoBar.SetCurrentValue(InfoBar.IsOpenProperty, value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(1, opened);
+
+                    // A cancelled close reverts IsOpen; that revert is not an open.
+                    static void Cancel(object? sender, InfoBarClosingEventArgs e)
+                    {
+                        e.Cancel = true;
+                    }
+
+                    infoBar.Closing += Cancel;
+                    infoBar.SetCurrentValue(InfoBar.IsOpenProperty, value: false);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    infoBar.Closing -= Cancel;
+
+                    Assert.True(infoBar.IsOpen, "A cancelled close leaves the bar open.");
+                    Assert.Equal(1, opened);
+
+                    // A real close and a fresh open do raise it again.
+                    infoBar.SetCurrentValue(InfoBar.IsOpenProperty, value: false);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    infoBar.SetCurrentValue(InfoBar.IsOpenProperty, value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(2, opened);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task InfoBar_CustomIcon_IsClampedToTheIconBoxAsync()
+        {
+            // WinUI hosts a custom icon in a Viewbox capped at InfoBarIconFontSize on both axes
+            // (InfoBar.xaml:111). Without the cap an oversized icon inflates the icon column and
+            // pushes the whole bar taller, which the 48 dip minimum height makes obvious.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 460, Height = 240 };
+                System.Windows.Shapes.Rectangle oversized = new()
+                {
+                    Width = 64,
+                    Height = 64,
+                    Fill = System.Windows.Media.Brushes.Red,
+                };
+                InfoBar infoBar = new()
+                {
+                    Title = "Update",
+                    Message = "A restart is needed.",
+                    IsOpen = true,
+                    Icon = oversized,
+                };
+
+                try
+                {
+                    window.Content = infoBar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Viewbox iconBox = Assert.IsType<System.Windows.Controls.Viewbox>(
+                        FindVisualChildByName<System.Windows.Controls.Viewbox>(infoBar, "CustomIconBox"), exactMatch: false);
+                    Assert.Equal(16.0, iconBox.MaxWidth, 0.01);
+                    Assert.Equal(16.0, iconBox.MaxHeight, 0.01);
+                    Assert.True(iconBox.ActualWidth <= 16.5, "A 64 dip icon must scale down, not widen the icon column.");
+                    Assert.True(iconBox.ActualHeight <= 16.5, "A 64 dip icon must scale down, not make the bar taller.");
+
+                    // The bar stays the height a single line bar is, rather than growing to the icon.
+                    Assert.True(infoBar.ActualHeight < 64, "An oversized icon must not drive the bar's height.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// A minimal command: the close button path needs one that records its parameter, and the
+        /// test project has no shared command helper.
+        /// </summary>
+        /// <param name="execute">Called with the command parameter each time the command runs.</param>
+        private sealed class RelayTestCommand(Action<object?> execute) : System.Windows.Input.ICommand
+        {
+            private readonly Action<object?> _execute = execute;
+
+            // Availability never changes here, so the event is accepted and dropped rather than
+            // backed by a field nothing would ever raise.
+            public event EventHandler? CanExecuteChanged
+            {
+                add => CommandManager.RequerySuggested += value;
+                remove => CommandManager.RequerySuggested -= value;
+            }
+
+            public bool CanExecute(object? parameter)
+            {
+                return true;
+            }
+
+            public void Execute(object? parameter)
+            {
+                _execute(parameter);
+            }
         }
     }
 }

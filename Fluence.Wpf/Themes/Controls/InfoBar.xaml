@@ -71,13 +71,16 @@
         <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
+        <!--  WinUI sets the bar's radius from the theme token rather than a literal (InfoBar.xaml:11), so an application that retunes ControlCornerRadius reaches the InfoBar too. The DP's own default stays 4 for a bar built in code with no theme applied.  -->
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Opacity" Value="0" />
-        <Setter Property="Padding" Value="12,10" />
+        <!--  WinUI InfoBarContentRootPadding = 16,0,0,0 (InfoBar_themeresources.xaml:75); the vertical inset lives on the icon margin and the panel's orientation padding instead, so a single line bar is 48 dip tall.  -->
+        <Setter Property="Padding" Value="16,0,0,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:InfoBar}">
@@ -88,21 +91,28 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         ClipToBounds="False"
                         CornerRadius="{TemplateBinding CornerRadius}">
-                        <!--  Content area. WinUI has no separate indicator-bar column (InfoBar.xaml upstream); the severity read comes entirely from the icon and background.  -->
-                        <Grid Margin="{TemplateBinding Padding}">
+                        <!--  Content area. WinUI has no separate indicator-bar column (InfoBar.xaml upstream); the severity read comes entirely from the icon and background. The inset is WinUI's InfoBarContentRootPadding 16,0,0,0 over InfoBarMinHeight 48 (InfoBar_themeresources.xaml:66,75): every other edge inset is carried by the icon margin, the panel's own orientation padding and the close button's margin, so the bar can collapse to one 48 dip line.  -->
+                        <Grid MinHeight="48" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!--  Banner row: icon, title, message, action and close.  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Free-form Content, under the banner, as WinUI's ContentArea sits (InfoBar.xaml:126).  -->
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
                             <!--  Icon area  -->
+                            <!--  WinUI top-aligns the icon and insets it with InfoBarIconMargin 0,16,14,16 (InfoBar.xaml:108-110, InfoBar_themeresources.xaml:76), so the glyph stays beside the title rather than drifting to the middle of a tall, wrapped bar.  -->
                             <Grid
                                 x:Name="IconArea"
                                 Grid.Column="0"
-                                Margin="0,0,10,0"
-                                VerticalAlignment="Center">
+                                Margin="0,16,14,16"
+                                VerticalAlignment="Top">
                                 <!--
                                     WinUI parity: two-layer severity glyph (InfoBar.xaml:108-109 upstream).
                                     IconBackground paints the filled-circle glyph (F136) in the severity
@@ -128,7 +138,14 @@
                                     Foreground="{DynamicResource TextFillColorInverseBrush}"
                                     Text="&#xF13F;"
                                     Visibility="Collapsed" />
-                                <!--  Custom icon override (shown when Icon DP is set)  -->
+                                <!--  Custom icon override (shown when Icon DP is set). WinUI hosts a custom icon in a Viewbox capped at InfoBarIconFontSize on both axes (InfoBar.xaml:111), so an oversized icon scales down instead of inflating the icon column and pushing the whole bar taller.  -->
+                                <Viewbox
+                                    x:Name="CustomIconBox"
+                                    MaxWidth="16"
+                                    MaxHeight="16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Stretch="Uniform">
                                 <ContentPresenter
                                     x:Name="CustomIconPresenter"
                                     HorizontalAlignment="Center"
@@ -142,46 +159,80 @@
                                         </Style>
                                     </ContentPresenter.Resources>
                                 </ContentPresenter>
+                                </Viewbox>
                             </Grid>
 
-                            <!--  Title and message  -->
-                            <StackPanel
+                            <!--
+                                Title, message and action share one panel that picks its own
+                                orientation, as WinUI's InfoBarPanel does (InfoBar.xaml:112-125):
+                                one line while all three fit, stacked when they do not. The two
+                                margins per child are WinUI's own
+                                (InfoBar_themeresources.xaml:79-86), because the gap between a
+                                title and a message side by side is not the gap between them
+                                stacked.
+                            -->
+                            <controls:InfoBarPanel
+                                x:Name="PART_BannerPanel"
+                                Grid.Row="0"
                                 Grid.Column="1"
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center">
+                                Margin="0,0,16,0"
+                                HorizontalOrientationPadding="0"
+                                VerticalOrientationPadding="0,14,0,18">
                                 <TextBlock
                                     x:Name="TitleTextBlock"
+                                    controls:InfoBarPanel.HorizontalOrientationMargin="0,14,0,0"
+                                    controls:InfoBarPanel.VerticalOrientationMargin="0,14,0,0"
                                     FontFamily="{TemplateBinding FontFamily}"
                                     FontSize="{TemplateBinding FontSize}"
                                     FontWeight="SemiBold"
                                     Foreground="{TemplateBinding Foreground}"
                                     Text="{TemplateBinding Title}"
-                                    TextTrimming="CharacterEllipsis"
                                     TextWrapping="Wrap" />
                                 <!--  WinUI parity: InfoBarMessageForeground (InfoBar_themeresources.xaml:18) is TextFillColorPrimaryBrush, following the control's own Foreground like the title, not a hardcoded secondary tone.  -->
                                 <TextBlock
                                     x:Name="MessageTextBlock"
-                                    Margin="0,2,0,0"
+                                    controls:InfoBarPanel.HorizontalOrientationMargin="12,14,0,0"
+                                    controls:InfoBarPanel.VerticalOrientationMargin="0,4,0,0"
                                     FontFamily="{TemplateBinding FontFamily}"
                                     FontSize="{TemplateBinding FontSize}"
                                     Foreground="{TemplateBinding Foreground}"
                                     Text="{TemplateBinding Message}"
                                     TextWrapping="Wrap" />
-                            </StackPanel>
+                                <!--  Action button slot  -->
+                                <ContentPresenter
+                                    x:Name="ActionPresenter"
+                                    controls:InfoBarPanel.HorizontalOrientationMargin="16,8,0,0"
+                                    controls:InfoBarPanel.VerticalOrientationMargin="0,12,0,0"
+                                    VerticalAlignment="Top"
+                                    Content="{TemplateBinding ActionButton}">
+                                    <ContentPresenter.Resources>
+                                        <!--  A hyperlink in the action slot pulls its own padding back, as WinUI's scoped style does (InfoBar.xaml:116-123, InfoBarHyperlinkButtonMargin -12,0,0,0), so the link text lines up with the message rather than sitting a button's padding further right. The foreground is left to the control: InfoBarHyperlinkButtonForeground is AccentTextFillColorPrimaryBrush, which is what HyperlinkButton already paints.  -->
+                                        <Style BasedOn="{StaticResource {x:Type controls:HyperlinkButton}}" TargetType="{x:Type controls:HyperlinkButton}">
+                                            <Setter Property="Margin" Value="-12,0,0,0" />
+                                        </Style>
+                                    </ContentPresenter.Resources>
+                                </ContentPresenter>
+                            </controls:InfoBarPanel>
 
-                            <!--  Action button slot  -->
+                            <!--  Free-form content. InfoBar is a ContentControl, so this is its XAML content property, and without a presenter for it anything a consumer nests in the bar compiled and rendered nothing. WinUI names the same presenter ContentArea and keeps it in the second row (InfoBar.xaml:126), promoted to the first when the bar carries neither title nor message (its NoBannerContent state, InfoBar.xaml:84-91).  -->
                             <ContentPresenter
-                                x:Name="ActionPresenter"
-                                Grid.Column="2"
-                                Margin="0,0,8,0"
+                                x:Name="ContentArea"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="0,8,8,0"
                                 VerticalAlignment="Center"
-                                Content="{TemplateBinding ActionButton}" />
+                                Content="{TemplateBinding Content}"
+                                ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
 
                             <!--  Close button  -->
+                            <!--  WinUI's InfoBarCloseButtonStyle is VerticalAlignment Top with Margin 5 (InfoBar_themeresources.xaml:88-94), so the close button sits at the top right of a tall bar rather than halfway down it.  -->
                             <Button
                                 x:Name="PART_CloseButton"
                                 Grid.Column="3"
-                                VerticalAlignment="Center"
+                                Margin="5"
+                                VerticalAlignment="Top"
                                 AutomationProperties.Name="Close"
                                 Style="{StaticResource InfoBarCloseButtonStyle}"
                                 ToolTip="Close">
@@ -268,6 +319,30 @@
                             <Setter TargetName="MessageTextBlock" Property="Margin" Value="0" />
                             <Setter TargetName="MessageTextBlock" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+
+                        <!--  Content empty → collapse, so the second row costs nothing.  -->
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter TargetName="ContentArea" Property="Margin" Value="0" />
+                            <Setter TargetName="ContentArea" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <!--  No banner text: the content takes the banner row itself, which is WinUI's NoBannerContent state.  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Title" Value="{x:Null}" />
+                                <Condition Property="Message" Value="{x:Null}" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ContentArea" Property="Grid.Row" Value="0" />
+                            <Setter TargetName="ContentArea" Property="Margin" Value="0,0,8,0" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Title" Value="" />
+                                <Condition Property="Message" Value="" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ContentArea" Property="Grid.Row" Value="0" />
+                            <Setter TargetName="ContentArea" Property="Margin" Value="0,0,8,0" />
+                        </MultiTrigger>
 
                         <!--  ActionButton empty → collapse  -->
                         <Trigger Property="ActionButton" Value="{x:Null}">

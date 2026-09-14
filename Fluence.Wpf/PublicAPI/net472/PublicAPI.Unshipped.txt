@@ -8,6 +8,14 @@ Fluence.Wpf.Automation.SelectorBarItemAutomationPeer
 Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.SelectorBarItemAutomationPeer(Fluence.Wpf.Controls.SelectorBarItem! owner) -> void
 Fluence.Wpf.Automation.TitleBarAutomationPeer
 Fluence.Wpf.Automation.TitleBarAutomationPeer.TitleBarAutomationPeer(Fluence.Wpf.Controls.TitleBar! owner) -> void
+Fluence.Wpf.Controls.InfoBar.CloseButtonClick -> System.EventHandler?
+Fluence.Wpf.Controls.InfoBar.CloseButtonCommand.get -> System.Windows.Input.ICommand?
+Fluence.Wpf.Controls.InfoBar.CloseButtonCommand.set -> void
+Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameter.get -> object?
+Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameter.set -> void
+Fluence.Wpf.Controls.InfoBar.CloseButtonStyle.get -> System.Windows.Style?
+Fluence.Wpf.Controls.InfoBar.CloseButtonStyle.set -> void
+Fluence.Wpf.Controls.InfoBar.Opened -> System.EventHandler<Fluence.Wpf.InfoBarOpenedEventArgs!>?
 Fluence.Wpf.Controls.SelectorBar
 Fluence.Wpf.Controls.SelectorBar.SelectorBar() -> void
 Fluence.Wpf.Controls.SelectorBarItem
@@ -22,6 +30,8 @@ Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffect.get -> Fluence.Wp
 Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffect.set -> void
 Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs(Fluence.Wpf.InfoBarCloseReason reason) -> void
 Fluence.Wpf.InfoBarClosingEventArgs.Reason.get -> Fluence.Wpf.InfoBarCloseReason
+Fluence.Wpf.InfoBarOpenedEventArgs
+Fluence.Wpf.InfoBarOpenedEventArgs.InfoBarOpenedEventArgs() -> void
 Fluence.Wpf.SlideNavigationTransitionEffect
 Fluence.Wpf.SlideNavigationTransitionEffect.FromLeft = 1 -> Fluence.Wpf.SlideNavigationTransitionEffect
 Fluence.Wpf.SlideNavigationTransitionEffect.FromRight = 2 -> Fluence.Wpf.SlideNavigationTransitionEffect
@@ -55,6 +65,9 @@ override Fluence.Wpf.Controls.TabView.OnItemsChanged(System.Collections.Speciali
 override Fluence.Wpf.Controls.TabView.OnSelectionChanged(System.Windows.Controls.SelectionChangedEventArgs! e) -> void
 override Fluence.Wpf.Controls.TabView.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameterProperty -> System.Windows.DependencyProperty!
+static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandProperty -> System.Windows.DependencyProperty!
+static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonStyleProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SelectorBarItem.IconProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SelectorBarItem.TextProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffectProperty -> System.Windows.DependencyProperty!
