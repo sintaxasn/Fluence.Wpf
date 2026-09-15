@@ -627,6 +627,52 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task ComboBox_DropdownReveal_RestsAtTheOpenPoseWhileItRunsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("PART_DropdownBorder", combo));
+                    TranslateTransform translate = Assert.IsType<TranslateTransform>(border.RenderTransform);
+                    Panel dropdownRoot = Assert.IsType<Panel>(combo.Template.FindName("PART_DropdownRoot", combo), exactMatch: false);
+
+                    combo.IsDropDownOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    // Regression guard, the defect that hid the flyout: the reveal clocks are
+                    // FillBehavior.Stop, so the property reverts to its BASE value the instant the
+                    // clock ends, before any Completed handler runs. The base has to be the open
+                    // pose, or a dropdown whose handler is late composites transparent and
+                    // offset. The reveal's own discrete keyframe supplies the start frame.
+                    Assert.Equal(1.0, (double)dropdownRoot.ReadLocalValue(UIElement.OpacityProperty), 0.001);
+
+                    // Releasing the clocks is what the end of a Stop-fill clock does, minus the
+                    // wait, so this reads the value the dropdown would settle at either way.
+                    dropdownRoot.BeginAnimation(UIElement.OpacityProperty, animation: null);
+                    translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
+
+                    Assert.Equal(1.0, dropdownRoot.Opacity, 0.001);
+                    Assert.Equal(0.0, translate.Y, 0.001);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task ComboBox_NoSelection_ShowsPlaceholderAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
