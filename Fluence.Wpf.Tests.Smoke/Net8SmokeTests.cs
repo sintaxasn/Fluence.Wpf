@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Tests.Smoke
                     Assert.Equal(3, Application.Current.Resources.MergedDictionaries.Count);
 
                     object? brush = Application.Current.TryFindResource("TextFillColorPrimaryBrush");
-                    _ = Assert.IsAssignableFrom<Brush>(brush);
+                    _ = Assert.IsType<Brush>(brush, exactMatch: false);
                 }
             });
         }

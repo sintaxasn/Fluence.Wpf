@@ -87,11 +87,12 @@ namespace Fluence.Wpf.Theming
             // the on-accent text token is right for all five; AddHighContrastBrushes splits them,
             // because there the Attention plate is the system highlight and the other four are the
             // window text colour.
-            dict["InfoBadgeAttentionForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
-            dict["InfoBadgeInformationalForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
-            dict["InfoBadgeSuccessForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
-            dict["InfoBadgeCautionForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
-            dict["InfoBadgeCriticalForegroundBrush"] = Solid(colors["TextOnAccentFillColorPrimary"]);
+            Color textOnAccent = colors["TextOnAccentFillColorPrimary"];
+            dict["InfoBadgeAttentionForegroundBrush"] = Solid(textOnAccent);
+            dict["InfoBadgeInformationalForegroundBrush"] = Solid(textOnAccent);
+            dict["InfoBadgeSuccessForegroundBrush"] = Solid(textOnAccent);
+            dict["InfoBadgeCautionForegroundBrush"] = Solid(textOnAccent);
+            dict["InfoBadgeCriticalForegroundBrush"] = Solid(textOnAccent);
 
             // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
