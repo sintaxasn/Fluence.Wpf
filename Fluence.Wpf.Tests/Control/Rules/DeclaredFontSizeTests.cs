@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 // The library styles its own ToolTip subclass; the framework's stays on the WPF default.
-                Fluence.Wpf.Controls.ToolTip tip = new() { Content = "Tip" };
+                ToolTip tip = new() { Content = "Tip" };
                 System.Windows.Controls.Border host = new() { ToolTip = tip };
                 Window window = new() { Content = host, Width = 240, Height = 160 };
 

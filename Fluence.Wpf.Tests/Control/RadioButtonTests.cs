@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
 using System.Windows.Automation;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                Controls.RadioButton radio = new() { Content = "Option" };
+                RadioButton radio = new() { Content = "Option" };
                 Window window = new() { Content = radio, Width = 240, Height = 120 };
 
                 try

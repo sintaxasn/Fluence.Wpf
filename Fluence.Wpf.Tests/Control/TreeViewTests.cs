@@ -78,8 +78,8 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.Border rootRail = FindIndicator(root);
-                    System.Windows.Controls.Border childRail = FindIndicator(child);
+                    Border rootRail = FindIndicator(root);
+                    Border childRail = FindIndicator(child);
 
                     // Each level nests one item template inside a 20 dip indent, so the child's rail
                     // would step right with it. The rail is pulled back by its own depth instead, and
@@ -128,10 +128,10 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
-        private static System.Windows.Controls.Border FindIndicator(Controls.TreeViewItem item)
+        private static Border FindIndicator(Controls.TreeViewItem item)
         {
-            return Assert.IsType<System.Windows.Controls.Border>(
-                FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator"), exactMatch: false);
+            return Assert.IsType<Border>(
+                FindVisualChildByName<Border>(item, "SelectionIndicator"), exactMatch: false);
         }
 
         [Fact]

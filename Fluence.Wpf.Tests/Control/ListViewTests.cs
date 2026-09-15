@@ -64,7 +64,7 @@ namespace Fluence.Wpf.Tests.Control
                 Controls.ListView view = new() { Width = 300, Height = 200 };
                 for (int index = 0; index < 6; index++)
                 {
-                    _ = view.Items.Add(new System.Windows.Controls.Border { Width = 80, Height = 40 });
+                    _ = view.Items.Add(new Border { Width = 80, Height = 40 });
                 }
 
                 Window window = new() { Content = view, Width = 400, Height = 300 };
@@ -88,8 +88,8 @@ namespace Fluence.Wpf.Tests.Control
 
                     // Six 80 dip items across a 300 dip list means the run wraps rather than
                     // running off the edge, which is the whole point of the state.
-                    System.Windows.Controls.Border first = Assert.IsType<System.Windows.Controls.Border>(view.Items[0], exactMatch: false);
-                    System.Windows.Controls.Border last = Assert.IsType<System.Windows.Controls.Border>(view.Items[5], exactMatch: false);
+                    Border first = Assert.IsType<Border>(view.Items[0], exactMatch: false);
+                    Border last = Assert.IsType<Border>(view.Items[5], exactMatch: false);
                     double firstTop = first.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
                     double lastTop = last.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
                     Assert.True(lastTop > firstTop, "A grid view must wrap its items onto further rows.");
@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Tests.Control
                 consumerPanel.Seal();
 
                 Controls.ListView view = new() { Width = 300, Height = 200, ItemsPanel = consumerPanel };
-                _ = view.Items.Add(new System.Windows.Controls.Border { Width = 80, Height = 40 });
+                _ = view.Items.Add(new Border { Width = 80, Height = 40 });
                 Window window = new() { Content = view, Width = 400, Height = 300 };
 
                 try

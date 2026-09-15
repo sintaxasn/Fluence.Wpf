@@ -945,7 +945,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     Width = 64,
                     Height = 64,
-                    Fill = System.Windows.Media.Brushes.Red,
+                    Fill = Brushes.Red,
                 };
                 InfoBar infoBar = new()
                 {
@@ -984,7 +984,7 @@ namespace Fluence.Wpf.Tests.Control
         /// test project has no shared command helper.
         /// </summary>
         /// <param name="execute">Called with the command parameter each time the command runs.</param>
-        private sealed class RelayTestCommand(Action<object?> execute) : System.Windows.Input.ICommand
+        private sealed class RelayTestCommand(Action<object?> execute) : ICommand
         {
             private readonly Action<object?> _execute = execute;
 

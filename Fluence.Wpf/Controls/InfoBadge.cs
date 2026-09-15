@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Controls
     /// Typically attached to a <see cref="NavigationViewItem"/> or other control.
     /// </summary>
     /// <remarks>
-    /// <see cref="System.Windows.Controls.ContentControl.Content"/> is driven by the badge itself:
+    /// <see cref="ContentControl.Content"/> is driven by the badge itself:
     /// it carries the value's text, the icon element, or nothing at all, depending on which display
     /// kind <see cref="Value"/> and <see cref="IconSource"/> resolve to. WinUI's InfoBadge has no
     /// content surface at all (<c language="text">InfoBadge.idl</c> declares only
@@ -132,7 +132,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Returns the canonical Segoe Fluent glyph for a badge severity, so a consumer can build
         /// the icon form of a badge without hardcoding codepoints, in the same shape as
-        /// <see cref="InfoBar.GetSeverityGlyph(Fluence.Wpf.InfoBarSeverity)"/>.
+        /// <see cref="InfoBar.GetSeverityGlyph(InfoBarSeverity)"/>.
         /// </summary>
         /// <remarks>
         /// WinUI ships a dot, a value and an icon style per severity, and only the icon styles
@@ -197,7 +197,7 @@ namespace Fluence.Wpf.Controls
         /// <remarks>
         /// This preserves parity rather than adding to it. WinUI's InfoBadge inherits
         /// <c language="csharp">CornerRadius</c> from its own <c language="csharp">Control</c> base
-        /// and reads it to honour a local value; WPF's <see cref="System.Windows.Controls.Control"/>
+        /// and reads it to honour a local value; WPF's <see cref="Control"/>
         /// has no such property, so the badge declares it.
         /// </remarks>
         public CornerRadius CornerRadius

@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
-                Controls.Slider slider = new()
+                Slider slider = new()
                 {
                     Orientation = orientation,
                     Width = orientation is System.Windows.Controls.Orientation.Horizontal ? 240 : 40,

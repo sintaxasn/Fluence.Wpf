@@ -300,7 +300,7 @@ namespace Fluence.Wpf.Tests.Control
                     // A press anywhere in the owning window closes the flyout. The flyout's own
                     // content lives in the popup's separate window, so a press inside it never
                     // reaches this handler and never closes it.
-                    MouseButtonEventArgs press = new(System.Windows.Input.Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
+                    MouseButtonEventArgs press = new(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
                     {
                         RoutedEvent = UIElement.PreviewMouseDownEvent,
                         Source = owner,
@@ -341,12 +341,12 @@ namespace Fluence.Wpf.Tests.Control
                     // mouse capture and releases that capture once the handler returns. Opening a
                     // light-dismiss popup in that window used to hand it a capture it lost again
                     // immediately, so the flyout vanished as it appeared.
-                    Assert.True(System.Windows.Input.Mouse.Capture(owner), "The owner must take the capture the gesture would give it.");
+                    Assert.True(Mouse.Capture(owner), "The owner must take the capture the gesture would give it.");
                     Controls.FlyoutBase.ShowAttachedFlyout(owner);
 
                     // The popup opens before the call returns, capture or no capture.
                     Assert.True(flyout.IsOpen, "ShowAt must open the flyout synchronously.");
-                    _ = System.Windows.Input.Mouse.Capture(element: null);
+                    _ = Mouse.Capture(element: null);
 
                     // And stay open: a dismissal arriving late would close it a frame later.
                     _ = await WaitUntilAsync(window.Dispatcher, 300, () => !flyout.IsOpen).ConfigureAwait(true);

@@ -86,10 +86,10 @@ namespace Fluence.Wpf.Tests.Smoke
             {
                 ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
-                Controls.Button button = new() { Content = "Smoke" };
-                Controls.TextBox textBox = new() { Text = "Smoke" };
-                Controls.ProgressBar progressBar = new() { Value = 40 };
-                Controls.InfoBadge badge = new() { Value = 3 };
+                Button button = new() { Content = "Smoke" };
+                TextBox textBox = new() { Text = "Smoke" };
+                ProgressBar progressBar = new() { Value = 40 };
+                InfoBadge badge = new() { Value = 3 };
                 System.Windows.Controls.StackPanel panel = new();
                 _ = panel.Children.Add(button);
                 _ = panel.Children.Add(textBox);

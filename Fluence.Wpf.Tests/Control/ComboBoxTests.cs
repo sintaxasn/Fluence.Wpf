@@ -847,7 +847,7 @@ namespace Fluence.Wpf.Tests.Control
 
                     Assert.Equal(new CornerRadius(3), Assert.IsType<CornerRadius>(Application.Current.TryFindResource("ComboBoxItemCornerRadius")));
 
-                    comboBox.SetCurrentValue(System.Windows.Controls.ComboBox.IsDropDownOpenProperty, value: true);
+                    comboBox.SetCurrentValue(ComboBox.IsDropDownOpenProperty, value: true);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -865,7 +865,7 @@ namespace Fluence.Wpf.Tests.Control
                 finally
                 {
                     Application.Current.Resources.Remove("ComboBoxItemCornerRadius");
-                    comboBox.SetCurrentValue(System.Windows.Controls.ComboBox.IsDropDownOpenProperty, value: false);
+                    comboBox.SetCurrentValue(ComboBox.IsDropDownOpenProperty, value: false);
                     window.Close();
                 }
             });
