@@ -303,3 +303,28 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the closed expander corners and the dropdown reveal
+
+One regression case for the ComboBox dropdown reveal, which rested on a hidden
+base value, and one rename: the expander header test now covers the closed state
+as well as the open one, so the name it had (top corners only) no longer
+describes what it asserts.
+
+### Renames: 1 line
+
+| From | To | Source |
+| ---- | -- | ------ |
+| `Expander_HeaderBorder_CornerRadiusTopOnlyAsync` | `Expander_HeaderBorder_KeepsTheWholeRadiusUntilItOpensAsync` | `Control/ExpanderTests.cs` |
+
+### Additions: 1 line
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `ComboBox_DropdownReveal_RestsAtTheOpenPoseWhileItRunsAsync` | 1 | `Control/ComboBoxTests.cs` |
+
+Net: 1 added, none removed. 1316 cases to 1317 on net10, 1313 to 1314 on net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

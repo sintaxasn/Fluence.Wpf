@@ -602,6 +602,7 @@
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ItemTemplate_HasHoverOverlayAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropDownItem_UsesWinUiMetricsAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopenAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_DropdownReveal_RestsAtTheOpenPoseWhileItRunsAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_NoSelection_ShowsPlaceholderAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ToggleButton_OpensDropDownAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ToggleButton_UsesReleaseClickModeAsync
@@ -667,7 +668,7 @@
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_StyleApplies_RootBorderFoundAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ChevronPath_ExistsWithRotateTransformOnParentAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_Expanded_ContentVisibilityIsVisibleAsync
-  Fluence.Wpf.Tests.Control.ExpanderTests.Expander_HeaderBorder_CornerRadiusTopOnlyAsync
+  Fluence.Wpf.Tests.Control.ExpanderTests.Expander_HeaderBorder_KeepsTheWholeRadiusUntilItOpensAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ContentSlideParts_PresentWithClipAndInlineTranslateAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ExpandSlide_RestsAtZeroWithStarContentRowAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_CollapseSlide_ClosesRowAndResetsTranslateAsync
