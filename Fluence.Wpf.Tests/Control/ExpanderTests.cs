@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task Expander_HeaderBorder_CornerRadiusTopOnlyAsync()
+        public Task Expander_HeaderBorder_KeepsTheWholeRadiusUntilItOpensAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -137,11 +137,22 @@ namespace Fluence.Wpf.Tests.Control
                     w.Show();
                     WpfTestSta.DrainDispatcher(w.Dispatcher);
 
-                    // WinUI parity: the header owns the two top corners while the content tier
-                    // (PART_ContentBorder) owns the two bottom corners, derived live from the
-                    // control's own CornerRadius rather than a shared uniform hardcoded radius.
+                    // WinUI parity (Expander.xaml:111, and the ExpandDown state at :64): closed, the
+                    // header is the whole card and takes the control's CornerRadius whole. Only an
+                    // open expander gives the bottom corners to the content tier, so a closed
+                    // expander is not a card with two square corners along its bottom edge.
                     Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+                    Assert.Equal(new CornerRadius(8), headerBorder.CornerRadius);
+
+                    expander.IsExpanded = true;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
                     Assert.Equal(new CornerRadius(8, 8, 0, 0), headerBorder.CornerRadius);
+
+                    expander.IsExpanded = false;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    Assert.Equal(new CornerRadius(8), headerBorder.CornerRadius);
                 }
                 finally
                 {
@@ -400,6 +411,11 @@ namespace Fluence.Wpf.Tests.Control
 
                     Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
                     Border headerBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "HeaderBorder"), exactMatch: false);
+
+                    // The header gives up corners only while the expander is open, so the mirror is
+                    // asserted in that state.
+                    expander.IsExpanded = true;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     // Up direction mirrors both tiers: content now sits above the header and owns
                     // the top corners plus the bottom-skipped border edge; the header mirrors to

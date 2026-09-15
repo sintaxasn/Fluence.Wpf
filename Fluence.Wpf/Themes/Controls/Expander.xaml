@@ -30,16 +30,18 @@
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <!--
                         WinUI parity (Expander_themeresources.xaml:6, :9-14): the header owns its own
-                        CardBackground fill and 1px CardStroke border, rounded on the two corners it
-                        occupies (top for ExpandDirection=Down, bottom for Up via the Tag="Up" trigger
-                        below) rather than sharing an outer card border with the content.
+                        CardBackground fill and 1px CardStroke border rather than sharing an outer card
+                        border with the content. Closed, it is the whole card and takes the control's
+                        CornerRadius whole (Expander.xaml:111); only an open expander clips the header
+                        to the two corners it still occupies, through the IsChecked triggers below,
+                        which is WinUI's ExpandDown and ExpandUp states (Expander.xaml:35,64).
                     -->
                     <Border
                         x:Name="HeaderBorder"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType={x:Type controls:Expander}}, Converter={x:Static controls:Expander.TopCornerRadiusFilter}}">
+                        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType={x:Type controls:Expander}}}">
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -125,11 +127,21 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="Chevron" Property="Stroke" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
-                        <!--  ExpandDirection=Up mirrors the header to the bottom corners so it still matches the card edge it occupies.  -->
+                        <!--  ExpandDirection=Up mirrors the chevron; the corner mirror is in the open-state trigger below, since a closed header keeps the whole radius either way.  -->
                         <Trigger Property="Tag" Value="Up">
                             <Setter TargetName="Chevron" Property="Data" Value="M 2,8.5 L 6,4.5 L 10,8.5" />
-                            <Setter TargetName="HeaderBorder" Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType={x:Type controls:Expander}}, Converter={x:Static controls:Expander.BottomCornerRadiusFilter}}" />
                         </Trigger>
+                        <!--  Open, the content tier owns the far corners, so the header gives them up: the top pair for ExpandDirection=Down, the bottom pair for Up (WinUI ExpandDown / ExpandUp, Expander.xaml:35,64). The Up case follows this one so it wins.  -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="HeaderBorder" Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType={x:Type controls:Expander}}, Converter={x:Static controls:Expander.TopCornerRadiusFilter}}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="Tag" Value="Up" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="HeaderBorder" Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType={x:Type controls:Expander}}, Converter={x:Static controls:Expander.BottomCornerRadiusFilter}}" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -218,7 +230,6 @@
                             <Setter TargetName="PART_ContentBorder" Property="Grid.Row" Value="0" />
                             <Setter TargetName="PART_ContentBorder" Property="BorderThickness" Value="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:Expander.TopCornerRadiusFilter}}" />
                             <Setter TargetName="PART_ContentBorder" Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:Expander.TopCornerRadiusFilter}}" />
-                            <Setter TargetName="ExpandSite" Property="Margin" Value="16,16,16,0" />
                             <Setter TargetName="PART_ToggleButton" Property="Tag" Value="Up" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
