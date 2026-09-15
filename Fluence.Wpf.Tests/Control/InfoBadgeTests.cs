@@ -183,7 +183,18 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.True(
                         text.ActualHeight <= border.ActualHeight,
                         string.Format(CultureInfo.InvariantCulture, "The numeral must fit the pill; it measured {0} in {1}.", text.ActualHeight, border.ActualHeight));
-                    Assert.Equal(textTop, textBottom, 0.1);
+
+                    // Centred within a dip rather than exactly, because the split depends on the
+                    // numeral's line box and that depends on which font in the FluentFontFamily
+                    // chain is installed. A machine with Segoe UI Variable measures 14.67 at 11 dip
+                    // and splits the 1.33 remainder evenly; one that falls back to Segoe UI measures
+                    // 15, and UseLayoutRounding sends the odd 1 dip remainder to a single side. Both
+                    // are centred. Neither is the defect this test guards, which was an 18.67 line
+                    // box spilling out of the 16 dip capsule and sitting low in it, caught by the
+                    // fit assertion above and by a gap difference far wider than a dip.
+                    Assert.True(
+                        Math.Abs(textTop - textBottom) <= 1.0,
+                        string.Format(CultureInfo.InvariantCulture, "The numeral must sit centred in the pill; it measured {0} above and {1} below in {2}.", textTop, textBottom, border.ActualHeight));
                 }
                 finally
                 {
