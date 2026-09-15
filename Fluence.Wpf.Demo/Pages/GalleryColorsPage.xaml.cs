@@ -711,7 +711,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Focusable = true,
             };
             scroll.SetResourceReference(StyleProperty, "GalleryPageScrollViewerStyle");
-            scroll.SetResourceReference(MarginProperty, "DemoPageScrollHostMargin");
+            scroll.SetResourceReference(MarginProperty, "DemoColorSectionScrollHostMargin");
             return scroll;
         }
 

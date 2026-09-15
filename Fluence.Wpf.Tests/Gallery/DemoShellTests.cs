@@ -1423,14 +1423,16 @@ namespace Fluence.Wpf.Tests.Gallery
                         // The locking invariant: the page header never scrolls with the samples.
                         Assert.Empty(DemoTestHost.FindVisualChildren<GalleryPageHeader>(scrollViewer));
 
-                        // WinUI Gallery geometry: the scroll host borrows the scrollbar rail back
-                        // out of the page's right margin and the content pays it again as a gutter,
-                        // so the cards line up with the page title on the left and reach the
-                        // Gallery's right edge, with the rail clear of both.
-                        Assert.Equal(new Thickness(0, 0, -12, 0), scrollViewer.Margin);
+                        // WinUI Gallery geometry: the Gallery puts its page ScrollViewer outside
+                        // the page content margin, so the rail rides the window frame. The scroll
+                        // host gives the whole right page margin back to reach it and the content
+                        // pays the same amount again, so the cards still end where the title does.
+                        // The Colors page is the exception, asserted above: its rail belongs to the
+                        // section on screen and stays inside the page margin.
+                        Assert.Equal(new Thickness(0, 0, -44, 0), scrollViewer.Margin);
 
                         StackPanel content = Assert.IsType<StackPanel>(scrollViewer.Content);
-                        Assert.Equal(new Thickness(0, 0, 12, 48), content.Margin);
+                        Assert.Equal(new Thickness(0, 0, 44, 48), content.Margin);
                     }
                     finally
                     {
