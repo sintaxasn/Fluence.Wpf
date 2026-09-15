@@ -328,14 +328,15 @@ namespace Fluence.Wpf.Controls
         /// from below for an upward one, per <see cref="IsDropDownOpenedUpward"/>) while the
         /// dropdown root (surface plus the elevation caster behind it, so the caster never
         /// paints a blank plate at full strength while the surface is still transparent) fades
-        /// 0 to 1, mirroring the previous template storyboard: 167 ms on the 0.8,0,0,1
+        /// 0 to 1, mirroring the previous template storyboard: 167 ms on the 0,0,0,1
         /// spline (the Typography.xaml ControlFastAnimationDuration and
         /// ControlFastOutSlowInKeySpline motion tokens, mirrored by value). The reveal moved
         /// from the template's MultiTrigger storyboards into code (FlyoutPresenter precedent)
         /// so it can consult the reduced-motion gate; a re-templated control without the
         /// canonical dropdown parts is left alone. The animations use
-        /// <see cref="FillBehavior.Stop"/>; the completed handlers stamp the rest values and
-        /// release the clocks so nothing stays animated once the reveal settles.
+        /// <see cref="FillBehavior.Stop"/> over base values that are already the rest values,
+        /// so the clock ending is enough to leave the dropdown open and in place; the completed
+        /// handlers only release the clocks so nothing stays animated.
         /// </summary>
         private void BeginDropdownReveal()
         {
@@ -370,9 +371,19 @@ namespace Fluence.Wpf.Controls
             double startOffset = IsDropDownOpenedUpward ? RevealOffsetPixels : -RevealOffsetPixels;
 
             // Seed the discrete start so the first rendered frame never flashes the rest
-            // position: the offset toward the control edge, fully transparent.
+            // position: the offset toward the control edge. SetCurrentValue is the right tool
+            // for the slide, because BeginAnimation discards the current-value slot and the
+            // base underneath it is the default 0, which is already the rest position.
             translate.SetCurrentValue(TranslateTransform.YProperty, startOffset);
-            SetDropdownRootOpacity(dropdownRoot, 0.0);
+
+            // Opacity cannot use that: the template stamps Opacity="0" on the root, so the base
+            // under a released clock is hidden rather than the rest value. The local value the
+            // reveal writes is therefore the REST value, and the reveal's own discrete keyframe
+            // at time zero is what makes the first frame transparent. Writing the start value
+            // here instead left the dropdown invisible from the moment the FillBehavior.Stop
+            // clock ended until the Completed handler arrived, which is the defect that hid the
+            // flyout.
+            SetDropdownRootOpacity(dropdownRoot, 1.0);
 
             DoubleAnimationUsingKeyFrames slideAnimation = CreateRevealAnimation(startOffset, 0.0);
             slideAnimation.Completed += (_, _) =>
@@ -409,7 +420,8 @@ namespace Fluence.Wpf.Controls
         /// reveal starts is invisible, and a local value outranks the current value that
         /// <c language="csharp">SetCurrentValue</c> writes, so the reveal has to set the local
         /// value or a Stop-fill animation would fall back to the hidden template value when its
-        /// clock is released.
+        /// clock is released. The value the reveal writes is the rest value, for the same
+        /// reason: the base is where the property lands when the clock ends.
         /// </summary>
         /// <param name="dropdownRoot">The dropdown root panel resolved from the template.</param>
         /// <param name="opacity">The opacity to stamp.</param>
@@ -438,7 +450,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         to,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(RevealMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }

@@ -34,6 +34,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Tests.Infrastructure;
 using Fluence.Wpf.Theming;
 using Xunit;
 
@@ -56,19 +57,16 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightDerivedBrushKeys = new(StringComparer.Ordinal)
         {
+            "AccentAcrylicBackgroundFillColorBaseBrush",
+            "AccentAcrylicBackgroundFillColorDefaultBrush",
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
-            "KeyboardFocusBorderColorBrush",
             "LayerOnAccentAcrylicFillColorDefaultBrush",
-            "NavigationViewSelectionIndicatorBrush",
-            "SystemFillColorAttentionBackgroundBrush",
+            "NavigationViewSelectionIndicatorForeground",
             "SystemFillColorAttentionBrush",
-            "SystemFillColorSolidAttentionBackgroundBrush",
             "TextControlElevationBorderFocusedBrush",
             "WindowCloseButtonBackgroundPointerOverBrush",
             "WindowCloseButtonBackgroundPressedBrush",
-            "WindowCloseFillColorHoverBrush",
-            "WindowCloseFillColorPressedBrush",
         };
 
         /// <summary>
@@ -81,6 +79,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightTextDerivedBrushKeys = new(StringComparer.Ordinal)
         {
+            "InfoBadgeAttentionForegroundBrush",
             "WindowCloseButtonForegroundPointerOverBrush",
         };
 
@@ -108,7 +107,7 @@ namespace Fluence.Wpf.Tests.Theming
                 // parity check hermetic, and the same machine-independent values are already
                 // covered by DesignTimeResourceTests.
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
             }).ConfigureAwait(true);
 
@@ -201,7 +200,7 @@ namespace Fluence.Wpf.Tests.Theming
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 ResourceDictionary res = app.Resources;
@@ -233,6 +232,49 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.Equal(accentPrimary, focused.GradientStops[0].Color);
                 Assert.Equal(1.0, focused.GradientStops[1].Offset, 0.001);
                 Assert.Equal(defaultStroke, focused.GradientStops[1].Color);
+            });
+        }
+
+        /// <summary>
+        /// Verifies the WinUI 3 asymmetry between ControlElevationBorderBrush and
+        /// AccentControlElevationBorderBrush: WinUI's Light theme dictionary flips
+        /// ControlElevationBorderBrush vertically (a ScaleY="-1" RelativeTransform), but its
+        /// Default/Dark theme dictionary defines the same key with no transform
+        /// (Common_themeresources_any.xaml Light block vs Default block). AccentControlElevationBorderBrush
+        /// is flipped in both theme dictionaries, so it must keep the transform regardless of theme.
+        /// </summary>
+        /// <param name="theme">The theme to verify.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        public Task ControlElevationBorderBrush_FlipsOnlyInLightThemeAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                app.Resources.MergedDictionaries.Clear();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                ResourceDictionary res = app.Resources;
+                LinearGradientBrush control = Assert.IsType<LinearGradientBrush>(res["ControlElevationBorderBrush"]);
+                if (theme is ApplicationTheme.Light)
+                {
+                    ScaleTransform flip = Assert.IsType<ScaleTransform>(control.RelativeTransform);
+                    Assert.Equal(-1.0, flip.ScaleY, 0.001);
+                }
+                else
+                {
+                    Assert.True(control.RelativeTransform is null || control.RelativeTransform == Transform.Identity,
+                        "Dark ControlElevationBorderBrush must not flip (WinUI Default/Dark defines it with no transform).");
+                }
+
+                // AccentControlElevationBorderBrush flips in every non-HC theme.
+                LinearGradientBrush accent = Assert.IsType<LinearGradientBrush>(res["AccentControlElevationBorderBrush"]);
+                ScaleTransform accentFlip = Assert.IsType<ScaleTransform>(accent.RelativeTransform);
+                Assert.Equal(-1.0, accentFlip.ScaleY, 0.001);
             });
         }
 
@@ -306,7 +348,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlight = SystemColors.HighlightColor;
@@ -336,7 +378,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
                 Color highlightText = SystemColors.HighlightTextColor;
@@ -396,7 +438,7 @@ namespace Fluence.Wpf.Tests.Theming
                 try
                 {
                     // First touch of the theme system.
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                 }
                 finally
                 {
@@ -426,6 +468,81 @@ namespace Fluence.Wpf.Tests.Theming
             DirectoryInfo? d = new(AppContext.BaseDirectory);
             while (d is not null && !File.Exists(Path.Join(d.FullName, "Fluence.Wpf.sln"))) { d = d.Parent; }
             return d?.FullName ?? AppContext.BaseDirectory;
+        }
+
+        /// <summary>
+        /// Adds every string key defined directly by <paramref name="dictionary"/> to
+        /// <paramref name="keys"/>, then recurses into its merged dictionaries. A dictionary whose
+        /// Source is under Themes/Controls/ or Themes/Icons/ contributes nothing: its keys are
+        /// template internal, unsupported, and free to change in any release.
+        /// </summary>
+        /// <param name="dictionary">The dictionary to walk.</param>
+        /// <param name="keys">The set to fill.</param>
+        private static void CollectPublicKeys(ResourceDictionary dictionary, ISet<string> keys)
+        {
+            string source = dictionary.Source?.ToString() ?? string.Empty;
+            bool templateInternal =
+                source.Contains("Themes/Controls/", StringComparison.OrdinalIgnoreCase)
+                || source.Contains("Themes/Icons/", StringComparison.OrdinalIgnoreCase);
+
+            if (!templateInternal)
+            {
+                foreach (object key in dictionary.Keys)
+                {
+                    if (key is string text)
+                    {
+                        _ = keys.Add(text);
+                    }
+                }
+            }
+
+            foreach (ResourceDictionary merged in dictionary.MergedDictionaries)
+            {
+                CollectPublicKeys(merged, keys);
+            }
+        }
+
+        /// <summary>
+        /// The public XAML key set is frozen at 1.0 the way the CLR surface is frozen by
+        /// PublicApiAnalyzers. This asserts the Light theme's published keys against
+        /// Theming/golden/PublicKeys.txt and fails on an addition as well as a removal, so an
+        /// intentional change has to update the file in the same commit.
+        /// </summary>
+        /// <remarks>
+        /// Light is the reference theme. High contrast overrides the value of existing keys rather
+        /// than publishing new ones, so one file covers the contract.
+        /// The current set is always written to data/theme-golden/PublicKeys.txt, which is what an
+        /// intentional change copies over the committed file. The four golden files are therefore
+        /// stored the way File.WriteAllLinesAsync emits them, without a byte order mark, so that
+        /// copy is a content diff and not a whole-file one.
+        /// </remarks>
+        [Fact]
+        public async Task PublicKeyInventory_MatchesFrozenSetAsync()
+        {
+            SortedSet<string> actual = new(StringComparer.Ordinal);
+            await WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = TestApp.EnsureLibraryTheme();
+                CollectPublicKeys(app.Resources, actual);
+            }).ConfigureAwait(true);
+
+            string outDirectory = Path.Join(FindRepoRoot(), "data", "theme-golden");
+            _ = Directory.CreateDirectory(outDirectory);
+            await File.WriteAllLinesAsync(
+                Path.Join(outDirectory, "PublicKeys.txt"), actual, TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+            string frozenPath = Path.Join(AppContext.BaseDirectory, "Theming", "golden", "PublicKeys.txt");
+            Assert.True(File.Exists(frozenPath),
+                "Theming/golden/PublicKeys.txt is missing. Copy data/theme-golden/PublicKeys.txt over it.");
+
+            string[] frozen = await File.ReadAllLinesAsync(frozenPath, TestContext.Current.CancellationToken).ConfigureAwait(true);
+            List<string> added = [.. actual.Except(frozen, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+            List<string> removed = [.. frozen.Except(actual, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+
+            Assert.True(added.Count is 0,
+                "New public keys are not in the frozen set: " + string.Join(", ", added));
+            Assert.True(removed.Count is 0,
+                "Frozen public keys no longer resolve: " + string.Join(", ", removed));
         }
     }
 }

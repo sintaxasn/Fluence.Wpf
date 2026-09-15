@@ -80,6 +80,15 @@ namespace Fluence.Wpf.Theming
             m["AccentFillColorSecondary"] = HsvColorHelper.WithAlpha(fill, 0xE6);
             m["AccentFillColorTertiary"] = HsvColorHelper.WithAlpha(fill, 0xCC);
 
+            // Accent acrylic fallbacks. WinUI builds these as AcrylicBrush recipes whose
+            // FallbackColor is the accent ramp entry itself (AcrylicBrush_themeresources.xaml:49,
+            // :51 for the Default dictionary, :101, :103 for Light): dark takes Dark1 for Default
+            // and Dark2 for Base, light takes Light3 for both. A WPF popup surface is not
+            // DWM-composited, so the fallback is what this library publishes, exactly as it does
+            // for the non-accent AcrylicBackgroundFillColor* pair in the per-theme tables.
+            m["AccentAcrylicBackgroundFillColorDefault"] = dark ? p.Dark1 : p.Light3;
+            m["AccentAcrylicBackgroundFillColorBase"] = dark ? p.Dark2 : p.Light3;
+
             // Accent text (from UpdateAccentTextBrushes)
             m["AccentTextFillColorPrimary"] = dark ? p.Light3 : p.Dark2;
             m["AccentTextFillColorSecondary"] = dark ? p.Light3 : p.Dark3;

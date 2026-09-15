@@ -187,6 +187,13 @@ namespace Fluence.Wpf.Controls
         /// <see cref="FrameworkElement.DataContext"/> for the lifetime of the popup so
         /// bindings inside the flyout content resolve against the anchor's view model.
         /// </summary>
+        /// <remarks>
+        /// The popup is open by the time this returns. When another element holds the mouse
+        /// capture, which is the case inside a button's Click handler, the flyout takes the
+        /// light-dismiss capture a second time once that gesture is over: a popup that took it
+        /// mid-gesture loses it again the moment the button lets go, which closes the flyout as it
+        /// appears.
+        /// </remarks>
         /// <param name="placementTarget">The element to anchor the flyout to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="placementTarget"/> is <see langword="null"/>.</exception>
         public void ShowAt(FrameworkElement placementTarget)
@@ -212,7 +219,18 @@ namespace Fluence.Wpf.Controls
             }
 
             Opening?.Invoke(this, EventArgs.Empty);
+
+            // Dismissal is watched for on the owning window rather than left to the popup's own
+            // mouse capture. A Button raises Click from its mouse-up handler while it still holds
+            // that capture and lets go only once the handler returns, so a light-dismiss popup
+            // opened from a Click takes the capture mid-gesture and loses it again a moment later.
+            // On .NET Framework that closes the flyout as it appears. Pinning the popup and
+            // listening for a click outside it is the same behaviour without the race, and it
+            // behaves identically on every target framework.
+            popup.SetCurrentValue(Popup.StaysOpenProperty, value: true);
             popup.IsOpen = true;
+            HookDismiss(placementTarget);
+
             Opened?.Invoke(this, EventArgs.Empty);
             if (Presenter is not null)
             {
@@ -270,6 +288,15 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// The transparent margin every flyout presenter template reserves on all four sides so its
+        /// ShadowCaster's DropShadowEffect has somewhere to render. WPF sizes a popup HWND to exactly
+        /// its child's layout size, so without the gutter the effect is clipped to the plate and only
+        /// the rounded corner notches survive. Placement subtracts it again so the plate lands where
+        /// it did before. Keep in step with the Margin in the presenter templates.
+        /// </summary>
+        private const double ShadowGutter = 16.0;
+
+        /// <summary>
         /// Computes the custom popup placements that center a popup on the facing edge of its
         /// placement target, matching WinUI flyout positioning: horizontal centering for
         /// <see cref="PlacementMode.Top"/> / <see cref="PlacementMode.Bottom"/> and vertical
@@ -289,12 +316,17 @@ namespace Fluence.Wpf.Controls
             Size targetSize,
             Point offset)
         {
-            double centeredX = ((targetSize.Width - popupSize.Width) / 2.0) + offset.X;
-            double centeredY = ((targetSize.Height - popupSize.Height) / 2.0) + offset.Y;
-            CustomPopupPlacement above = new(new Point(centeredX, -popupSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
-            CustomPopupPlacement below = new(new Point(centeredX, targetSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
-            CustomPopupPlacement leftOf = new(new Point(-popupSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
-            CustomPopupPlacement rightOf = new(new Point(targetSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
+            // popupSize includes the gutter on all four sides, so the plate is inset by ShadowGutter
+            // inside it. Center on the plate rather than on the popup, and pull every candidate back
+            // by the gutter on the axis it docks to.
+            double plateWidth = popupSize.Width - (2 * ShadowGutter);
+            double plateHeight = popupSize.Height - (2 * ShadowGutter);
+            double centeredX = ((targetSize.Width - plateWidth) / 2.0) + offset.X - ShadowGutter;
+            double centeredY = ((targetSize.Height - plateHeight) / 2.0) + offset.Y - ShadowGutter;
+            CustomPopupPlacement above = new(new Point(centeredX, -popupSize.Height + offset.Y + ShadowGutter), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement below = new(new Point(centeredX, targetSize.Height + offset.Y - ShadowGutter), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement leftOf = new(new Point(-popupSize.Width + offset.X + ShadowGutter, centeredY), PopupPrimaryAxis.Vertical);
+            CustomPopupPlacement rightOf = new(new Point(targetSize.Width + offset.X - ShadowGutter, centeredY), PopupPrimaryAxis.Vertical);
             return side is PlacementMode.Top
                 ? [above, below]
                 : side is PlacementMode.Left
@@ -370,9 +402,61 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         private void OnPopupClosed(object? sender, EventArgs e)
         {
+            UnhookDismiss();
             _ = HostPopup?.PlacementTarget = null;
             Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, value: null);
             Closed?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Starts watching the window the flyout is anchored in, so a press anywhere outside the
+        /// flyout closes it. Window deactivation is deliberately not a signal: moving focus to the
+        /// presenter activates the popup's own window, which would close the flyout as it opens. See <see cref="ShowAt"/> for why
+        /// dismissal is watched for here rather than left to the popup's own mouse capture.
+        /// </summary>
+        /// <param name="placementTarget">The element the flyout is anchored to.</param>
+        private void HookDismiss(FrameworkElement placementTarget)
+        {
+            UnhookDismiss();
+            _dismissWindow = Window.GetWindow(placementTarget);
+            if (_dismissWindow is null)
+            {
+                return;
+            }
+
+            // handledEventsToo, because a control that handles its own press would otherwise keep
+            // the flyout open behind it.
+            _dismissWindow.AddHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown), handledEventsToo: true);
+        }
+
+        /// <summary>
+        /// Stops watching the window. Safe to call when nothing is hooked.
+        /// </summary>
+        private void UnhookDismiss()
+        {
+            if (_dismissWindow is null)
+            {
+                return;
+            }
+
+            _dismissWindow.RemoveHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown));
+            _dismissWindow = null;
+        }
+
+        /// <summary>
+        /// Closes the flyout on a press in the owning window. The flyout's own content lives in the
+        /// popup's separate window, so a press inside it never reaches this handler.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnWindowPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Hide();
+        }
+
+        /// <summary>
+        /// The window whose presses close this flyout while it is open.
+        /// </summary>
+        private Window? _dismissWindow;
     }
 }

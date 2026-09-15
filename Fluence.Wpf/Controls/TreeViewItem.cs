@@ -49,6 +49,16 @@ namespace Fluence.Wpf.Controls
         private const string SelectionCheckBoxPart = "SelectionCheckBox";
 
         /// <summary>
+        /// The name of the selection rail in the item template.
+        /// </summary>
+        private const string SelectionIndicatorPart = "SelectionIndicator";
+
+        /// <summary>
+        /// The indent one tree level adds, matching the ItemsPresenter margin in the template.
+        /// </summary>
+        private const double LevelIndent = 20.0;
+
+        /// <summary>
         /// Initializes static members of the TreeViewItem class and overrides the default style metadata.
         /// </summary>
         /// <remarks>This static constructor ensures that TreeViewItem uses its own style by default,
@@ -82,6 +92,43 @@ namespace Fluence.Wpf.Controls
         {
             get => (bool?)GetValue(IsSelectionCheckedProperty);
             set => SetValue(IsSelectionCheckedProperty, value);
+        }
+
+        /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            UpdateSelectionIndicatorIndent();
+        }
+
+        /// <summary>
+        /// Pulls the accumulated tree indent back off the selection rail, so it stands in the same
+        /// column for an item at any depth.
+        /// </summary>
+        /// <remarks>
+        /// Each level of the tree nests one item template inside another, and the nested one carries
+        /// a 20 dip left margin, so everything an item draws, the rail included, starts that much
+        /// further in. WinUI splits the two: its indentation lands on the presenter's content and
+        /// never on the indicator beside it, which is what keeps the rail a straight column down the
+        /// pane. WPF has no equivalent hook, so the rail carries a negative margin of its own depth.
+        /// </remarks>
+        private void UpdateSelectionIndicatorIndent()
+        {
+            if (GetTemplateChild(SelectionIndicatorPart) is not FrameworkElement indicator)
+            {
+                return;
+            }
+
+            int depth = 0;
+            for (DependencyObject? ancestor = VisualTreeHelper.GetParent(this); ancestor is not null; ancestor = VisualTreeHelper.GetParent(ancestor))
+            {
+                if (ancestor is System.Windows.Controls.TreeViewItem)
+                {
+                    depth++;
+                }
+            }
+
+            indicator.SetCurrentValue(MarginProperty, new Thickness(-LevelIndent * depth, 0, 0, 0));
         }
 
         /// <inheritdoc />

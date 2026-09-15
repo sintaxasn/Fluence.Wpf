@@ -56,6 +56,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_PrimaryButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_SecondaryButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_DialogOverlayHost, Type = typeof(Panel))]
     public class ContentDialog : ContentControl
     {
         // Template part names.
@@ -66,7 +67,7 @@ namespace Fluence.Wpf.Controls
         // Name of the optional full-window overlay host panel a window template may expose
         // (FluenceWindow does) so the dialog can dim and block the entire window, title bar
         // included, instead of only the content adorner layer.
-        private const string DialogOverlayHostPart = "PART_DialogOverlayHost";
+        private const string PART_DialogOverlayHost = "PART_DialogOverlayHost";
 
         /// <summary>
         /// Initializes static members of the ContentDialog class and overrides the default
@@ -397,12 +398,12 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs after the dialog has been added to the owner window's adorner layer.
         /// </summary>
-        public event EventHandler? Opened;
+        public event EventHandler<ContentDialogOpenedEventArgs>? Opened;
 
         /// <summary>
         /// Occurs after the dialog has been removed from the owner window's adorner layer.
         /// </summary>
-        public event EventHandler? Closed;
+        public event EventHandler<ContentDialogClosedEventArgs>? Closed;
 
         /// <summary>
         /// Shows the dialog modally over the active window (or the application main window)
@@ -433,7 +434,7 @@ namespace Fluence.Wpf.Controls
             // entire window (including title-bar content such as a search box). Fall back to the
             // content adorner layer for plain windows, whose client area carries no extra chrome.
             Panel? overlayHost =
-                (owner as Control)?.Template?.FindName(DialogOverlayHostPart, owner) as Panel;
+                (owner as Control)?.Template?.FindName(PART_DialogOverlayHost, owner) as Panel;
 
             UIElement? adornedContent = null;
             AdornerLayer? adornerLayer = null;
@@ -490,7 +491,7 @@ namespace Fluence.Wpf.Controls
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveInitialFocus));
 
             BeginOpenAnimation();
-            Opened?.Invoke(this, EventArgs.Empty);
+            Opened?.Invoke(this, new ContentDialogOpenedEventArgs());
             return completionSource.Task;
         }
 
@@ -659,7 +660,7 @@ namespace Fluence.Wpf.Controls
             // storyboard attributes cannot reference and code therefore mirrors by value:
             // ControlFasterAnimationDuration (83 ms) for the linear opacity rise and
             // ControlNormalAnimationDuration (250 ms) with ControlFastOutSlowInKeySpline
-            // (0.8,0,0,1) for the scale settle.
+            // (0,0,0,1) for the scale settle.
             DoubleAnimationUsingKeyFrames opacityAnimation = new()
             {
                 FillBehavior = FillBehavior.Stop,
@@ -691,7 +692,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         1.0,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(OpenScaleMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }
@@ -922,7 +923,7 @@ namespace Fluence.Wpf.Controls
 
             // WinUI ContentDialog_themeresources.xaml "To=DialogHidden" transition: scale
             // 1.0 to 1.05 over 167 ms (ControlFastAnimationDuration) on
-            // ControlFastOutSlowInKeySpline (0.8,0,0,1), opacity 1 to 0 linear over 83 ms
+            // ControlFastOutSlowInKeySpline (0,0,0,1), opacity 1 to 0 linear over 83 ms
             // (ControlFasterAnimationDuration); code mirrors the Typography.xaml token
             // values. The keyframe tracks omit the discrete start so each animation departs
             // from the live value, which keeps a close during the entrance continuing from
@@ -970,7 +971,7 @@ namespace Fluence.Wpf.Controls
                     new SplineDoubleKeyFrame(
                         1.05,
                         KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(CloseScaleMilliseconds)),
-                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                        MotionHelper.FastOutSlowInKeySpline),
                 },
             };
         }
@@ -1040,7 +1041,7 @@ namespace Fluence.Wpf.Controls
             }
 
             _ = completionSource.TrySetResult(result);
-            Closed?.Invoke(this, EventArgs.Empty);
+            Closed?.Invoke(this, new ContentDialogClosedEventArgs(result));
         }
 
         /// <summary>

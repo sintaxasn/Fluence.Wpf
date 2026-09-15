@@ -34,7 +34,7 @@ using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryHomePage : UserControl
+    public partial class GalleryHomePage : Page
     {
         public GalleryHomePage()
         {
