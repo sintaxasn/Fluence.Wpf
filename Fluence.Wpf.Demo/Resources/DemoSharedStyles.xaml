@@ -25,9 +25,9 @@
         same amount again (DemoPageScrollContentMargin) so the cards still end where the page title
         does. The scrolling content also carries the Gallery's 48 dip bottom inset, so the trailing
         room after the last card scrolls with the samples instead of standing as dead space under the
-        scroll host. The Colors page is the exception and keeps its rail inside the page margin, on
-        DemoColorSectionScrollHostMargin below, because its rail belongs to the section on screen
-        rather than to the page.
+        scroll host. The Colors page uses the same host margin for its per-section scroll hosts, with
+        DemoColorSectionContentMargin as its matching gutter, so every page's rail sits in the same
+        place.
     -->
     <Thickness x:Key="DemoPageScrollHostMargin">0,0,-44,0</Thickness>
     <Thickness x:Key="DemoPageScrollContentMargin">0,0,44,48</Thickness>
@@ -412,15 +412,12 @@
     <!--  WinUI Gallery ColorPage.xaml: the SelectorBar carries Margin -12,0,0,0 so its first label aligns with the text above.  -->
     <Thickness x:Key="DemoColorSelectorBarMargin">-12,4,0,0</Thickness>
     <!--
-        The section content keeps the right-hand gutter its scroll host borrowed back from the page
-        margin (DemoColorSectionScrollHostMargin), so the vertical scrollbar has somewhere to sit
-        instead of running under the cards, and the cards still line up with the page title on the left.
-        The 48 dip bottom is the Gallery's trailing room after the last tile row, scrolling with the
-        section.
+        The section content pays back the whole right page margin its scroll host gave up
+        (DemoPageScrollHostMargin), so the rail rides the window frame as it does on every other
+        gallery page and the tiles still line up with the page title on the left. The 48 dip bottom is
+        the Gallery's trailing room after the last tile row, scrolling with the section.
     -->
-    <Thickness x:Key="DemoColorSectionContentMargin">0,0,12,48</Thickness>
-    <!--  The Colors page rail stays inside the page margin rather than riding the window frame, because it belongs to the section on screen and travels with it through the SlideNavigationPresenter, which is where the WinUI 3 Gallery Color page puts its own (image parity: the Color page rail sits left of the frame, every other page's rides it).  -->
-    <Thickness x:Key="DemoColorSectionScrollHostMargin">0,0,-12,0</Thickness>
+    <Thickness x:Key="DemoColorSectionContentMargin">0,0,44,48</Thickness>
     <Thickness x:Key="DemoNoMargin">0</Thickness>
 
 </ResourceDictionary>

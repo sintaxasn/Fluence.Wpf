@@ -1427,8 +1427,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         // the page content margin, so the rail rides the window frame. The scroll
                         // host gives the whole right page margin back to reach it and the content
                         // pays the same amount again, so the cards still end where the title does.
-                        // The Colors page is the exception, asserted above: its rail belongs to the
-                        // section on screen and stays inside the page margin.
+                        // The Colors page does the same, one scroll host per section.
                         Assert.Equal(new Thickness(0, 0, -44, 0), scrollViewer.Margin);
 
                         StackPanel content = Assert.IsType<StackPanel>(scrollViewer.Content);
