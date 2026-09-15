@@ -150,8 +150,10 @@
     </Style>
 
     <Style TargetType="{x:Type controls:Expander}">
-        <!--  Background is the content tier's fill, which is where WinUI's Expander paints it (Expander.xaml:114). The header tier carries its own ExpanderHeaderBackground and never takes this one.  -->
+        <!--  Background is the content tier's fill, which is where WinUI's Expander paints it (Expander.xaml:114). The header tier has its own HeaderBackground, WinUI's ExpanderHeaderBackground, and never takes this one.  -->
         <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
+        <!--  WinUI ExpanderHeaderBackground (Expander_themeresources.xaml:15), surfaced as a property so a consumer can recolour the header tier without retemplating.  -->
+        <Setter Property="HeaderBackground" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -177,11 +179,11 @@
                                 <RowDefinition x:Name="Row1Def" Height="0" />
                             </Grid.RowDefinitions>
 
-                            <!--  The header tier paints ExpanderHeaderBackground, the card default fill, which WinUI keys separately from the control's Background: that one belongs to the content tier (Expander_themeresources.xaml:15, Expander.xaml:111,114).  -->
+                            <!--  The header tier paints HeaderBackground, WinUI's ExpanderHeaderBackground, which WinUI keys separately from the control's Background: that one belongs to the content tier (Expander_themeresources.xaml:15, Expander.xaml:111,114).  -->
                             <ToggleButton
                                 x:Name="PART_ToggleButton"
                                 Grid.Row="0"
-                                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                Background="{TemplateBinding HeaderBackground}"
                                 Content="{TemplateBinding Header}"
                                 ContentTemplate="{TemplateBinding HeaderTemplate}"
                                 ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"

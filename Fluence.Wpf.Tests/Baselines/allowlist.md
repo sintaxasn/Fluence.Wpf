@@ -328,3 +328,20 @@ Net: 1 added, none removed. 1316 cases to 1317 on net10, 1313 to 1314 on net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the expander header background
+
+One case for the property that gives the header tier back to consumers after the
+box-model change moved `Background` to the content tier.
+
+### Additions: 1 line
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `Expander_HeaderBackground_PaintsTheHeaderTierOnlyAsync` | 1 | `Control/ExpanderTests.cs` |
+
+Net: 1 added, none removed. 1317 cases to 1318 on net10, 1314 to 1315 on net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.

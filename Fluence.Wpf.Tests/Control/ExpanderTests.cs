@@ -30,6 +30,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -382,6 +383,46 @@ namespace Fluence.Wpf.Tests.Control
                     // the control's own BorderThickness and CornerRadius rather than a hardcoded literal.
                     Assert.Equal(new Thickness(2, 0, 2, 2), contentBorder.BorderThickness);
                     Assert.Equal(new CornerRadius(0, 0, 8, 8), contentBorder.CornerRadius);
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task Expander_HeaderBackground_PaintsTheHeaderTierOnlyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.Expander expander = new() { Header = "Test", Content = "Body" };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    ToggleButton header = Assert.IsType<ToggleButton>(FindVisualChildByName<ToggleButton>(expander, "PART_ToggleButton"), exactMatch: false);
+                    Border contentBorder = Assert.IsType<Border>(FindVisualChildByName<Border>(expander, "PART_ContentBorder"), exactMatch: false);
+
+                    // WinUI keys the two tiers separately (Expander.xaml:111,114): the header takes
+                    // ExpanderHeaderBackground, which is HeaderBackground here, and the content takes
+                    // the control's own Background. Left unset, the default style supplies both.
+                    Assert.Equal(w.TryFindResource("CardBackgroundFillColorDefaultBrush"), expander.HeaderBackground);
+                    Assert.Equal(expander.HeaderBackground, header.Background);
+                    Assert.Equal(w.TryFindResource("CardBackgroundFillColorSecondaryBrush"), contentBorder.Background);
+
+                    // Each tier answers its own property, so a consumer can recolour either one
+                    // without retemplating and without disturbing the other.
+                    SolidColorBrush headerFill = new(Colors.Red);
+                    SolidColorBrush contentFill = new(Colors.Blue);
+                    expander.HeaderBackground = headerFill;
+                    expander.Background = contentFill;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+
+                    Assert.Same(headerFill, header.Background);
+                    Assert.Same(contentFill, contentBorder.Background);
                 }
                 finally
                 {

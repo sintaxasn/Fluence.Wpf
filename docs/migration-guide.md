@@ -98,9 +98,11 @@ The caption button colours remain published under their WinUI names: `WindowClos
 
 ### Visual defaults changed
 
-Four template changes alter how existing markup renders, with nothing to fix at build time.
+Five template changes alter how existing markup renders, with nothing to fix at build time.
 
 `ContentDialog` no longer accents a button unless you ask for one. The primary button carried `Appearance="Accent"` unconditionally; it is now driven by `DefaultButton`, whose default is `ContentDialogButton.None`, so a dialog that does not set `DefaultButton` renders all three buttons standard. This is WinUI's own `DefaultButtonStates` behaviour. To keep the old look, set `DefaultButton="Primary"` on the dialog.
+
+`Expander.Background` paints the content tier rather than the header. WinUI keys the two separately, giving the header `ExpanderHeaderBackground` and the content the control's own `Background` (`Expander.xaml:111,114`), and Fluence had the pair the other way round. The header is now its own property, `Expander.HeaderBackground`, which defaults to the card default fill, so an expander that sets neither renders exactly as before. An expander that set `Background` to colour its header colours the content instead: move that value to `HeaderBackground`, or keep it on `Background` if the content tier was what you meant.
 
 `CheckBox` has a `MinWidth` of 120, the WinUI `CheckBoxMinWidth`. A checkbox in a tight column, a `DataGrid` cell or an item template now reserves that width even when its content is narrower. Set `MinWidth="0"` on the instance or in a derived style to opt out; the library does exactly that for the `TreeView` item template.
 

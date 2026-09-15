@@ -139,6 +139,32 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Identifies the <see cref="HeaderBackground"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty HeaderBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(HeaderBackground),
+                typeof(Brush),
+                typeof(Expander),
+                new FrameworkPropertyMetadata(defaultValue: null));
+
+        /// <summary>
+        /// Gets or sets the brush that fills the header tier.
+        /// </summary>
+        /// <remarks>
+        /// WinUI keys the two tiers separately: the header takes ExpanderHeaderBackground and
+        /// the content takes the control's own Background (Expander.xaml:111,114). This is the
+        /// header half of that pair, so a consumer can colour either tier without retemplating.
+        /// The default style supplies the card default fill, so leaving it unset keeps the
+        /// shipped look.
+        /// </remarks>
+        public Brush? HeaderBackground
+        {
+            get => (Brush?)GetValue(HeaderBackgroundProperty);
+            set => SetValue(HeaderBackgroundProperty, value);
+        }
+
+        /// <summary>
         /// Gets the row definition that hosts the content for the current expand direction
         /// (row 0 for <see cref="ExpandDirection.Up"/>, row 1 otherwise).
         /// </summary>

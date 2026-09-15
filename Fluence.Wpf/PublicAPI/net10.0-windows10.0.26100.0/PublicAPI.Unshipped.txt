@@ -8,6 +8,8 @@ Fluence.Wpf.Automation.SelectorBarItemAutomationPeer
 Fluence.Wpf.Automation.SelectorBarItemAutomationPeer.SelectorBarItemAutomationPeer(Fluence.Wpf.Controls.SelectorBarItem! owner) -> void
 Fluence.Wpf.Automation.TitleBarAutomationPeer
 Fluence.Wpf.Automation.TitleBarAutomationPeer.TitleBarAutomationPeer(Fluence.Wpf.Controls.TitleBar! owner) -> void
+Fluence.Wpf.Controls.Expander.HeaderBackground.get -> System.Windows.Media.Brush?
+Fluence.Wpf.Controls.Expander.HeaderBackground.set -> void
 Fluence.Wpf.Controls.InfoBadge.CornerRadius.get -> System.Windows.CornerRadius
 Fluence.Wpf.Controls.InfoBadge.CornerRadius.set -> void
 Fluence.Wpf.Controls.InfoBar.CloseButtonClick -> System.EventHandler?
@@ -71,6 +73,7 @@ override Fluence.Wpf.Controls.TabView.PrepareContainerForItemOverride(System.Win
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
 override Fluence.Wpf.Controls.TreeViewItem.OnApplyTemplate() -> void
 static Fluence.Wpf.Controls.InfoBadge.GetStyleGlyph(Fluence.Wpf.InfoBadgeStyle badgeStyle) -> string!
+static readonly Fluence.Wpf.Controls.Expander.HeaderBackgroundProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBadge.CornerRadiusProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameterProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandProperty -> System.Windows.DependencyProperty!

@@ -675,6 +675,7 @@
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_RapidToggleMidFlight_SettlesCollapsedWithoutStuckOffsetAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ExpandUp_SlidesFromBelowIntoTopContentRowAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ContentBorder_CardSecondaryFillAndSeamBorderThicknessAsync
+  Fluence.Wpf.Tests.Control.ExpanderTests.Expander_HeaderBackground_PaintsTheHeaderTierOnlyAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ExpandUp_ContentBorderMirrorsSeamAndCornersAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_Disabled_HeaderKeepsCardFillAndStrokeAsync
   Fluence.Wpf.Tests.Control.ExpanderTests.Expander_ChevronPlate_HoverAndPressedTintOnlyThePlateAsync
