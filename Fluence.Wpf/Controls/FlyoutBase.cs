@@ -30,6 +30,9 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using Windows.Win32;
 
 namespace Fluence.Wpf.Controls
 {
@@ -39,12 +42,14 @@ namespace Fluence.Wpf.Controls
     /// WinUI 3 <c language="csharp">FlyoutBase</c> contract.
     /// </summary>
     /// <remarks>
-    /// The popup is created lazily on the first <see cref="ShowAt"/> call with
-    /// <see cref="Popup.StaysOpen"/> set to <see langword="false"/> (clicking outside the
-    /// flyout dismisses it). The popup uses a custom placement callback so the flyout is
-    /// centered on the facing edge of its placement target, matching WinUI, and Escape
-    /// pressed inside the flyout dismisses it. Derived classes supply the popup child via
-    /// <see cref="CreatePresenter"/>.
+    /// The popup is created lazily on the first <see cref="ShowAt"/> call. It is pinned open and
+    /// <see cref="FlyoutBase"/> owns the light dismiss itself: a press outside the flyout, a press
+    /// on the owning window's caption or borders, the window moving, and the application losing
+    /// the foreground all close it, as does Escape pressed inside it. A press on the placement
+    /// target closes the flyout and is swallowed, so the button that opened it toggles it shut
+    /// rather than reopening it. The popup uses a custom placement callback so the flyout is
+    /// centered on the facing edge of its placement target, matching WinUI. Derived classes
+    /// supply the popup child via <see cref="CreatePresenter"/>.
     /// </remarks>
     public abstract class FlyoutBase : DependencyObject
     {
@@ -409,10 +414,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Starts watching the window the flyout is anchored in, so a press anywhere outside the
-        /// flyout closes it. Window deactivation is deliberately not a signal: moving focus to the
-        /// presenter activates the popup's own window, which would close the flyout as it opens. See <see cref="ShowAt"/> for why
-        /// dismissal is watched for here rather than left to the popup's own mouse capture.
+        /// Starts watching the window the flyout is anchored in for everything that light-dismisses
+        /// a WPF popup: a press in the window's client area, a press on its non-client area (the
+        /// caption and the resize borders, which on a <see cref="FluenceWindow"/> includes the whole
+        /// title bar because it hit-tests as caption), the window moving, and the application losing
+        /// the foreground to another one. Window deactivation itself is deliberately not a signal:
+        /// moving focus to the presenter activates the popup's own window and deactivates this one,
+        /// which would close the flyout as it opens. <c language="text">WM_ACTIVATEAPP</c> is sent
+        /// only when activation leaves the application, so that handoff does not raise it. See
+        /// <see cref="ShowAt"/> for why dismissal is watched for here rather than left to the
+        /// popup's own mouse capture.
         /// </summary>
         /// <param name="placementTarget">The element the flyout is anchored to.</param>
         private void HookDismiss(FrameworkElement placementTarget)
@@ -427,6 +438,9 @@ namespace Fluence.Wpf.Controls
             // handledEventsToo, because a control that handles its own press would otherwise keep
             // the flyout open behind it.
             _dismissWindow.AddHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown), handledEventsToo: true);
+            _dismissWindow.LocationChanged += OnWindowLocationChanged;
+            _dismissHwndSource = PresentationSource.FromVisual(_dismissWindow) as HwndSource;
+            _dismissHwndSource?.AddHook(OnWindowMessage);
         }
 
         /// <summary>
@@ -440,23 +454,124 @@ namespace Fluence.Wpf.Controls
             }
 
             _dismissWindow.RemoveHandler(UIElement.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowPreviewMouseDown));
+            _dismissWindow.LocationChanged -= OnWindowLocationChanged;
+            _dismissHwndSource?.RemoveHook(OnWindowMessage);
+            _dismissHwndSource = null;
             _dismissWindow = null;
         }
 
         /// <summary>
         /// Closes the flyout on a press in the owning window. The flyout's own content lives in the
-        /// popup's separate window, so a press inside it never reaches this handler.
+        /// popup's separate window, so a press inside it never reaches this handler. A press on the
+        /// placement target is swallowed once it has closed the flyout: the target is usually the
+        /// button whose Click opened the flyout, and that Click follows the press, so left to run it
+        /// would call <see cref="ShowAt"/> and reopen what the press just closed, and the button
+        /// could never toggle its own flyout shut. WinUI's light dismiss swallows that press the
+        /// same way. Everywhere else the press is left alone, so whatever was pressed still gets
+        /// its click.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The event data.</param>
         private void OnWindowPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            bool onPlacementTarget = HostPopup?.PlacementTarget is DependencyObject anchor
+                && IsWithin(anchor, e.OriginalSource as DependencyObject);
+            Hide();
+            if (onPlacementTarget && !IsOpen)
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Closes the flyout when the owning window moves. The popup is pinned, so it would otherwise
+        /// stay where it was while its anchor travelled.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnWindowLocationChanged(object? sender, EventArgs e)
+        {
             Hide();
         }
 
         /// <summary>
-        /// The window whose presses close this flyout while it is open.
+        /// Closes the flyout on the window messages that never surface as routed input:
+        /// see <see cref="IsDismissMessage"/>.
+        /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="msg">The message identifier.</param>
+        /// <param name="wParam">The message parameter.</param>
+        /// <param name="lParam">The message parameter.</param>
+        /// <param name="handled">Indicates whether the message was handled. Never set here.</param>
+        /// <returns><see cref="IntPtr.Zero"/>; the message is always left to the window.</returns>
+        private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (IsDismissMessage(msg, wParam))
+            {
+                Hide();
+            }
+
+            return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Whether a window message is one a light-dismiss popup closes on that never reaches the
+        /// routed input events: a non-client button press (<c language="text">WM_NCLBUTTONDOWN</c>,
+        /// <c language="text">WM_NCRBUTTONDOWN</c> or <c language="text">WM_NCMBUTTONDOWN</c>,
+        /// which is the caption, the resize borders, and on a <see cref="FluenceWindow"/> the
+        /// whole title bar), or <c language="text">WM_ACTIVATEAPP</c> with a false wParam, which is
+        /// the application losing the foreground to another one: a click in another application or
+        /// on the desktop, or Alt+Tab. Internal so tests can pin the set.
+        /// </summary>
+        /// <param name="msg">The message identifier.</param>
+        /// <param name="wParam">The message parameter.</param>
+        /// <returns><see langword="true"/> when the message should close an open flyout.</returns>
+        internal static bool IsDismissMessage(int msg, IntPtr wParam)
+        {
+            return msg == PInvoke.WM_NCLBUTTONDOWN
+                || msg == PInvoke.WM_NCRBUTTONDOWN
+                || msg == PInvoke.WM_NCMBUTTONDOWN
+                || (msg == PInvoke.WM_ACTIVATEAPP && wParam == IntPtr.Zero);
+        }
+
+        /// <summary>
+        /// Whether <paramref name="origin"/> is <paramref name="anchor"/> or sits inside it. Walks
+        /// up from the origin, stepping through content elements such as a Run or a Hyperlink to
+        /// their host first, because <see cref="VisualTreeHelper"/> rejects them.
+        /// </summary>
+        /// <param name="anchor">The element whose subtree is tested.</param>
+        /// <param name="origin">The element the press originated on.</param>
+        /// <returns><see langword="true"/> when the origin is the anchor or a descendant of it.</returns>
+        private static bool IsWithin(DependencyObject anchor, DependencyObject? origin)
+        {
+            DependencyObject? current = origin;
+            while (current is not null)
+            {
+                if (ReferenceEquals(current, anchor))
+                {
+                    return true;
+                }
+
+                current = current switch
+                {
+                    Visual or System.Windows.Media.Media3D.Visual3D => VisualTreeHelper.GetParent(current),
+                    FrameworkContentElement fce => fce.Parent ?? LogicalTreeHelper.GetParent(fce),
+                    ContentElement ce => ContentOperations.GetParent(ce) ?? LogicalTreeHelper.GetParent(ce),
+                    _ => LogicalTreeHelper.GetParent(current),
+                };
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// The window whose presses, moves and messages close this flyout while it is open.
         /// </summary>
         private Window? _dismissWindow;
+
+        /// <summary>
+        /// The message source of <see cref="_dismissWindow"/>, hooked while the flyout is open.
+        /// </summary>
+        private HwndSource? _dismissHwndSource;
     }
 }

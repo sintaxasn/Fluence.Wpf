@@ -33,6 +33,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Fluence.Wpf.Tests.Infrastructure;
+using Windows.Win32;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
@@ -283,6 +284,53 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 Window window = new() { Width = 400, Height = 300 };
+                Button owner = new() { Content = "Owner", VerticalAlignment = VerticalAlignment.Top };
+                Border elsewhere = new() { Height = 100, VerticalAlignment = VerticalAlignment.Bottom };
+                Controls.Flyout flyout = new() { Content = "Attached" };
+
+                try
+                {
+                    Grid root = new();
+                    _ = root.Children.Add(owner);
+                    _ = root.Children.Add(elsewhere);
+                    window.Content = root;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(owner);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
+                        "The flyout must open.");
+
+                    // A press anywhere in the owning window closes the flyout. The flyout's own
+                    // content lives in the popup's separate window, so a press inside it never
+                    // reaches this handler and never closes it. Away from the anchor the press is
+                    // left alone, so whatever was pressed still receives its click.
+                    MouseButtonEventArgs press = new(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseDownEvent,
+                    };
+                    elsewhere.RaiseEvent(press);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true),
+                        "A press outside the flyout must dismiss it.");
+                    Assert.False(press.Handled, "A press away from the anchor must still reach what was pressed.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task FlyoutBase_LightDismiss_PressOnTheAnchorClosesWithoutReopeningAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300 };
                 Button owner = new() { Content = "Owner" };
                 Controls.Flyout flyout = new() { Content = "Attached" };
 
@@ -297,19 +345,21 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
                         "The flyout must open.");
 
-                    // A press anywhere in the owning window closes the flyout. The flyout's own
-                    // content lives in the popup's separate window, so a press inside it never
-                    // reaches this handler and never closes it.
+                    // The anchor is usually the button whose Click opened the flyout. Its press has
+                    // to close the flyout and stop there: left to continue, the click that follows
+                    // would call ShowAt again and reopen what the press just closed, so the anchor
+                    // could never toggle its own flyout shut. WinUI's light dismiss swallows the
+                    // press the same way.
                     MouseButtonEventArgs press = new(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
                     {
                         RoutedEvent = UIElement.PreviewMouseDownEvent,
-                        Source = owner,
                     };
-                    window.RaiseEvent(press);
+                    owner.RaiseEvent(press);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true),
-                        "A press outside the flyout must dismiss it.");
+                        "A press on the anchor must dismiss the flyout.");
+                    Assert.True(press.Handled, "A press on the anchor must be swallowed so the following click cannot reopen the flyout.");
                 }
                 finally
                 {
@@ -317,6 +367,60 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
+        }
+
+        [Fact]
+        public Task FlyoutBase_LightDismiss_ClosesWhenTheOwningWindowMovesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300, WindowStartupLocation = WindowStartupLocation.Manual, Left = 100, Top = 100 };
+                Button owner = new() { Content = "Owner" };
+                Controls.Flyout flyout = new() { Content = "Attached" };
+
+                try
+                {
+                    window.Content = owner;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(owner);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
+                        "The flyout must open.");
+
+                    // The popup is pinned, so it does not follow the window it is anchored in. A move
+                    // has to close the flyout, as it does for a WPF light-dismiss popup and in WinUI,
+                    // rather than leave it floating where the anchor used to be.
+                    window.Left += 40;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true),
+                        "Moving the owning window must dismiss the flyout.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData((int)PInvoke.WM_NCLBUTTONDOWN, 0, true)]
+        [InlineData((int)PInvoke.WM_NCRBUTTONDOWN, 0, true)]
+        [InlineData((int)PInvoke.WM_NCMBUTTONDOWN, 0, true)]
+        [InlineData((int)PInvoke.WM_ACTIVATEAPP, 0, true)]
+        [InlineData((int)PInvoke.WM_ACTIVATEAPP, 1, false)]
+        [InlineData((int)PInvoke.WM_NCHITTEST, 0, false)]
+        [InlineData((int)PInvoke.WM_NCLBUTTONUP, 0, false)]
+        public void FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(int msg, int wParam, bool expected)
+        {
+            // These are the light-dismiss signals that never surface as routed input: a press on
+            // the caption or a resize border arrives as a non-client button message, and a click in
+            // another application, on the desktop, or an Alt+Tab arrives as WM_ACTIVATEAPP with a
+            // false wParam. Gaining the foreground back (a true wParam) must not close anything.
+            Assert.Equal(expected, Controls.FlyoutBase.IsDismissMessage(msg, new IntPtr(wParam)));
         }
 
         [Fact]
