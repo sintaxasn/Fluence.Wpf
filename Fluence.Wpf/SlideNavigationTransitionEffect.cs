@@ -47,6 +47,14 @@ namespace Fluence.Wpf
     /// XAML ported from WinUI that touches the numeric value maps across unchanged, and
     /// <c language="text">FromBottom</c> can be added later without moving anything.
     /// </para>
+    /// <para>
+    /// The cost of that numbering is that <c language="csharp">default</c> is not a declared
+    /// member: it is the 0 held for <c language="text">FromBottom</c>. The dependency property
+    /// defaults to <see cref="FromRight"/> explicitly, and
+    /// <see cref="Controls.SlideNavigationPresenter.TransitionEffect"/> rejects 0, or any other
+    /// undeclared value, with an <see cref="System.ArgumentException"/> rather than playing a
+    /// horizontal effect the caller did not ask for.
+    /// </para>
     /// </remarks>
     public enum SlideNavigationTransitionEffect
     {

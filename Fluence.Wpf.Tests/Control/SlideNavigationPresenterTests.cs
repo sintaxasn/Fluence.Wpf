@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -310,6 +311,27 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     CloseWindowAndDrain(window);
                 }
+            });
+        }
+
+        [Fact]
+        public Task SlideNavigationPresenter_TransitionEffect_RejectsAnUndeclaredValueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.SlideNavigationPresenter presenter = new();
+
+                // The enumeration keeps WinUI's numbers and leaves 0 to the unported FromBottom, so
+                // default(SlideNavigationTransitionEffect) is not a declared member. A caller who
+                // ports WinUI code that used FromBottom, or writes default, must hear about it
+                // rather than get a horizontal slide they did not ask for.
+                Assert.Equal(SlideNavigationTransitionEffect.FromRight, presenter.TransitionEffect);
+                _ = Assert.Throws<ArgumentException>(() => presenter.TransitionEffect = default);
+                _ = Assert.Throws<ArgumentException>(() => presenter.TransitionEffect = (SlideNavigationTransitionEffect)7);
+                Assert.Equal(SlideNavigationTransitionEffect.FromRight, presenter.TransitionEffect);
+
+                presenter.TransitionEffect = SlideNavigationTransitionEffect.FromLeft;
+                Assert.Equal(SlideNavigationTransitionEffect.FromLeft, presenter.TransitionEffect);
             });
         }
     }

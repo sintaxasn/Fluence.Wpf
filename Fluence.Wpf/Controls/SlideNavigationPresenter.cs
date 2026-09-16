@@ -134,7 +134,23 @@ namespace Fluence.Wpf.Controls
                 nameof(TransitionEffect),
                 typeof(SlideNavigationTransitionEffect),
                 typeof(SlideNavigationPresenter),
-                new FrameworkPropertyMetadata(SlideNavigationTransitionEffect.FromRight));
+                new FrameworkPropertyMetadata(SlideNavigationTransitionEffect.FromRight),
+                IsTransitionEffectDeclared);
+
+        /// <summary>
+        /// Rejects a <see cref="TransitionEffect"/> value the enumeration does not declare. The
+        /// enumeration keeps WinUI's numbering and leaves 0 to WinUI's unported
+        /// <c language="text">FromBottom</c>, so <c language="csharp">default</c> and a value
+        /// ported from WinUI code that used <c language="text">FromBottom</c> both land here.
+        /// Failing the set is better than silently playing the horizontal effect the caller did
+        /// not ask for.
+        /// </summary>
+        /// <param name="value">The proposed value.</param>
+        /// <returns><see langword="true"/> when the value is a declared member.</returns>
+        private static bool IsTransitionEffectDeclared(object value)
+        {
+            return value is SlideNavigationTransitionEffect.FromLeft or SlideNavigationTransitionEffect.FromRight;
+        }
 
         /// <summary>
         /// Gets or sets the side the incoming content enters from on the next content change.
