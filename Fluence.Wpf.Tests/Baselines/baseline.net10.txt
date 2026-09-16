@@ -38,6 +38,7 @@
   Fluence.Wpf.Tests.Windowing.FluenceWindowTests.SizeToContentWindow_TemplateBorder_FillsClientAreaAsync
   Fluence.Wpf.Tests.Windowing.FluenceWindowTests.SizeToContentWindow_StillGrowsAndStaysFilled_WhenContentGrowsAsync
   Fluence.Wpf.Tests.Windowing.FluenceWindowTests.FixedSizeWindow_TemplateBorder_FillsClientAreaAsync
+  Fluence.Wpf.Tests.Windowing.FluenceWindowTests.FluenceWindow_MaxButtonRelease_DecodesAnyWParamWithoutThrowing
   Fluence.Wpf.Tests.Windowing.NativeMethodsTests.GetImmersiveDarkModeAttribute_Returns20_For18985AndLater
   Fluence.Wpf.Tests.Windowing.NativeMethodsTests.GetImmersiveDarkModeAttribute_Returns19_ForPre18985Builds
   Fluence.Wpf.Tests.Windowing.NativeMethodsTests.ApplyAutoHideTaskbarShift_Left_MovesRightAndShrinksWidth
@@ -348,12 +349,16 @@
   Fluence.Wpf.Tests.Theming.ThemeParityTests.ControlElevationBorderBrush_FlipsOnlyInLightThemeAsync(theme: Light)
   Fluence.Wpf.Tests.Theming.ThemeParityTests.ControlElevationBorderBrush_FlipsOnlyInLightThemeAsync(theme: Dark)
   Fluence.Wpf.Tests.Theming.ThemeParityTests.AccentResolver_System_PrefersOsPaletteThenGenerates
-  Fluence.Wpf.Tests.Theming.ThemeParityTests.Rebuilt_MatchesGoldenResolvedValuesAsync
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.Rebuilt_MatchesGoldenResolvedValuesAsync(theme: Light)
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.Rebuilt_MatchesGoldenResolvedValuesAsync(theme: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.Rebuilt_MatchesGoldenResolvedValuesAsync(theme: HighContrast)
   Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlightAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightTextAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.ApplyTheme_Alone_UsesSystemAccentPaletteAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.FirstApply_RaisesAccentColorChanged_BeforeAnyOtherThemeAccessAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_IsTheSameInEveryThemeAsync(theme: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_IsTheSameInEveryThemeAsync(theme: HighContrast)
   Fluence.Wpf.Tests.Theming.ThemeTestHelpersTests.StandardThemeCycle_ResolvesKeyBrushesAsync
   Fluence.Wpf.Tests.Theming.ThemeTestHelpersTests.VisualTreeHelper_GetDpi_ReturnsPositiveScaleAsync
   Fluence.Wpf.Tests.Theming.TypographyResourceContractTests.ControlFastOutSlowInKeySpline_MatchesWinUiCanonicalCurveAsync
@@ -687,6 +692,15 @@
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ClosingCancel_KeepsFlyoutOpenAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ContentChange_FlowsToPresenterAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesOnAPressOutsideAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_PressOnTheAnchorClosesWithoutReopeningAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesWhenTheOwningWindowMovesAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 161, wParam: 0, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 164, wParam: 0, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 167, wParam: 0, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 28, wParam: 0, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 28, wParam: 1, expected: False)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 132, wParam: 0, expected: False)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 162, wParam: 0, expected: False)
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyoutAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_PlacementModes_MapToPopupPlacementAsync
@@ -760,8 +774,8 @@
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_SelectionIndicator_CanonicalGeometryAndCenteredAsync
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_SelectionIndicator_FadesInAtFullSizeWhenSelectedAsync
   Fluence.Wpf.Tests.Control.ListBoxTests.ListBox_GetContainerForItemOverride_ReturnsFluentListBoxItemAsync
-  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync
-  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync
+  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ItemsLayoutGrid_WrapsItemsAcrossTheListAsync
+  Fluence.Wpf.Tests.Control.ListViewTests.ListView_ItemsLayoutGrid_LeavesAConsumerPanelAloneAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_PresentInItemTemplateAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_WidthIsCanonicalAsync
   Fluence.Wpf.Tests.Control.ListViewTests.ListView_SelectionIndicator_CornerRadiusIsCanonicalAsync
@@ -887,6 +901,9 @@
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_SpinPanel_HasWinUiCanonicalMarginAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_CompactSpinPanel_ReservesLayoutWhenHiddenAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_ClampsPositiveInfinityToMaximumAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_TypedNaN_IsRejectedLikeAnyUnparseableTextAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_NaNBound_DoesNotSwitchClampingOffAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_NormalizesReversedRangeBeforeClampingAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Click_ClampsToMaximumAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Header_BecomesAccessibleNameAsync
@@ -993,6 +1010,7 @@
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Determinate_UpdatesArcAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Indeterminate_CaterpillarArcBecomesVisibleAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_StateSizeStoryboards_ReleaseRatherThanStampOnExitAsync
+  Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_CheckedDot_KeepsItsCheckedSizeWhenAStateStoryboardIsReleasedAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_Description_SetsAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_DescriptionChanges_UpdatesAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_NullDescription_ClearsAutomationHelpTextAsync
@@ -1047,6 +1065,7 @@
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_ReducedMotion_SwapsWithoutSlidingAsync
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_RapidChanges_KeepOnlyTheNewestContentAsync
   Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_OutgoingContent_KeepsTheContentTemplateAsync
+  Fluence.Wpf.Tests.Control.SlideNavigationPresenterTests.SlideNavigationPresenter_TransitionEffect_RejectsAnUndeclaredValueAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_StyleApplies_PartTrackFoundAsync
   Fluence.Wpf.Tests.Control.SliderTests.Slider_SnapToTick_LandsOnATickWhenDraggedAsync(orientation: Horizontal)
   Fluence.Wpf.Tests.Control.SliderTests.Slider_SnapToTick_LandsOnATickWhenDraggedAsync(orientation: Vertical)
@@ -1239,6 +1258,11 @@
   Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.InfoBadge_AutomationPeer_ReportsValueAsNameAsync(value: 0, expectedName: "0")
   Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.InfoBadge_AutomationPeer_ReportsValueAsNameAsync(value: -1, expectedName: "")
   Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.FlyoutPresenter_AutomationPeer_ReportsGroupControlTypeAsync
+  Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.SplitButton_Disabled_InvokeAndExpandCollapse_ThrowElementNotEnabledExceptionAsync
+  Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.ToggleSplitButton_Disabled_ToggleAndExpandCollapse_ThrowElementNotEnabledExceptionAsync
+  Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.ToggleSwitch_Disabled_Toggle_ThrowsElementNotEnabledExceptionAsync
+  Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.DropDownButton_Disabled_ExpandCollapse_ThrowElementNotEnabledExceptionAsync
+  Fluence.Wpf.Tests.Control.Rules.AutomationPeerTests.NavigationViewItem_Disabled_InvokeAndSelect_ThrowElementNotEnabledExceptionAsync
   Fluence.Wpf.Tests.Control.Rules.BackgroundParityTests.SelectionControls_OffStateBackgrounds_UseWinUiAltFillRolesAsync
   Fluence.Wpf.Tests.Control.Rules.BackgroundParityTests.ScrollBar_RailBackground_UsesWinUiTrackFillRoleAsync
   Fluence.Wpf.Tests.Control.Rules.BackgroundParityTests.DemoSampleControl_Chrome_UsesWinUiGalleryBackgroundRolesAsync

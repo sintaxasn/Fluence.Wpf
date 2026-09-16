@@ -23,13 +23,14 @@ already-built binary keeps working and only a recompile against the new library 
 
 ### Enums renamed
 
-Values are unchanged in all three cases; rename the type at every use site.
+Values are unchanged in the first three cases; rename the type at every use site. The fourth renames its values and the property that carries it too.
 
 | Was | Is |
 | --- | --- |
 | `SpinButtonPlacementMode` | `NumberBoxSpinButtonPlacementMode`. The property `NumberBox.SpinButtonPlacementMode` keeps its name, so XAML attributes do not change. |
 | `BackdropType` | `WindowBackdropType`. `Auto` is unchanged. `FluenceWindow.SystemBackdropType` and `ApplicationThemeManager.CurrentBackdrop` keep their names and change type. |
 | `CornerPreference` | `WindowCornerPreference`. `FluenceWindow.CornerStyle` keeps its name and changes type. |
+| `ListViewState` | `ListViewItemsLayout`, with `Default` now `List` and `GridView` now `Grid`. The property `ListView.ViewState` is `ListView.ItemsLayout`, so XAML changes from `ViewState="GridView"` to `ItemsLayout="Grid"`. The numeric values are unchanged. The old names collided with WPF's own `ListView.View`, whose `GridView` means a column view, where this layout wraps items into tiles. |
 
 ### Events that gained typed args
 
@@ -95,6 +96,14 @@ The caption button colours remain published under their WinUI names: `WindowClos
 `InfoBar.IsOpen` defaults to `false`, matching WinUI. A bar declared without it used to be visible as soon as its page loaded; it is now closed until something opens it. Add `IsOpen="True"` to any bar that should show from the start. There is no build error for this one, so search your XAML for `InfoBar` declarations that do not set `IsOpen`.
 
 `SlideNavigationTransitionEffect.FromRight` is 2 rather than 0, leaving 0 where WinUI has `FromBottom`. The names are unchanged, so only code or XAML that reads or writes the numeric value is affected.
+
+### Behaviour changed
+
+Two members keep their signatures and do something different at runtime, so neither produces a build error.
+
+`InfoBar.Closing` fires on every close, as WinUI's does, where it used to fire from the close button alone. A handler that sets `Cancel` to `true` therefore now also vetoes an `IsOpen = false` written in code or by a binding, which previously always succeeded; the veto puts `IsOpen` back to `true` and no `Closed` follows. `e.Reason` says which path started the close, so a handler meant to confirm a user dismissal should cancel only when `Reason` is `InfoBarCloseReason.CloseButton`, or it will also block the code that closes the bar.
+
+`InfoBadge.Value` rejects anything below -1, the range WinUI also rejects. A direct set throws `ArgumentException` where it used to render the badge as a dot; a binding that produces such a value is reported as a binding error and the badge keeps its default, -1, which is the dot. Clamp the source, or set -1 when you mean the dot.
 
 ### Visual defaults changed
 

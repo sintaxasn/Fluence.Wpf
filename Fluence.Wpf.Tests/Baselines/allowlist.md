@@ -345,3 +345,83 @@ Net: 1 added, none removed. 1317 cases to 1318 on net10, 1314 to 1315 on net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the third review pass
+
+Twelve cases from five test methods, all regression guards for the third
+review pass on PR #73. Both theories expand their `InlineData` on both
+frameworks in this capture.
+
+### Additions: 12 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground` | 7 | `Control/FlyoutTests.cs` |
+| `FlyoutBase_LightDismiss_PressOnTheAnchorClosesWithoutReopeningAsync` | 1 | `Control/FlyoutTests.cs` |
+| `FlyoutBase_LightDismiss_ClosesWhenTheOwningWindowMovesAsync` | 1 | `Control/FlyoutTests.cs` |
+| `RadioButton_CheckedDot_KeepsItsCheckedSizeWhenAStateStoryboardIsReleasedAsync` | 1 | `Control/RadioButtonTests.cs` |
+| `PublicKeyInventory_IsTheSameInEveryThemeAsync` | 2 | `Theming/ThemeParityTests.cs` |
+
+Net: 12 added, none removed. 1318 cases to 1330 on net10, 1315 to 1327 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the reviewer's second-look items
+
+Two renames follow `ListView.ViewState` becoming `ListView.ItemsLayout`; the
+golden value check becomes a theory so its high contrast case can skip, by name,
+on a desktop whose system colours differ from the ones the snapshot recorded; and
+one case pins that `SlideNavigationPresenter.TransitionEffect` rejects the 0 left
+for WinUI's `FromBottom`.
+
+### Renames: 2 lines
+
+| From | To | Source |
+| ---- | -- | ------ |
+| `ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync` | `ListView_ItemsLayoutGrid_WrapsItemsAcrossTheListAsync` | `Control/ListViewTests.cs` |
+| `ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync` | `ListView_ItemsLayoutGrid_LeavesAConsumerPanelAloneAsync` | `Control/ListViewTests.cs` |
+
+### Additions: 3 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `Rebuilt_MatchesGoldenResolvedValuesAsync` | 3, was 1: the fact became a theory over the three themes | `Theming/ThemeParityTests.cs` |
+| `SlideNavigationPresenter_TransitionEffect_RejectsAnUndeclaredValueAsync` | 1 | `Control/SlideNavigationPresenterTests.cs` |
+
+Net: 3 added, none removed, 2 renamed. 1330 cases to 1333 on net10, 1327 to 1330
+on net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the security scan findings
+
+Nine regression cases for the three findings in the 2026-09-15 security scan: the
+action providers on five automation peers refusing a disabled control, the
+`WM_NCLBUTTONUP` wParam decode surviving a 64-bit value, and `NumberBox` keeping
+`NaN` out of `Value`.
+
+### Additions: 9 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `SplitButton_Disabled_InvokeAndExpandCollapse_ThrowElementNotEnabledExceptionAsync` | 1 | `Control/Rules/AutomationPeerTests.cs` |
+| `ToggleSplitButton_Disabled_ToggleAndExpandCollapse_ThrowElementNotEnabledExceptionAsync` | 1 | `Control/Rules/AutomationPeerTests.cs` |
+| `ToggleSwitch_Disabled_Toggle_ThrowsElementNotEnabledExceptionAsync` | 1 | `Control/Rules/AutomationPeerTests.cs` |
+| `DropDownButton_Disabled_ExpandCollapse_ThrowElementNotEnabledExceptionAsync` | 1 | `Control/Rules/AutomationPeerTests.cs` |
+| `NavigationViewItem_Disabled_InvokeAndSelect_ThrowElementNotEnabledExceptionAsync` | 1 | `Control/Rules/AutomationPeerTests.cs` |
+| `FluenceWindow_MaxButtonRelease_DecodesAnyWParamWithoutThrowing` | 1 | `Windowing/FluenceWindowTests.cs` |
+| `NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `NumberBox_TypedNaN_IsRejectedLikeAnyUnparseableTextAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `NumberBox_NaNBound_DoesNotSwitchClampingOffAsync` | 1 | `Control/NumberBoxTests.cs` |
+
+Net: 9 added, none removed. 1333 cases to 1342 on net10, 1330 to 1339 on
+net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
