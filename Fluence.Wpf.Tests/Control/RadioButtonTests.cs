@@ -96,6 +96,61 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        [Fact]
+        public Task RadioButton_CheckedDot_KeepsItsCheckedSizeWhenAStateStoryboardIsReleasedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                RadioButton radio = new() { Content = "Option" };
+                Window window = new() { Content = radio, Width = 240, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    radio.IsChecked = true;
+                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+
+                    Ellipse dot = FindVisualChildByName<Ellipse>(radio, "InnerDot")
+                        ?? throw new InvalidOperationException("The RadioButton template has no InnerDot.");
+                    Assert.Equal(8.0, dot.Width);
+                    Assert.Equal(8.0, dot.Height);
+
+                    // The hover, pressed and disabled triggers all resize the checked dot with a named
+                    // storyboard and release it with RemoveStoryboard on exit. Rendered, the release
+                    // has to land back on the checked 8, not on the template's resting 0: WPF layers a
+                    // later trigger's storyboard over an earlier trigger's rather than replacing it,
+                    // so removing the top layer uncovers the checked grow again. The disabled trigger
+                    // is the one a test can drive without a pointer, and it has the same shape as
+                    // the two pointer triggers.
+                    radio.IsEnabled = false;
+                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+                    Assert.Equal(9.33, dot.Width, 2);
+                    Assert.Equal(9.33, dot.Height, 2);
+
+                    radio.IsEnabled = true;
+                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 100).ConfigureAwait(true);
+                    Assert.Equal(8.0, dot.Width);
+                    Assert.Equal(8.0, dot.Height);
+
+                    // And the release must not leave a dot in an unchecked ring either, which is the
+                    // defect RemoveStoryboard was adopted to fix.
+                    radio.IsEnabled = false;
+                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+                    radio.IsChecked = false;
+                    radio.IsEnabled = true;
+                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 400).ConfigureAwait(true);
+                    Assert.Equal(0.0, dot.Width);
+                    Assert.Equal(0.0, dot.Height);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         private static bool StartsADotResize(IEnumerable<TriggerAction> actions)
         {
             foreach (TriggerAction action in actions)

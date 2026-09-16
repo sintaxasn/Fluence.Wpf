@@ -105,12 +105,16 @@
                                 string and the TextBlock that draws it is generated here: the implicit
                                 TextBlock style in Typography.xaml:43-47 sizes every unstyled TextBlock
                                 at 14 and beats the inherited TextElement values above, so the declared
-                                size never reached the text.
+                                size never reached the text. The style extends the implicit one rather
+                                than replacing it, so anything Typography.xaml adds later still reaches
+                                the text; FontWeight is bound so the tab's own weight wins over the
+                                Regular the implicit style stamps.
                             -->
                                 <ContentPresenter.Resources>
-                                    <Style TargetType="{x:Type TextBlock}">
+                                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
                                         <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
+                                        <Setter Property="FontWeight" Value="{Binding FontWeight, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
                                         <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:TabViewItem}}}" />
                                     </Style>
                                 </ContentPresenter.Resources>

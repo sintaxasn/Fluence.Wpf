@@ -56,12 +56,16 @@
                                 string and the TextBlock that draws it is generated here: the implicit
                                 TextBlock style in Typography.xaml:43-47 sizes every unstyled TextBlock
                                 at 14 and beats the inherited TextElement values above, so the declared
-                                size never reached the text.
+                                size never reached the text. The style extends the implicit one rather
+                                than replacing it, so anything Typography.xaml adds later still reaches
+                                the text; FontWeight is bound so the header's own weight wins over the
+                                Regular the implicit style stamps.
                             -->
                             <ContentPresenter.Resources>
-                                <Style TargetType="{x:Type TextBlock}">
+                                <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
                                     <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:NavigationViewItemHeader}}}" />
                                     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:NavigationViewItemHeader}}}" />
+                                    <Setter Property="FontWeight" Value="{Binding FontWeight, RelativeSource={RelativeSource AncestorType={x:Type controls:NavigationViewItemHeader}}}" />
                                     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:NavigationViewItemHeader}}}" />
                                 </Style>
                             </ContentPresenter.Resources>
@@ -474,10 +478,10 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
-                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375, Margin 0,0,0,2). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375). WinUI stacks two margins around that line: NavigationViewItemSeparatorMargin 0,3,0,4 on the SeparatorLine inside the separator template (NavigationView_themeresources.xaml:247) and 0,0,0,2 on the VisualItemsSeparator instance itself. The separator template here draws one Border with no inner line, so this element carries their sum, 0,3,0,6. It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
                         <controls:NavigationViewItemSeparator
                             Grid.Row="2"
-                            Margin="0,3,0,4"
+                            Margin="0,3,0,6"
                             HorizontalAlignment="Stretch"
                             Visibility="{Binding PaneFooterSeparatorVisibility, RelativeSource={RelativeSource TemplatedParent}}" />
 
@@ -767,10 +771,10 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
-                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375, Margin 0,0,0,2). It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
+                        <!--  Divider between the scrolling menu items and the pinned footer entries, WinUI's own VisualItemsSeparator (NavigationView.xaml:375). WinUI stacks two margins around that line: NavigationViewItemSeparatorMargin 0,3,0,4 on the SeparatorLine inside the separator template (NavigationView_themeresources.xaml:247) and 0,0,0,2 on the VisualItemsSeparator instance itself. The separator template here draws one Border with no inner line, so this element carries their sum, 0,3,0,6. It spans the pane rather than taking the item separator's 12 dip left inset, because it separates the two lists rather than two items inside one. WinUI reveals it only while the menu list overflows; here it follows PaneFooterSeparatorVisibility, which is set when the footer holds something, and docs/winui-parity.md records the difference.  -->
                         <controls:NavigationViewItemSeparator
                             Grid.Row="2"
-                            Margin="0,3,0,4"
+                            Margin="0,3,0,6"
                             HorizontalAlignment="Stretch"
                             Visibility="{Binding PaneFooterSeparatorVisibility, RelativeSource={RelativeSource TemplatedParent}}" />
 

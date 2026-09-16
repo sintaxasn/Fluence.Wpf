@@ -76,9 +76,11 @@
                                         14 dip in a 16 dip pill. Its line box measured 18.67, so the
                                         digits overflowed the capsule and sat low in it. A style scoped
                                         to this presenter wins that contest and hands the numeral the
-                                        badge's own typography back.
+                                        badge's own typography back. It extends the implicit style rather
+                                        than replacing it, so anything Typography.xaml adds later still
+                                        reaches the numeral.
                                     -->
-                                    <Style TargetType="{x:Type TextBlock}">
+                                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
                                         <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
                                         <Setter Property="FontWeight" Value="{Binding FontWeight, RelativeSource={RelativeSource AncestorType={x:Type controls:InfoBadge}}}" />
@@ -107,7 +109,7 @@
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                <!--  Icon / FontIcon / Value: show the pill. A drawn icon takes WinUI's uniform 4,4,4,4; a font glyph and a value keep the 4,0,4,2 the presenter already carries.  -->
+                                <!--  Icon / FontIcon / Value: show the pill. A drawn icon takes WinUI's uniform 4,4,4,4; a font glyph and a value keep the 4,0,4,0 the presenter already carries.  -->
                                 <VisualState x:Name="Icon">
                                     <Storyboard>
                                         <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="ContentArea" Storyboard.TargetProperty="Margin">
