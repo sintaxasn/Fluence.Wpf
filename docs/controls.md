@@ -135,7 +135,7 @@ The form page combines input controls with card surfaces, status text, validatio
 
 Key API:
 
-`Card`, `ListBox`, `ListBoxItem`, `ListView`, `PersonPicture`, `Image`, `CardVariant`, `ListViewState`
+`Card`, `ListBox`, `ListBoxItem`, `ListView`, `PersonPicture`, `Image`, `CardVariant`, `ListViewItemsLayout`
 
 Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs. `Image` frames a picture with a theme-aware 1px stroke and a rounded-corner clip driven by `CornerRadius`, while `Source` and `Stretch` behave like the stock WPF image element.
 
@@ -143,7 +143,7 @@ Collection controls keep WPF item-source and template behavior. `Card` adds head
 
 Key API:
 
-`ListView`, `ListBox`, `TreeView`, `Card`, `ListViewState`
+`ListView`, `ListBox`, `TreeView`, `Card`, `ListViewItemsLayout`
 
 The data-binding page shows standard WPF `ItemsSource`, `SelectedItem`, `SelectedItems`, item-template, and command-binding patterns with Fluence controls. The control API is WPF-native; view models need no Fluence-specific base classes.
 
@@ -271,7 +271,7 @@ Both helpers stay in sync with the `InfoBar` control template; use them instead 
 
 `InfoBar`'s close button carries WinUI's own contract: `CloseButtonClick` fires first, then `CloseButtonCommand` runs with `CloseButtonCommandParameter`, and only then does the close pipeline start, so a cancel still belongs in `Closing` rather than in the click. `CloseButtonStyle` replaces the button's style and clearing it puts the template's own style back.
 
-`InfoBar.Opened` fires from the same `IsOpen` transition, so a bar opened in code or by a binding reports it; a cancelled close reverts `IsOpen` without raising it. Note that `IsOpen` defaults to `true` here where WinUI's defaults to `false`; `docs/winui-parity.md` records that.
+`InfoBar.Opened` fires from the same `IsOpen` transition, so a bar opened in code or by a binding reports it; a cancelled close reverts `IsOpen` without raising it. `IsOpen` defaults to `false`, as WinUI's does, so a bar declared without it stays closed until something opens it; `docs/migration-guide.md` covers the move from the earlier `true`.
 
 `InfoBar` raises `Closing` and `Closed` from the `IsOpen` transition, so both fire whether the bar is dismissed by its close button or by `IsOpen = false` in code, and `InfoBarCloseReason` says which. Setting `InfoBarClosingEventArgs.Cancel` in a `Closing` handler keeps the bar open: `IsOpen` returns to `true` and no `Closed` follows. A `Closing` handler may set `IsOpen` itself without producing a second `Closed`.
 

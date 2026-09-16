@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task ListView_ViewStateGridView_WrapsItemsAcrossTheListAsync()
+        public Task ListView_ItemsLayoutGrid_WrapsItemsAcrossTheListAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -75,11 +75,11 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    // The default state keeps WPF's vertical panel, so nothing is pinned on the control.
-                    Assert.Equal(ListViewState.Default, view.ViewState);
+                    // The default layout keeps WPF's vertical panel, so nothing is pinned on the control.
+                    Assert.Equal(ListViewItemsLayout.List, view.ItemsLayout);
                     Assert.Equal(DependencyProperty.UnsetValue, view.ReadLocalValue(ItemsControl.ItemsPanelProperty));
 
-                    view.ViewState = ListViewState.GridView;
+                    view.ItemsLayout = ListViewItemsLayout.Grid;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -87,14 +87,14 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(Orientation.Horizontal, panel.Orientation);
 
                     // Six 80 dip items across a 300 dip list means the run wraps rather than
-                    // running off the edge, which is the whole point of the state.
+                    // running off the edge, which is the whole point of the layout.
                     Border first = Assert.IsType<Border>(view.Items[0], exactMatch: false);
                     Border last = Assert.IsType<Border>(view.Items[5], exactMatch: false);
                     double firstTop = first.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
                     double lastTop = last.TransformToAncestor(panel).Transform(new Point(0, 0)).Y;
-                    Assert.True(lastTop > firstTop, "A grid view must wrap its items onto further rows.");
+                    Assert.True(lastTop > firstTop, "The grid layout must wrap its items onto further rows.");
 
-                    view.ViewState = ListViewState.Default;
+                    view.ItemsLayout = ListViewItemsLayout.List;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task ListView_ViewStateGridView_LeavesAConsumerPanelAloneAsync()
+        public Task ListView_ItemsLayoutGrid_LeavesAConsumerPanelAloneAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -126,11 +126,11 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    view.ViewState = ListViewState.GridView;
+                    view.ItemsLayout = ListViewItemsLayout.Grid;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    // A panel the consumer pinned outranks the view state.
+                    // A panel the consumer pinned outranks the layout.
                     Assert.Same(consumerPanel, view.ItemsPanel);
                     _ = Assert.IsType<System.Windows.Controls.Primitives.UniformGrid>(FindVisualChild<System.Windows.Controls.Primitives.UniformGrid>(view), exactMatch: false);
                 }

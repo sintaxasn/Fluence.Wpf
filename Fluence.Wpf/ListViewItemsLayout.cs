@@ -29,18 +29,27 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the view state for a ListView.
+    /// Specifies how a <see cref="Controls.ListView"/> arranges its items: one per row down the
+    /// list, or wrapped across it as a grid of tiles.
     /// </summary>
-    public enum ListViewState
+    /// <remarks>
+    /// This is a Fluence property with no WinUI counterpart, because WinUI ships the two arrangements
+    /// as separate controls (<c language="text">ListView</c> and <c language="text">GridView</c>).
+    /// It is deliberately not named after WinUI's <c language="text">GridView</c>: in WPF,
+    /// <see cref="System.Windows.Controls.ListView.View"/> already takes a
+    /// <see cref="System.Windows.Controls.GridView"/>, and that one means a column view.
+    /// </remarks>
+    public enum ListViewItemsLayout
     {
         /// <summary>
-        /// Default list view with vertical items.
+        /// One item per row, in WPF's own virtualizing vertical panel. The default.
         /// </summary>
-        Default = 0,
+        List = 0,
 
         /// <summary>
-        /// Grid view with items arranged in a grid.
+        /// Items wrap across the list as tiles, the way WinUI's <c language="text">GridView</c>
+        /// lays them out with its <c language="text">ItemsWrapGrid</c>.
         /// </summary>
-        GridView = 1,
+        Grid = 1,
     }
 }

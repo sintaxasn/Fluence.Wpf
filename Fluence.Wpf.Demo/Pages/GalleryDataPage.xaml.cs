@@ -319,7 +319,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "    <fluence:ListView\n" +
                                                      "        x:Name=\"GridViewListView\"\n" +
                                                      "        Height=\"230\"\n" +
-                                                     "        ViewState=\"GridView\">\n" +
+                                                     "        ItemsLayout=\"Grid\">\n" +
                                                      "        <ListViewItem Content=\"Ana Bowman\" />\n" +
                                                      "        <ListViewItem Content=\"Shawn Hughes\" />\n" +
                                                      "        <ListViewItem Content=\"Oscar Ward\" />\n" +
@@ -338,14 +338,14 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "            InitializeComponent();\n" +
                                                              "        }\n" +
                                                              "\n" +
-                                                             "        private void GridViewState_Click(object sender, RoutedEventArgs e)\n" +
+                                                             "        private void GridLayout_Click(object sender, RoutedEventArgs e)\n" +
                                                              "        {\n" +
-                                                             "            GridViewListView.ViewState = ListViewState.GridView;\n" +
+                                                             "            GridViewListView.ItemsLayout = ListViewItemsLayout.Grid;\n" +
                                                              "        }\n" +
                                                              "\n" +
-                                                             "        private void ListViewState_Click(object sender, RoutedEventArgs e)\n" +
+                                                             "        private void ListLayout_Click(object sender, RoutedEventArgs e)\n" +
                                                              "        {\n" +
-                                                             "            GridViewListView.ViewState = ListViewState.Default;\n" +
+                                                             "            GridViewListView.ItemsLayout = ListViewItemsLayout.List;\n" +
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
@@ -466,14 +466,14 @@ namespace Fluence.Wpf.Demo.Pages
                 new DemoSampleSource(7, ListViewGridStateXamlSource, ListViewGridStateCSharpSource));
         }
 
-        private void GridViewState_Click(object sender, RoutedEventArgs e)
+        private void GridLayout_Click(object sender, RoutedEventArgs e)
         {
-            _ = GridViewListView?.ViewState = ListViewState.GridView;
+            _ = GridViewListView?.ItemsLayout = ListViewItemsLayout.Grid;
         }
 
-        private void ListViewState_Click(object sender, RoutedEventArgs e)
+        private void ListLayout_Click(object sender, RoutedEventArgs e)
         {
-            _ = GridViewListView?.ViewState = ListViewState.Default;
+            _ = GridViewListView?.ItemsLayout = ListViewItemsLayout.List;
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

@@ -309,7 +309,7 @@
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            ViewState="GridView">
+                            ItemsLayout="Grid">
                             <ListViewItem Content="Ana Bowman" />
                             <ListViewItem Content="Shawn Hughes" />
                             <ListViewItem Content="Oscar Ward" />
@@ -323,18 +323,18 @@
                     <ContentControl x:Name="DemoSampleSlot07RightRailContentHost" Visibility="Collapsed">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <fluence:RadioButton
-                                x:Name="GridViewStateOption"
-                                Click="GridViewState_Click"
-                                Content="Grid view"
+                                x:Name="GridLayoutOption"
+                                Click="GridLayout_Click"
+                                Content="Grid"
                                 IsChecked="True" />
                             <fluence:RadioButton
-                                x:Name="ListViewStateOption"
+                                x:Name="ListLayoutOption"
                                 Margin="{DynamicResource DemoTextTopGapMargin}"
-                                Click="ListViewState_Click"
-                                Content="Default" />
+                                Click="ListLayout_Click"
+                                Content="List" />
                         </StackPanel>
                     </ContentControl>
-                    <local:DemoSampleControl SampleDescription="Set ViewState to GridView when items read better as tiles that wrap across the list; Default keeps one item per row." />
+                    <local:DemoSampleControl SampleDescription="Set ItemsLayout to Grid when items read better as tiles that wrap across the list; List keeps one item per row." />
                 </StackPanel>
             </fluence:SmoothScrollViewer>
         </Grid>
