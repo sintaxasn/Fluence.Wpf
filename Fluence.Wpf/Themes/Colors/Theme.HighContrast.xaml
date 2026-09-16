@@ -114,6 +114,9 @@
     <!--  Acrylic Background Fill Colors  -->
     <Color x:Key="AcrylicBackgroundFillColorDefault">#FF000000</Color>
     <Color x:Key="AcrylicBackgroundFillColorBase">#FF000000</Color>
+    <!--  The accent pair is computed from the ramp for Light and Dark (ColorMap.Build) and fixed here, like SystemFillColorAttention; the brushes resolve to the live highlight.  -->
+    <Color x:Key="AccentAcrylicBackgroundFillColorDefault">#FF1AEBFF</Color>
+    <Color x:Key="AccentAcrylicBackgroundFillColorBase">#FF1AEBFF</Color>
 
     <!--  System Fill Colors  -->
     <Color x:Key="SystemFillColorAttention">#FF1AEBFF</Color>

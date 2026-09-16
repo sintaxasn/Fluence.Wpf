@@ -46,6 +46,7 @@ CardStrokeColorDefaultBrush
 CardStrokeColorDefaultSolid
 CardStrokeColorDefaultSolidBrush
 CircleElevationBorderBrush
+ComboBoxItemCornerRadius
 ContentControlThemeFontFamily
 ControlAltFillColorDisabled
 ControlAltFillColorDisabledBrush

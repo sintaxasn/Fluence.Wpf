@@ -299,37 +299,92 @@ namespace Fluence.Wpf.Tests.Theming
 
         /// <summary>
         /// Verifies that the rebuilt engine reproduces every golden resolved Color and Brush value
-        /// (accent pinned to #0078D4) for Light, Dark, and HighContrast with zero drift.
+        /// (accent pinned to #0078D4) for Light, Dark, and HighContrast with zero drift, and that
+        /// the snapshot records every live Color and Brush in turn. Without the second direction a
+        /// key the snapshot omits is checked by nothing, which is how the two accent acrylic keys
+        /// carried an unverified high contrast value for a whole delta.
         /// </summary>
-        [Fact]
-        public async Task Rebuilt_MatchesGoldenResolvedValuesAsync()
+        /// <remarks>
+        /// The high contrast snapshot is only partly machine-independent. Its brushes bound to the
+        /// live highlight are excluded (see <see cref="HighContrastHighlightDerivedBrushKeys"/>), but
+        /// the many bound to <c language="csharp">SystemColors.WindowColor</c>,
+        /// <c language="csharp">WindowTextColor</c> and <c language="csharp">GrayTextColor</c> are
+        /// recorded at the values a standard desktop reports (white, black
+        /// and #6D6D6D), because those do not follow the user's accent and a CI runner never turns
+        /// a high contrast theme on. A desktop that does report different values would drift every
+        /// one of those rows, so the high contrast case skips, with the mismatch named, rather than
+        /// fail for a reason that is not the engine's.
+        /// </remarks>
+        /// <param name="theme">The theme whose snapshot is checked.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public async Task Rebuilt_MatchesGoldenResolvedValuesAsync(ApplicationTheme theme)
         {
-            foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
+            if (theme is ApplicationTheme.HighContrast && DescribeSystemColorMismatch() is string mismatch)
             {
-                IReadOnlyDictionary<string, (Color color, Color brush)> actual = await CaptureResolvedAsync(theme).ConfigureAwait(true);
-                string goldenPath = Path.Join(AppContext.BaseDirectory, "Theming", "golden", theme + ".txt");
-                Dictionary<string, (string, string)> golden = (await File.ReadAllLinesAsync(goldenPath, TestContext.Current.CancellationToken).ConfigureAwait(true))
-                    .Select(static l => l.Split('|'))
-                    .ToDictionary(static a => a[0], static a => (a[1], a[2]), StringComparer.Ordinal);
-
-                List<string> drift = [];
-                foreach (KeyValuePair<string, (string, string)> kv in golden)
-                {
-                    if (!actual.TryGetValue(kv.Key, out (Color color, Color brush) got))
-                    {
-                        drift.Add("MISSING " + kv.Key);
-                        continue;
-                    }
-                    string gc = Hex(got.color);
-                    string gb = Hex(got.brush);
-                    if (!string.Equals(gc, kv.Value.Item1, StringComparison.Ordinal) || !string.Equals(gb, kv.Value.Item2, StringComparison.Ordinal))
-                    {
-                        drift.Add(string.Format(CultureInfo.InvariantCulture, "{0} golden=({1},{2}) actual=({3},{4})",
-                            kv.Key, kv.Value.Item1, kv.Value.Item2, gc, gb));
-                    }
-                }
-                Assert.Empty(drift);
+                Assert.Skip("The high contrast snapshot records the standard desktop system colours; this desktop reports " + mismatch + ".");
             }
+
+            IReadOnlyDictionary<string, (Color color, Color brush)> actual = await CaptureResolvedAsync(theme).ConfigureAwait(true);
+            string goldenPath = Path.Join(AppContext.BaseDirectory, "Theming", "golden", theme + ".txt");
+            Dictionary<string, (string, string)> golden = (await File.ReadAllLinesAsync(goldenPath, TestContext.Current.CancellationToken).ConfigureAwait(true))
+                .Select(static l => l.Split('|'))
+                .ToDictionary(static a => a[0], static a => (a[1], a[2]), StringComparer.Ordinal);
+
+            List<string> drift = [];
+            foreach (KeyValuePair<string, (string, string)> kv in golden)
+            {
+                if (!actual.TryGetValue(kv.Key, out (Color color, Color brush) got))
+                {
+                    drift.Add("MISSING " + kv.Key);
+                    continue;
+                }
+                string gc = Hex(got.color);
+                string gb = Hex(got.brush);
+                if (!string.Equals(gc, kv.Value.Item1, StringComparison.Ordinal) || !string.Equals(gb, kv.Value.Item2, StringComparison.Ordinal))
+                {
+                    drift.Add(string.Format(CultureInfo.InvariantCulture, "{0} golden=({1},{2}) actual=({3},{4})",
+                        kv.Key, kv.Value.Item1, kv.Value.Item2, gc, gb));
+                }
+            }
+
+            // The other direction: a live value the snapshot does not record. Regenerate the
+            // golden files with Golden_WriteCurrentResolvedValuesAsync and copy them over.
+            foreach (string key in actual.Keys.Order(StringComparer.Ordinal))
+            {
+                if (!golden.ContainsKey(key))
+                {
+                    drift.Add("UNRECORDED " + key + " in " + theme);
+                }
+            }
+
+            Assert.Empty(drift);
+        }
+
+        /// <summary>
+        /// Names the first live system colour that differs from the value the high contrast
+        /// snapshot was captured with, or returns <see langword="null"/> when they all match.
+        /// </summary>
+        private static string? DescribeSystemColorMismatch()
+        {
+            (string name, Color live, Color assumed)[] expectations =
+            [
+                ("SystemColors.WindowColor", SystemColors.WindowColor, Color.FromRgb(0xFF, 0xFF, 0xFF)),
+                ("SystemColors.WindowTextColor", SystemColors.WindowTextColor, Color.FromRgb(0x00, 0x00, 0x00)),
+                ("SystemColors.GrayTextColor", SystemColors.GrayTextColor, Color.FromRgb(0x6D, 0x6D, 0x6D)),
+            ];
+
+            foreach ((string name, Color live, Color assumed) in expectations)
+            {
+                if (live != assumed)
+                {
+                    return name + " as " + Hex(live) + " where the snapshot assumes " + Hex(assumed);
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -543,6 +598,38 @@ namespace Fluence.Wpf.Tests.Theming
                 "New public keys are not in the frozen set: " + string.Join(", ", added));
             Assert.True(removed.Count is 0,
                 "Frozen public keys no longer resolve: " + string.Join(", ", removed));
+        }
+
+        /// <summary>
+        /// Dark and high contrast publish exactly the Light key set. High contrast overrides the
+        /// value of existing keys rather than publishing new ones or dropping any, which is the
+        /// assumption that lets <see cref="PublicKeyInventory_MatchesFrozenSetAsync"/> sample Light
+        /// alone. Without this, a key computed for Light and Dark but skipped for high contrast, or
+        /// supplied by one theme's table and forgotten in another, would vanish from that theme
+        /// with nothing to notice: the value snapshots iterate the committed golden file, so a key
+        /// missing from the live set is checked by nothing.
+        /// </summary>
+        /// <param name="theme">The theme compared against Light.</param>
+        [Theory]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public async Task PublicKeyInventory_IsTheSameInEveryThemeAsync(ApplicationTheme theme)
+        {
+            SortedSet<string> light = new(StringComparer.Ordinal);
+            SortedSet<string> other = new(StringComparer.Ordinal);
+            await WpfTestSta.RunOnStaAsync(() =>
+            {
+                CollectPublicKeys(TestApp.EnsureLibraryTheme().Resources, light);
+                CollectPublicKeys(TestApp.EnsureLibraryTheme(theme).Resources, other);
+            }).ConfigureAwait(true);
+
+            List<string> missing = [.. light.Except(other, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+            List<string> extra = [.. other.Except(light, StringComparer.Ordinal).Order(StringComparer.Ordinal)];
+
+            Assert.True(missing.Count is 0,
+                theme + " does not publish keys Light publishes: " + string.Join(", ", missing));
+            Assert.True(extra.Count is 0,
+                theme + " publishes keys Light does not: " + string.Join(", ", extra));
         }
     }
 }

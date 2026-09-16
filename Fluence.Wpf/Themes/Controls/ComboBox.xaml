@@ -3,8 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
-    <!--  WinUI ComboBoxItemCornerRadius = 3 (ComboBox_themeresources_perf2026.xaml line 345), which is deliberately not ControlCornerRadius (4). Keyed rather than written into the template so an application overriding corner radii can still reach the drop-down item.  -->
-    <CornerRadius x:Key="ComboBoxItemCornerRadius">3</CornerRadius>
+    <!--  The item corner radius is the published ComboBoxItemCornerRadius (WinUI's 3, deliberately not ControlCornerRadius 4), defined beside the other corner radii in SpecialBrushes.AddSharedTokens so an application overriding corner radii reaches it through a supported key.  -->
 
     <Style x:Key="ComboBoxToggleStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="Transparent" />

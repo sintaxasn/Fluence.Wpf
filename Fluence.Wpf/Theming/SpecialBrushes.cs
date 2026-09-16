@@ -80,6 +80,8 @@ namespace Fluence.Wpf.Theming
             dict["ApplicationBackgroundBrush"] = applicationBackgroundBrush;
             dict["ApplicationPageBackgroundThemeBrush"] = applicationBackgroundBrush;
 
+            // Brush-only keys with no Color twin.
+
             // InfoBadge foregrounds, one per severity plate. WinUI keys the badge's own foreground
             // (InfoBadgeForeground) rather than reusing a text token, because the pair has to move
             // with the plate: a badge is a filled capsule, so the numeral's legibility depends on
@@ -94,7 +96,6 @@ namespace Fluence.Wpf.Theming
             dict["InfoBadgeCautionForegroundBrush"] = Solid(textOnAccent);
             dict["InfoBadgeCriticalForegroundBrush"] = Solid(textOnAccent);
 
-            // Brush-only keys with no Color twin.
             dict["AccentFillColorSelectedTextBackgroundBrush"] = Solid(colors["SystemAccentColor"]);
             // Shared selection-pill accent for NavigationView, ListView, ListBox, TreeView, and SelectorBar.
             // Light/Dark use AccentFillColorDefault (WinUI NavigationView_themeresources.xaml:180
@@ -130,6 +131,12 @@ namespace Fluence.Wpf.Theming
             dict["ControlCornerRadius"] = new CornerRadius(4);
             dict["OverlayCornerRadius"] = new CornerRadius(8);
             dict["PopupCornerRadius"] = new CornerRadius(8);
+
+            // WinUI ComboBoxItemCornerRadius (ComboBox_themeresources_perf2026.xaml:345), which WinUI
+            // deliberately keeps distinct from ControlCornerRadius. Published beside the other corner
+            // radii rather than kept inside ComboBox.xaml so an application overriding corner radii
+            // can reach the drop-down item through a supported key.
+            dict["ComboBoxItemCornerRadius"] = new CornerRadius(3);
 
             DropShadowEffect flyoutShadow = new()
             {

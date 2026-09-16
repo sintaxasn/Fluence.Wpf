@@ -283,6 +283,7 @@
     </LinearGradientBrush>
 
     <!--  Layout tokens  -->
+    <CornerRadius x:Key="ComboBoxItemCornerRadius">3</CornerRadius>
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
     <CornerRadius x:Key="PopupCornerRadius">8</CornerRadius>
