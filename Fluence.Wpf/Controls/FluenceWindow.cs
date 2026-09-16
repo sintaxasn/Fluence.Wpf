@@ -1469,7 +1469,7 @@ namespace Fluence.Wpf.Controls
             {
                 HandleGetMinMaxInfo(hwnd, lParam, ref handled);
             }
-            else if (msg == PInvoke.WM_NCLBUTTONUP && wParam.ToInt32() == PInvoke.HTMAXBUTTON)
+            else if (msg == PInvoke.WM_NCLBUTTONUP && IsMaxButtonRelease(wParam))
             {
                 HandleMaxButtonClick(ref handled);
             }
@@ -1643,6 +1643,22 @@ namespace Fluence.Wpf.Controls
 
             Marshal.StructureToPtr(mmi, lParam, fDeleteOld: false);
             handled = true;
+        }
+
+        /// <summary>
+        /// Whether a <c language="csharp">WM_NCLBUTTONUP</c> wParam is the snap-layout max/restore
+        /// hit-test code. Decoded through <see cref="IntPtr.ToInt64"/>, never
+        /// <see cref="IntPtr.ToInt32"/>: on a 64-bit process wParam is a full 64-bit value, any
+        /// process on the desktop can post one, and <c language="csharp">ToInt32</c> throws
+        /// <see cref="OverflowException"/> for anything outside 32 bits. An exception escaping an
+        /// <see cref="HwndSource"/> hook tears the process down, so a single posted message would
+        /// have crashed the host. Internal so tests can pin the decode.
+        /// </summary>
+        /// <param name="wParam">The message parameter.</param>
+        /// <returns><see langword="true"/> when the release was over the max button hit area.</returns>
+        internal static bool IsMaxButtonRelease(IntPtr wParam)
+        {
+            return wParam.ToInt64() == PInvoke.HTMAXBUTTON;
         }
 
         /// <summary>

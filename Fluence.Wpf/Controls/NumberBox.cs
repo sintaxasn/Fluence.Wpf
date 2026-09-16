@@ -305,7 +305,9 @@ namespace Fluence.Wpf.Controls
             {
                 s = s.Trim();
             }
-            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed))
+            // NumberStyles.Any accepts the culture's NaN symbol, and NaN is not a number the bounds
+            // can place, so it is treated as text that did not parse rather than committed.
+            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed) || double.IsNaN(parsed))
             {
                 return false;
             }
@@ -395,14 +397,14 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceValueCallback(DependencyObject d, object baseValue)
         {
+            // NaN is not a number the bounds can place, so it never commits: the value keeps what
+            // it had, which is what WinUI's InvalidInputOverwritten validation does with input it
+            // cannot place. It used to be returned unclamped, which let "NaN" typed, bound or set
+            // through UIA past a finite Minimum and Maximum, and once in, NaN plus SmallChange is
+            // NaN, so the spin buttons could never bring the value back into range.
             NumberBox box = (NumberBox)d;
             double v = (double)baseValue;
-            if (double.IsNaN(v))
-            {
-                return baseValue;
-            }
-            double clamped = box.ClampValue(v);
-            return double.IsNaN(clamped) ? baseValue : clamped;
+            return double.IsNaN(v) ? box.Value : box.ClampValue(v);
         }
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -488,8 +490,10 @@ namespace Fluence.Wpf.Controls
 
         private double ClampValue(double value)
         {
-            double min = Minimum;
-            double max = Maximum;
+            // A NaN bound is no bound. Math.Max and Math.Min propagate NaN, so left in place it
+            // would have switched clamping off for every value rather than for none.
+            double min = double.IsNaN(Minimum) ? double.MinValue : Minimum;
+            double max = double.IsNaN(Maximum) ? double.MaxValue : Maximum;
             if (min > max)
             {
                 (max, min) = (min, max);

@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -69,19 +70,27 @@ namespace Fluence.Wpf.Automation
             : null;
 
         /// <inheritdoc />
+        /// <exception cref="ElementNotEnabledException">The item is disabled.</exception>
         public void AddToSelection()
         {
             SelectItem();
         }
 
         /// <inheritdoc />
+        /// <exception cref="ElementNotEnabledException">The item is disabled.</exception>
         public void RemoveFromSelection()
         {
+            ThrowIfDisabled();
         }
 
         /// <inheritdoc />
+        /// <exception cref="ElementNotEnabledException">The item is disabled.</exception>
         public void Invoke()
         {
+            // A disabled item is how a host greys out a section the current user may not open.
+            // Input never reaches it, but a UIA client calls this directly, so the disabled state
+            // is enforced here, as WPF's own item peers and the library's SetValue providers do.
+            ThrowIfDisabled();
             if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.InvokeItem(NavigationViewItem);
@@ -96,11 +105,25 @@ namespace Fluence.Wpf.Automation
         /// <summary>
         /// Selects the associated navigation view item.
         /// </summary>
+        /// <exception cref="ElementNotEnabledException">The item is disabled.</exception>
         public void SelectItem()
         {
+            ThrowIfDisabled();
             if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.SelectItemFromContainer(NavigationViewItem);
+            }
+        }
+
+        /// <summary>
+        /// Enforces the UIA contract that a provider refuses to act on a disabled item.
+        /// </summary>
+        /// <exception cref="ElementNotEnabledException">The item is disabled.</exception>
+        private void ThrowIfDisabled()
+        {
+            if (!IsEnabled())
+            {
+                throw new ElementNotEnabledException();
             }
         }
 

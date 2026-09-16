@@ -1128,5 +1128,25 @@ namespace Fluence.Wpf.Tests.Windowing
                 }
             });
         }
+
+        [Fact]
+        public void FluenceWindow_MaxButtonRelease_DecodesAnyWParamWithoutThrowing()
+        {
+            // Any process on the desktop can post WM_NCLBUTTONUP with an arbitrary 64-bit wParam to
+            // a FluenceWindow. The decode used IntPtr.ToInt32, which throws OverflowException past
+            // 32 bits, and an exception escaping an HwndSource hook tears the process down.
+            Assert.True(FluenceWindow.IsMaxButtonRelease(new IntPtr(9)));
+            Assert.False(FluenceWindow.IsMaxButtonRelease(new IntPtr(2)));
+            Assert.False(FluenceWindow.IsMaxButtonRelease(IntPtr.Zero));
+
+            if (IntPtr.Size is not 8)
+            {
+                Assert.Skip("A 64-bit wParam needs a 64-bit process.");
+            }
+
+            // HTMAXBUTTON in the low dword with a set bit above it: exactly what ToInt32 threw on.
+            Assert.False(FluenceWindow.IsMaxButtonRelease(new IntPtr((1L << 32) | 9L)));
+            Assert.False(FluenceWindow.IsMaxButtonRelease(new IntPtr(long.MinValue)));
+        }
     }
 }

@@ -387,5 +387,168 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 }
             });
         }
+
+        // The action providers (Invoke, Toggle, Expand, Collapse, Select) carry the same contract as
+        // SetValue: a disabled control refuses with ElementNotEnabledException. Input never reaches a
+        // disabled control, but a UIA client on the same desktop calls these methods directly, so
+        // without the guard a host's IsEnabled gate on an action could be walked around from another
+        // process, with no focus and no visual cue.
+
+        [Fact]
+        public Task SplitButton_Disabled_InvokeAndExpandCollapse_ThrowElementNotEnabledExceptionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                int clicks = 0;
+                SplitButton button = new() { Content = "Run", IsEnabled = false };
+                button.Click += (_, _) => clicks++;
+                Window window = new() { Content = button, Width = 200, Height = 100 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    SplitButtonAutomationPeer peer = Assert.IsType<SplitButtonAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(button));
+                    IInvokeProvider invoke = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+                    IExpandCollapseProvider expand = Assert.IsType<IExpandCollapseProvider>(peer.GetPattern(PatternInterface.ExpandCollapse), exactMatch: false);
+
+                    _ = Assert.Throws<ElementNotEnabledException>(invoke.Invoke);
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Expand);
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Collapse);
+
+                    Assert.Equal(0, clicks);
+                    Assert.False(button.IsFlyoutOpen);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ToggleSplitButton_Disabled_ToggleAndExpandCollapse_ThrowElementNotEnabledExceptionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ToggleSplitButton button = new() { Content = "Bold", IsEnabled = false };
+                Window window = new() { Content = button, Width = 200, Height = 100 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    ToggleSplitButtonAutomationPeer peer = Assert.IsType<ToggleSplitButtonAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(button));
+                    IToggleProvider toggle = Assert.IsType<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle), exactMatch: false);
+                    IExpandCollapseProvider expand = Assert.IsType<IExpandCollapseProvider>(peer.GetPattern(PatternInterface.ExpandCollapse), exactMatch: false);
+
+                    _ = Assert.Throws<ElementNotEnabledException>(toggle.Toggle);
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Expand);
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Collapse);
+
+                    Assert.False(button.IsChecked);
+                    Assert.False(button.IsFlyoutOpen);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ToggleSwitch_Disabled_Toggle_ThrowsElementNotEnabledExceptionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ToggleSwitch toggleSwitch = new() { IsEnabled = false };
+                Window window = new() { Content = toggleSwitch, Width = 200, Height = 100 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    ToggleSwitchAutomationPeer peer = Assert.IsType<ToggleSwitchAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(toggleSwitch));
+                    IToggleProvider toggle = Assert.IsType<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle), exactMatch: false);
+
+                    _ = Assert.Throws<ElementNotEnabledException>(toggle.Toggle);
+                    Assert.False(toggleSwitch.IsChecked);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DropDownButton_Disabled_ExpandCollapse_ThrowElementNotEnabledExceptionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                DropDownButton button = new() { Content = "More", IsEnabled = false };
+                Window window = new() { Content = button, Width = 200, Height = 100 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    DropDownButtonAutomationPeer peer = Assert.IsType<DropDownButtonAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(button));
+                    IExpandCollapseProvider expand = Assert.IsType<IExpandCollapseProvider>(peer.GetPattern(PatternInterface.ExpandCollapse), exactMatch: false);
+
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Expand);
+                    _ = Assert.Throws<ElementNotEnabledException>(expand.Collapse);
+                    Assert.False(button.IsChecked);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationViewItem_Disabled_InvokeAndSelect_ThrowElementNotEnabledExceptionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                NavigationView nav = new();
+                NavigationViewItem home = new() { Content = "Home" };
+                NavigationViewItem admin = new() { Content = "Admin", IsEnabled = false };
+                _ = nav.Items.Add(home);
+                _ = nav.Items.Add(admin);
+                nav.SelectedItem = home;
+                Window window = new() { Content = nav, Width = 400, Height = 300 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    NavigationViewItemAutomationPeer peer = Assert.IsType<NavigationViewItemAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(admin));
+                    IInvokeProvider invoke = Assert.IsType<IInvokeProvider>(peer.GetPattern(PatternInterface.Invoke), exactMatch: false);
+                    ISelectionItemProvider selection = Assert.IsType<ISelectionItemProvider>(peer.GetPattern(PatternInterface.SelectionItem), exactMatch: false);
+
+                    // A disabled entry is the standard way a host greys out a section the current
+                    // user may not open; the peer must not open it for them.
+                    _ = Assert.Throws<ElementNotEnabledException>(invoke.Invoke);
+                    _ = Assert.Throws<ElementNotEnabledException>(selection.Select);
+                    _ = Assert.Throws<ElementNotEnabledException>(selection.AddToSelection);
+                    _ = Assert.Throws<ElementNotEnabledException>(peer.SelectItem);
+
+                    Assert.Same(home, nav.SelectedItem);
+                    Assert.False(admin.IsSelected);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
     }
 }

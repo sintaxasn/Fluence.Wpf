@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -321,6 +322,74 @@ namespace Fluence.Wpf.Tests.Control
                 };
 
                 Assert.Equal(5.0, numberBox.Value);
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                // Finite bounds are the documented remedy for untrusted input, and NaN used to walk
+                // straight past them: the coercion returned it unclamped, Value read NaN, and since
+                // NaN plus SmallChange is NaN the spin buttons could never recover it. This is the
+                // path a two-way binding and the UIA IRangeValueProvider.SetValue take.
+                Controls.NumberBox numberBox = new()
+                {
+                    Minimum = 0,
+                    Maximum = 100,
+                    Value = 42,
+                };
+                Assert.Equal(42.0, numberBox.Value);
+
+                numberBox.Value = double.NaN;
+
+                Assert.Equal(42.0, numberBox.Value);
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_TypedNaN_IsRejectedLikeAnyUnparseableTextAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                // NumberStyles.Any accepts the culture's NaN symbol, so "NaN" parses and used to
+                // commit. It is not a number the bounds can place, so it is treated as text that did
+                // not parse: TryParseText reports false and Value keeps what it had.
+                Controls.NumberBox numberBox = new()
+                {
+                    Minimum = 0,
+                    Maximum = 100,
+                    Value = 42,
+                };
+                Assert.Equal(42.0, numberBox.Value);
+
+                numberBox.Text = double.NaN.ToString(CultureInfo.CurrentCulture);
+
+                Assert.False(numberBox.TryParseText());
+                Assert.Equal(42.0, numberBox.Value);
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_NaNBound_DoesNotSwitchClampingOffAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                // Math.Max and Math.Min propagate NaN, so a NaN Minimum used to return NaN from the
+                // clamp and the coercion then let every value through unclamped. A NaN bound is no
+                // bound on that side, and the other side still holds.
+                Controls.NumberBox numberBox = new()
+                {
+                    Minimum = double.NaN,
+                    Maximum = 100,
+                    Value = 500,
+                };
+
+                Assert.Equal(100.0, numberBox.Value);
+
+                numberBox.Value = -500;
+                Assert.Equal(-500.0, numberBox.Value);
             });
         }
 
