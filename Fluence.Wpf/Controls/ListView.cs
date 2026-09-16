@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Controls
         /// better served by a consumer-supplied panel through
         /// <see cref="ItemsControl.ItemsPanel"/>, which this property leaves alone once set. The
         /// WPF <see cref="System.Windows.Controls.ListView.View"/> property is untouched: that one
-        /// takes a <see cref="System.Windows.Controls.GridView"/> of columns, a different thing.
+        /// takes a <see cref="GridView"/> of columns, a different thing.
         /// </remarks>
         public ListViewItemsLayout ItemsLayout
         {
