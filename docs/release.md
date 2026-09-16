@@ -8,14 +8,13 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
 1. **CI is green on `main`.** The `build` job runs the text policy check, restores in locked mode, builds Release, verifies formatting, and runs both target framework test lanes.
 2. **`CHANGELOG.md` has a dated section for the version you are about to tag**, with nothing left under `Unreleased` that belongs in it. The release job slices that section for the release notes and fails if it is missing.
-3. **`PublicAPI.Unshipped.txt` is empty for every target framework.** Nothing in CI enforces this: `PublicApiAnalyzers` fails the build only when a public member is undeclared in both `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt` (RS0016) or when a declared member has disappeared (RS0017). A member sitting in `Unshipped` satisfies that check just as well as one folded into `Shipped`, so a 1.0 tag can go out with additions never folded in unless you confirm this by hand:
+3. **`PublicAPI.Unshipped.txt` is empty.** One pair of baseline files under `Fluence.Wpf/PublicAPI/` serves all three target frameworks, because the surface is the same on each. Nothing in CI enforces this: `PublicApiAnalyzers` fails the build only when a public member is undeclared in both `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt` (RS0016) or when a declared member has disappeared (RS0017). A member sitting in `Unshipped` satisfies that check just as well as one folded into `Shipped`, so a 1.0 tag can go out with additions never folded in unless you confirm this by hand:
 
    ```powershell
-   Get-ChildItem -Recurse -Filter PublicAPI.Unshipped.txt Fluence.Wpf/PublicAPI |
-       ForEach-Object { '{0}: {1} lines' -f $_.Directory.Name, (Get-Content $_.FullName).Count }
+   (Get-Content Fluence.Wpf/PublicAPI/PublicAPI.Unshipped.txt).Count
    ```
 
-   One line, `#nullable enable`, means empty. To fold the additions in, fold each `PublicAPI.Unshipped.txt` into its sibling `PublicAPI.Shipped.txt`, sort the result, and reset the unshipped file to `#nullable enable`. Folding in is not a plain append. A `*REMOVED*` line is an instruction to delete the named member from `PublicAPI.Shipped.txt`, so apply it and drop the marker rather than carrying it across, or the shipped baseline ends up holding an entry form that does not belong in it. Both files also begin with `#nullable enable`, so keep one and drop the duplicate.
+   One line, `#nullable enable`, means empty. To fold the additions in, fold `PublicAPI.Unshipped.txt` into `PublicAPI.Shipped.txt`, sort the result, and reset the unshipped file to `#nullable enable`. Folding in is not a plain append. A `*REMOVED*` line is an instruction to delete the named member from `PublicAPI.Shipped.txt`, so apply it and drop the marker rather than carrying it across, or the shipped baseline ends up holding an entry form that does not belong in it. Both files also begin with `#nullable enable`, so keep one and drop the duplicate.
 4. **`docs/migration-guide.md` has an entry for every breaking change in the section.** The release policy in [the roadmap](roadmap.md) promises this. After 1.0 there should be none in a minor release.
 5. **Screenshots are current.** If gallery visuals changed, regenerate `docs/screenshots/` before tagging:
 
@@ -25,6 +24,7 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
    Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness
    ```
 6. **The `NUGET_API_KEY` repository secret is set.** The `release` job's last step pushes to nuget.org using it, and nothing prompts you to create it before the first tag. A missing or expired key fails only at that last step, after the GitHub release has already been created and the zips and packages already attached.
+7. **The `release` environment has a required reviewer.** The `release` job runs in a GitHub Environment of that name so that creating the release and pushing to nuget.org wait for an approval, which is the one chance to stop a mistaken tag before anything irreversible happens. The workflow can only name the environment; the rule lives in repository settings (Settings, Environments, `release`, Required reviewers). GitHub creates the environment on first use with no rules, so until a reviewer is added the job runs unattended exactly as it did before. If the secret is moved into the environment rather than left at repository level, only this job can read it.
 
 ## Bump
 

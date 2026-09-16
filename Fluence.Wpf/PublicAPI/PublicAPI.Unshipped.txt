@@ -1,5 +1,11 @@
 ﻿#nullable enable
+*REMOVED*Fluence.Wpf.Controls.ListView.ViewState.get -> Fluence.Wpf.ListViewState
+*REMOVED*Fluence.Wpf.Controls.ListView.ViewState.set -> void
 *REMOVED*Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs() -> void
+*REMOVED*Fluence.Wpf.ListViewState
+*REMOVED*Fluence.Wpf.ListViewState.Default = 0 -> Fluence.Wpf.ListViewState
+*REMOVED*Fluence.Wpf.ListViewState.GridView = 1 -> Fluence.Wpf.ListViewState
+*REMOVED*static readonly Fluence.Wpf.Controls.ListView.ViewStateProperty -> System.Windows.DependencyProperty!
 Fluence.Wpf.Automation.FlyoutPresenterAutomationPeer
 Fluence.Wpf.Automation.FlyoutPresenterAutomationPeer.FlyoutPresenterAutomationPeer(Fluence.Wpf.Controls.FlyoutPresenter! owner) -> void
 Fluence.Wpf.Automation.InfoBadgeAutomationPeer
@@ -20,6 +26,8 @@ Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameter.set -> void
 Fluence.Wpf.Controls.InfoBar.CloseButtonStyle.get -> System.Windows.Style?
 Fluence.Wpf.Controls.InfoBar.CloseButtonStyle.set -> void
 Fluence.Wpf.Controls.InfoBar.Opened -> System.EventHandler<Fluence.Wpf.InfoBarOpenedEventArgs!>?
+Fluence.Wpf.Controls.ListView.ItemsLayout.get -> Fluence.Wpf.ListViewItemsLayout
+Fluence.Wpf.Controls.ListView.ItemsLayout.set -> void
 Fluence.Wpf.Controls.SelectorBar
 Fluence.Wpf.Controls.SelectorBar.SelectorBar() -> void
 Fluence.Wpf.Controls.SelectorBarItem
@@ -36,6 +44,9 @@ Fluence.Wpf.InfoBarClosingEventArgs.InfoBarClosingEventArgs(Fluence.Wpf.InfoBarC
 Fluence.Wpf.InfoBarClosingEventArgs.Reason.get -> Fluence.Wpf.InfoBarCloseReason
 Fluence.Wpf.InfoBarOpenedEventArgs
 Fluence.Wpf.InfoBarOpenedEventArgs.InfoBarOpenedEventArgs() -> void
+Fluence.Wpf.ListViewItemsLayout
+Fluence.Wpf.ListViewItemsLayout.Grid = 1 -> Fluence.Wpf.ListViewItemsLayout
+Fluence.Wpf.ListViewItemsLayout.List = 0 -> Fluence.Wpf.ListViewItemsLayout
 Fluence.Wpf.SlideNavigationTransitionEffect
 Fluence.Wpf.SlideNavigationTransitionEffect.FromLeft = 1 -> Fluence.Wpf.SlideNavigationTransitionEffect
 Fluence.Wpf.SlideNavigationTransitionEffect.FromRight = 2 -> Fluence.Wpf.SlideNavigationTransitionEffect
@@ -78,6 +89,7 @@ static readonly Fluence.Wpf.Controls.InfoBadge.CornerRadiusProperty -> System.Wi
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandParameterProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonCommandProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBar.CloseButtonStyleProperty -> System.Windows.DependencyProperty!
+static readonly Fluence.Wpf.Controls.ListView.ItemsLayoutProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SelectorBarItem.IconProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SelectorBarItem.TextProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.SlideNavigationPresenter.TransitionEffectProperty -> System.Windows.DependencyProperty!

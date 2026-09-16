@@ -70,9 +70,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <!--
+    One public surface baseline shared by all three target frameworks: the surface is identical
+    across them today. A framework-specific member would fail RS0016 or RS0017 for that framework
+    alone, which is the moment to move the pair under PublicAPI\$(TargetFramework)\ and split it.
+  -->
   <ItemGroup>
-    <AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Shipped.txt" />
-    <AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Unshipped.txt" />
+    <AdditionalFiles Include="PublicAPI\PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI\PublicAPI.Unshipped.txt" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

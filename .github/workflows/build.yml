@@ -97,7 +97,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1314; 'net10' = 1315 }
+          $floor = @{ 'net472' = 1338; 'net10' = 1339 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
@@ -183,6 +183,12 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: windows-latest
+    # The job runs in the "release" environment so its two irreversible steps, creating the
+    # GitHub release and pushing to nuget.org, can sit behind a required reviewer. The gate itself
+    # is repository configuration (Settings, Environments, "release", required reviewers), not
+    # something this file can declare; docs/release.md lists it as a precondition. Without that
+    # rule the environment exists but waits on nobody.
+    environment: release
     permissions:
       contents: write
 
