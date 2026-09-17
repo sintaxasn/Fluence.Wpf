@@ -457,3 +457,24 @@ Net: 13 added, 1 removed. 1342 cases to 1354 on net10, 1339 to 1351 on net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the fifth review pass
+
+The scoped `TextBlock` rebind covered one of the three properties the implicit
+style sets, so the case that pinned it widened to all three and was renamed with
+it. No case was added or removed.
+
+### Renames: 1 line
+
+| Old name | New name | Reason |
+| ---- | ---- | ------ |
+| `Button_FontWeight_ReachesTheContentTextAsync` | `Button_FontProperties_ReachTheContentTextAsync` | The rebind now covers `FontFamily` and `FontSize` as well as `FontWeight`, and the case asserts all three, so the name no longer says `FontWeight` alone. |
+
+### Additions: none
+
+Net: none added, none removed, 1 renamed. 1354 cases on net10 and 1351 on
+net472, unchanged.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-rename capture.
