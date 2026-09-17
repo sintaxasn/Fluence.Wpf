@@ -31,6 +31,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -725,6 +727,44 @@ namespace Fluence.Wpf.Tests.Control
 
                 Assert.Equal(AutomationLiveSetting.Polite, AutomationProperties.GetLiveSetting(ring));
                 window.Close();
+            });
+        }
+
+        [Fact]
+        public Task ProgressRing_RangeValueSetValue_ReportsThatItIsReadOnlyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    // The pattern declares IsReadOnly, so a client that sets a value has to be told
+                    // the operation is unsupported rather than left to assume it took. Disabled is
+                    // reported first, as every other action peer in this assembly reports it.
+                    ProgressRing ring = new() { Width = 64, Height = 64, IsIndeterminate = false, Value = 25 };
+                    window.Content = ring;
+                    window.Show();
+                    _ = ring.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    IRangeValueProvider provider = Assert.IsType<IRangeValueProvider>(
+                        UIElementAutomationPeer.CreatePeerForElement(ring).GetPattern(PatternInterface.RangeValue),
+                        exactMatch: false);
+
+                    Assert.True(provider.IsReadOnly);
+                    _ = Assert.Throws<InvalidOperationException>(() => provider.SetValue(50));
+                    Assert.Equal(25.0, ring.Value);
+
+                    ring.IsEnabled = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    _ = Assert.Throws<ElementNotEnabledException>(() => provider.SetValue(50));
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
 
