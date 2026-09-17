@@ -8,7 +8,7 @@
     <PackageVersion Include="Microsoft.Build.Tasks.Git" Version="10.0.401" />
     <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
     <!-- Analyzers referenced from Directory.Build.props -->
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.235" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.259" />
     <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
     <PackageVersion Include="Microsoft.Extensions.StaticAnalysis" Version="10.10.0" />
@@ -23,8 +23,8 @@
     <!-- Fluence.Wpf.Demo.Mvvm -->
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <!-- Fluence.Wpf.Tests -->
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.0" />
-    <PackageVersion Include="xunit.v3" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
   </ItemGroup>
 </Project>
