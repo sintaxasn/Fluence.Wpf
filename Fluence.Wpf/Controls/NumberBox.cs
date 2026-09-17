@@ -295,7 +295,8 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Updates <see cref="Value"/> from <see cref="Text"/> if parsing succeeds.
+        /// Updates <see cref="Value"/> from <see cref="Text"/> if parsing succeeds, and clears
+        /// <see cref="Value"/> to <see cref="double.NaN"/> when the field is empty.
         /// </summary>
         /// <returns><see langword="true"/> if a number was parsed and applied; otherwise <see langword="false"/>.</returns>
         public bool TryParseText()
@@ -305,8 +306,16 @@ namespace Fluence.Wpf.Controls
             {
                 s = s.Trim();
             }
-            // NumberStyles.Any accepts the culture's NaN symbol, and NaN is not a number the bounds
-            // can place, so it is treated as text that did not parse rather than committed.
+            // WinUI commits NaN for empty text and reads NaN as "value not set (cleared)"
+            // (NumberBox.cpp:120, :488), so an emptied field clears rather than keeping the number
+            // it last held and leaving the two out of step. Nothing parsed, so the result is false.
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                Value = double.NaN;
+                return false;
+            }
+            // NumberStyles.Any accepts the culture's NaN symbol. The cleared state is reached by
+            // emptying the field, not by typing that symbol, so the symbol is text that did not parse.
             if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed) || double.IsNaN(parsed))
             {
                 return false;
@@ -330,18 +339,30 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Increments <see cref="Value"/> by <see cref="SmallChange"/> with clamping.
+        /// Increments <see cref="Value"/> by <see cref="SmallChange"/> with clamping. A cleared
+        /// value has nothing to step from, so the call does nothing.
         /// </summary>
         protected virtual void OnUpClick()
         {
+            // WinUI guards its own StepValue the same way (NumberBox.cpp:605): NaN plus SmallChange
+            // is NaN, so stepping a cleared box would only produce another cleared box.
+            if (double.IsNaN(Value))
+            {
+                return;
+            }
             Value = ClampValue(Value + SmallChange);
         }
 
         /// <summary>
-        /// Decrements <see cref="Value"/> by <see cref="SmallChange"/> with clamping.
+        /// Decrements <see cref="Value"/> by <see cref="SmallChange"/> with clamping. A cleared
+        /// value has nothing to step from, so the call does nothing.
         /// </summary>
         protected virtual void OnDownClick()
         {
+            if (double.IsNaN(Value))
+            {
+                return;
+            }
             Value = ClampValue(Value - SmallChange);
         }
 
@@ -393,18 +414,19 @@ namespace Fluence.Wpf.Controls
             _partUpButton?.Click += OnPartUpButtonClick;
             _partDownButton?.Click += OnPartDownButtonClick;
             UpdateTextFromValue();
+            UpdateSpinButtonsEnabled();
         }
 
         private static object CoerceValueCallback(DependencyObject d, object baseValue)
         {
-            // NaN is not a number the bounds can place, so it never commits: the value keeps what
-            // it had, which is what WinUI's InvalidInputOverwritten validation does with input it
-            // cannot place. It used to be returned unclamped, which let "NaN" typed, bound or set
-            // through UIA past a finite Minimum and Maximum, and once in, NaN plus SmallChange is
-            // NaN, so the spin buttons could never bring the value back into range.
+            // NaN is the cleared state, not out-of-range input, so the bounds do not apply to it.
+            // WinUI exempts it from the same coercion: InvalidInputOverwritten only runs for a value
+            // that is not NaN (NumberBox.cpp:463), because NaN is how it represents "value not set"
+            // (NumberBox.cpp:120). Stepping a cleared box is what has to be guarded instead, and
+            // OnUpClick and OnDownClick do that, so a cleared value can no longer strand the field.
             NumberBox box = (NumberBox)d;
             double v = (double)baseValue;
-            return double.IsNaN(v) ? box.Value : box.ClampValue(v);
+            return double.IsNaN(v) ? v : box.ClampValue(v);
         }
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -413,6 +435,7 @@ namespace Fluence.Wpf.Controls
             NumberBox box = (NumberBox)d;
             box.OnValueChanged((double)e.OldValue, (double)e.NewValue);
             box.UpdateTextFromValue();
+            box.UpdateSpinButtonsEnabled();
         }
 
         private static void OnMinMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -470,9 +493,21 @@ namespace Fluence.Wpf.Controls
             OnDownClick();
         }
 
+        private void UpdateSpinButtonsEnabled()
+        {
+            // A cleared value cannot be stepped, so the buttons that step it are disabled while it
+            // is cleared. WinUI gates its own UpdateSpinButtonEnabled on the same test
+            // (NumberBox.cpp:640).
+            bool canStep = !double.IsNaN(Value);
+            _partUpButton?.SetCurrentValue(IsEnabledProperty, canStep);
+            _partDownButton?.SetCurrentValue(IsEnabledProperty, canStep);
+        }
+
         private void UpdateTextFromValue()
         {
-            string formatted = Value.ToString(CultureInfo.CurrentCulture);
+            // A cleared value has no number to show, so the field goes empty and the placeholder,
+            // if the consumer set one, takes over.
+            string formatted = double.IsNaN(Value) ? string.Empty : Value.ToString(CultureInfo.CurrentCulture);
             _suppressTextSync = true;
             try
             {

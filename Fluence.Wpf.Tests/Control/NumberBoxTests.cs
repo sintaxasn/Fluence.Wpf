@@ -326,14 +326,14 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync()
+        public Task NumberBox_DirectValue_NaN_ClearsTheValueAndTheTextAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                // Finite bounds are the documented remedy for untrusted input, and NaN used to walk
-                // straight past them: the coercion returned it unclamped, Value read NaN, and since
-                // NaN plus SmallChange is NaN the spin buttons could never recover it. This is the
-                // path a two-way binding and the UIA IRangeValueProvider.SetValue take.
+                // NaN is the cleared state, not out-of-range input, so the bounds do not apply to it
+                // and it survives coercion. WinUI reads NaN the same way (NumberBox.cpp:120, :463).
+                // What the bounds do have to be protected from is stepping a cleared value, which
+                // NumberBox_Click_OnACleared* below covers.
                 Controls.NumberBox numberBox = new()
                 {
                     Minimum = 0,
@@ -344,7 +344,129 @@ namespace Fluence.Wpf.Tests.Control
 
                 numberBox.Value = double.NaN;
 
-                Assert.Equal(42.0, numberBox.Value);
+                Assert.True(double.IsNaN(numberBox.Value));
+                Assert.Equal(string.Empty, numberBox.Text);
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_PlaceholderText_ShowsWhileTheValueIsClearedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    // PlaceholderText was a declared property no template read. The cleared state is
+                    // what it exists to label, so the template shows it for an empty field.
+                    Controls.NumberBox numberBox = new()
+                    {
+                        PlaceholderText = "Quantity",
+                        Value = double.NaN,
+                        Width = 160,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = numberBox.ApplyTemplate();
+                    TextBlock placeholder = Assert.IsType<TextBlock>(numberBox.Template.FindName("PlaceholderTextBlock", numberBox));
+
+                    Assert.Equal("Quantity", placeholder.Text);
+                    Assert.Equal(Visibility.Visible, placeholder.Visibility);
+
+                    numberBox.Value = 3;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal(Visibility.Collapsed, placeholder.Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_EmptyText_ClearsTheValueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                // An emptied field is the cleared state, so Value follows it to NaN rather than
+                // keeping a number the field no longer shows (WinUI NumberBox.cpp:488). Nothing
+                // parsed, so TryParseText still reports false.
+                Controls.NumberBox numberBox = new()
+                {
+                    Minimum = 0,
+                    Maximum = 100,
+                    Value = 42,
+                };
+                Assert.Equal("42", numberBox.Text);
+
+                numberBox.Text = string.Empty;
+
+                Assert.False(numberBox.TryParseText());
+                Assert.True(double.IsNaN(numberBox.Value));
+            });
+        }
+
+        [Fact]
+        public Task NumberBox_Click_OnAClearedValue_DoesNothingAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    // NaN plus SmallChange is NaN, so a cleared box cannot be stepped back into
+                    // range. The spin buttons are disabled while it is cleared and the step itself
+                    // is guarded, so neither the pointer nor a UIA client can strand the field.
+                    Controls.NumberBox numberBox = new()
+                    {
+                        Minimum = 0,
+                        Maximum = 100,
+                        Value = double.NaN,
+                        SmallChange = 1,
+                        SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                        Width = 160,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton upButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_UpButton", numberBox));
+                    RepeatButton downButton = Assert.IsType<RepeatButton>(numberBox.Template.FindName("PART_DownButton", numberBox));
+
+                    Assert.False(upButton.IsEnabled, "A cleared value cannot be stepped up.");
+                    Assert.False(downButton.IsEnabled, "A cleared value cannot be stepped down.");
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    _ = Assert.Throws<ElementNotEnabledException>(invoke.Invoke);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(double.IsNaN(numberBox.Value));
+
+                    numberBox.Value = 7;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(upButton.IsEnabled, "A number can be stepped again.");
+                    Assert.True(downButton.IsEnabled, "A number can be stepped again.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
             });
         }
 
