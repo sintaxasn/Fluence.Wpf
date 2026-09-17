@@ -59,7 +59,9 @@
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.Foreground="{TemplateBinding Foreground}">
                                 <ContentPresenter.Resources>
+                                    <!--  FontWeight is bound because the implicit style stamps Regular, and a Setter beats the value the control inherits down, so a consumer's FontWeight would never reach the text otherwise.  -->
                                     <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+                                        <Setter Property="FontWeight" Value="{Binding FontWeight, RelativeSource={RelativeSource AncestorType={x:Type controls:HyperlinkButton}}}" />
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
                                 </ContentPresenter.Resources>

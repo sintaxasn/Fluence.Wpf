@@ -53,6 +53,38 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task Button_FontWeight_ReachesTheContentTextAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+
+                try
+                {
+                    // The scoped TextBlock style extends the implicit one, which stamps FontWeight
+                    // Regular, and a Setter beats the weight the control would otherwise inherit
+                    // down. Without the rebind the style silently wins and a consumer's Bold never
+                    // renders.
+                    Controls.Button button = new() { Content = "Weighted", FontWeight = FontWeights.Bold };
+                    window.Content = button;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TextBlock text = Assert.IsType<TextBlock>(FindVisualChild<TextBlock>(button), exactMatch: false);
+
+                    Assert.Equal(FontWeights.Bold, text.FontWeight);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task Button_AccentDisabled_DarkTheme_UsesVisibleDisabledAccentTokensAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
