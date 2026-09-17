@@ -521,6 +521,7 @@
   Fluence.Wpf.Tests.Control.BreadcrumbBarTests.BreadcrumbBar_ThemeCycle_CrumbBrushesResolveAsync
   Fluence.Wpf.Tests.Control.BreadcrumbBarTests.BreadcrumbBar_AutomationPeer_ReportsGroupClassNameAndNameAsync
   Fluence.Wpf.Tests.Control.BreadcrumbBarTests.BreadcrumbBarItem_Pressed_AnimatesContentPlatePressScaleAsync
+  Fluence.Wpf.Tests.Control.ButtonTests.Button_FontWeight_ReachesTheContentTextAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_AccentDisabled_DarkTheme_UsesVisibleDisabledAccentTokensAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_AccentDisabled_DarkThemeWithoutAccentRefresh_UsesVisibleDisabledAccentTokensAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_RestFill_InsetByStrokeExceptForAccentAsync
@@ -693,6 +694,7 @@
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_ContentChange_FlowsToPresenterAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesOnAPressOutsideAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_PressOnTheAnchorClosesWithoutReopeningAsync
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesWhenAnotherWindowOfTheSameApplicationIsActivatedAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_LightDismiss_ClosesWhenTheOwningWindowMovesAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 161, wParam: 0, expected: True)
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 164, wParam: 0, expected: True)
@@ -701,6 +703,12 @@
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 28, wParam: 1, expected: False)
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 132, wParam: 0, expected: False)
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_DismissMessages_AreNonClientPressesAndLosingTheForeground(msg: 162, wParam: 0, expected: False)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 6, wParam: 0, lParam: 8738, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 6, wParam: 0, lParam: 0, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 6, wParam: 0, lParam: 4369, expected: False)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 6, wParam: 1, lParam: 8738, expected: False)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 6, wParam: 65536, lParam: 8738, expected: True)
+  Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(msg: 28, wParam: 0, lParam: 8738, expected: False)
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShownFromAClick_SurvivesTheButtonReleasingCaptureAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.FlyoutBase_ShowAttachedFlyout_OpensAttachedFlyoutAsync
   Fluence.Wpf.Tests.Control.FlyoutTests.Flyout_PlacementModes_MapToPopupPlacementAsync
@@ -901,7 +909,10 @@
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_SpinPanel_HasWinUiCanonicalMarginAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_CompactSpinPanel_ReservesLayoutWhenHiddenAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_ClampsPositiveInfinityToMaximumAsync
-  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_NaN_ClearsTheValueAndTheTextAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_PlaceholderText_ShowsWhileTheValueIsClearedAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_EmptyText_ClearsTheValueAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Click_OnAClearedValue_DoesNothingAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_TypedNaN_IsRejectedLikeAnyUnparseableTextAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_NaNBound_DoesNotSwitchClampingOffAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DirectValue_NormalizesReversedRangeBeforeClampingAsync
@@ -1007,6 +1018,7 @@
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_ProgressStateAlias_MapsOntoStateFlagsAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_ThemeCycle_TemplateRemainsAppliedAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_DeclaresPoliteLiveSettingAsync
+  Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_RangeValueSetValue_ReportsThatItIsReadOnlyAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Determinate_UpdatesArcAsync
   Fluence.Wpf.Tests.Control.ProgressRingTests.ProgressRing_Indeterminate_CaterpillarArcBecomesVisibleAsync
   Fluence.Wpf.Tests.Control.RadioButtonTests.RadioButton_StateSizeStoryboards_ReleaseRatherThanStampOnExitAsync

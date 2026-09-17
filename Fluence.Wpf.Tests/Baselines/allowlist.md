@@ -425,3 +425,35 @@ net472.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-addition capture.
+
+## Branch `fix/gallery-visual-defects`: the fourth review pass
+
+The cleared state `NumberBox` gives back, the flyout dismissal that two windows
+of one application never triggered, the `FontWeight` a scoped `TextBlock` style
+swallowed, and the read-only `ProgressRing` value pattern that answered a client
+with silence.
+
+### Removals: 1 line
+
+| Method | Reason |
+| ------ | ------ |
+| `NumberBox_DirectValue_NaN_KeepsThePreviousValueAsync` | Superseded. `NaN` is WinUI's "value not set" sentinel and is exempt from coercion there (`NumberBox.cpp:120`, `:463`), so keeping the previous value was the wrong contract. `NumberBox_DirectValue_NaN_ClearsTheValueAndTheTextAsync` asserts the contract that replaced it, and the stuck spinner that motivated the old behaviour is now covered by `NumberBox_Click_OnAClearedValue_DoesNothingAsync`. |
+
+### Additions: 13 lines
+
+| Method | Occurrences | Source |
+| ------ | ----------: | ------ |
+| `NumberBox_DirectValue_NaN_ClearsTheValueAndTheTextAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `NumberBox_EmptyText_ClearsTheValueAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `NumberBox_Click_OnAClearedValue_DoesNothingAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `NumberBox_PlaceholderText_ShowsWhileTheValueIsClearedAsync` | 1 | `Control/NumberBoxTests.cs` |
+| `FlyoutBase_LightDismiss_ClosesWhenAnotherWindowOfTheSameApplicationIsActivatedAsync` | 1 | `Control/FlyoutTests.cs` |
+| `FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup` | 6 | `Control/FlyoutTests.cs` |
+| `Button_FontWeight_ReachesTheContentTextAsync` | 1 | `Control/ButtonTests.cs` |
+| `ProgressRing_RangeValueSetValue_ReportsThatItIsReadOnlyAsync` | 1 | `Control/ProgressRingTests.cs` |
+
+Net: 13 added, 1 removed. 1342 cases to 1354 on net10, 1339 to 1351 on net472.
+
+### Status
+
+Consumed. The baseline files beside this one carry the post-addition capture.
