@@ -370,6 +370,51 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task FlyoutBase_LightDismiss_ClosesWhenAnotherWindowOfTheSameApplicationIsActivatedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 400, Height = 300, WindowStartupLocation = WindowStartupLocation.Manual, Left = 100, Top = 100 };
+                Window other = new() { Width = 300, Height = 200, WindowStartupLocation = WindowStartupLocation.Manual, Left = 560, Top = 100 };
+                Button owner = new() { Content = "Owner" };
+                Controls.Flyout flyout = new() { Content = "Attached" };
+
+                try
+                {
+                    window.Content = owner;
+                    window.Show();
+                    _ = window.Activate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(owner);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => flyout.IsOpen).ConfigureAwait(true),
+                        "The flyout must open.");
+
+                    // Focusing the presenter hands activation to the popup, which must not read as a
+                    // dismissal, or the flyout would close as it opens.
+                    Assert.True(flyout.IsOpen, "The flyout's own activation handoff must not dismiss it.");
+
+                    // WM_ACTIVATEAPP is raised only when activation leaves the application, so a
+                    // second window of the same application never produces one. The popup this
+                    // replaced closed here through capture loss, so the flyout has to as well.
+                    other.Show();
+                    _ = other.Activate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !flyout.IsOpen).ConfigureAwait(true),
+                        "Activating another window of the same application must dismiss the flyout.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    other.Close();
+                    window.Close();
+                }
+            });
+        }
+
+        [Fact]
         public Task FlyoutBase_LightDismiss_ClosesWhenTheOwningWindowMovesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
@@ -421,6 +466,26 @@ namespace Fluence.Wpf.Tests.Control
             // another application, on the desktop, or an Alt+Tab arrives as WM_ACTIVATEAPP with a
             // false wParam. Gaining the foreground back (a true wParam) must not close anything.
             Assert.Equal(expected, Controls.FlyoutBase.IsDismissMessage(msg, new IntPtr(wParam)));
+        }
+
+        [Theory]
+        [InlineData((int)PInvoke.WM_ACTIVATE, 0, 0x2222, true)]
+        [InlineData((int)PInvoke.WM_ACTIVATE, 0, 0, true)]
+        [InlineData((int)PInvoke.WM_ACTIVATE, 0, 0x1111, false)]
+        [InlineData((int)PInvoke.WM_ACTIVATE, 1, 0x2222, false)]
+        [InlineData((int)PInvoke.WM_ACTIVATE, 0x00010000, 0x2222, true)]
+        [InlineData((int)PInvoke.WM_ACTIVATEAPP, 0, 0x2222, false)]
+        public void FlyoutBase_ForeignActivation_IsDeactivationToAWindowThatIsNotThePopup(int msg, int wParam, int lParam, bool expected)
+        {
+            // WA_INACTIVE (the low word of wParam) with any window other than the popup is the
+            // handoff WM_ACTIVATEAPP cannot report: a second window of the same application. The
+            // popup's own handle is exempt, because focusing the presenter activates it and the
+            // flyout would otherwise close as it opens. A null handle means activation left for a
+            // window this thread does not own, which dismisses. WA_ACTIVE never dismisses, and the
+            // minimised flag rides the high word, so it must not change the decode.
+            IntPtr popupHandle = new(0x1111);
+
+            Assert.Equal(expected, Controls.FlyoutBase.IsForeignActivationMessage(msg, new IntPtr(wParam), new IntPtr(lParam), popupHandle));
         }
 
         [Fact]

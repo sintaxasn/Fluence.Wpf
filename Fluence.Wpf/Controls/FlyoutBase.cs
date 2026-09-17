@@ -220,6 +220,10 @@ namespace Fluence.Wpf.Controls
 
             if (popup.IsOpen)
             {
+                // Already open, so there is no second Opening: but the placement target was just
+                // reassigned, and it can live in another window. Re-hook so dismissal watches the
+                // window the flyout is now anchored in rather than the one it opened in.
+                HookDismiss(placementTarget);
                 return;
             }
 
@@ -417,13 +421,16 @@ namespace Fluence.Wpf.Controls
         /// Starts watching the window the flyout is anchored in for everything that light-dismisses
         /// a WPF popup: a press in the window's client area, a press on its non-client area (the
         /// caption and the resize borders, which on a <see cref="FluenceWindow"/> includes the whole
-        /// title bar because it hit-tests as caption), the window moving, and the application losing
-        /// the foreground to another one. Window deactivation itself is deliberately not a signal:
-        /// moving focus to the presenter activates the popup's own window and deactivates this one,
-        /// which would close the flyout as it opens. <c language="text">WM_ACTIVATEAPP</c> is sent
-        /// only when activation leaves the application, so that handoff does not raise it. See
-        /// <see cref="ShowAt"/> for why dismissal is watched for here rather than left to the
-        /// popup's own mouse capture.
+        /// title bar because it hit-tests as caption), the window moving, the application losing the
+        /// foreground to another one, and activation moving to any window that is not the flyout's
+        /// own popup. The last of those is what covers a second top-level window of the same
+        /// application, which <c language="text">WM_ACTIVATEAPP</c> never reports because activation
+        /// has not left the application. The <see cref="Window.Deactivated"/> event cannot serve for
+        /// it: moving focus to the presenter activates the popup's own window and deactivates this
+        /// one, and the event does not say which window took over, so the flyout would close as it
+        /// opens. <c language="text">WM_ACTIVATE</c> does say, which is why the decode in
+        /// <see cref="IsForeignActivationMessage"/> is the signal instead. See <see cref="ShowAt"/>
+        /// for why dismissal is watched for here rather than left to the popup's own mouse capture.
         /// </summary>
         /// <param name="placementTarget">The element the flyout is anchored to.</param>
         private void HookDismiss(FrameworkElement placementTarget)
@@ -506,13 +513,27 @@ namespace Fluence.Wpf.Controls
         /// <returns><see cref="IntPtr.Zero"/>; the message is always left to the window.</returns>
         private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (IsDismissMessage(msg, wParam))
+            if (IsDismissMessage(msg, wParam) || IsForeignActivationMessage(msg, wParam, lParam, PopupHandle))
             {
-                Hide();
+                // Posted rather than called here. Hide raises Closing and Closed, so calling it
+                // would run consumer handlers inside the window procedure, where an exception that
+                // escapes takes the process down with it. On the dispatcher queue the same handlers
+                // fault the dispatcher instead, which a host can observe and handle.
+                _ = Dispatcher.BeginInvoke(new Action(Hide));
             }
 
             return IntPtr.Zero;
         }
+
+        /// <summary>
+        /// The window handle of the popup that hosts the presenter, or <see cref="IntPtr.Zero"/>
+        /// when the flyout has no presented popup. Read while deciding whether an activation handoff
+        /// is the flyout's own.
+        /// </summary>
+        private IntPtr PopupHandle =>
+            Presenter is not null && PresentationSource.FromVisual(Presenter) is HwndSource source
+                ? source.Handle
+                : IntPtr.Zero;
 
         /// <summary>
         /// Whether a window message is one a light-dismiss popup closes on that never reaches the
@@ -532,6 +553,37 @@ namespace Fluence.Wpf.Controls
                 || msg == PInvoke.WM_NCRBUTTONDOWN
                 || msg == PInvoke.WM_NCMBUTTONDOWN
                 || (msg == PInvoke.WM_ACTIVATEAPP && wParam == IntPtr.Zero);
+        }
+
+        /// <summary>
+        /// Whether a window message is the owning window losing activation to a window that is not
+        /// the flyout's own popup. <c language="text">WM_ACTIVATEAPP</c> covers only activation
+        /// leaving the application, so a second top-level window of the same application, reached by
+        /// a click or by Alt+Tab, never raises it; the popup this replaced closed in both cases
+        /// through capture loss. <c language="text">WM_ACTIVATE</c> is raised for that handoff too,
+        /// and carries the window being activated in <paramref name="lParam"/>, which is how the
+        /// flyout's own activation is told apart from any other: focusing the presenter activates the
+        /// popup, and closing on that would close the flyout as it opens.
+        /// Internal so tests can pin the decode.
+        /// </summary>
+        /// <param name="msg">The message identifier.</param>
+        /// <param name="wParam">The message parameter; its low word carries the activation state.</param>
+        /// <param name="lParam">The message parameter; the window being activated, which can be null.</param>
+        /// <param name="popupHandle">The handle of the flyout's own popup, or <see cref="IntPtr.Zero"/> when it has none.</param>
+        /// <returns><see langword="true"/> when the message should close an open flyout.</returns>
+        internal static bool IsForeignActivationMessage(int msg, IntPtr wParam, IntPtr lParam, IntPtr popupHandle)
+        {
+            if (msg != PInvoke.WM_ACTIVATE)
+            {
+                return false;
+            }
+
+            // WA_INACTIVE (0) is the low word of wParam; the high word is the minimised flag. The
+            // mask is unchecked because a 64-bit wParam does not fit an int, which is the decode
+            // WM_NCLBUTTONUP had to be corrected to in this same pass.
+            const int WA_INACTIVE = 0;
+            int state = unchecked((int)(wParam.ToInt64() & 0xFFFF));
+            return state == WA_INACTIVE && lParam != popupHandle;
         }
 
         /// <summary>
