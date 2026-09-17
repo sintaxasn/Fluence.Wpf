@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
-        public Task Button_FontWeight_ReachesTheContentTextAsync()
+        public Task Button_FontProperties_ReachTheContentTextAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -61,11 +61,18 @@ namespace Fluence.Wpf.Tests.Control
 
                 try
                 {
-                    // The scoped TextBlock style extends the implicit one, which stamps FontWeight
-                    // Regular, and a Setter beats the weight the control would otherwise inherit
-                    // down. Without the rebind the style silently wins and a consumer's Bold never
-                    // renders.
-                    Controls.Button button = new() { Content = "Weighted", FontWeight = FontWeights.Bold };
+                    // The scoped TextBlock style extends the implicit one, which sets FontFamily,
+                    // FontSize and FontWeight, and a Setter beats the value the control would
+                    // otherwise inherit down. Without all three rebinds the style silently wins and
+                    // a consumer's declared font never renders.
+                    FontFamily declared = new("Consolas");
+                    Controls.Button button = new()
+                    {
+                        Content = "Weighted",
+                        FontFamily = declared,
+                        FontSize = 20,
+                        FontWeight = FontWeights.Bold,
+                    };
                     window.Content = button;
                     window.Width = 240;
                     window.Height = 120;
@@ -76,6 +83,8 @@ namespace Fluence.Wpf.Tests.Control
                     TextBlock text = Assert.IsType<TextBlock>(FindVisualChild<TextBlock>(button), exactMatch: false);
 
                     Assert.Equal(FontWeights.Bold, text.FontWeight);
+                    Assert.Equal(20.0, text.FontSize);
+                    Assert.Equal(declared.Source, text.FontFamily.Source, StringComparer.Ordinal);
                 }
                 finally
                 {
