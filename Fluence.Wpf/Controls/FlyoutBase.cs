@@ -513,13 +513,14 @@ namespace Fluence.Wpf.Controls
         /// <returns><see cref="IntPtr.Zero"/>; the message is always left to the window.</returns>
         private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (IsDismissMessage(msg, wParam) || IsForeignActivationMessage(msg, wParam, lParam, PopupHandle))
+            // PopupHandle walks the presenter's presentation source, so it is read only for the one
+            // message that needs it rather than for every WM_MOUSEMOVE and WM_NCHITTEST the owning
+            // window sees while the flyout is open.
+            bool dismiss = IsDismissMessage(msg, wParam)
+                || (msg == PInvoke.WM_ACTIVATE && IsForeignActivationMessage(msg, wParam, lParam, PopupHandle));
+            if (dismiss)
             {
-                // Posted rather than called here. Hide raises Closing and Closed, so calling it
-                // would run consumer handlers inside the window procedure, where an exception that
-                // escapes takes the process down with it. On the dispatcher queue the same handlers
-                // fault the dispatcher instead, which a host can observe and handle.
-                _ = Dispatcher.BeginInvoke(new Action(Hide));
+                Hide();
             }
 
             return IntPtr.Zero;
@@ -578,11 +579,13 @@ namespace Fluence.Wpf.Controls
                 return false;
             }
 
-            // WA_INACTIVE (0) is the low word of wParam; the high word is the minimised flag. The
-            // mask is unchecked because a 64-bit wParam does not fit an int, which is the decode
-            // WM_NCLBUTTONUP had to be corrected to in this same pass.
+            // WA_INACTIVE is the low word of wParam, and the high word carries the minimised flag,
+            // so the low word has to be masked out rather than the whole wParam compared. ToInt64
+            // reads the wParam whole, the way the WM_NCLBUTTONUP decode had to be corrected to
+            // earlier in this branch. A masked low word always fits an int, so no overflow guard is
+            // needed around the cast.
             const int WA_INACTIVE = 0;
-            int state = unchecked((int)(wParam.ToInt64() & 0xFFFF));
+            int state = (int)(wParam.ToInt64() & 0xFFFF);
             return state == WA_INACTIVE && lParam != popupHandle;
         }
 
