@@ -214,7 +214,17 @@
                             </Setter>
                         </MultiTrigger>
 
-                        <!--  Checked  -->
+                        <!--
+                            Checked. The anonymous storyboard below grows the dot, and the named
+                            state storyboards (hover, pressed, disabled) animate the same property
+                            afterwards. WPF layers a later trigger's storyboard over an earlier
+                            trigger's rather than replacing it, even under SnapshotAndReplace, so
+                            each RemoveStoryboard uncovers this grow again rather than dropping the
+                            dot to the template base of 0. Read on its own the handoff looks like it
+                            loses the checked size, and two reviewers have now reported it as a
+                            defect; RadioButton_CheckedDot_KeepsItsCheckedSizeWhenAStateStoryboardIsReleasedAsync
+                            pins the real behaviour.
+                        -->
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="OuterEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="OuterEllipseHover" Property="Opacity" Value="0" />

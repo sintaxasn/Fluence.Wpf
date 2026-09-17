@@ -99,7 +99,13 @@ The caption button colours remain published under their WinUI names: `WindowClos
 
 ### Behaviour changed
 
-Two members keep their signatures and do something different at runtime, so neither produces a build error.
+Five behaviours changed under unchanged signatures, so none of them produces a build error.
+
+`NumberBox.Value` carries a cleared state again, and `NaN` is what represents it, as it does in WinUI (`NumberBox.cpp:120`). A `NaN` written to `Value` is no longer refused: it clears the box, `Text` goes empty, `PlaceholderText` shows if one is set, and the spin buttons disable until a number returns, because `NaN` plus `SmallChange` is `NaN` and stepping could never recover the value. Emptying `Text` clears `Value` the same way, so the two can no longer disagree. `TryParseText` still returns `false` for an empty field, since nothing parsed. A consumer bound to `Value` must expect `NaN` and test for it with `double.IsNaN`, rather than assuming the last number is still there. Typing the culture's `NaN` symbol is still rejected as unparseable text; clearing the field is the way to clear the value.
+
+A flyout, menu flyout or command bar flyout now closes when another window of the same application is activated, by a click or by Alt+Tab. It previously stayed open, because the message it watched for (`WM_ACTIVATEAPP`) is raised only when activation leaves the application. A handler that assumed the flyout survived a window switch has to reopen it.
+
+`ProgressRingAutomationPeer.SetValue` throws instead of doing nothing: `ElementNotEnabledException` for a disabled ring, otherwise `InvalidOperationException`, because the pattern declares `IsReadOnly`. Only a UI Automation client reaches this; application code sets `ProgressRing.Value` directly and is unaffected.
 
 `InfoBar.Closing` fires on every close, as WinUI's does, where it used to fire from the close button alone. A handler that sets `Cancel` to `true` therefore now also vetoes an `IsOpen = false` written in code or by a binding, which previously always succeeded; the veto puts `IsOpen` back to `true` and no `Closed` follows. `e.Reason` says which path started the close, so a handler meant to confirm a user dismissal should cancel only when `Reason` is `InfoBarCloseReason.CloseButton`, or it will also block the code that closes the bar.
 

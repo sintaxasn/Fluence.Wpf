@@ -121,7 +121,7 @@ Key API:
 
 `ComboBox`, `Slider`, `NumberBox`, `TextBox`, `PasswordBoxExtensions`, `AutoSuggestBox`, `NumberBoxSpinButtonPlacementMode`, `NumberBoxValueChangedEventArgs`, `AutoSuggestBoxTextChangedEventArgs`, `AutoSuggestBoxSuggestionChosenEventArgs`, `AutoSuggestBoxQuerySubmittedEventArgs`, `AutoSuggestionBoxTextChangeReason`
 
-Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
+Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement, and carries a cleared state as WinUI does: `double.NaN` in `Value` means no value, the field renders empty with `PlaceholderText` showing, and the spin buttons disable until a number returns. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
 
 ### Forms
 
