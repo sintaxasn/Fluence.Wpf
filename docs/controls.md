@@ -121,7 +121,7 @@ Key API:
 
 `ComboBox`, `Slider`, `NumberBox`, `TextBox`, `PasswordBoxExtensions`, `AutoSuggestBox`, `NumberBoxSpinButtonPlacementMode`, `NumberBoxValueChangedEventArgs`, `AutoSuggestBoxTextChangedEventArgs`, `AutoSuggestBoxSuggestionChosenEventArgs`, `AutoSuggestBoxQuerySubmittedEventArgs`, `AutoSuggestionBoxTextChangeReason`
 
-Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement, and carries a cleared state as WinUI does: `double.NaN` in `Value` means no value, the field renders empty with `PlaceholderText` showing, and the spin buttons disable until a number returns. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
+Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement, and carries a cleared state as WinUI does: `double.NaN` in `Value` means no value, the field renders empty with `PlaceholderText` showing, and the spin buttons disable until a number returns. One deliberate deviation: `Value` defaults to `0`, where WinUI declares the property with NaN (`NumberBox.idl:43`), so a fresh `NumberBox` shows `0` rather than its placeholder. The cleared state is reached by assigning `double.NaN` or by the user emptying the field. The default stays `0` because every consumer binding to `Value` would otherwise start reading NaN. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
 
 ### Forms
 
@@ -769,6 +769,8 @@ Every control below overrides `OnCreateAutomationPeer` and reports its own class
 | `TitleBarAutomationPeer` | `TitleBar` | a title bar named after the title, or the explicit automation name when one is set |
 | `ToggleSplitButtonAutomationPeer` | `ToggleSplitButton` | the toggle state and the flyout |
 | `ToggleSwitchAutomationPeer` | `ToggleSwitch` | a toggle with the toggle pattern |
+
+One deliberate deviation from WinUI: `ProgressRingAutomationPeer.SetValue` throws rather than writing the value. The pattern declares `IsReadOnly`, and WinUI's own peer declares it too and then writes anyway, which is a WinUI inconsistency. Fluence follows the UI Automation contract instead, as WPF's `ProgressBarAutomationPeer` and the in-tree `RatingControlAutomationPeer` do: `ElementNotEnabledException` for a disabled ring, `InvalidOperationException` otherwise. Application code sets `ProgressRing.Value` directly and is unaffected.
 
 ## Event args and support types
 

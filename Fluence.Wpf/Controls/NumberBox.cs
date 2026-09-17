@@ -497,7 +497,7 @@ namespace Fluence.Wpf.Controls
         {
             // A cleared value cannot be stepped, so the buttons that step it are disabled while it
             // is cleared. WinUI gates its own UpdateSpinButtonEnabled on the same test
-            // (NumberBox.cpp:640).
+            // (NumberBox.cpp:686).
             bool canStep = !double.IsNaN(Value);
             _partUpButton?.SetCurrentValue(IsEnabledProperty, canStep);
             _partDownButton?.SetCurrentValue(IsEnabledProperty, canStep);
@@ -506,7 +506,8 @@ namespace Fluence.Wpf.Controls
         private void UpdateTextFromValue()
         {
             // A cleared value has no number to show, so the field goes empty and the placeholder,
-            // if the consumer set one, takes over.
+            // if the consumer set one, takes over. WinUI's UpdateTextToValue writes an empty string
+            // for the same reason (NumberBox.cpp:640).
             string formatted = double.IsNaN(Value) ? string.Empty : Value.ToString(CultureInfo.CurrentCulture);
             _suppressTextSync = true;
             try
