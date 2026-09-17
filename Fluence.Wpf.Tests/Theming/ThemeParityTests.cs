@@ -307,13 +307,17 @@ namespace Fluence.Wpf.Tests.Theming
         /// <remarks>
         /// The high contrast snapshot is only partly machine-independent. Its brushes bound to the
         /// live highlight are excluded (see <see cref="HighContrastHighlightDerivedBrushKeys"/>), but
-        /// the many bound to <c language="csharp">SystemColors.WindowColor</c>,
-        /// <c language="csharp">WindowTextColor</c> and <c language="csharp">GrayTextColor</c> are
-        /// recorded at the values a standard desktop reports (white, black
-        /// and #6D6D6D), because those do not follow the user's accent and a CI runner never turns
-        /// a high contrast theme on. A desktop that does report different values would drift every
-        /// one of those rows, so the high contrast case skips, with the mismatch named, rather than
-        /// fail for a reason that is not the engine's.
+        /// the many bound to the other seven members
+        /// <c language="csharp">AddHighContrastBrushes</c> reads
+        /// (<c language="csharp">SystemColors.WindowColor</c>,
+        /// <c language="csharp">WindowTextColor</c>, <c language="csharp">GrayTextColor</c>,
+        /// <c language="csharp">ControlColor</c>, <c language="csharp">ControlTextColor</c>,
+        /// <c language="csharp">ControlDarkColor</c> and <c language="csharp">ControlLightColor</c>)
+        /// are recorded at the values a standard desktop reports (white, black, #6D6D6D, #F0F0F0,
+        /// black, #A0A0A0 and #E3E3E3), because those do not follow the user's accent and a CI
+        /// runner never turns a high contrast theme on. A desktop that does report different values
+        /// would drift every one of those rows, so the high contrast case skips, with the mismatch
+        /// named, rather than fail for a reason that is not the engine's.
         /// </remarks>
         /// <param name="theme">The theme whose snapshot is checked.</param>
         [Theory]
@@ -369,11 +373,18 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static string? DescribeSystemColorMismatch()
         {
+            // Every SystemColors member AddHighContrastBrushes reads, less the highlight pair, which
+            // HighContrastHighlightDerivedBrushKeys excludes from the snapshot instead. A member left
+            // out here is a member whose drift fails the case rather than skipping it.
             (string name, Color live, Color assumed)[] expectations =
             [
                 ("SystemColors.WindowColor", SystemColors.WindowColor, Color.FromRgb(0xFF, 0xFF, 0xFF)),
                 ("SystemColors.WindowTextColor", SystemColors.WindowTextColor, Color.FromRgb(0x00, 0x00, 0x00)),
                 ("SystemColors.GrayTextColor", SystemColors.GrayTextColor, Color.FromRgb(0x6D, 0x6D, 0x6D)),
+                ("SystemColors.ControlColor", SystemColors.ControlColor, Color.FromRgb(0xF0, 0xF0, 0xF0)),
+                ("SystemColors.ControlTextColor", SystemColors.ControlTextColor, Color.FromRgb(0x00, 0x00, 0x00)),
+                ("SystemColors.ControlDarkColor", SystemColors.ControlDarkColor, Color.FromRgb(0xA0, 0xA0, 0xA0)),
+                ("SystemColors.ControlLightColor", SystemColors.ControlLightColor, Color.FromRgb(0xE3, 0xE3, 0xE3)),
             ];
 
             foreach ((string name, Color live, Color assumed) in expectations)
@@ -529,7 +540,8 @@ namespace Fluence.Wpf.Tests.Theming
         /// Adds every string key defined directly by <paramref name="dictionary"/> to
         /// <paramref name="keys"/>, then recurses into its merged dictionaries. A dictionary whose
         /// Source is under Themes/Controls/ or Themes/Icons/ contributes nothing: its keys are
-        /// template internal, unsupported, and free to change in any release.
+        /// template internal, unsupported, and free to change in any release. The slot [0] marker
+        /// <see cref="FluenceThemeEngine.ComputedDictionaryMarker"/> is skipped for the same reason.
         /// </summary>
         /// <param name="dictionary">The dictionary to walk.</param>
         /// <param name="keys">The set to fill.</param>
@@ -544,7 +556,10 @@ namespace Fluence.Wpf.Tests.Theming
             {
                 foreach (object key in dictionary.Keys)
                 {
-                    if (key is string text)
+                    // The slot [0] marker is an internal bookkeeping key, not a token a consumer can
+                    // bind, so it stays out of the inventory this file freezes as the public
+                    // contract.
+                    if (key is string text && !string.Equals(text, FluenceThemeEngine.ComputedDictionaryMarker, StringComparison.Ordinal))
                     {
                         _ = keys.Add(text);
                     }
