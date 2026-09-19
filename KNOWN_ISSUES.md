@@ -4,7 +4,34 @@ This file tracks optional follow-ups and deliberate non-features. Filed bugs wit
 reproductions live on the issue tracker; this is the consolidated view for
 maintainers.
 
+## Tree selection and unrealized data-bound branches
+
+Multiple-selection cascading follows existing `TreeViewItem` containers. For a
+collapsed data-bound branch whose descendant containers have not been created,
+checking the parent does not select those unrealized data items, and newly
+realized child containers do not inherit that earlier checked state. Applications
+that need selection of an entire data hierarchy should maintain that selection in
+their data model. The removal/reset reconciliation in this branch removes detached
+containers from `SelectedItems`; it does not add data-model selection propagation.
+This limitation needs a separate API and realization-policy decision before any
+claim of complete data-bound cascading support.
+
 ## Current follow-ups (not defects)
+
+- **Inline STA and embedded hosts own final dispatcher cleanup** - removing the
+  module preserves WPF's process-wide Application so later imports can reuse it.
+  A host using its own STA thread must finish all UI work and shut down its WPF
+  dispatcher on that thread before terminating the runspace. Embedded scripts must
+  leave this decision to the host. An idle live dispatcher can otherwise cause a
+  CLR shutdown assertion after successful UI work. This was reproduced with the
+  standalone PowerShell 7 STA test runner; its terminal finally block now checks
+  for leaked windows and shuts down the owned dispatcher before exiting.
+  The module automatically retires its secondary UI dispatcher during orderly exit
+  of the primary, unpushed ConsoleHost session. Child runspaces and custom hosts do
+  not register this hook, because their closure must not retire a shared process
+  application. Forced process termination is outside this cleanup contract.
+  Both passing Pester assertions and a zero process exit code are required for a
+  successful render gate; a shutdown assertion must never be treated as a pass.
 
 - **A single-process `net472` run of the whole test assembly aborts** - two
   attempts at running `Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe`

@@ -23,12 +23,13 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 ├── Fluence.Wpf.Tests/       xunit.v3 suite (net472 + net10.0-windows10.0.26100.0)
-└── Fluence.Wpf.Tests.Smoke/ xunit.v3 smoke lane (net8.0-windows10.0.26100.0)
+├── Fluence.Wpf.Tests.Smoke/ xunit.v3 smoke lane (net8.0-windows10.0.26100.0)
+└── Fluence.Wpf.PowerShell.Module/   Script module (not in the solution): src/, tests/, examples/, build/
 ```
 
-`Fluence.Wpf.Demo.PowerShell/` sits beside these with no project of its own: it holds the four
-PowerShell samples `docs/powershell.md` walks through, plus the window they load, so it is not part
-of the solution.
+#### PowerShell module
+
+`Fluence.Wpf.PowerShell.Module/` holds the `Fluence.Wpf.PowerShell` script module: declarative Fluent dialogs, prompts, progress and windows for Windows PowerShell 5.1 and PowerShell 7, built on the library. It is deliberately not a project in `Fluence.Wpf.sln`; `build/Build-Module.ps1` stages the library's Release `net472` and `net8.0-windows10.0.26100.0` outputs into `src/Fluence.Wpf.PowerShell/lib/` (gitignored), and `build/Package-Module.ps1` produces the zip and nupkg under `artifacts/`. The PowerShell code follows the PSADT conventions rather than the C# ones in this handbook: 5.1 and 7 compatible syntax only, one function per file with comment-based help and `[OutputType()]`, fully qualified .NET type names, Allman braces, UTF-8 BOM, and `PSScriptAnalyzerSettings.psd1` at the module root as the analyzer gate. It resolves the library's renamed enums at call time (`Resolve-FluenceLibraryType`), so it runs against the `BackdropType` and `WindowBackdropType` generations of the library alike. User documentation lives in [docs/powershell/](docs/powershell/README.md).
 
 ### CLR namespaces
 
@@ -302,8 +303,9 @@ When adding a new control or materially changing an existing one:
   4. Assert via `VisualTree` helpers and `TryFindResource`.
   5. Drain with `WpfTestSta.DrainDispatcher` and close through `CloseWindowAndDrain(window)` in a `finally`.
 - **InternalsVisibleTo**: the test assembly sees library internals; theme tests can call `ApplicationThemeManager.ResetForTesting()` to isolate fixtures.
+- **Known failures**: `KNOWN_ISSUES.md` records the `net472` whole-assembly abort, the `net472` TimePicker flyout flake, and PowerShell dispatcher lifetime boundaries. A green local run requires passing assertions and a successful process exit. Do not merge if your own changes add to the known-failure count.
 - **Baseline policy**: the HEAD-of-branch case count is the floor. `Fluence.Wpf.Tests/Baselines/` holds the `--list-tests` capture per TFM; a change that adds or removes a test case must update it and say why in `CHANGELOG.md`. Diff by method name, not by fully qualified name: classes get renamed, method names do not.
-- **Known failures**: `KNOWN_ISSUES.md` records the `net472` whole-assembly abort and the `net472` TimePicker flyout flake. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
+- **PowerShell module lanes**: `Fluence.Wpf.PowerShell.Module/tests/` is a Pester v5 suite (import Pester with `-MaximumVersion 5.99.99`; Pester 6 is not supported), broadly one `*.Tests.ps1` per public function plus the private helpers that carry logic. Three public cmdlets have no file of their own: the four theme cmdlets share `Theming.Tests.ps1`, and `Close-FluenceWindow` and `Show-FluenceWindow` are covered by `Show-FluenceWindow.Mta.Tests.ps1` and `Show-FluenceWindow.Render.Tests.ps1`. `build/Test-Module.ps1` is the gate: it runs PSScriptAnalyzer with the shipped settings plus a second pass for `PSPlaceOpenBrace` (a formatting rule the default set leaves out, and the one that enforces Allman braces), then Pester. Any Error or Warning fails, and so does a Pester discovery failure, which produces no failed case and would otherwise pass unnoticed. Two lanes: the **logic lane** (default) excludes the `UI` tag and is what CI runs under `pwsh`, `pwsh -MTA` and `powershell.exe -STA`; the **render lane** (`-IncludeUi`, which sets `FLUENCE_PS_UI=1`) opens and self-closes real windows and runs locally only, once per change, on `pwsh`, `powershell.exe -STA` and `pwsh -MTA` (the module-owned UI runspace path). Run the render lane as one batch and never interleave it with other work; the machine's foreground is in use. Case counts per lane are recorded in `docs/release.md` and move only with a CHANGELOG note. Test files import the module with `Import-Module ... -Force` in `BeforeAll`, so a private helper is reached through the module object (`& (Get-Module Fluence.Wpf.PowerShell) { ... }`), never by dot-sourcing a copy.
 - **Screenshot harness**: `Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs` writes the ten documentation PNGs under `docs/screenshots/`. Capture is **opt-in**: the tests are `[Trait("Category", "Screenshots")]` and skip unless `FLUENCE_CAPTURE_SCREENSHOTS=1`, so an ordinary run never overwrites the committed images. DWM backdrops are not captured by `RenderTargetBitmap`, so each surface is hosted in a plain off-screen `Window` over a solid `SolidBackgroundFillColorBaseBrush`.
 
 ---
@@ -427,7 +429,7 @@ Public and repository documentation:
 - [docs/theming.md](docs/theming.md)
 - [docs/controls.md](docs/controls.md)
 - [docs/winui-parity.md](docs/winui-parity.md)
-- [docs/powershell.md](docs/powershell.md)
+- [docs/powershell/](docs/powershell/README.md) - the `Fluence.Wpf.PowerShell` module set; [docs/powershell.md](docs/powershell.md) is a stub pointing at it
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/roadmap.md](docs/roadmap.md)
 - [docs/release.md](docs/release.md)

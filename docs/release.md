@@ -26,9 +26,13 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 6. **The `NUGET_API_KEY` repository secret is set.** The `release` job's last step pushes to nuget.org using it, and nothing prompts you to create it before the first tag. A missing or expired key fails only at that last step, after the GitHub release has already been created and the zips and packages already attached.
 7. **The `release` environment has a required reviewer.** The `release` job runs in a GitHub Environment of that name so that creating the release and pushing to nuget.org wait for an approval, which is the one chance to stop a mistaken tag before anything irreversible happens. The workflow can only name the environment; the rule lives in repository settings (Settings, Environments, `release`, Required reviewers). GitHub creates the environment on first use with no rules, so until a reviewer is added the job runs unattended exactly as it did before. If the secret is moved into the environment rather than left at repository level, only this job can read it.
 
+## 1.0 approval checkpoint
+
+The PowerShell integration branch is submitted for mjr4077au review before the 1.0 version bump. Keep both package versions at 0.9.0-pre until that review is approved. CI currently validates and packages the module; PowerShell Gallery publication, its credential setup and release-environment approval checks are a follow-up release change. The existing tag-gated NuGet publishing workflow remains in place. Do not create a 1.0 tag until that follow-up is reviewed and both publication paths are ready.
+
 ## Bump
 
-Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. Nothing else in the tree carries a version:
+Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. Nothing in the solution carries a version besides this file:
 
 ```xml
 <VersionPrefix>0.9.0</VersionPrefix>
@@ -36,6 +40,8 @@ Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. Nothing els
 ```
 
 An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `pre`, which produces `0.9.0-pre`, or `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
+
+The one version outside the solution is the PowerShell module manifest, `Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1`, which the SDK does not generate. Set `ModuleVersion` to the same `VersionPrefix` and `PSData.Prerelease` to the same `VersionSuffix` (with no leading hyphen), so `Package-Module.ps1` names its artifacts with the same string the library nupkg carries.
 
 Commit the bump, along with the `CHANGELOG.md` section, on `main`.
 
@@ -46,7 +52,43 @@ git tag v0.9.0-pre
 git push origin v0.9.0-pre
 ```
 
-The tag must be exactly `v` plus the version the tree resolves to. CI checks it and fails the release before publishing anything if it does not match. To confirm before tagging:
+## PowerShell module gates
+
+The script module under `Fluence.Wpf.PowerShell.Module/` is outside the solution and has its own gate (see [AGENTS.md section 6](../AGENTS.md#6-testing) for the lane definitions). Stage the Release assemblies first, then run the analyzer and the Pester logic lane on both editions; the render lane opens real windows, so run it once locally before tagging:
+
+```powershell
+dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
+pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -SkipAnalyzer
+powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -IncludeUi
+powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -IncludeUi
+pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -IncludeUi
+```
+
+Expected counts for the current suite (Pester reports them on the `Pester:` summary line):
+
+| Lane | Total | Passed | Skipped | Not run |
+| --- | ---: | ---: | ---: | ---: |
+| Logic lane, `pwsh` or `powershell.exe` (STA) | 184 | 156 | 2 | 26 |
+| Logic lane, `pwsh -MTA` | 184 | 158 | 0 | 26 |
+| Render lane (`-IncludeUi`), STA hosts | 184 | 182 | 2 | 0 |
+| Render lane (`-IncludeUi`), `pwsh -MTA` | 184 | 184 | 0 | 0 |
+
+The two skipped cases on STA hosts are the MTA-only transport tests; the not-run cases are the UI-tagged render tests. PSScriptAnalyzer must report no findings. A change that adds or removes a case updates this table and says why in `CHANGELOG.md`.
+
+Run each gate in its own process. Require both passing Pester results and process exit code 0. The test runner performs terminal cleanup of an inline dispatcher; the module handles its owned secondary dispatcher during primary ConsoleHost exit. Host ownership boundaries are recorded in [KNOWN_ISSUES.md](../KNOWN_ISSUES.md).
+
+Then package and inspect the module artifacts:
+
+```powershell
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
+```
+
+`Fluence.Wpf.PowerShell.Module/artifacts/` must hold `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg`, where the version is `ModuleVersion` from the manifest with the `PSData.Prerelease` tag appended, so `0.9.0` plus `pre` names the artifacts `0.9.0-pre`. Confirm the module `README.md` and `docs/powershell/` describe the current cmdlet surface.
+
+## Pack check
 
 ```powershell
 dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFramework=net472 -nologo

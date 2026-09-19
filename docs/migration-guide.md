@@ -129,7 +129,7 @@ Popup surfaces reserve a 16 px shadow gutter and compensate for it with `Horizon
 
 `ContentControlThemeFontFamily` and `ApplicationPageBackgroundThemeBrush` are WinUI's names for `FluentFontFamily` and `ApplicationBackgroundBrush`. Both pairs ship, and both original names are supported for the life of 1.x, so nothing has to change. Prefer the WinUI names in new code.
 
-## Basic Steps
+## Basic steps
 
 1. Reference `Fluence.Wpf/Fluence.Wpf.csproj` or a local `Fluence.Wpf` package.
 2. Add the XML namespace:
@@ -150,7 +150,7 @@ Popup surfaces reserve a 16 px shadow gutter and compensate for it with `Horizon
 4. Replace shell windows with `fluence:FluenceWindow` where you need Fluent caption buttons, a DWM backdrop, rounded corners, or a title-bar content slot.
 5. Replace controls incrementally. Start with leaf controls (`Button`, `TextBox`, `ComboBox`, `ListView`, `InfoBar`, `ProgressBar`), then move larger shell surfaces like `NavigationView` and `TabView`.
 
-## Resource Rules
+## Resource rules
 
 - Use `DynamicResource` for Fluence brushes, colors, typography, corner radii, and theme-bound values.
 - Do not manually merge `Themes/Generic.xaml` when using `ApplicationThemeManager.Apply`; the manager owns the fixed resource dictionary slots.

@@ -97,7 +97,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1350; 'net10' = 1351 }
+          $floor = @{ 'net472' = 1367; 'net10' = 1368 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
@@ -112,6 +112,47 @@ jobs:
               Write-Host "$tfm : $total cases across both lanes."
             }
           }
+
+      # The PowerShell module (Fluence.Wpf.PowerShell.Module/) is a script module outside the
+      # solution. Build-Module.ps1 stages the Release net472 and net8.0-windows assemblies the
+      # solution build produced; Test-Module.ps1 runs PSScriptAnalyzer plus the Pester logic lane
+      # (the UI lane needs an interactive desktop and stays local). Both editions run because the
+      # module loads a different Fluence.Wpf target on each.
+      - name: Ensure PSScriptAnalyzer and Pester 5
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Scope CurrentUser -Force }
+          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version.Major -eq 5 })) { Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck -MaximumVersion 5.99.99 }
+
+      - name: Ensure analyzer and Pester 5 for Windows PowerShell
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue)) { Install-PackageProvider -Name NuGet -Scope CurrentUser -Force }
+          if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Scope CurrentUser -Force }
+          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version.Major -eq 5 })) { Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck -MaximumVersion 5.99.99 }
+
+      - name: Stage PowerShell module libraries
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
+
+      - name: Test PowerShell module (PowerShell 7)
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/pwsh.xml
+
+      - name: Test PowerShell module (PowerShell 7, MTA)
+        run: pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -SkipAnalyzer -TestResultPath TestResults/psmodule/pwsh-mta.xml
+
+      - name: Test PowerShell module (Windows PowerShell 5.1)
+        shell: cmd
+        run: powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/desktop.xml
+
+      - name: Package PowerShell module
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
+
+      - name: Upload PowerShell module package
+        uses: actions/upload-artifact@v7
+        with:
+          name: fluence-ps-module-package
+          path: Fluence.Wpf.PowerShell.Module/artifacts/
 
       - name: Upload test results
         if: always()
@@ -150,7 +191,7 @@ jobs:
         with:
           name: fluence-wpf-release-dotnet472
           path: |
-            Fluence.Wpf/bin/Release/net472/Fluence.Wpf.dll
+            Fluence.Wpf/bin/Release/net472/*.dll
             Fluence.Wpf/bin/Release/net472/Fluence.Wpf.pdb
             Fluence.Wpf/bin/Release/net472/Fluence.Wpf.xml
           retention-days: 30

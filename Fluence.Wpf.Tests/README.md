@@ -2,7 +2,7 @@
 
 This folder contains the xunit.v3 suite for the Fluence.Wpf library and demo shell.
 
-## What Lives Here
+## What lives here
 
 - `Infrastructure/WpfTestSta.cs` - the single STA-thread dispatcher used by every UI-touching test.
 - `Infrastructure/TestApp.cs` - the single application and theme reset. `EnsureLibraryTheme` for library tests, `EnsureDemoTheme` for the demo opt-in.
@@ -37,7 +37,7 @@ $env:FLUENCE_CAPTURE_SCREENSHOTS = "1"
 Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --filter-class Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness --no-ansi --progress off
 ```
 
-## Maintenance Notes
+## Maintenance notes
 
 New classes, and everything under `Control/`, `Control/Rules/` and `Gallery/Pages/`, own the reset through `IAsyncLifetime` or `IClassFixture<LightThemeFixture>`; test bodies do not call a setup helper. A small set of `Theming/` and `Windowing/` classes, plus `Gallery/DemoResourceCleanupTests.cs` and `Gallery/DemoSampleContractTests.cs`, predate this rule and still reset in the test body; see `AGENTS.md` section 6 for the list. Keep tests non-parallel and route UI work through `WpfTestSta`; WPF resource dictionaries, storyboards, and template application are not safe to exercise from parallel worker threads.
 

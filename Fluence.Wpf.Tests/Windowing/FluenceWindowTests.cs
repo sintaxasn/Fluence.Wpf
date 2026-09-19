@@ -389,6 +389,48 @@ namespace Fluence.Wpf.Tests.Windowing
             });
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public Task SystemThemeWatcher_AttachesBeforeDuringAndAfterSourceInitializationAsync(int watchMode)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+                Window window = watchMode is 2 ? new FluenceWindow() : new Window();
+                window.Width = 200;
+                window.Height = 150;
+                window.ShowInTaskbar = false;
+                try
+                {
+                    if (watchMode is 1)
+                    {
+                        _ = new System.Windows.Interop.WindowInteropHelper(window).EnsureHandle();
+                    }
+                    if (watchMode is not 2)
+                    {
+                        SystemThemeWatcher.Watch(window);
+                    }
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    FieldInfo field = Assert.IsType<FieldInfo>(typeof(SystemThemeWatcher).GetField("_watchedWindows", BindingFlags.NonPublic | BindingFlags.Static), exactMatch: false);
+                    System.Collections.IEnumerable registrations = Assert.IsType<System.Collections.IEnumerable>(field.GetValue(null), exactMatch: false);
+                    object registration = Assert.Single(registrations.Cast<object>(), candidate =>
+                        ReferenceEquals(candidate.GetType().GetProperty("Window", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(candidate), window));
+                    object? hooked = registration.GetType().GetProperty("IsHooked", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(registration);
+                    Assert.True(Assert.IsType<bool>(hooked));
+                }
+                finally
+                {
+                    window.Close();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                }
+            });
+        }
+
         private static int GetWatchedWindowCount()
         {
             FieldInfo field = Assert.IsType<FieldInfo>(typeof(SystemThemeWatcher).GetField("_watchedWindows", BindingFlags.NonPublic | BindingFlags.Static), exactMatch: false);

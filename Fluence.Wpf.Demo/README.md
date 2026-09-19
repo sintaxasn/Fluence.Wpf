@@ -33,6 +33,23 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug
 4. **`DemoSampleControl`** is the reusable "sample card": a description, the live control(s), an
    optional options rail, and an expandable XAML/C# source viewer.
 
+## Gallery home
+
+The homepage is a direct catalog and landing composition rather than a discrete control
+sample page. The theme-aware Fluence.WPF lockup is its largest visual element, with a
+620 DIP maximum width that shrinks to fit the viewport. A short introduction and compact
+GitHub and LinkedIn icon links sit below the artwork, followed by the control catalog.
+The homepage has no live preview; interactive samples and source tabs live on their
+destination pages.
+
+The catalog reduces its columns when the available content width narrows. Colors,
+typography and interaction feedback come from the library's existing resources and
+control templates, so Light, Dark, High Contrast and accent changes follow the normal
+theme pipeline. The appearance link opens Settings; the Menus and Trees links open
+their dedicated pages. The social links use native HyperlinkButton controls with
+keyboard focus, accessible names and tooltips. Their vector artwork comes from
+[Bootstrap Icons under the MIT license](Resources/BootstrapIcons.LICENSE.md).
+
 ## How a page wires its samples (the one piece of "magic")
 
 Named controls cannot be declared *inside* `DemoSampleControl` property elements (WPF raises

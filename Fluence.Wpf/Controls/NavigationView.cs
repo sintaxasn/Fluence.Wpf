@@ -1890,6 +1890,11 @@ defaultValue: null,
             {
                 return;
             }
+            if (IsFooterItem(navItem))
+            {
+                SelectFooterItem(navItem);
+                return;
+            }
             object data = GetDataFromContainer(navItem);
             if (!ReferenceEquals(SelectedItem, data))
             {

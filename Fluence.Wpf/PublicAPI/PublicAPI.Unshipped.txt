@@ -82,7 +82,9 @@ override Fluence.Wpf.Controls.TabView.OnItemsChanged(System.Collections.Speciali
 override Fluence.Wpf.Controls.TabView.OnSelectionChanged(System.Windows.Controls.SelectionChangedEventArgs! e) -> void
 override Fluence.Wpf.Controls.TabView.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void
 override Fluence.Wpf.Controls.TitleBar.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
+override Fluence.Wpf.Controls.TreeView.OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs! e) -> void
 override Fluence.Wpf.Controls.TreeViewItem.OnApplyTemplate() -> void
+override Fluence.Wpf.Controls.TreeViewItem.OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs! e) -> void
 static Fluence.Wpf.Controls.InfoBadge.GetStyleGlyph(Fluence.Wpf.InfoBadgeStyle badgeStyle) -> string!
 static readonly Fluence.Wpf.Controls.Expander.HeaderBackgroundProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.InfoBadge.CornerRadiusProperty -> System.Windows.DependencyProperty!

@@ -68,13 +68,14 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 **`FluenceWindow`**, a window with Mica, Acrylic and Tabbed DWM backdrops, rounded corners, configurable caption buttons, and a title-bar content slot for a search box or your own content.
 
-**Three target frameworks**, so the same UI runs on .NET Framework 4.7.2, .NET 8 and .NET 10, and from Windows PowerShell 5.1 through `Add-Type` with no Windows App SDK anywhere. See [PowerShell](docs/powershell.md).
+**Three target frameworks**, so the same UI runs on .NET Framework 4.7.2, .NET 8 and .NET 10, and from Windows PowerShell 5.1 and PowerShell 7 through the `Fluence.Wpf.PowerShell` module or a bare `Add-Type`, with no Windows App SDK anywhere. See [PowerShell](docs/powershell/README.md).
 
 ## Demos
 
 - **Gallery** (`Fluence.Wpf.Demo`): 17 catalog pages organized by control category, each with a live example and its source next to it, plus theme, accent and backdrop switching.
 - **MVVM Task Manager** (`Fluence.Wpf.Demo.Mvvm`): a minimal CommunityToolkit.Mvvm application with no interaction logic in code-behind.
-- **PowerShell** (`Fluence.Wpf.Demo.PowerShell`): four standalone scripts that build a themed WPF UI from Windows PowerShell 5.1.
+- **PowerShell module** (`Fluence.Wpf.PowerShell.Module`): the `Fluence.Wpf.PowerShell` script module, with runnable examples under `examples/`, for Windows PowerShell 5.1 and PowerShell 7.
+- **PowerShell, no module** (`Fluence.Wpf.Demo.PowerShell`): four standalone scripts that build a themed WPF UI from Windows PowerShell 5.1 with `Add-Type` alone.
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
@@ -88,16 +89,23 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md), reference, startup calls, local pack
-- [Theming](docs/theming.md), merge slots, keys, accent, backdrop, watcher
-- [Controls](docs/controls.md), the full catalog and the automation peers
-- [WinUI parity](docs/winui-parity.md), where Fluence matches WinUI 3 and where it knowingly differs
-- [PowerShell](docs/powershell.md), theme a WPF window from Windows PowerShell 5.1
-- [Migration guide](docs/migration-guide.md), moving from another Fluent-style stack, and every breaking change
-- [Roadmap](docs/roadmap.md), release policy and what comes next
-- [Changelog](CHANGELOG.md)
-- [Contributing](CONTRIBUTING.md)
+- [Getting started](docs/getting-started.md) - reference, startup calls, local pack
+- [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
+- [Controls](docs/controls.md) - catalog aligned with the demo gallery
+- [WinUI parity](docs/winui-parity.md) - where Fluence matches WinUI 3 and where it knowingly differs
+- [PowerShell](docs/powershell/README.md) - the `Fluence.Wpf.PowerShell` module: tutorial, how-to guides, cmdlet reference
+- [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
+- [Contributing](CONTRIBUTING.md) - build matrix, tests, PR notes
+- [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
+- [Roadmap](docs/roadmap.md) - release policy and what comes next
+- [Changelog](CHANGELOG.md) - every released change
 - [Known issues](KNOWN_ISSUES.md)
+
+## Contributing
+
+The contributor guide is at [CONTRIBUTING.md](CONTRIBUTING.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
+
+For AI-assisted work, read [AGENTS.md](AGENTS.md) first.
 
 ## License
 

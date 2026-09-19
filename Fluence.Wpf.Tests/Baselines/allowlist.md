@@ -478,3 +478,17 @@ net472, unchanged.
 ### Status
 
 Consumed. The baseline files beside this one carry the post-rename capture.
+
+## PowerShell integration and Gallery Home review
+
+The branch refresh adds 17 cases per full target framework: two homepage route
+and reflow cases, three theme-watcher handle cases, one footer automation case,
+two tree removal/reset cases, six smooth-scroll cases, and three dialog-owner
+lifetime cases. The existing homepage link case is renamed from
+`GalleryHomePage_UsesHeaderLockupHeroAndGitHubLinkAsync` to
+`GalleryHomePage_UsesProminentBrandAndAccessibleSocialLinksAsync` because it now
+checks the larger brand and both rendered, accessible social icons.
+
+No cases are removed. Discovery rises from 1351 to 1368 on net472 and from 1354
+to 1371 on net10. The complementary runtime lanes report 1367 and 1368 cases,
+respectively; these are the CI floors after screenshot filtering. The method-name diff contains only this rename and these additions.

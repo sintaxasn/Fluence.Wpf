@@ -27,6 +27,7 @@
  */
 
 using System.Collections;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -113,6 +114,41 @@ namespace Fluence.Wpf.Controls
             if (element is TreeViewItem treeViewItem)
             {
                 treeViewItem.CoerceSelectionForOwner(this);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+            ReconcileSelectionAfterItemsChanged(parent: null);
+        }
+
+        /// <summary>
+        /// Reconciles the live selection after a root or child collection changes, using
+        /// only its existing containers. Does not expand or realize any tree branch.
+        /// </summary>
+        /// <param name="parent">The changed child collection's owner, or null for the root.</param>
+        internal void ReconcileSelectionAfterItemsChanged(TreeViewItem? parent)
+        {
+            if (SelectionMode is not TreeViewSelectionMode.Multiple || _updatingSelectionChecks)
+            {
+                return;
+            }
+
+            _updatingSelectionChecks = true;
+            try
+            {
+                if (parent is not null)
+                {
+                    parent.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, GetChildSelectionState(parent));
+                    UpdateAncestorSelectionStates(parent);
+                }
+                RebuildMultipleSelectedItems();
+            }
+            finally
+            {
+                _updatingSelectionChecks = false;
             }
         }
 

@@ -62,6 +62,103 @@ namespace Fluence.Wpf.Tests.Control
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
         }
 
+        [Fact]
+        public Task ContentDialog_SecondInstanceOnSameOwnerIsRejectedUntilCloseAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(async static () =>
+            {
+                Window owner = CreateShownContentDialogOwner();
+                Controls.ContentDialog first = new() { Title = "First", CloseButtonText = "Close" };
+                Controls.ContentDialog second = new() { Title = "Second", CloseButtonText = "Close" };
+                try
+                {
+                    Task<ContentDialogResult> firstTask = first.ShowAsync();
+                    WpfTestSta.DrainDispatcher(owner.Dispatcher);
+                    _ = Assert.Throws<InvalidOperationException>((Action)(() => _ = second.ShowAsync()));
+                    Assert.Null(second.Parent);
+                    Assert.Equal(Visibility.Collapsed, second.Visibility);
+                    Assert.False(firstTask.IsCompleted);
+                    _ = Assert.Single(GetContentDialogOverlayAdorners(owner)!);
+
+                    first.Hide();
+                    Assert.True(await WaitUntilAsync(owner.Dispatcher, 2000, () => firstTask.IsCompleted).ConfigureAwait(true));
+                    Task<ContentDialogResult> secondTask = second.ShowAsync();
+                    Assert.False(secondTask.IsCompleted);
+                    second.Hide();
+                    Assert.True(await WaitUntilAsync(owner.Dispatcher, 2000, () => secondTask.IsCompleted).ConfigureAwait(true));
+                }
+                finally
+                {
+                    owner.Close();
+                    WpfTestSta.DrainDispatcher(owner.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentDialog_FailedShowReleasesOwnerAndInstanceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window owner = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new() { CloseButtonText = "Close" };
+                static void FailOpening(object? sender, ContentDialogOpenedEventArgs e)
+                {
+                    throw new InvalidOperationException("Expected opening failure.");
+                }
+                dialog.Opened += FailOpening;
+                try
+                {
+                    _ = Assert.Throws<InvalidOperationException>((Action)(() => _ = dialog.ShowAsync()));
+                    Assert.True(GetContentDialogOverlayAdorners(owner) is null or { Length: 0 });
+                    dialog.Opened -= FailOpening;
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.False(task.IsCompleted);
+                    owner.Close();
+                    Assert.True(task.IsCompleted);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(owner);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentDialog_DifferentOwnersCanEachShowADialogAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                Window firstOwner = new() { Width = 320, Height = 240, Content = new Grid(), ShowActivated = false };
+                Window secondOwner = new() { Width = 320, Height = 240, Content = new Grid(), ShowActivated = false };
+                Controls.ContentDialog first = new();
+                Controls.ContentDialog second = new();
+                try
+                {
+                    firstOwner.Show();
+                    secondOwner.Show();
+                    WpfTestSta.DrainDispatcher(firstOwner.Dispatcher);
+                    app.MainWindow = firstOwner;
+                    Task<ContentDialogResult> firstTask = first.ShowAsync();
+                    app.MainWindow = secondOwner;
+                    Task<ContentDialogResult> secondTask = second.ShowAsync();
+                    _ = Assert.Single(GetContentDialogOverlayAdorners(firstOwner)!);
+                    _ = Assert.Single(GetContentDialogOverlayAdorners(secondOwner)!);
+                    firstOwner.Close();
+                    Assert.True(firstTask.IsCompleted);
+                    Assert.False(secondTask.IsCompleted);
+                    secondOwner.Close();
+                    Assert.True(secondTask.IsCompleted);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(firstOwner);
+                    CloseWindowAndDrain(secondOwner);
+                }
+            });
+        }
+
         private static Adorner[]? GetContentDialogOverlayAdorners(Window owner)
         {
             if (owner.Content is not UIElement root)

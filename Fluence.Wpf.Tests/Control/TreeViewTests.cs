@@ -575,6 +575,73 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task TreeView_MultipleSelection_RemovalAndResetDiscardDetachedItemsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeView tree = new() { SelectionMode = TreeViewSelectionMode.Multiple };
+                Controls.TreeViewItem parent = new() { Header = "Parent", IsExpanded = true };
+                Controls.TreeViewItem first = new() { Header = "First" };
+                Controls.TreeViewItem second = new() { Header = "Second" };
+                _ = tree.Items.Add(parent);
+                _ = parent.Items.Add(first);
+                _ = parent.Items.Add(second);
+                Window window = new() { Content = tree, Width = 300, Height = 240 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    first.IsSelectionChecked = true;
+                    Assert.Contains(first, tree.SelectedItems.Cast<object>());
+                    parent.Items.Remove(first);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Empty(tree.SelectedItems);
+                    Assert.False(parent.IsSelectionChecked);
+                    second.IsSelectionChecked = true;
+                    parent.Items.Clear();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Empty(tree.SelectedItems);
+                    Assert.False(parent.IsSelectionChecked);
+                    parent.IsSelectionChecked = true;
+                    tree.Items.Remove(parent);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Empty(tree.SelectedItems);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task TreeView_MultipleSelection_ItemsSourceReplacementDiscardsOldSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                System.Collections.ObjectModel.ObservableCollection<string> originalItems = ["Old"];
+                System.Collections.ObjectModel.ObservableCollection<string> replacementItems = ["New"];
+                Controls.TreeView tree = new() { SelectionMode = TreeViewSelectionMode.Multiple, ItemsSource = originalItems };
+                Window window = new() { Content = tree, Width = 300, Height = 240 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Controls.TreeViewItem item = Assert.IsType<Controls.TreeViewItem>(tree.ItemContainerGenerator.ContainerFromIndex(0));
+                    item.IsSelectionChecked = true;
+                    Assert.Contains("Old", tree.SelectedItems.Cast<object>());
+                    tree.ItemsSource = replacementItems;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Empty(tree.SelectedItems);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task TreeView_MultipleSelectionCascadesAndComputesParentStateAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

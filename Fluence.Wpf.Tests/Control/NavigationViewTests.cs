@@ -2827,6 +2827,36 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task NavigationView_Automation_FooterSupportsSelectionAndInvocationAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
+                Window window = new() { Content = nav };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    NavigationViewItemAutomationPeer peer = new(footer);
+                    int invocationCount = 0;
+                    nav.ItemInvoked += (_, _) => invocationCount++;
+                    Assert.NotNull(peer.SelectionContainer);
+                    peer.SelectItem();
+                    Assert.Same(footer, nav.SelectedFooterItem);
+                    Assert.True(peer.IsSelected);
+                    Assert.Equal(0, invocationCount);
+                    peer.Invoke();
+                    Assert.Equal(1, invocationCount);
+                    Assert.Same(footer, nav.SelectedFooterItem);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task NavigationView_Automation_GetSelection_ReportsFooterSelectionAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

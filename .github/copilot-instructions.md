@@ -122,13 +122,13 @@ that TFM as two complementary lanes (see AGENTS.md section 6 and
 
 ---
 
-## Background Terminal Commands
+## Background terminal commands
 
 - When polling background terminal commands, use short wait intervals (30-60 seconds per read) instead of multi-minute waits, so completed work is noticed promptly.
 
 ---
 
-## Testing Guidelines
+## Testing guidelines
 
 - In `Fluence.Wpf.Tests`, prefer direct calls to the canonical `WpfTestSta` and `TestApp` helpers (e.g., `RunOnStaAsync`, `EnsureLibraryTheme`, `DrainDispatcher`, etc.) instead of per-class wrapper/forwarder methods. Remove any duplicated wrapper logic when encountered.
 - Prefer eliding async/await for methods whose entire body is a single awaited Task-returning call: return the Task directly instead of async/await (e.g., `public Task X() { return WpfTestSta.RunOnStaAsync(...); }`). This applies even though Roslynator RCS1174 only covers Task<T>. Keep `new ValueTask(task)` wrapping only where required by interfaces like xUnit v3 IAsyncLifetime.

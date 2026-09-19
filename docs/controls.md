@@ -93,7 +93,7 @@ Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentInto
 
 `FluenceWindow.DefaultIcon` is a public static `ImageSource?` that exposes the rasterized Fluence brand icon. Every `FluenceWindow` defaults its `Icon` property to this value so the brand mark appears in the title bar and taskbar without any caller setup; a consumer can also apply `DefaultIcon` to its own non-`FluenceWindow` windows. A consumer-assigned `Icon` overrides the default. The value is `null` if the brand resource is unavailable (for example in a headless or session-0 process).
 
-### Basic Actions
+### Basic actions
 
 Key API:
 
@@ -139,7 +139,7 @@ Key API:
 
 Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs. `Image` frames a picture with a theme-aware 1px stroke and a rounded-corner clip driven by `CornerRadius`, while `Source` and `Stretch` behave like the stock WPF image element.
 
-### Data Binding
+### Data binding
 
 Key API:
 
@@ -248,7 +248,7 @@ Key API:
 
 `TreeView`, `TreeViewItem`, `TreeViewSelectionMode`
 
-`TreeView` supports single and multiple selection modes, a live `SelectedItems` list, expandable hierarchy, and tri-state item selection through `TreeViewItem.IsSelectionChecked`.
+`TreeView` supports single and multiple selection modes, a live `SelectedItems` list, expandable hierarchy, and tri-state item selection through `TreeViewItem.IsSelectionChecked`. Multiple-selection cascading follows existing item containers; maintain whole-hierarchy selection in the data model when descendants are not yet realized. See [the data-bound branch limitation](../KNOWN_ISSUES.md#tree-selection-and-unrealized-data-bound-branches).
 
 ### Status and Feedback
 
@@ -360,7 +360,7 @@ controls that WPF does not natively make fully keyboard-accessible:
 - `RatingControl`: Left/Right arrow keys decrement and increment the rating; Home and End
   jump to the minimum and maximum values.
 - `PasswordBox` reveal button: Space and Enter toggle the reveal state when the reveal button
-  is keyboard-focused; the reveal button’s accessible name updates to announce the current state.
+  is keyboard-focused; the reveal button's accessible name updates to announce the current state.
 - `NumberBox` spin buttons: the increment and decrement buttons are keyboard-accessible tab
   stops with accessible names; the `LargeChange` value reported by the automation peer
   matches the `NumberBox.LargeChange` property.
@@ -385,7 +385,7 @@ See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
 
 ## NavigationView
 
-Three pane display modes ship out of the box:
+The library ships three pane display modes:
 
 | `PaneDisplayMode` | Rail                                            | Labels                         | Template                                |
 |-------------------|-------------------------------------------------|--------------------------------|-----------------------------------------|
@@ -559,6 +559,8 @@ private void ShowNoteFlyout_Click(object sender, RoutedEventArgs e)
 ```
 
 `ContentDialog` raises a modal prompt with a title, arbitrary body content, and up to three command buttons (`PrimaryButtonText`, `SecondaryButtonText`, `CloseButtonText`; buttons with no text collapse). `ShowAsync()` returns a `Task<ContentDialogResult>` that completes when the dialog closes, `Hide()` dismisses it programmatically, and `DefaultButton` picks the button that takes initial focus and answers Enter; Escape routes through the close button, and Tab navigation is trapped inside the dialog. Over a `FluenceWindow` the smoke layer dims the entire window, title bar included; over a plain `Window` the dialog is hosted in the content adorner layer.
+
+Only one dialog can be active on a given owner window. A second `ShowAsync()` call on that owner throws `InvalidOperationException`; await the first result before opening another. Separate owner windows can each show a dialog.
 
 A dialog declared inline in XAML starts collapsed and is detached from its declared parent when `ShowAsync()` runs, then re-hosted inside the modal overlay (it becomes visible only while overlay-hosted). The supported parent types are `Panel`, `Decorator` (for example `Border`), and `ContentControl`; `ShowAsync()` throws an `InvalidOperationException` with a descriptive message for any other parent type, so remove the dialog from an unsupported parent before showing it.
 

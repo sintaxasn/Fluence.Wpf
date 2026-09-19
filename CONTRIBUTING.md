@@ -29,6 +29,18 @@ Fluence.Wpf.Tests\bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Tests.exe --
 
 Both target frameworks (`net472` and `net10.0-windows10.0.26100.0`) must build and test green. The library builds with `TreatWarningsAsErrors=true`, `WarningLevel=9999`, and `AnalysisLevel=latest-all`: fix warnings at the root cause, do not suppress them. `string.IsNullOrEmpty()` is banned (use `string.IsNullOrWhiteSpace()`); public API needs `///` XML docs or the build fails.
 
+## PowerShell module
+
+The `Fluence.Wpf.PowerShell` script module under `Fluence.Wpf.PowerShell.Module/` is not a project in the solution and has its own gate. Stage the Release assemblies the solution build produced, then run PSScriptAnalyzer plus the Pester logic lane on both PowerShell editions:
+
+```powershell
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
+powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
+```
+
+The render lane (`-IncludeUi`) opens real windows and runs locally only; [docs/release.md](docs/release.md) lists it with the expected case counts per lane. The module follows PSADT PowerShell conventions, not the C# ones above: 5.1 and 7 compatible syntax, one function per file with comment-based help and `[OutputType()]`, fully qualified .NET type names, Allman braces, UTF-8 with BOM. Cmdlet reference pages under `docs/powershell/reference/` are generated from the comment-based help, so change the help in the function and re-run `build/Export-ModuleReference.ps1` rather than editing the page.
+
 ## Formatting and text policy
 
 XAML style (4-space indent, UTF-8 with BOM, LF line endings, final newline) is governed by `.editorconfig`, applied to `.xaml` like every other source file; there is no separate XAML formatter tool. Encoding and text policy are enforced by a repo hook and in CI:

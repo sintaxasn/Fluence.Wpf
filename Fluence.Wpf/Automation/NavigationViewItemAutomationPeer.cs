@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Automation
         public bool IsSelected => NavigationViewItem.IsSelected;
 
         /// <inheritdoc />
-        public IRawElementProviderSimple? SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
+        public IRawElementProviderSimple? SelectionContainer => OwningNavigationView is NavigationView nav
             ? ProviderFromPeer(CreatePeerForElement(nav))
             : null;
 
@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Automation
             // Input never reaches it, but a UIA client calls this directly, so the disabled state
             // is enforced here, as WPF's own item peers and the library's SetValue providers do.
             ThrowIfDisabled();
-            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
+            if (OwningNavigationView is NavigationView nav)
             {
                 nav.InvokeItem(NavigationViewItem);
             }
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Automation
         public void SelectItem()
         {
             ThrowIfDisabled();
-            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
+            if (OwningNavigationView is NavigationView nav)
             {
                 nav.SelectItemFromContainer(NavigationViewItem);
             }
@@ -131,5 +131,9 @@ namespace Fluence.Wpf.Automation
         /// Gets the associated NavigationViewItem that owns this instance.
         /// </summary>
         private NavigationViewItem NavigationViewItem => (NavigationViewItem)Owner;
+
+        private NavigationView? OwningNavigationView =>
+            ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView
+            ?? NavigationView.FromItemContainer(NavigationViewItem);
     }
 }
