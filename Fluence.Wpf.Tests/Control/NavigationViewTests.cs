@@ -31,10 +31,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
@@ -2829,7 +2831,7 @@ namespace Fluence.Wpf.Tests.Control
         [Fact]
         public Task NavigationView_Automation_FooterSupportsSelectionAndInvocationAsync()
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(static async () =>
             {
                 NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
                 Window window = new() { Content = nav };
@@ -2837,10 +2839,19 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    NavigationViewItemAutomationPeer peer = new(footer);
+                    // Ask UIA for the window root so provider conversion does not depend on
+                    // an external accessibility client having already connected the peer tree.
+                    IntPtr windowHandle = new WindowInteropHelper(window).Handle;
+                    Task<AutomationElement> rootTask = Task.Run(() => AutomationElement.FromHandle(windowHandle), TestContext.Current.CancellationToken);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 5000, () => rootTask.IsCompleted).ConfigureAwait(true), "UI Automation did not connect the window root.");
+                    AutomationElement root = await rootTask.ConfigureAwait(true);
+                    Assert.NotNull(root);
+                    NavigationViewItemAutomationPeer peer = Assert.IsType<NavigationViewItemAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(footer));
                     int invocationCount = 0;
                     nav.ItemInvoked += (_, _) => invocationCount++;
-                    Assert.NotNull(peer.SelectionContainer);
+                    IRawElementProviderSimple? selectionContainer = peer.SelectionContainer;
+                    Assert.NotNull(selectionContainer);
+                    Assert.Equal("NavigationView", selectionContainer.GetPropertyValue(AutomationElementIdentifiers.ClassNameProperty.Id));
                     peer.SelectItem();
                     Assert.Same(footer, nav.SelectedFooterItem);
                     Assert.True(peer.IsSelected);
