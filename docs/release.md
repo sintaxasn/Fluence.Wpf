@@ -28,7 +28,7 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
 ## 1.0 approval checkpoint
 
-The PowerShell integration branch is submitted for mjr4077au review before the 1.0 version bump. Keep both package versions at 0.9.0-pre until that review is approved. CI currently validates and packages the module; PowerShell Gallery publication, its credential setup and release-environment approval checks are a follow-up release change. The existing tag-gated NuGet publishing workflow remains in place. Do not create a 1.0 tag until that follow-up is reviewed and both publication paths are ready.
+The PowerShell integration branch is submitted for mjr4077au review before the 1.0 version bump. Keep both package versions at 0.9.0-pre until that review is approved. CI validates and packages the module in a separate `powershell` job after `build` succeeds. Both jobs must pass before merging this integration change, but the existing .NET `release` job depends only on `build`, so a PowerShell feed or tooling outage cannot block the .NET release. This is the review policy; required checks must also be configured in repository branch protection. PowerShell Gallery publication, its credential setup and release-environment approval checks are a follow-up release change. The existing tag-gated NuGet publishing workflow remains in place. Do not create a 1.0 tag until that follow-up is reviewed and both publication paths are ready.
 
 ## Bump
 
@@ -41,7 +41,7 @@ Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. Nothing in 
 
 An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `pre`, which produces `0.9.0-pre`, or `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
 
-The one version outside the solution is the PowerShell module manifest, `Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1`, which the SDK does not generate. Set `ModuleVersion` to the same `VersionPrefix` and `PSData.Prerelease` to the same `VersionSuffix` (with no leading hyphen), so `Package-Module.ps1` names its artifacts with the same string the library nupkg carries.
+The one version outside the solution is the PowerShell module manifest, `Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1`, which the SDK does not generate. Set `ModuleVersion` to the same `VersionPrefix` and `PSData.Prerelease` to the same `VersionSuffix` (with no leading hyphen), so `Package-Module.ps1` names its artifacts with the same string the library nupkg carries. `Build-Module.ps1` enforces exact agreement before building or touching staging, and packaging invokes that same guard. For a stable release, clear both suffixes; switching only one fails the gate.
 
 Commit the bump, along with the `CHANGELOG.md` section, on `main`.
 
@@ -54,7 +54,9 @@ git push origin v0.9.0-pre
 
 ## PowerShell module gates
 
-The script module under `Fluence.Wpf.PowerShell.Module/` is outside the solution and has its own gate (see [AGENTS.md section 6](../AGENTS.md#6-testing) for the lane definitions). Stage the Release assemblies first, then run the analyzer and the Pester logic lane on both editions; the render lane opens real windows, so run it once locally before tagging:
+The script module under `Fluence.Wpf.PowerShell.Module/` is outside the solution and has its own gate (see [AGENTS.md section 6](../AGENTS.md#6-testing) for the lane definitions). Install Pester 5.8.0 and PSScriptAnalyzer 1.25.0 in each edition before running the gate; the runner imports those exact versions. Follow the separate network setup commands in the [module README](../Fluence.Wpf.PowerShell.Module/README.md#tests-and-gate). Windows PowerShell setup pins the NuGet provider to 2.8.5.208; PowerShell 7 uses its compatible bundled provider. Packaging requires an already installed compatible provider and does not bootstrap one.
+
+Stage the Release assemblies first, then run the analyzer and the Pester logic lane on both editions; the render lane opens real windows, so run it once locally before tagging:
 
 ```powershell
 dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
@@ -71,10 +73,10 @@ Expected counts for the current suite (Pester reports them on the `Pester:` summ
 
 | Lane | Total | Passed | Skipped | Not run |
 | --- | ---: | ---: | ---: | ---: |
-| Logic lane, `pwsh` or `powershell.exe` (STA) | 184 | 156 | 2 | 26 |
-| Logic lane, `pwsh -MTA` | 184 | 158 | 0 | 26 |
-| Render lane (`-IncludeUi`), STA hosts | 184 | 182 | 2 | 0 |
-| Render lane (`-IncludeUi`), `pwsh -MTA` | 184 | 184 | 0 | 0 |
+| Logic lane, `pwsh` or `powershell.exe` (STA) | 212 | 184 | 2 | 26 |
+| Logic lane, `pwsh -MTA` | 212 | 186 | 0 | 26 |
+| Render lane (`-IncludeUi`), STA hosts | 212 | 210 | 2 | 0 |
+| Render lane (`-IncludeUi`), `pwsh -MTA` | 212 | 212 | 0 | 0 |
 
 The two skipped cases on STA hosts are the MTA-only transport tests; the not-run cases are the UI-tagged render tests. PSScriptAnalyzer must report no findings. A change that adds or removes a case updates this table and says why in `CHANGELOG.md`.
 
@@ -96,7 +98,9 @@ dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFram
 
 ## What CI does
 
-On the tag push, the `build` job runs everything it runs for `main`, then packs. The `release` job then:
+The `build` job owns the .NET restore, build, formatting, test, pack and artifact steps. A separate `powershell` job downloads its `fluence-wpf-release-dotnet472` and `fluence-wpf-release-dotnet8` artifacts into the corresponding Release output folders, stages the module, installs pinned tools in dedicated setup steps, and runs the PowerShell 7 STA, PowerShell 7 MTA and Windows PowerShell 5.1 STA logic lanes. It uploads `fluence-ps-module-package` and a separate `fluence-ps-module-test-results` artifact. The render lane stays local.
+
+On a tag push, `release` depends only on `build` and downloads only `fluence-wpf-*` artifacts. PowerShell failures therefore cannot block .NET artifact upload or publication. No PowerShell Gallery publication step is configured. The `release` job then:
 
 1. Checks the tag against the tree version and fails if they differ.
 2. Zips the per-target-framework library binaries and the demo.

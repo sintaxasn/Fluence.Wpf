@@ -6,6 +6,29 @@
 
 Every breaking change in 0.9.0-pre, the last preview before 1.0, is listed here. Some entries break only at compile time and need a recompile; some also break an already-compiled consumer binary at load time; and the resource key changes near the end fail silently instead, with no compile error at all.
 
+### PowerShell password prompts and result display
+
+Password prompts now return `System.Security.SecureString` by default. This applies to `New-FluencePrompt -InputType Password` used by a dialog and to `Get-FluenceInput -InputType Password`. Pass `-AsPlainText` only when the receiving API requires a managed string.
+
+Use the secure result directly when constructing a credential:
+
+```powershell
+$result = Show-FluenceDialog -Prompts @(
+    New-FluencePrompt -Name User -Message 'User name'
+    New-FluencePrompt -Name Password -Message 'Password' -InputType Password
+) -Buttons @(New-FluenceButton -Name SignIn -Text 'Sign in')
+if (-not $result.Cancelled)
+{
+    $credential = [System.Management.Automation.PSCredential]::new($result.User, $result.Password)
+}
+```
+
+Keep the secure value alive while the credential is needed, then dispose it when authentication work is complete.
+
+Password validation scripts receive the secure value by default. Pattern validation requires explicit `-AsPlainText`; required-value validation checks the secure value's length without decrypting it. Password defaults must be strings; non-string defaults, including SecureString, are rejected instead of being converted to text. A supplied string default is already plaintext and should be avoided for secrets.
+
+The default `Fluence.DialogResult` display shows completion status instead of enumerating user input. Read named result properties explicitly in scripts. This display prevents accidental console output; explicit property access or custom formatting can still disclose a plaintext opt-in value.
+
 ### Types that became internal
 
 Internalizing a type also breaks an already-compiled consumer binary, not only source that

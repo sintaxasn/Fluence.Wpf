@@ -9,8 +9,8 @@
       - Fluence.Wpf.PowerShell.<version>.nupkg  (PowerShell Gallery format)
 
     The .nupkg is produced by Publish-Module targeting a temporary local file-based
-    PSRepository. Nothing is published to PSGallery. A missing NuGet provider may be downloaded by
-    the PowerShellGet bootstrap; install the provider beforehand for an offline package run.
+    PSRepository. Nothing is published to PSGallery. A compatible NuGet provider must already be
+    available; this script does not bootstrap one. Install the build prerequisites separately.
 .PARAMETER Configuration
     MSBuild configuration passed to Build-Module.ps1. Defaults to 'Release'.
 .PARAMETER OutputPath
@@ -42,6 +42,16 @@ $psd1   = Join-Path $modSrc 'Fluence.Wpf.PowerShell.psd1'
 if ([string]::IsNullOrWhiteSpace($OutputPath))
 {
     $OutputPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\artifacts'
+}
+
+# Fail before staging or writing artifacts. Desktop uses the pinned 2.8.5.208 provider;
+# current PowerShell 7 ships a compatible 3.0.0.1 provider with PackageManagement.
+$nugetProvider = Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue |
+    Where-Object { $_.Version -ge [System.Version]'2.8.5.208' } |
+    Select-Object -First 1
+if ($null -eq $nugetProvider)
+{
+    throw 'NuGet provider 2.8.5.208 or later must already be installed. In a separate setup step with network access, run: Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force. Packaging does not bootstrap providers.'
 }
 
 # 1. Stage assemblies via Build-Module.ps1
@@ -92,9 +102,6 @@ $nupkgPath   = Join-Path $OutputPath $nupkgName
 New-Item -ItemType Directory -Path $repoDir -Force | Out-Null
 
 Write-Output "Creating NUPKG via Publish-Module to temp repository: $repoDir ..."
-
-# Ensure NuGet provider is available (required for PSGet v2 publish)
-Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
 
 Register-PSRepository -Name $repoName -SourceLocation $repoDir -PublishLocation $repoDir -InstallationPolicy Trusted
 

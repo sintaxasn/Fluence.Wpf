@@ -2,6 +2,26 @@
 <Configuration>
     <ViewDefinitions>
         <View>
+            <Name>Fluence.DialogResult</Name>
+            <ViewSelectedBy>
+                <TypeName>Fluence.DialogResult</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Cancelled</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>TimedOut</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+        <View>
             <Name>Fluence.Button</Name>
             <ViewSelectedBy>
                 <TypeName>Fluence.Button</TypeName>

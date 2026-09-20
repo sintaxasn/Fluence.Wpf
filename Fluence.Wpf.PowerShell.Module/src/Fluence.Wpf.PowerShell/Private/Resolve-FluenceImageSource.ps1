@@ -7,7 +7,8 @@
         Accepts a filesystem path (relative paths resolve against the current location and the file
         must exist), a file: URI, or a pack: URI (pack://application:,,,/Assembly;component/path).
         Anything else, such as an http: or data: URI, is rejected at spec-build time with a clear
-        error, so a bad image never reaches the UI thread.
+        error. This validates the source location only: image decoding, pack resource existence,
+        and WPF pack authority resolution occur on the UI thread and can still fail there.
     .PARAMETER Image
         The path or URI the caller passed.
     .OUTPUTS

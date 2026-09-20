@@ -14,8 +14,13 @@
         One of: Text, Multiline, Password, Number, Checkbox, Toggle, Choice, List, Date, Time,
         FileOpen, FileSave, FolderOpen, Link. Choice renders the -ValidateSet as a combo box or radio
         buttons; List renders it as a list view that can also take several selections (-MultiSelect).
+    .PARAMETER AsPlainText
+        Password prompts only. Return a plain string instead of the default SecureString.
+        Assign an explicitly requested plaintext value to a variable to avoid printing it.
     .PARAMETER DefaultValue
         The initial value. For a List prompt with -MultiSelect, one item or an array of items.
+        Password defaults must be strings and remain plaintext in the specification; omit the
+        default when collecting a secret. SecureString defaults are rejected without decryption.
     .PARAMETER ValidateSet
         For Choice and List prompts, the allowed values. Required when InputType is Choice or List.
     .PARAMETER As
@@ -25,13 +30,16 @@
         an array, even for one selected item. Not valid for other input types.
     .PARAMETER ValidateNotEmpty
         Require a non-whitespace value (for a List prompt, at least one selected item) before the
-        dialog can close on a non-cancel button.
+        dialog can close on a non-cancel button. Secure passwords require Length greater than zero.
     .PARAMETER ValidatePattern
-        A regular expression the value must match.
+        A regular expression the value must match. Password prompts require -AsPlainText to use it.
     .PARAMETER ValidateScript
         A scriptblock that receives the value and returns $true when valid. On a separate UI
         runspace it is recreated from text; caller variables, functions and closures are unavailable.
         Keep validators self-contained. On the caller's STA thread the live block is preserved.
+        Password validators receive SecureString unless -AsPlainText is specified; use Length to
+        check the number of characters. Do not retain or dispose the validator input; the module
+        replaces it as the field changes. Required secure passwords must have at least one character.
     .EXAMPLE
         New-FluencePrompt -Name User -Message 'Account name' -ValidateNotEmpty
     .EXAMPLE
@@ -62,6 +70,9 @@
         [object]$DefaultValue,
 
         [Parameter()]
+        [switch]$AsPlainText,
+
+        [Parameter()]
         [string[]]$ValidateSet,
 
         [Parameter()]
@@ -89,6 +100,23 @@
     if ($MultiSelect -and $InputType -ne 'List')
     {
         throw '-MultiSelect applies only to List prompts.'
+    }
+
+    if ($AsPlainText -and $InputType -ne 'Password')
+    {
+        throw '-AsPlainText applies only to Password prompts.'
+    }
+
+    if ($InputType -eq 'Password')
+    {
+        if ($null -ne $DefaultValue -and $DefaultValue -isnot [string])
+        {
+            throw 'A Password -DefaultValue must be a string. Omit it to collect a password without a plaintext default.'
+        }
+        if (-not $AsPlainText -and -not [string]::IsNullOrWhiteSpace($ValidatePattern))
+        {
+            throw 'Password -ValidatePattern requires -AsPlainText. Use -ValidateScript with SecureString.Length for secure validation.'
+        }
     }
 
     if ([string]::IsNullOrWhiteSpace($Name))
@@ -164,6 +192,7 @@
         Name             = $Name
         Message          = $Message
         InputType        = $InputType
+        AsPlainText      = [bool]$AsPlainText
         DefaultValue     = $DefaultValue
         ValidateSet      = $ValidateSet
         As               = $As

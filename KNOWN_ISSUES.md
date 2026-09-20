@@ -12,7 +12,7 @@ checking the parent does not select those unrealized data items, and newly
 realized child containers do not inherit that earlier checked state. Applications
 that need selection of an entire data hierarchy should maintain that selection in
 their data model. The removal/reset reconciliation in this branch removes detached
-containers from `SelectedItems`; it does not add data-model selection propagation.
+containers from `SelectedItems`; it does not add data-model selection propagation. A checked collapsed parent keeps its state when its bound children change but remain unrealized; only a genuinely empty child collection clears that parent state.
 This limitation needs a separate API and realization-policy decision before any
 claim of complete data-bound cascading support.
 

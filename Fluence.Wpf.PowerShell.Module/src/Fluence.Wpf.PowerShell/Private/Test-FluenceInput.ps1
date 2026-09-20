@@ -30,9 +30,18 @@
     foreach ($p in $Prompts)
     {
         $value = $Values[$p.Name]
-        $asText = [string]$value
+        $asText = $null
+        if ($value -is [System.Security.SecureString])
+        {
+            $isEmpty = $value.Length -eq 0
+        }
+        else
+        {
+            $asText = [string]$value
+            $isEmpty = [string]::IsNullOrWhiteSpace($asText)
+        }
 
-        if ($p.ValidateNotEmpty -and [string]::IsNullOrWhiteSpace($asText))
+        if ($p.ValidateNotEmpty -and $isEmpty)
         {
             return @{ IsValid = $false; Message = "'$($p.Name)' is required." }
         }
@@ -61,7 +70,14 @@
                 # A validator that throws counts as a failed validation, but the exception is the only
                 # clue that the scriptblock itself is broken (a typo, a missing cmdlet) rather than
                 # the value being rejected, so record it instead of discarding it.
-                Write-Verbose "ValidateScript for '$($p.Name)' threw: $($_.Exception.Message)"
+                if ($p.InputType -eq 'Password')
+                {
+                    Write-Verbose "ValidateScript for '$($p.Name)' threw. Exception text is omitted for password prompts."
+                }
+                else
+                {
+                    Write-Verbose "ValidateScript for '$($p.Name)' threw: $($_.Exception.Message)"
+                }
                 $ok = $false
             }
             if (-not $ok)

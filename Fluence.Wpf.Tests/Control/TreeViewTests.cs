@@ -642,6 +642,127 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task TreeView_MultipleSelection_CollapsedBoundChildrenPreserveParentUntilEmptyAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                System.Collections.ObjectModel.ObservableCollection<string> children = ["First", "Second"];
+                Controls.TreeView tree = new()
+                {
+                    SelectionMode = TreeViewSelectionMode.Multiple,
+                    ItemsSource = new[] { children },
+                    ItemTemplate = new HierarchicalDataTemplate { ItemsSource = new System.Windows.Data.Binding() },
+                };
+                Window window = new() { Content = tree, Width = 300, Height = 240 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Controls.TreeViewItem parent = Assert.IsType<Controls.TreeViewItem>(tree.ItemContainerGenerator.ContainerFromIndex(0));
+                    Assert.False(parent.IsExpanded);
+                    Assert.Equal(2, parent.Items.Count);
+                    Assert.Null(parent.ItemContainerGenerator.ContainerFromIndex(0));
+                    parent.IsSelectionChecked = true;
+                    Assert.Same(children, Assert.Single(tree.SelectedItems));
+
+                    children.RemoveAt(0);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(parent.IsSelectionChecked);
+                    Assert.Same(children, Assert.Single(tree.SelectedItems));
+                    Assert.Null(parent.ItemContainerGenerator.ContainerFromIndex(0));
+
+                    children.Add("Third");
+                    children[0] = "Replacement";
+                    children.Move(0, 1);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(parent.IsSelectionChecked);
+                    Assert.Same(children, Assert.Single(tree.SelectedItems));
+                    Assert.False(parent.IsExpanded);
+                    Assert.Null(parent.ItemContainerGenerator.ContainerFromIndex(0));
+
+                    children.Clear();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(parent.IsSelectionChecked);
+                    Assert.Empty(tree.SelectedItems);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public Task TreeView_MultipleSelection_UncheckedAdditionDoesNotRebuildSelectionAsync(bool addChild)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Controls.TreeViewItem selected = new() { Header = "Selected" };
+                Controls.TreeViewItem parent = new() { Header = "Parent", IsExpanded = true };
+                Controls.TreeView tree = new() { SelectionMode = TreeViewSelectionMode.Multiple };
+                _ = tree.Items.Add(selected);
+                _ = tree.Items.Add(parent);
+                Window window = new() { Content = tree, Width = 300, Height = 240 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    selected.IsSelectionChecked = true;
+                    System.Collections.IEnumerator selection = tree.SelectedItems.GetEnumerator();
+                    ItemsControl owner = addChild ? parent : tree;
+                    _ = owner.Items.Add(new Controls.TreeViewItem { Header = "Unchecked" });
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    // Clearing and repopulating the live selection invalidates its enumerator,
+                    // even if it ends up with the same values. An unrelated addition needs neither.
+                    Assert.True(selection.MoveNext());
+                    Assert.Same(selected, selection.Current);
+                    Assert.False(selection.MoveNext());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+        [Fact]
+        public Task TreeView_MultipleSelection_AdditionsWithSelectionStateStillReconcileAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TreeViewItem parent = new() { Header = "Parent", IsExpanded = true };
+                Controls.TreeViewItem selected = new() { Header = "Selected" };
+                _ = parent.Items.Add(selected);
+                Controls.TreeView tree = new() { SelectionMode = TreeViewSelectionMode.Multiple };
+                _ = tree.Items.Add(parent);
+                Window window = new() { Content = tree, Width = 300, Height = 240 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    parent.IsSelectionChecked = true;
+                    _ = parent.Items.Add(new Controls.TreeViewItem { Header = "Unchecked" });
+                    Assert.Null(parent.IsSelectionChecked);
+                    Assert.Same(selected, Assert.Single(tree.SelectedItems));
+
+                    Controls.TreeViewItem addedParent = new() { Header = "Added parent" };
+                    Controls.TreeViewItem addedSelected = new() { Header = "Added selected", IsSelectionChecked = true };
+                    _ = addedParent.Items.Add(addedSelected);
+                    _ = tree.Items.Add(addedParent);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Contains(selected, tree.SelectedItems.Cast<object>());
+                    Assert.Contains(addedSelected, tree.SelectedItems.Cast<object>());
+                    Assert.DoesNotContain(parent, tree.SelectedItems.Cast<object>());
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+        [Fact]
         public Task TreeView_MultipleSelectionCascadesAndComputesParentStateAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

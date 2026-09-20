@@ -4,7 +4,9 @@ The objects the cmdlets return. All are `PSCustomObject` instances tagged with a
 
 ## Fluence.DialogResult
 
-Returned by `Show-FluenceDialog`.
+Returned by `Show-FluenceDialog`. The default console view shows only `Cancelled` and `TimedOut`, so arbitrary prompt names and explicitly requested plaintext passwords cannot leak through that view. All button and prompt properties remain available through explicit property access. `Format-List *`, selecting properties, or serialization can expose plaintext values; formatting is not a security boundary.
+
+Password properties hold `System.Security.SecureString` by default, including empty or untouched fields and cancelled dialog results. Dispose each secure value once it is no longer needed. With `New-FluencePrompt -InputType Password -AsPlainText`, that property is a string. `Get-FluenceInput -AsPlainText` returns the string directly and does not receive this formatting protection.
 
 | Property | Type | Meaning |
 | --- | --- | --- |
@@ -34,6 +36,7 @@ Returned by `New-FluencePrompt`; consumed by `Show-FluenceDialog -Prompts`.
 | `DefaultValue` | `object` | Coerced to the input type's value type at build time. |
 | `ValidateSet` | `string[]` | Allowed values for `Choice` and `List`. |
 | `As` | `string` | `Combo` or `Radio` for `Choice`. |
+| `AsPlainText` | `bool` | Password only. Return a string instead of SecureString when true. |
 | `MultiSelect` | `bool` | `List` only. |
 | `ValidateNotEmpty` | `bool` | Require a value. |
 | `ValidatePattern` | `string` | Regular expression the value must match. |

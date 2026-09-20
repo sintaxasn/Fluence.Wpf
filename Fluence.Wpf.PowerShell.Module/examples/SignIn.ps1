@@ -15,11 +15,20 @@ Import-Module "$PSScriptRoot/../src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShel
 
 $result = Show-FluenceDialog -Title 'Sign In' -Prompts $prompts -Buttons $buttons
 
-if ($result.Login)
+try
 {
-    Write-Output "Signed in as: $($result.User)"
+    if ($result.Login)
+    {
+        $credential = [System.Management.Automation.PSCredential]::new($result.User, $result.Pass)
+        # Pass $credential to the intended authentication API here. Do not print its password.
+        Write-Output "Credentials collected for: $($credential.UserName)"
+    }
+    else
+    {
+        Write-Output 'Sign-in cancelled.'
+    }
 }
-else
+finally
 {
-    Write-Output 'Sign-in cancelled.'
+    if ($result.Pass -is [System.Security.SecureString]) { $result.Pass.Dispose() }
 }

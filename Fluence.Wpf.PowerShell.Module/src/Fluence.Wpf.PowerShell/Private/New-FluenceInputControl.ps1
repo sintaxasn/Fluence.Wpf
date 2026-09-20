@@ -65,8 +65,28 @@
             {
                 $ctl.Password = [string]$Prompt.DefaultValue
             }
-            $ctl.add_PasswordChanged({
+            $asPlainText = [bool]$Prompt.AsPlainText
+            if ($asPlainText)
+            {
                 $State.Result[$name] = $ctl.Password
+            }
+            else
+            {
+                $State.Result[$name] = $ctl.SecurePassword
+            }
+            $ctl.add_PasswordChanged({
+                if ($State.Result[$name] -is [System.Security.SecureString])
+                {
+                    $State.Result[$name].Dispose()
+                }
+                if ($asPlainText)
+                {
+                    $State.Result[$name] = $ctl.Password
+                }
+                else
+                {
+                    $State.Result[$name] = $ctl.SecurePassword
+                }
             }.GetNewClosure())
             return $ctl
         }

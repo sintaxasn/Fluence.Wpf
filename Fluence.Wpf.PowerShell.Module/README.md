@@ -26,6 +26,8 @@ pwsh -NoProfile -File build\Build-Module.ps1
 Import-Module .\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1
 ```
 
+Staging first checks that the manifest `ModuleVersion` and `PSData.Prerelease` exactly match `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. A mismatch, including a stable/prerelease transition, stops before changing the existing `lib` folder.
+
 From a release zip, extract the `Fluence.Wpf.PowerShell` folder into a module path and `Import-Module Fluence.Wpf.PowerShell`. The staged module is self-contained and imports on both editions; the loader picks `lib\net472` for Windows PowerShell and `lib\net8.0-windows10.0.26100.0` for PowerShell 7.
 
 ---
@@ -134,12 +136,30 @@ Every dialog cmdlet takes `-Theme` and `-Backdrop`; `Show-FluenceDialog`, `Show-
 
 ## Tests and gate
 
-`build\Test-Module.ps1` runs PSScriptAnalyzer with `PSScriptAnalyzerSettings.psd1`, a second analyzer pass for the Allman brace rule `PSPlaceOpenBrace`, and the Pester v5 suite under `tests\` (import Pester 5; Pester 6 is not supported). The default run is the logic lane; `-IncludeUi` also runs the UI-tagged cases, which open and close real windows. Run it in a dedicated process under both editions. The runner fails if inline WPF windows remain after Pester and shuts down its owned dispatcher before exiting:
+`build\Test-Module.ps1` imports PSScriptAnalyzer 1.25.0 and Pester 5.8.0 by exact version. It runs the analyzer with `PSScriptAnalyzerSettings.psd1`, a second analyzer pass for the Allman brace rule `PSPlaceOpenBrace`, and the Pester suite under `tests\`. Other installed versions do not satisfy the gate. The default run is the logic lane; `-IncludeUi` also runs the UI-tagged cases, which open and close real windows. Run it in a dedicated process under both editions. The runner fails if inline WPF windows remain after Pester and shuts down its owned dispatcher before exiting:
 
 ```powershell
 pwsh -NoProfile -File build\Test-Module.ps1
 powershell.exe -NoProfile -STA -File build\Test-Module.ps1
 ```
+
+Install the pinned build tools in each edition before running its gate (this setup requires network access to PowerShell Gallery):
+
+```powershell
+Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force
+Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck
+```
+
+On Windows PowerShell 5.1, first enable TLS 1.2 and install its NuGet provider in that separate setup step:
+
+```powershell
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force
+```
+
+PowerShell 7 ships a compatible NuGet provider with PackageManagement (3.0.0.1 in the validated host). Packaging requires an already available provider of at least 2.8.5.208 and fails before staging if none is available; it does not bootstrap providers. `Publish-Module` targets only a temporary local repository. Install PowerShellGet's packaging dependencies during setup before attempting an offline package run.
+
+CI has a separate `powershell` job that downloads the `build` job's library binaries, stages them, runs the logic lane in all three host modes, and uploads module packages and test results. The .NET release depends only on `build`, so a PowerShell tool or feed outage cannot block the library artifacts or release. Both jobs must pass before merging the integration change; PowerShell Gallery publication remains a follow-up.
 
 `build\Package-Module.ps1` writes `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg` to `artifacts\`. `build\Export-ModuleReference.ps1` regenerates the reference pages under `docs\powershell\reference\` from the comment-based help.
 

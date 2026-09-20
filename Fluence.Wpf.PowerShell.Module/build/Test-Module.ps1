@@ -4,11 +4,11 @@
 .DESCRIPTION
     Two gates, in order:
 
-      1. PSScriptAnalyzer over src/, build/, examples/ and tests/ with the shipped
+      1. PSScriptAnalyzer 1.25.0 over src/, build/, examples/ and tests/ with the shipped
          PSScriptAnalyzerSettings.psd1, plus a second pass for PSPlaceOpenBrace (a formatting rule,
          which the default rule set leaves out) so the Allman brace style is enforced rather than
          merely documented. Any Error or Warning finding from either pass fails the run.
-      2. The Pester v5 suite under tests/. By default the UI-tagged cases (real windows) are
+      2. The Pester 5.8.0 suite under tests/. By default the UI-tagged cases (real windows) are
          excluded; -IncludeUi sets FLUENCE_PS_UI=1 and runs them too.
 
     The Fluence.Wpf assemblies must already be staged under src/Fluence.Wpf.PowerShell/lib (see
@@ -55,15 +55,15 @@ $ErrorActionPreference = 'Stop'
 $moduleRoot = Split-Path $PSScriptRoot -Parent
 $failed = $false
 
-# Pester 5 is imported before the analyzer runs, even for an analyzer-only run. PSScriptAnalyzer
+# Pester 5.8.0 is imported before the analyzer runs, even for an analyzer-only run. PSScriptAnalyzer
 # resolves the commands it sees through Get-Command, and Get-Command on Describe or It autoloads the
 # newest installed Pester (6.x on a machine that has it). Pester 5 then fails to import because an
-# assembly with the same name is already loaded. Importing 5.x first pins the resolution.
-Import-Module Pester -MinimumVersion 5.0.0 -MaximumVersion 5.99.99 -ErrorAction Stop
+# assembly with the same name is already loaded. Importing 5.8.0 first pins the resolution.
+Import-Module Pester -RequiredVersion 5.8.0 -ErrorAction Stop
 
 if (-not $SkipAnalyzer)
 {
-    Import-Module PSScriptAnalyzer -ErrorAction Stop
+    Import-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -ErrorAction Stop
     $settings = Join-Path $moduleRoot 'PSScriptAnalyzerSettings.psd1'
     $targets = @('src', 'build', 'examples', 'tests') | ForEach-Object { Join-Path $moduleRoot $_ }
 
@@ -106,6 +106,7 @@ if (-not $SkipAnalyzer)
 
 if (-not $SkipPester)
 {
+    $previousUi = $env:FLUENCE_PS_UI
     try
     {
         if ($IncludeUi)
@@ -143,6 +144,8 @@ if (-not $SkipPester)
     }
     finally
     {
+        $env:FLUENCE_PS_UI = $previousUi
+
         # This executable test gate owns its process lifetime. An inline dispatcher must finish
         # while its pipeline thread still exists, before the explicit exit below tears it down.
         # The shipped module preserves this dispatcher across imports and does not own that choice.

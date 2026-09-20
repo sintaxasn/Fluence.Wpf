@@ -121,7 +121,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
-            ReconcileSelectionAfterItemsChanged(parent: null);
+            ReconcileSelectionAfterItemsChanged(parent: null, e);
         }
 
         /// <summary>
@@ -129,9 +129,20 @@ namespace Fluence.Wpf.Controls
         /// only its existing containers. Does not expand or realize any tree branch.
         /// </summary>
         /// <param name="parent">The changed child collection's owner, or null for the root.</param>
-        internal void ReconcileSelectionAfterItemsChanged(TreeViewItem? parent)
+        /// <param name="e">The collection change to reconcile.</param>
+        internal void ReconcileSelectionAfterItemsChanged(TreeViewItem? parent, NotifyCollectionChangedEventArgs e)
         {
             if (SelectionMode is not TreeViewSelectionMode.Multiple || _updatingSelectionChecks)
+            {
+                return;
+            }
+
+            // An unchecked addition cannot remove a selection or change an unchecked parent.
+            // Inspect only the added subtree instead of walking every existing root on each add.
+            if (e.Action is NotifyCollectionChangedAction.Add
+                && (parent is null || parent.IsSelectionChecked is false)
+                && e.NewItems is { } addedItems
+                && !ContainsSelectionState(parent ?? (ItemsControl)this, addedItems))
             {
                 return;
             }
@@ -389,11 +400,27 @@ namespace Fluence.Wpf.Controls
 
             return childCount switch
             {
-                0 => false,
+                0 => parent.Items.Count is 0 ? false : parent.IsSelectionChecked,
                 _ when checkedCount == childCount => true,
                 _ when checkedCount is 0 && !hasPartialChild => false,
                 _ => null,
             };
+        }
+
+        private static bool ContainsSelectionState(ItemsControl owner, IList items)
+        {
+            foreach (object item in items)
+            {
+                TreeViewItem? container = item as TreeViewItem
+                    ?? owner.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                if (container is not null
+                    && (container.IsSelectionChecked is not false || ContainsSelectionState(container, container.Items)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void RebuildMultipleSelectedItems()

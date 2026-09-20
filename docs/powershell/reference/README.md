@@ -52,5 +52,5 @@ Technical description of the `Fluence.Wpf.PowerShell` module surface. The cmdlet
 | `Fluence.Wpf.PowerShell.psd1` | Module manifest: version, exported functions, format file, gallery metadata. |
 | `Fluence.Wpf.PowerShell.psm1` | Root module: loads WPF, dot-sources `Private/` and `Public/`, loads `Fluence.Wpf.dll`, registers the removal handler. |
 | `lib/net472/`, `lib/net8.0-windows10.0.26100.0/` | Staged library builds for Windows PowerShell and PowerShell 7. Gitignored; produced by `build/Build-Module.ps1`. |
-| `Types/Fluence.Format.ps1xml` | Table views for `Fluence.Button`, `Fluence.Prompt` and `Fluence.ProgressHandle`. |
+| `Formats/Fluence.Format.ps1xml` | Views for `Fluence.Button`, `Fluence.Prompt`, `Fluence.ProgressHandle` and the outcome-only `Fluence.DialogResult`. |
 | `PSScriptAnalyzerSettings.psd1` | Analyzer rules for the gate: Error and Warning severities, 5.1 and 7.0 syntax compatibility, the 5.1 cmdlet compatibility profile. |

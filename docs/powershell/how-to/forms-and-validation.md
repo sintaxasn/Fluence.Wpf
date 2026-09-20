@@ -109,7 +109,9 @@ $log = Get-FluenceInput -Message 'Log file' -InputType FileSave -DefaultValue "$
 
 ## Collect a password
 
-`-InputType Password` renders the Fluence-styled `PasswordBox` with a reveal button. The value comes back as a plain string.
+`-InputType Password` renders the Fluence-styled `PasswordBox` with a reveal button. Its value is a `System.Security.SecureString` by default. Pass it directly to an API accepting SecureString, such as `PSCredential`, and dispose it when done. This avoids a plaintext result by default; it does not protect against code running in the same process or make downstream logging safe.
+
+`-ValidateNotEmpty` checks the secure value's `Length`, so whitespace characters count. A custom `-ValidateScript` receives SecureString: for example, `{ param($value) $value.Length -ge 12 }`. Do not retain or dispose that validator input; the module replaces and disposes it as the field changes. Regex validation requires the explicit `-AsPlainText` option, rather than decrypting a secure value implicitly. A password `-DefaultValue` must be a string and remains plaintext in the specification; omit it when collecting a secret.
 
 ```powershell
 $result = Show-FluenceDialog -Title 'Sign in' -Prompts @(
@@ -117,11 +119,30 @@ $result = Show-FluenceDialog -Title 'Sign in' -Prompts @(
     New-FluencePrompt -Name Pass -Message 'Password' -InputType Password -ValidateNotEmpty
 ) -Buttons (New-FluenceButton -Text 'Sign in' -Name Login -IsDefault), 'Cancel'
 
-if ($result.Login)
+try
 {
-    $credential = [System.Management.Automation.PSCredential]::new($result.User, (ConvertTo-SecureString $result.Pass -AsPlainText -Force))
+    if ($result.Login)
+    {
+        $credential = [System.Management.Automation.PSCredential]::new($result.User, $result.Pass)
+        # Use the credential here before disposing its password.
+    }
+}
+finally
+{
+    if ($result.Pass -is [System.Security.SecureString]) { $result.Pass.Dispose() }
 }
 ```
+
+Even a cancelled `Show-FluenceDialog` result contains its captured values: dispose its password property if you do not use it. `Get-FluenceInput` returns `$null` on cancel/timeout and disposes the discarded secure input itself.
+
+For an API that requires a plain string, opt in and assign the result:
+
+```powershell
+$plainSecret = Get-FluenceInput -Message 'API key' -InputType Password -AsPlainText
+# Pass the value to the intended API without writing it to the console or a log.
+```
+
+The default dialog result view hides prompt values, even with `-AsPlainText`. Explicit property access, `Format-List *`, serialization, and the raw string returned by `Get-FluenceInput -AsPlainText` can still expose them.
 
 ## Show a read-only link
 

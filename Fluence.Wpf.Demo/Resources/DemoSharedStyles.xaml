@@ -420,7 +420,6 @@
     <Thickness x:Key="DemoColorSectionContentMargin">0,0,44,48</Thickness>
     <Thickness x:Key="DemoNoMargin">0</Thickness>
 
-
     <!--  Home: the theme-aware brand lockup leads a compact native control catalog.  -->
     <Thickness x:Key="HomeHeroMargin">0,16,0,36</Thickness>
     <Thickness x:Key="HomeSocialLinksMargin">0,12,0,0</Thickness>

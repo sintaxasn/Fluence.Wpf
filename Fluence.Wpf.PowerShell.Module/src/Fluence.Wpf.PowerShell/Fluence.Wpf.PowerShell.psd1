@@ -29,7 +29,7 @@
     CmdletsToExport      = @()
     VariablesToExport    = @()
     AliasesToExport      = @()
-    FormatsToProcess     = @('Types/Fluence.Format.ps1xml')
+    FormatsToProcess     = @('Formats/Fluence.Format.ps1xml')
     PrivateData          = @{
         PSData = @{
             Prerelease   = 'pre'

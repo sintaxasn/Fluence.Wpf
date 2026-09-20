@@ -492,3 +492,13 @@ checks the larger brand and both rendered, accessible social icons.
 No cases are removed. Discovery rises from 1351 to 1368 on net472 and from 1354
 to 1371 on net10. The complementary runtime lanes report 1367 and 1368 cases,
 respectively; these are the CI floors after screenshot filtering. The method-name diff contains only this rename and these additions.
+
+## PR 74 reviewer follow-up
+
+The review adds seven cases per full target framework, with no removals or renames:
+one collapsed, data-bound tree selection case; two unchecked-addition cases;
+one selected-addition reconciliation case; one scrolling case under sustained input;
+and two hosted gallery scrolling cases for Colors and Data. The five new method names
+are recorded in the method inventories. Discovery rises to 1375 on net472 and 1378
+on net10. The corresponding runtime CI floors are 1374 and 1375 after screenshot
+filtering, preserving the existing explicit regeneration skip.

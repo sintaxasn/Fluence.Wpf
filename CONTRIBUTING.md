@@ -36,8 +36,11 @@ The `Fluence.Wpf.PowerShell` script module under `Fluence.Wpf.PowerShell.Module/
 ```powershell
 pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
 pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
+pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -SkipAnalyzer
 powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1
 ```
+
+Install the exact Pester and PSScriptAnalyzer versions listed in [docs/release.md](docs/release.md) before running the gate. CI runs the PowerShell checks and module packaging in a separate job after consuming the library artifacts.
 
 The render lane (`-IncludeUi`) opens real windows and runs locally only; [docs/release.md](docs/release.md) lists it with the expected case counts per lane. The module follows PSADT PowerShell conventions, not the C# ones above: 5.1 and 7 compatible syntax, one function per file with comment-based help and `[OutputType()]`, fully qualified .NET type names, Allman braces, UTF-8 with BOM. Cmdlet reference pages under `docs/powershell/reference/` are generated from the comment-based help, so change the help in the function and re-run `build/Export-ModuleReference.ps1` rather than editing the page.
 

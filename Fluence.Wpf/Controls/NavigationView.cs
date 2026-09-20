@@ -773,14 +773,7 @@ defaultValue: null,
             bool isFooter = IsFooterItem(item);
             object invokedItem = isFooter ? item : GetDataFromContainer(item);
             ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, isSettingsInvoked: false));
-            if (isFooter)
-            {
-                SelectFooterItem(item);
-            }
-            else
-            {
-                SelectItemFromContainer(item);
-            }
+            SelectItemFromContainer(item);
         }
 
         /// <summary>

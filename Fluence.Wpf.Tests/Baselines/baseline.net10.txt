@@ -492,6 +492,8 @@
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_CompactsControlsAtNarrowWidthsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColorsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GallerySettingsPageTests.GallerySettingsPage_InvalidAccentSwatchTag_DoesNotChangeAccentAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GallerySmoothScrollingTests.GalleryWheelBurstAndExternalScrollReachRequestedOffsetsAsync(colorsPage: False)
+  Fluence.Wpf.Tests.Gallery.Pages.GallerySmoothScrollingTests.GalleryWheelBurstAndExternalScrollReachRequestedOffsetsAsync(colorsPage: True)
   Fluence.Wpf.Tests.Gallery.Pages.GalleryStatusPageTests.GalleryStatusPage_DeterminateProgressRingUsesNumberBoxBindingAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryStatusPageTests.GalleryStatusPage_ProgressBarValueAllowsZeroAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryStatusPageTests.GalleryStatusPage_SourceMatchesLiveStepAndRingValuesAsync
@@ -1101,6 +1103,7 @@
   Fluence.Wpf.Tests.Control.SmoothScrollViewerTests.WheelAfterExternalScrollContinuesFromLiveOffsetAsync(motion: True, wheelFirst: True)
   Fluence.Wpf.Tests.Control.SmoothScrollViewerTests.WheelAnimationAfterExternalScrollDoesNotRewindAsync
   Fluence.Wpf.Tests.Control.SmoothScrollViewerTests.ExternalScrollDuringWheelAnimationCancelsOldDestinationAsync
+  Fluence.Wpf.Tests.Control.SmoothScrollViewerTests.WheelAnimationMakesProgressWhileInputRemainsQueuedAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.Defaults_AreWinUiCanonAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.IsFlyoutOpen_IsReadOnlyDpAsync
   Fluence.Wpf.Tests.Control.SplitButtonTests.Template_ExposesPrimarySecondaryAndPopupPartsAsync
@@ -1263,6 +1266,10 @@
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelectionCheckbox_StaysCompactAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_RemovalAndResetDiscardDetachedItemsAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_ItemsSourceReplacementDiscardsOldSelectionAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_CollapsedBoundChildrenPreserveParentUntilEmptyAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_UncheckedAdditionDoesNotRebuildSelectionAsync(addChild: False)
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_UncheckedAdditionDoesNotRebuildSelectionAsync(addChild: True)
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_AdditionsWithSelectionStateStillReconcileAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelectionCascadesAndComputesParentStateAsync
   Fluence.Wpf.Tests.Control.Rules.AccessibilityNameTests.GlyphButtons_InPickersAndSpinners_HaveAutomationNamesAsync
   Fluence.Wpf.Tests.Control.Rules.AccessibilityNameTests.FluenceWindow_CaptionButtons_HaveAutomationNamesAsync

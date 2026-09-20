@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
-            FindOwningTreeView()?.ReconcileSelectionAfterItemsChanged(this);
+            FindOwningTreeView()?.ReconcileSelectionAfterItemsChanged(this, e);
         }
 
         /// <inheritdoc />

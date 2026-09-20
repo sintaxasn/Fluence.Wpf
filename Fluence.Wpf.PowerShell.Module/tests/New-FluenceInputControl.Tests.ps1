@@ -46,3 +46,35 @@ Describe 'New-FluenceInputControl result seeding' {
         $v | Should -BeTrue
     }
 }
+
+
+Describe 'Password control capture without a window' {
+    It 'captures <Mode> passwords as <ExpectedType> on the real STA route' -ForEach @(
+        @{ Mode = 'empty'; ExpectedType = 'System.Security.SecureString'; Plain = $false; Default = $null; Changed = $null; Length = 0 }
+        @{ Mode = 'untouched'; ExpectedType = 'System.Security.SecureString'; Plain = $false; Default = 'seed'; Changed = $null; Length = 4 }
+        @{ Mode = 'edited'; ExpectedType = 'System.Security.SecureString'; Plain = $false; Default = 'seed'; Changed = 'new-value'; Length = 9 }
+        @{ Mode = 'explicit plaintext'; ExpectedType = 'System.String'; Plain = $true; Default = 'seed'; Changed = 'new-value'; Length = 9 }
+    ) {
+        $value = & (Get-Module Fluence.Wpf.PowerShell) {
+            param($plain, $initial, $changed)
+            Invoke-OnFluenceUi -Script {
+                param($plain2, $initial2, $changed2)
+                $prompt = New-FluencePrompt -Name Key -Message 'Key' -InputType Password -AsPlainText:$plain2 -DefaultValue $initial2
+                $state = @{ Result = @{} }
+                $control = New-FluenceInputControl -Prompt $prompt -State $state
+                if ($null -ne $changed2) { $control.Password = $changed2 }
+                return $state.Result.Key
+            } -ArgumentList @($plain, $initial, $changed)
+        } $Plain $Default $Changed
+        try
+        {
+            $value.GetType().FullName | Should -Be $ExpectedType
+            $value.Length | Should -Be $Length
+            if ($Plain) { $value | Should -BeExactly 'new-value' }
+        }
+        finally
+        {
+            if ($value -is [System.Security.SecureString]) { $value.Dispose() }
+        }
+    }
+}

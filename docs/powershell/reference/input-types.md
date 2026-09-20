@@ -6,7 +6,7 @@ The `-InputType` values accepted by `New-FluencePrompt`, the Fluence control eac
 | --- | --- | --- | --- | --- |
 | `Text` (default) | `Fluence.Wpf.Controls.TextBox` | `string` | `DefaultValue` or `$null` | Single line. |
 | `Multiline` | `Fluence.Wpf.Controls.TextBox` (AcceptsReturn, 3 lines minimum) | `string` | `DefaultValue` or `$null` | Enter inserts a newline. |
-| `Password` | `System.Windows.Controls.PasswordBox` with the Fluence style and reveal button | `string` | `DefaultValue` or `$null` | The value is a plain string; handle it accordingly. |
+| `Password` | `System.Windows.Controls.PasswordBox` with the Fluence style and reveal button | `SecureString` (`string` with `-AsPlainText`) | Secure copy of the default, or an empty SecureString | Dispose the returned SecureString when done. Defaults must be strings and remain plaintext in the spec. Regex validation requires `-AsPlainText`; custom validators receive the selected return type. |
 | `Number` | `Fluence.Wpf.Controls.NumberBox` | `double` | `DefaultValue` or `0` | `DefaultValue` must convert to `double`. |
 | `Checkbox` | `Fluence.Wpf.Controls.CheckBox` | `bool` | `DefaultValue` or `$false` | The prompt `Message` is the check box label; no separate label is shown. `DefaultValue` is converted with `[Convert]::ToBoolean`, so `'false'` is `$false`. |
 | `Toggle` | `Fluence.Wpf.Controls.ToggleSwitch` (On / Off) | `bool` | `DefaultValue` or `$false` | Same conversion as `Checkbox`. |
@@ -25,9 +25,9 @@ Validation runs when a non-cancel button is clicked, in prompt order, and stops 
 
 | Rule | Passes when |
 | --- | --- |
-| `-ValidateNotEmpty` | The value converted to a string is not empty or whitespace. For an array (a `List` with `-MultiSelect`) this means at least one item. |
-| `-ValidatePattern <regex>` | The value is empty, or its string form matches the pattern. Combine with `-ValidateNotEmpty` to require a match. |
-| `-ValidateScript { param($value) ... }` | The last object the scriptblock emits is truthy. An exception inside the scriptblock counts as a failure. |
+| `-ValidateNotEmpty` | A secure Password has `Length` greater than zero; whitespace characters count and the value is not decrypted. For other types, the value converted to a string is not empty or whitespace. For an array (a `List` with `-MultiSelect`) this means at least one item. |
+| `-ValidatePattern <regex>` | The value is empty, or its string form matches the pattern. Combine with `-ValidateNotEmpty` to require a match. Password prompts require explicit `-AsPlainText`. |
+| `-ValidateScript { param($value) ... }` | The last object the scriptblock emits is truthy. An exception inside the scriptblock counts as a failure. Password validators receive SecureString by default, or a string with `-AsPlainText`; do not retain or dispose the validator input. |
 
 Messages: `'<Name>' is required.`, `'<Name>' does not match the required format.`, `'<Name>' failed validation.`
 

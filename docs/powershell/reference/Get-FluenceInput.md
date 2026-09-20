@@ -5,12 +5,12 @@ Shows a themed Fluent input dialog and returns the captured value, or $null on c
 ## Syntax
 
 ```text
-Get-FluenceInput [-Message] <string> [-Title <string>] [-DefaultValue <Object>] [-InputType <string>] [-ValidateSet <string[]>] [-As <string>] [-Timeout <int>] [-Countdown] [-Theme <string>] [-Backdrop <string>] [<CommonParameters>]
+Get-FluenceInput [-Message] <string> [-Title <string>] [-DefaultValue <Object>] [-AsPlainText] [-InputType <string>] [-ValidateSet <string[]>] [-As <string>] [-Timeout <int>] [-Countdown] [-Theme <string>] [-Backdrop <string>] [<CommonParameters>]
 ```
 
 ## Description
 
-Wraps a single-prompt Show-FluenceDialog with an OK (default) and Cancel button. Returns the captured input value when the user clicks OK, or $null when the user cancels or the dialog times out.
+Wraps a single-prompt Show-FluenceDialog with an OK (default) and Cancel button. Returns the captured input value when the user clicks OK, or $null when the user cancels or the dialog times out. Password input returns SecureString unless -AsPlainText is specified. Dispose the returned SecureString when the caller no longer needs it.
 
 ## Parameters
 
@@ -18,7 +18,8 @@ Wraps a single-prompt Show-FluenceDialog with an OK (default) and Cancel button.
 | --- | --- | --- | --- | --- |
 | `-Message` | String | Yes |  | The prompt label shown in the dialog (Mandatory). |
 | `-Title` | String | No | Fluence | The window title. Defaults to 'Fluence'. |
-| `-DefaultValue` | Object | No |  | The initial value pre-filled in the input control. |
+| `-DefaultValue` | Object | No |  | The initial value pre-filled in the input control. Password defaults must be strings and remain plaintext in the specification; omit the default when collecting a secret. |
+| `-AsPlainText` | switch | No |  | Password prompts only. Return a plain string instead of the default SecureString. Assign an explicitly requested plaintext value to a variable to avoid printing it. The DialogResult default formatting does not apply to this raw string. |
 | `-InputType` | String | No | Text | The input control type. One of: Text (default), Multiline, Password, Number, Checkbox, Toggle, Choice, Date, Time, FileOpen, FileSave, FolderOpen, Link. A List prompt is not offered here because it picks from a set rather than capturing a typed value; use Show-FluenceListSelection for that. Values: Text, Multiline, Password, Number, Checkbox, Toggle, Choice, Date, Time, FileOpen, FileSave, FolderOpen, Link. |
 | `-ValidateSet` | String[] | No |  | The allowed values for a Choice prompt. Required when -InputType is Choice. |
 | `-As` | String | No |  | How a Choice prompt renders its values: Combo (default) or Radio. Values: Combo, Radio. |

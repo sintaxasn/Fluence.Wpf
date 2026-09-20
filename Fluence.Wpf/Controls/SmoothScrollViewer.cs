@@ -196,17 +196,18 @@ namespace Fluence.Wpf.Controls
             // The WPF scroll command queue replaces consecutive offset commands on the
             // same axis. Sending from a clock callback can therefore erase a consumer's queued
             // scroll request before layout publishes it. Let layout drain that queue first.
-            // An external offset change then cancels this pending send with the old animation.
+            // Loaded follows Render/layout but precedes Input, so wheel input cannot starve
+            // animated offsets. An external offset change cancels the pending send.
             if (property == CurrentVerticalOffsetProperty)
             {
                 _ = _pendingVerticalScroll?.Abort();
-                _pendingVerticalScroll = Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                _pendingVerticalScroll = Dispatcher.BeginInvoke(DispatcherPriority.Loaded,
                     new Action(() => ApplyOffset(property, offset)));
             }
             else
             {
                 _ = _pendingHorizontalScroll?.Abort();
-                _pendingHorizontalScroll = Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                _pendingHorizontalScroll = Dispatcher.BeginInvoke(DispatcherPriority.Loaded,
                     new Action(() => ApplyOffset(property, offset)));
             }
         }
@@ -246,7 +247,7 @@ namespace Fluence.Wpf.Controls
                 EasingFunction = SharedEase,
             };
             animation.Freeze();
-            BeginAnimation(property, animation, HandoffBehavior.SnapshotAndReplace);
+            BeginAnimation(property, animation);
         }
 
         private static double Clamp(double value, double min, double max)

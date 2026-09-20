@@ -22,8 +22,12 @@ $script:ThemeSeededSlot = 'Fluence.Wpf.PowerShell.ThemeSeeded'
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
 # Dot-source private then public functions.
-$private = @(Get-ChildItem -Path (Join-Path $script:ModuleRoot 'Private') -Filter '*.ps1' -ErrorAction SilentlyContinue)
-$public  = @(Get-ChildItem -Path (Join-Path $script:ModuleRoot 'Public')  -Filter '*.ps1' -ErrorAction SilentlyContinue)
+$private = @(Get-ChildItem -LiteralPath (Join-Path $script:ModuleRoot 'Private') -Filter '*.ps1' -File -ErrorAction Stop)
+$public  = @(Get-ChildItem -LiteralPath (Join-Path $script:ModuleRoot 'Public') -Filter '*.ps1' -File -ErrorAction Stop)
+if ($private.Count -eq 0 -or $public.Count -eq 0)
+{
+    throw 'Fluence.Wpf.PowerShell package is incomplete: Private and Public must each contain function scripts.'
+}
 foreach ($file in @($private + $public))
 {
     . $file.FullName

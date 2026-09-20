@@ -6,13 +6,19 @@
     .DESCRIPTION
         Wraps a single-prompt Show-FluenceDialog with an OK (default) and Cancel button. Returns
         the captured input value when the user clicks OK, or $null when the user cancels or the
-        dialog times out.
+        dialog times out. Password input returns SecureString unless -AsPlainText is specified.
+        Dispose the returned SecureString when the caller no longer needs it.
     .PARAMETER Message
         The prompt label shown in the dialog (Mandatory).
     .PARAMETER Title
         The window title. Defaults to 'Fluence'.
+    .PARAMETER AsPlainText
+        Password prompts only. Return a plain string instead of the default SecureString.
+        Assign an explicitly requested plaintext value to a variable to avoid printing it.
+        The DialogResult default formatting does not apply to this raw string.
     .PARAMETER DefaultValue
-        The initial value pre-filled in the input control.
+        The initial value pre-filled in the input control. Password defaults must be strings and
+        remain plaintext in the specification; omit the default when collecting a secret.
     .PARAMETER InputType
         The input control type. One of: Text (default), Multiline, Password, Number, Checkbox,
         Toggle, Choice, Date, Time, FileOpen, FileSave, FolderOpen, Link. A List prompt is not
@@ -63,6 +69,9 @@
         [object]$DefaultValue,
 
         [Parameter()]
+        [switch]$AsPlainText,
+
+        [Parameter()]
         [ValidateSet('Text', 'Multiline', 'Password', 'Number', 'Checkbox', 'Toggle',
             'Choice', 'Date', 'Time', 'FileOpen', 'FileSave', 'FolderOpen', 'Link')]
         [string]$InputType = 'Text',
@@ -96,7 +105,7 @@
         InputType = $InputType
     }
 
-    foreach ($name in @('DefaultValue', 'ValidateSet', 'As'))
+    foreach ($name in @('DefaultValue', 'ValidateSet', 'As', 'AsPlainText'))
     {
         if ($PSBoundParameters.ContainsKey($name))
         {
@@ -129,6 +138,10 @@
 
     if ($result.Cancelled -or $result.TimedOut)
     {
+        if ($result.Input -is [System.Security.SecureString])
+        {
+            $result.Input.Dispose()
+        }
         return $null
     }
 

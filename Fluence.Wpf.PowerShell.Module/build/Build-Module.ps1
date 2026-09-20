@@ -6,7 +6,8 @@
     PowerShell 5.1, net8.0-windows10.0.26100.0 for PowerShell 7, which rolls forward onto the .NET 9
     and 10 runtimes) from Fluence.Wpf/bin/<Configuration>/<tfm> into
     src/Fluence.Wpf.PowerShell/lib/<tfm>. Stale lib subfolders are removed first so an orphaned TFM
-    folder from an earlier run never ships.
+    folder from an earlier run never ships. Before any build or staging, the manifest version
+    and prerelease identifier must exactly match Directory.Build.props.
 
     The library is not built here unless -Build is passed: CI builds the solution once and this
     script stages what that build produced. A missing build output fails with the exact dotnet
@@ -38,6 +39,31 @@ $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $lib = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\lib'
 $project = Join-Path $repo 'Fluence.Wpf\Fluence.Wpf.csproj'
 $targetFrameworks = @('net472', 'net8.0-windows10.0.26100.0')
+
+# Version agreement is required before building or mutating staging, including release transitions.
+$manifestPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1'
+$manifest = Import-PowerShellDataFile -LiteralPath $manifestPath
+[xml]$props = Get-Content -LiteralPath (Join-Path $repo 'Directory.Build.props') -Raw
+$prefixNodes = @($props.SelectNodes('/Project/PropertyGroup/VersionPrefix'))
+$suffixNodes = @($props.SelectNodes('/Project/PropertyGroup/VersionSuffix'))
+if ($prefixNodes.Count -ne 1 -or $suffixNodes.Count -gt 1)
+{
+    throw 'The tree version must have one VersionPrefix and at most one VersionSuffix in Directory.Build.props.'
+}
+$treePrefix = $prefixNodes[0].InnerText
+$treeSuffix = ''
+if ($suffixNodes.Count -eq 1)
+{
+    $treeSuffix = $suffixNodes[0].InnerText
+}
+$modulePrefix = [string]$manifest.ModuleVersion
+$moduleSuffix = [string]$manifest.PrivateData.PSData.Prerelease
+if ([string]::IsNullOrWhiteSpace($treePrefix) -or
+    -not [string]::Equals($modulePrefix, $treePrefix, [System.StringComparison]::Ordinal) -or
+    -not [string]::Equals($moduleSuffix, $treeSuffix, [System.StringComparison]::Ordinal))
+{
+    throw "Module version '$modulePrefix' (Prerelease='$moduleSuffix') does not match Directory.Build.props VersionPrefix='$treePrefix', VersionSuffix='$treeSuffix'. Align both version fields before staging or packaging."
+}
 
 if ($Build)
 {

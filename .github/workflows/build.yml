@@ -97,7 +97,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1367; 'net10' = 1368 }
+          $floor = @{ 'net472' = 1374; 'net10' = 1375 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
@@ -112,47 +112,6 @@ jobs:
               Write-Host "$tfm : $total cases across both lanes."
             }
           }
-
-      # The PowerShell module (Fluence.Wpf.PowerShell.Module/) is a script module outside the
-      # solution. Build-Module.ps1 stages the Release net472 and net8.0-windows assemblies the
-      # solution build produced; Test-Module.ps1 runs PSScriptAnalyzer plus the Pester logic lane
-      # (the UI lane needs an interactive desktop and stays local). Both editions run because the
-      # module loads a different Fluence.Wpf target on each.
-      - name: Ensure PSScriptAnalyzer and Pester 5
-        shell: pwsh
-        run: |
-          if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Scope CurrentUser -Force }
-          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version.Major -eq 5 })) { Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck -MaximumVersion 5.99.99 }
-
-      - name: Ensure analyzer and Pester 5 for Windows PowerShell
-        shell: powershell
-        run: |
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue)) { Install-PackageProvider -Name NuGet -Scope CurrentUser -Force }
-          if (-not (Get-Module -ListAvailable PSScriptAnalyzer)) { Install-Module PSScriptAnalyzer -Scope CurrentUser -Force }
-          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version.Major -eq 5 })) { Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck -MaximumVersion 5.99.99 }
-
-      - name: Stage PowerShell module libraries
-        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
-
-      - name: Test PowerShell module (PowerShell 7)
-        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/pwsh.xml
-
-      - name: Test PowerShell module (PowerShell 7, MTA)
-        run: pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -SkipAnalyzer -TestResultPath TestResults/psmodule/pwsh-mta.xml
-
-      - name: Test PowerShell module (Windows PowerShell 5.1)
-        shell: cmd
-        run: powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/desktop.xml
-
-      - name: Package PowerShell module
-        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
-
-      - name: Upload PowerShell module package
-        uses: actions/upload-artifact@v7
-        with:
-          name: fluence-ps-module-package
-          path: Fluence.Wpf.PowerShell.Module/artifacts/
 
       - name: Upload test results
         if: always()
@@ -215,7 +174,86 @@ jobs:
             nupkg/*.snupkg
           retention-days: 30
 
-  # Version tags (v*) run the full build/test/pack gates above and then publish a
+  # Script-module tooling and tests cannot block library artifacts or the .NET release.
+  # This job consumes the exact binaries uploaded by build; no second library build is needed.
+  powershell:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download library binaries (.NET Framework 4.7.2)
+        uses: actions/download-artifact@v8
+        with:
+          name: fluence-wpf-release-dotnet472
+          path: Fluence.Wpf/bin/Release/net472
+
+      - name: Download library binaries (.NET 8)
+        uses: actions/download-artifact@v8
+        with:
+          name: fluence-wpf-release-dotnet8
+          path: Fluence.Wpf/bin/Release/net8.0-windows10.0.26100.0
+
+      # Network setup is explicit and isolated from local package creation. Windows PowerShell
+      # needs the external NuGet provider; PowerShell 7 uses its bundled provider.
+      - name: Install pinned build tools (Windows PowerShell)
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue | Where-Object { $_.Version -eq [version]'2.8.5.208' })) {
+            Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force
+          }
+          if (-not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })) {
+            Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force
+          }
+          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })) {
+            Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck
+          }
+
+      - name: Install pinned build tools (PowerShell 7)
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })) {
+            Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force
+          }
+          if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })) {
+            Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck
+          }
+
+      - name: Stage PowerShell module libraries
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
+
+      - name: Test PowerShell module (PowerShell 7)
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/pwsh.xml
+
+      - name: Test PowerShell module (PowerShell 7, MTA)
+        run: pwsh -NoProfile -MTA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -SkipAnalyzer -TestResultPath TestResults/psmodule/pwsh-mta.xml
+
+      - name: Test PowerShell module (Windows PowerShell 5.1)
+        shell: cmd
+        run: powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/desktop.xml
+
+      - name: Package PowerShell module
+        run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
+
+      - name: Upload PowerShell module package
+        uses: actions/upload-artifact@v7
+        with:
+          name: fluence-ps-module-package
+          path: Fluence.Wpf.PowerShell.Module/artifacts/
+          if-no-files-found: error
+
+      - name: Upload PowerShell module test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fluence-ps-module-test-results
+          path: TestResults/psmodule/
+          retention-days: 14
+
+  # Version tags (v*) run the .NET build/test/pack gates above and then publish a
   # GitHub release with the per-TFM library binaries, the demo, and the NuGet
   # package attached, and push the package to nuget.org. Tags carrying a
   # SemVer prerelease identifier are marked as prereleases. Write permission is
@@ -260,6 +298,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
+          pattern: fluence-wpf-*
           path: artifacts
 
       - name: Stage release assets
