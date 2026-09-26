@@ -94,7 +94,7 @@ Any other scheme (`http:`, `data:`) is rejected with an error before a window op
 
 ![An image-led confirmation dialog in the light theme](../images/dialog-image-light.png)
 
-A runnable version that draws its own PNG is in `Fluence.Wpf.PowerShell.Module/examples/ImageDialog.ps1`.
+Supply your own image file at the path above.
 
 ## Place the dialog in a corner
 
@@ -118,15 +118,15 @@ With `-ParentWindow`, `Center` gives way to centring over the owner. `TopRight` 
 $outcome = Show-FluenceRestartPrompt -Title 'Contoso Suite' -Message 'Restart your computer to complete the installation.' -Countdown 120
 switch ($outcome)
 {
-    'Restart' { Restart-Computer -Force }
-    'TimedOut' { Restart-Computer -Force }
-    'Later' { Write-Log 'Restart deferred.' }
+    'Restart' { Write-Output 'Restart requested.' }
+    'TimedOut' { Write-Output 'Countdown expired.' }
+    'Later' { Write-Output 'Restart deferred.' }
 }
 ```
 
 ![The restart prompt in the dark theme, counting down on the Restart now button](../images/restart-prompt-dark.png)
 
-Use `-NoCountdown` for a prompt that waits indefinitely. The cmdlet never restarts the machine itself.
+Use `-NoCountdown` for a prompt that waits indefinitely. Both the cmdlet and this recipe only report the outcome; neither restarts the machine. Let the calling script decide what each outcome means for its workflow.
 
 ## Override theme, backdrop or accent for one dialog
 
@@ -137,3 +137,4 @@ Every dialog cmdlet takes `-Theme` (`Auto`, `Light`, `Dark`, `HighContrast`) and
 - [Show-FluenceMessage](../reference/Show-FluenceMessage.md), [Show-FluenceDialog](../reference/Show-FluenceDialog.md), [New-FluenceButton](../reference/New-FluenceButton.md), [Show-FluenceRestartPrompt](../reference/Show-FluenceRestartPrompt.md)
 - [Result objects](../reference/result-objects.md) for the exact shape of `Fluence.DialogResult`
 - [Build forms with validation](forms-and-validation.md) to add input prompts to a dialog
+- [Runnable confirmation example](../../../Fluence.Wpf.PowerShell.Module/examples/README.md#start-with-a-confirmation)

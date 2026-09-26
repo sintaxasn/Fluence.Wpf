@@ -74,4 +74,4 @@ On `pwsh -MTA` and on a host application you can call `Show-FluenceMessage` or a
 - [Show-FluenceProgress](../reference/Show-FluenceProgress.md), [Update-FluenceProgress](../reference/Update-FluenceProgress.md), [Close-FluenceProgress](../reference/Close-FluenceProgress.md)
 - [Result objects](../reference/result-objects.md) for `Fluence.ProgressHandle`
 - [Explanation](../explanation.md) for the inline, runspace and host threading models
-- Runnable example: `Fluence.Wpf.PowerShell.Module/examples/Progress.ps1`
+- Runnable example: `Fluence.Wpf.PowerShell.Module/examples/03-Progress.ps1`

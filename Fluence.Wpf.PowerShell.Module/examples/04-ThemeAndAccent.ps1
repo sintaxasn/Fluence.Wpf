@@ -1,9 +1,9 @@
-﻿# ThemeAndAccent.ps1 - Switch Light/Dark/Auto themes and cycle custom accent colors live, and watch
+﻿# 04-ThemeAndAccent.ps1 - Switch Light/Dark/Auto themes and cycle custom accent colors live, and watch
 # the window icon follow the theme. The module handles STA, assembly loading, the Application, and the
 # message loop; runtime theming goes through Set-FluenceTheme and Set-FluenceAccent, -WatchSystemTheme
 # follows the OS setting while open, and the brand Light/Dark vector icons (merged into application
 # resources by the library) are rasterized once and swapped to match the resolved theme.
-# Run: powershell.exe -File ThemeAndAccent.ps1   OR   pwsh -File ThemeAndAccent.ps1
+# Run: powershell.exe -File 04-ThemeAndAccent.ps1   OR   pwsh -File 04-ThemeAndAccent.ps1
 
 # $Data is read inside the add_Click / theme-change closures (via .GetNewClosure()), which the analyzer
 # cannot trace statically; it is the sanctioned cross-handler state channel on an MTA UI runspace, not
@@ -19,25 +19,39 @@ $xaml = @'
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
-    Title="Fluence.Wpf - Theme and Accent"
+    Title="Fluence.Wpf - Theme and accent"
     Width="560"
-    Height="380"
+    Height="440"
+    MinWidth="480"
+    MinHeight="360"
     SystemBackdropType="Mica"
     ExtendsContentIntoTitleBar="False">
-    <StackPanel Margin="24" VerticalAlignment="Center">
-        <TextBlock Text="Theme" fluence:TextBlockExtensions.Typography="Subtitle" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-        <StackPanel Orientation="Horizontal" Margin="0,8,0,16">
-            <fluence:Button x:Name="LightBtn" Content="Light" Margin="0,0,8,0" />
-            <fluence:Button x:Name="DarkBtn" Content="Dark" Margin="0,0,8,0" />
-            <fluence:Button x:Name="AutoBtn" Content="Auto (follow Windows)" />
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Theme and accent" fluence:TextBlockExtensions.Typography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" />
+            <TextBlock Text="Choose a theme and accent color to see the window update immediately." Margin="0,8,0,0" fluence:TextBlockExtensions.Typography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
         </StackPanel>
-        <TextBlock Text="Accent" fluence:TextBlockExtensions.Typography="Subtitle" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-        <StackPanel Orientation="Horizontal" Margin="0,8,0,16">
-            <fluence:Button x:Name="AccentBtn" Content="Cycle custom accent" Appearance="Accent" Margin="0,0,8,0" />
-            <fluence:Button x:Name="SystemAccentBtn" Content="Use system accent" />
-        </StackPanel>
-        <fluence:InfoBar x:Name="StatusBar" IsOpen="True" IsClosable="False" Severity="Informational" Title="Tip" Message="Switch the theme (or change Windows while Auto is on) - the title-bar and taskbar icon follow it." />
-    </StackPanel>
+        <fluence:SmoothScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Theme" Margin="0,0,0,12" fluence:TextBlockExtensions.Typography="BodyStrong" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <WrapPanel Margin="0,0,0,8">
+                    <fluence:Button x:Name="LightBtn" Content="Light" Margin="0,0,8,8" />
+                    <fluence:Button x:Name="DarkBtn" Content="Dark" Margin="0,0,8,8" />
+                    <fluence:Button x:Name="AutoBtn" Content="Use system setting" Margin="0,0,0,8" />
+                </WrapPanel>
+                <TextBlock Text="Accent" Margin="0,0,0,12" fluence:TextBlockExtensions.Typography="BodyStrong" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <WrapPanel Margin="0,0,0,8">
+                    <fluence:Button x:Name="AccentBtn" Content="Cycle custom accent" Appearance="Accent" Margin="0,0,8,8" />
+                    <fluence:Button x:Name="SystemAccentBtn" Content="Use system accent" Margin="0,0,0,8" />
+                </WrapPanel>
+                <fluence:InfoBar x:Name="StatusBar" IsOpen="True" IsClosable="False" Severity="Informational" Title="Tip" Message="The window and its icon follow your theme. Choose Use system setting to follow Windows." />
+            </StackPanel>
+        </fluence:SmoothScrollViewer>
+    </Grid>
 </fluence:FluenceWindow>
 '@
 

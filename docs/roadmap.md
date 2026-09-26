@@ -63,56 +63,26 @@ and applies to this page only.
 | Packaging | Done | `DebugType` is `portable`, and the library packs with `Microsoft.SourceLink.GitHub`, `IncludeSymbols`, and `SymbolPackageFormat=snupkg`. `dotnet pack -c Release` emits `Fluence.Wpf.<version>.nupkg` with no PDB inside, plus a matching `.snupkg` carrying one portable PDB per target framework, each embedding a SourceLink document map. `ContinuousIntegrationBuild` is set only when `GITHUB_ACTIONS` is `true`, so a CI-built PDB carries repository-relative paths while a local build keeps absolute ones for local debugging. `VersionPrefix` and `VersionSuffix` in `Directory.Build.props` are the single source of the version; the SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion`, and `InformationalVersion` from them. The tag-gated GitHub release job (zipped per-TFM binaries, the demo, and the nupkg plus its snupkg) already exists and now also publishes to NuGet: a `v*` tag push runs the job once the build job passes, the job fails closed if the tag does not match the tree version or if `CHANGELOG.md` has no matching version section, and it then pushes the nupkg, with its sibling snupkg, to nuget.org using the `NUGET_API_KEY` secret. Creating and pushing that tag remains the owner's manual step. |
 | Documentation pass | Done | The guides are reconciled with the shipped surface. The site in section 5 stays a 1.x item. |
 
-## 4. PowerShell module over the PSADT UI bridge
+## 4. PowerShell scripting interface
 
-**Goal.** Give PowerShell callers a supported way to show Fluence windows and
-dialogs without writing C#, and give PSAppDeployToolkit a stable contract for
-the Fluence dialogs it already renders.
+**Status: Done.** `Fluence.Wpf.PowerShell` is the primary scripting interface for
+Fluence.Wpf. The script module lives in `Fluence.Wpf.PowerShell.Module/` and
+supports Windows PowerShell 5.1 and PowerShell 7.4 or later. Its loader selects
+the library's `net472` or `net8.0-windows10.0.26100.0` build for the host.
 
-**What exists today.** There is no PowerShell module. `Fluence.Wpf.Demo.PowerShell`
-holds four standalone scripts (`01-HelloWorld.ps1`, `02-ThemeAndAccent.ps1`,
-`03-ControlsTour.ps1`, `04-LoadXamlFile.ps1`) plus `MainWindow.xaml`, documented
-in [docs/powershell.md](powershell.md). They run under Windows PowerShell 5.1,
-load the `net472` assembly with `Add-Type`, relaunch themselves into an STA
-apartment, and call the same static theme API a C# caller would. The library
-also targets `net8.0-windows10.0.26100.0` for in-process consumption from
-PowerShell 7.
+The module provides dialogs, validated prompts, progress windows, full windows
+from XAML or a content scriptblock, and theme, accent and backdrop cmdlets.
+It handles assembly loading and STA hosting, including a module-owned UI
+runspace for an MTA caller. The module runs in-process; its
+[PSADT hosting guide](powershell/how-to/host-in-psadt.md) describes integration
+with an existing host application.
 
-**What PSADT does today.** In the PSAppDeployToolkit 4.2 checkout inspected for
-this page, the toolkit vendors this library under `vendor/Fluence.Wpf` and
-references it from `src/PSADT.UserInterface.Interfaces`. That project's `Fluent`
-folder holds `FluentDialog.xaml`, whose root element is a `FluenceWindow`, and
-the CloseApps, Custom, Input, ListSelection, Progress and Restart dialogs built
-on it. An internal static `DialogManager` owns a dedicated WPF dispatcher thread
-and forces `RenderOptions.ProcessRenderMode` to `SoftwareOnly`. PowerShell
-functions such as `Show-ADTInstallationPrompt` do not create windows themselves;
-they call the private `Invoke-ADTClientServerOperation` with `-ShowModalDialog`,
-which sends `PipeCommand.ShowModalDialog` across an encrypted named pipe to the
-client process running in the active user session, where `DialogManager` renders
-it. The configured `DialogStyle` selects between the WinForms Classic dialogs
-and these Fluence ones. The bridge that exists is therefore PSADT's own client
-and server pair; Fluence has no PowerShell surface of its own.
-
-**What the module would provide.**
-
-- Cmdlets to show a `FluenceWindow` and the stock dialogs from a script.
-- Theme, accent, and backdrop cmdlets over `ApplicationThemeManager` and
-  `ApplicationAccentColorManager`.
-- XAML loading from a file or a string with the Fluence namespace already
-  resolvable, replacing the hand-rolled `XamlReader` calls in the sample scripts.
-- STA and dispatcher lifetime handling, so a script does not have to reimplement
-  the relaunch guard.
-- A documented bridge contract with PSADT's client and server UI layer, so a
-  PSADT dialog and a standalone script reach the same rendering path.
-
-**Open questions.** Whether the module is binary (net472 plus net8) or script
-only; whether it wraps PSADT's `DialogManager` or duplicates it; who owns the
-dispatcher when PSADT already owns one; whether it ships inside the existing
-NuGet package, as a separate PowerShell Gallery package, or both; and how its
-version tracks the copy of the library vendored into PSADT.
-
-**Dependencies.** The shape of PSADT 4.2's client and server UI layer. Nothing
-here should fork `DialogManager` while it is internal to PSADT.
+The [tutorial](powershell/tutorial.md) covers building or installing the module.
+The maintained scripting examples live in
+[`Fluence.Wpf.PowerShell.Module/examples/`](../Fluence.Wpf.PowerShell.Module/examples/),
+and the [PowerShell documentation](powershell/README.md) contains the how-to
+guides, cmdlet reference and design explanation. The module's build scripts
+stage the library binaries and package a self-contained zip and nupkg.
 
 ## 5. Documentation website
 

@@ -724,7 +724,7 @@ Ten reference captures live under `docs/screenshots/`:
 - `gallery-buttons-{light,dark}.png` - Buttons page with the `LeftCompact` navigation rail.
 - `gallery-status-{light,dark}.png` - Status page with the `Top` navigation bar.
 - `mvvm-{light,dark}.png` - the MVVM Task Manager demo.
-- `powershell-{light,dark}.png` - the PowerShell controls-tour window (`03-ControlsTour.ps1`).
+- `powershell-{light,dark}.png` - the PowerShell module controls-tour window ([`06-ControlsTour.ps1`](../Fluence.Wpf.PowerShell.Module/examples/06-ControlsTour.ps1)).
 
 Capture is opt-in: the `GalleryScreenshotHarness` tests skip unless the `FLUENCE_CAPTURE_SCREENSHOTS` environment variable is set, so an ordinary test run never overwrites the committed images. To regenerate them (use the .NET 10 target so the MVVM capture is included):
 

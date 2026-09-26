@@ -50,6 +50,12 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 [Getting started](docs/getting-started.md) has the full setup, including theme switching and the system theme watcher.
 
+## Use it from PowerShell
+
+The **`Fluence.Wpf.PowerShell` module is the primary interface for scripts**. It provides cmdlets for dialogs, validated forms, progress and full windows, and handles assembly loading, STA hosting and theming for Windows PowerShell 5.1 and PowerShell 7.4 or later.
+
+Start with the [PowerShell tutorial](docs/powershell/tutorial.md) to build or install the module and show your first dialog. The [module examples](Fluence.Wpf.PowerShell.Module/examples/) cover simple messages through XAML-hosted windows; the [cmdlet reference](docs/powershell/reference/README.md) describes the full scripting interface.
+
 ## Screenshots
 
 | Light Mode | Dark Mode       |
@@ -68,14 +74,13 @@ ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 
 **`FluenceWindow`**, a window with Mica, Acrylic and Tabbed DWM backdrops, rounded corners, configurable caption buttons, and a title-bar content slot for a search box or your own content.
 
-**Three target frameworks**, so the same UI runs on .NET Framework 4.7.2, .NET 8 and .NET 10, and from Windows PowerShell 5.1 and PowerShell 7 through the `Fluence.Wpf.PowerShell` module or a bare `Add-Type`, with no Windows App SDK anywhere. See [PowerShell](docs/powershell/README.md).
+**Three target frameworks**, so the same UI runs on .NET Framework 4.7.2, .NET 8 and .NET 10, and from Windows PowerShell 5.1 and PowerShell 7.4 or later through the `Fluence.Wpf.PowerShell` module, with no Windows App SDK anywhere. See [PowerShell](docs/powershell/README.md).
 
 ## Demos
 
 - **Gallery** (`Fluence.Wpf.Demo`): 17 catalog pages organized by control category, each with a live example and its source next to it, plus theme, accent and backdrop switching.
 - **MVVM Task Manager** (`Fluence.Wpf.Demo.Mvvm`): a minimal CommunityToolkit.Mvvm application with no interaction logic in code-behind.
-- **PowerShell module** (`Fluence.Wpf.PowerShell.Module`): the `Fluence.Wpf.PowerShell` script module, with runnable examples under `examples/`, for Windows PowerShell 5.1 and PowerShell 7.
-- **PowerShell, no module** (`Fluence.Wpf.Demo.PowerShell`): four standalone scripts that build a themed WPF UI from Windows PowerShell 5.1 with `Add-Type` alone.
+- **PowerShell module examples** ([`Fluence.Wpf.PowerShell.Module/examples/`](Fluence.Wpf.PowerShell.Module/examples/)): runnable dialogs, forms, progress and full-window examples for Windows PowerShell 5.1 and PowerShell 7.4 or later.
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release

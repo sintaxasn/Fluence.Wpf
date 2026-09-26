@@ -502,3 +502,9 @@ and two hosted gallery scrolling cases for Colors and Data. The five new method 
 are recorded in the method inventories. Discovery rises to 1375 on net472 and 1378
 on net10. The corresponding runtime CI floors are 1374 and 1375 after screenshot
 filtering, preserving the existing explicit regeneration skip.
+
+## PowerShell module examples replace the standalone demo
+
+- `PowerShellDemoScripts_FollowCanonicalBootstrap` is renamed to `PowerShellModuleExamples_UseModule`. It now verifies that the four window examples import the module manifest and use `Show-FluenceWindow`; the module owns the former manual bootstrap.
+- `PowerShellDemoXaml_UsesCurrentFluenceWindowProperties` is renamed to `PowerShellModuleXaml_UsesCurrentFluenceWindowProperties` and validates `Fluence.Wpf.PowerShell.Module/examples/MainWindow.xaml`.
+- Both names are updated in the net472 and net10 baselines. Test case counts are unchanged.

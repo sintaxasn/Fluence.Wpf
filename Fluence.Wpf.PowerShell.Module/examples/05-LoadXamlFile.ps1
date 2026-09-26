@@ -1,7 +1,7 @@
-﻿# LoadXamlFile.ps1 - Load the window UI from MainWindow.xaml on disk instead of an inline string, then
+﻿# 05-LoadXamlFile.ps1 - Load the window UI from MainWindow.xaml on disk instead of an inline string, then
 # wire its named controls. The module handles STA, assembly loading, the Application, theming, and the
 # message loop, so the whole script is one Show-FluenceWindow -XamlPath call.
-# Run: powershell.exe -File LoadXamlFile.ps1   OR   pwsh -File LoadXamlFile.ps1
+# Run: powershell.exe -File 05-LoadXamlFile.ps1   OR   pwsh -File 05-LoadXamlFile.ps1
 
 # $Data is read inside the add_Click closure (via .GetNewClosure()), which the analyzer cannot trace;
 # $e is the conventional ($s, $e) event-args parameter on the SelectionChanged handler. Both intentional.
@@ -23,6 +23,8 @@ Show-FluenceWindow -XamlPath (Join-Path $PSScriptRoot 'MainWindow.xaml') -WatchS
         [System.Windows.Media.Color]::FromRgb(0xC4, 0x2B, 0x1C),
         [System.Windows.Media.Color]::FromRgb(0x74, 0x37, 0xC9)
     )
+
+    $Window.FindName('CloseButton').add_Click({ Close-FluenceWindow -Window $Window }.GetNewClosure())
 
     $themeCombo = $Window.FindName('ThemeComboBox')
     if ($null -ne $themeCombo)

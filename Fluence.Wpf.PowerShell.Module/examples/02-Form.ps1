@@ -1,5 +1,5 @@
-﻿# Form.ps1 - Mixed form with Text, Number, Choice, Date, and Checkbox prompts.
-# Run: pwsh -File Form.ps1   OR   powershell.exe -File Form.ps1
+﻿# 02-Form.ps1 - Mixed form with Text, Number, Choice, Date, and Checkbox prompts.
+# Run: pwsh -File 02-Form.ps1   OR   powershell.exe -File 02-Form.ps1
 
 Import-Module "$PSScriptRoot/../src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1" -Force
 

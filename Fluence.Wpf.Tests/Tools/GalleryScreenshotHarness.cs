@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Tests.Tools
         private const int GalleryCaptureWidth = 1280;
         private const int GalleryCaptureHeight = 900;
         private const int PowerShellCaptureWidth = 620;
-        private const int PowerShellCaptureHeight = 560;
+        private const int PowerShellCaptureHeight = 640;
 #if NET10_0_OR_GREATER
         private const int AppCaptureWidth = 960;
         private const int AppCaptureHeight = 740;
@@ -289,13 +289,13 @@ namespace Fluence.Wpf.Tests.Tools
         }
 
         /// <summary>
-        /// Reads the inline XAML here-string from <c language="text">03-ControlsTour.ps1</c> so the captured window
+        /// Reads the inline XAML here-string from <c language="text">06-ControlsTour.ps1</c> so the captured window
         /// stays in lock-step with the script the screenshot documents.
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown if the XAML here-string cannot be located.</exception>
         private static async Task<string> ExtractControlsTourXamlAsync()
         {
-            string scriptPath = Path.Join(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "03-ControlsTour.ps1");
+            string scriptPath = Path.Join(FindRepoRoot(), "Fluence.Wpf.PowerShell.Module", "examples", "06-ControlsTour.ps1");
             string[] lines = await File.ReadAllLinesAsync(scriptPath, TestContext.Current.CancellationToken).ConfigureAwait(true);
 
             int start = -1;
@@ -322,7 +322,7 @@ namespace Fluence.Wpf.Tests.Tools
             if (start < 0 || end < 0)
             {
                 throw new InvalidOperationException(
-                    "Could not locate the XAML here-string in 03-ControlsTour.ps1.");
+                    "Could not locate the XAML here-string in 06-ControlsTour.ps1.");
             }
 
             StringBuilder builder = new();
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Tests.Tools
             try
             {
                 window = XamlReader.Parse(await ExtractControlsTourXamlAsync().ConfigureAwait(true)) as Window
-                    ?? throw new InvalidOperationException("03-ControlsTour.ps1 XAML did not load as a WPF Window.");
+                    ?? throw new InvalidOperationException("06-ControlsTour.ps1 XAML did not load as a WPF Window.");
 
                 PrepareCaptureWindow(window, PowerShellCaptureWidth, PowerShellCaptureHeight);
                 string fullPath = Path.Join(outputDirectory, Invariant("powershell-{0}.png", themeSlug));

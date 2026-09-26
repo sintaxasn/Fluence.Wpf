@@ -1,6 +1,6 @@
-﻿# Progress.ps1 - A five-step deployment loop behind a non-modal progress window: indeterminate while
+﻿# 03-Progress.ps1 - A five-step deployment loop behind a non-modal progress window: indeterminate while
 # preparing, then determinate with a message and detail line per step, then closed.
-# Run: pwsh -File Progress.ps1   OR   powershell.exe -File Progress.ps1
+# Run: pwsh -File 03-Progress.ps1   OR   powershell.exe -File 03-Progress.ps1
 
 Import-Module "$PSScriptRoot/../src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1" -Force
 

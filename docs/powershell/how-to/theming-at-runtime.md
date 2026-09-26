@@ -66,7 +66,7 @@ Compare `CurrentBackdrop` by name. Its enum type is `WindowBackdropType` on newe
 
 ## React to theme changes in your own code
 
-Inside `-Initialize`, subscribe to the library's `Changed` event and unsubscribe when the window closes. The `ThemeAndAccent.ps1` example uses this to swap the window icon between a light and a dark variant:
+Inside `-Initialize`, subscribe to the library's `Changed` event and unsubscribe when the window closes. The `04-ThemeAndAccent.ps1` example uses this to swap the window icon between a light and a dark variant:
 
 ```powershell
 $applyIcon = {
@@ -83,4 +83,4 @@ $Window.add_Closed({ [Fluence.Wpf.ApplicationThemeManager]::remove_Changed($appl
 - [Set-FluenceTheme](../reference/Set-FluenceTheme.md), [Set-FluenceAccent](../reference/Set-FluenceAccent.md), [Set-FluenceBackdrop](../reference/Set-FluenceBackdrop.md), [Get-FluenceTheme](../reference/Get-FluenceTheme.md)
 - [theming.md](../../theming.md) for the library's colour and brush catalogue
 - [Explanation](../explanation.md) for what theme seeding and the dictionary slots are
-- Runnable examples: `Fluence.Wpf.PowerShell.Module/examples/ThemeAndAccent.ps1`, `HelloWindow.ps1`
+- [Runnable appearance example](../../../Fluence.Wpf.PowerShell.Module/examples/README.md#use-an-example-for-your-task)

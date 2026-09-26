@@ -43,7 +43,7 @@ Show-FluenceWindow -XamlPath (Join-Path $PSScriptRoot 'MainWindow.xaml') -WatchS
 }
 ```
 
-`Fluence.Wpf.PowerShell.Module/examples/LoadXamlFile.ps1` and its `MainWindow.xaml` are a complete example.
+`Fluence.Wpf.PowerShell.Module/examples/05-LoadXamlFile.ps1` and its `MainWindow.xaml` are a complete example.
 
 ## Wire controls
 
@@ -130,4 +130,14 @@ Show-FluenceWindow -Title 'Built in code' -Width 400 -Height 200 -SizeToContent 
 - [Show-FluenceWindow](../reference/Show-FluenceWindow.md), [Close-FluenceWindow](../reference/Close-FluenceWindow.md)
 - [Change theme, accent and backdrop at runtime](theming-at-runtime.md) for `Set-FluenceBackdrop -Window`
 - [Explanation](../explanation.md) for why handlers run on a different runspace on MTA hosts
-- Runnable examples: `Fluence.Wpf.PowerShell.Module/examples/HelloWindow.ps1`, `ThemeAndAccent.ps1`, `ControlsTour.ps1`, `LoadXamlFile.ps1`
+- [Runnable window examples and controls tour](../../../Fluence.Wpf.PowerShell.Module/examples/README.md)
+
+## Layout conventions in the examples
+
+The custom window examples use the library's named typography roles rather than local font families or sizes: Title for the page heading, Body for explanatory text, and Body Strong for sample section headings. These roles use the shared Segoe UI Variable font family with the library's Windows fallback and match the [WinUI typography hierarchy](https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/typography).
+
+Spacing follows the existing Fluence window layout and [Windows spacing guidance](https://learn.microsoft.com/en-us/windows/apps/design/style/spacing): 24 DIP window gutters, 16 DIP card insets and section separation, 12 DIP between a section heading and its content, and 8 DIP between related controls. Controls keep their standard template padding and height. Text wraps, and the custom windows define minimum sizes so content remains usable when resized.
+
+In `06-ControlsTour.ps1`, the title and introduction stay above the scrolling samples, and the Close button stays in a separate footer below them. `MainWindow.xaml`, loaded by `05-LoadXamlFile.ps1`, also keeps its header and Close footer outside the scrolling content. Both Close actions call `Close-FluenceWindow`.
+
+The message, form and progress examples let the module cmdlets supply their shared layout and typography.

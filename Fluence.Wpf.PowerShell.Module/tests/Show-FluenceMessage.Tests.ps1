@@ -30,7 +30,7 @@ Describe 'Show-FluenceMessage parameter validation' {
     It 'rejects an unknown -Position' {
         { Show-FluenceMessage -Message 'x' -Position Middle } | Should -Throw -ExceptionType ([System.Management.Automation.ParameterBindingException])
     }
-    # -Icon None is the image-led shape that examples/ImageDialog.ps1 and the dialogs how-to use: an
+    # -Icon None is the image-led shape used by the dialogs how-to: an
     # image and text with no severity glyph. The wrapper forwards Icon verbatim to Show-FluenceDialog,
     # which has always accepted None, so this set must match or those call sites fail at binding.
     It 'accepts -Icon None, which draws no severity glyph' {

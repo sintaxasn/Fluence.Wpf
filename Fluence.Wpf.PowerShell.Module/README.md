@@ -115,22 +115,17 @@ Every dialog cmdlet takes `-Theme` and `-Backdrop`; `Show-FluenceDialog`, `Show-
 
 ## Examples
 
-`examples\` holds ready-to-run scripts. Run any of them with `pwsh -File examples\QuickStart.ps1` or `powershell.exe -File examples\QuickStart.ps1`.
+The [examples catalogue](examples/README.md) contains six numbered scripts, with run commands, expected results and links to the relevant guides. Run them in numeric order from messages through forms, progress, appearance and custom windows to the controls tour, or choose the task you need.
 
-| Script | What it shows |
-| --- | --- |
-| `QuickStart.ps1` | One-line success message |
-| `Message.ps1` | YesNo confirmation with branch logic |
-| `SignIn.ps1` | Account and password form with validation |
-| `Form.ps1` | Mixed form: Text, Number, Choice, Date, Checkbox |
-| `ImageDialog.ps1` | A branded message with an image, centred text and a corner position |
-| `ListSelection.ps1` | Single and multi-select list dialogs |
-| `RestartPrompt.ps1` | Restart now / Restart later with a countdown |
-| `Progress.ps1` | A five-step loop behind a progress window |
-| `HelloWindow.ps1` | A Mica window whose button cycles the backdrop and rotates a greeting |
-| `ThemeAndAccent.ps1` | Light, Dark and Auto themes, custom accents, and a window icon that follows the theme |
-| `ControlsTour.ps1` | Common controls in scrolling cards; a toggle drives an `InfoBar` |
-| `LoadXamlFile.ps1` | The window UI loaded from `MainWindow.xaml` on disk |
+From the `Fluence.Wpf.PowerShell.Module` directory, after staging the library:
+
+```powershell
+pwsh -NoProfile -File .\examples\01-Message.ps1
+# Or use Windows PowerShell 5.1:
+powershell.exe -NoProfile -File .\examples\01-Message.ps1
+```
+
+Choose Yes to print `Proceeding`; No or dismissing the dialog prints `Cancelled`.
 
 ---
 

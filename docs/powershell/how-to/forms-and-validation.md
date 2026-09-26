@@ -94,8 +94,15 @@ For a list on its own, `Show-FluenceListSelection` wraps this in a dialog with O
 
 ```powershell
 $region = Show-FluenceListSelection -Title 'Region' -Message 'Choose the deployment region' -Items 'Europe', 'Americas', 'Asia Pacific' -DefaultValue 'Europe'
-$features = Show-FluenceListSelection -Message 'Select the features' -Items 'Core', 'Documentation', 'Samples' -MultiSelect
+if ($null -eq $region) { return }
+Write-Output "Region: $region"
+
+$features = Show-FluenceListSelection -Message 'Select the features' -Items 'Core', 'Documentation', 'Samples' -MultiSelect -DefaultValue @('Core', 'Documentation')
+if ($null -eq $features) { return }
+Write-Output "Features: $($features -join ', ')"
 ```
+
+A single selection returns the selected item; `-MultiSelect` returns an array, even for one item. `-DefaultValue` selects an item or, for multiple selection, an array of items before the dialog opens. OK requires at least one selection. Cancel, Esc, the X and a timeout return `$null`, so check for cancellation before using the result.
 
 ![A single-select list dialog in the dark theme](../images/list-selection-dark.png)
 
@@ -169,4 +176,4 @@ Untouched prompts report their `-DefaultValue`, or the type's empty value when t
 - [New-FluencePrompt](../reference/New-FluencePrompt.md), [Get-FluenceInput](../reference/Get-FluenceInput.md), [Show-FluenceListSelection](../reference/Show-FluenceListSelection.md)
 - [Input types](../reference/input-types.md) for every `-InputType`, its control and its value type
 - [Show dialogs and messages](dialogs.md) for buttons, icons, timeouts and placement
-- Runnable examples: `Fluence.Wpf.PowerShell.Module/examples/Form.ps1`, `SignIn.ps1`, `ListSelection.ps1`
+- [Runnable form example](../../../Fluence.Wpf.PowerShell.Module/examples/README.md#use-an-example-for-your-task)

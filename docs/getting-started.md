@@ -92,6 +92,6 @@ Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 
 ## Using from PowerShell
 
-The `Fluence.Wpf.PowerShell` module gives Windows PowerShell 5.1 and PowerShell 7 scripts themed dialogs, prompts, progress windows and XAML-hosted windows without a project or a compile step; start with the [tutorial](powershell/tutorial.md) and the [PowerShell documentation index](powershell/README.md). To load the library directly with `Add-Type` instead, see [Use the library without the module](powershell/how-to/raw-library-without-the-module.md) and the scripts under `Fluence.Wpf.Demo.PowerShell/`.
+The `Fluence.Wpf.PowerShell` module is the primary interface for scripts. It gives Windows PowerShell 5.1 and PowerShell 7.4 or later themed dialogs, prompts, progress windows and XAML-hosted windows. Start with the [tutorial](powershell/tutorial.md) to build or install the module, then explore the [runnable module examples](../Fluence.Wpf.PowerShell.Module/examples/) and the [PowerShell documentation index](powershell/README.md).
 
 Next: [theming.md](theming.md) for dictionary order and pitfalls, [controls.md](controls.md) for the control inventory and XAML snippets.
