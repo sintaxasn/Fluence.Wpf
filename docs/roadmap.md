@@ -79,7 +79,7 @@ stage the library binaries and package a self-contained zip and nupkg.
 
 The project documentation is authored in Markdown and uses relative links. The [documentation index](index.md) leads to the Controls, C# Library, and PowerShell sections. These pages can be read directly on GitHub or through the Docusaurus website.
 
-The C# API reference is generated from the compiled library and its XML documentation. Website builds read the generated Markdown alongside the guides. The publishing workflow prepares static output for the separate `gh-pages` branch, with public publication requiring approval. Versioned documentation remains a future decision. See [website development](../website/README.md) for the current build and publishing process.
+The C# API reference is generated from the compiled library and its XML documentation. Website builds read the generated Markdown alongside the guides. The standalone website repository is preparing for Cloudflare Pages; deployment will wait for release approval. Versioned documentation remains a future decision. See the [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website) for the build and hosting setup.
 
 ## 6. Candidate items
 
