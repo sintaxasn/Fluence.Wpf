@@ -1,5 +1,7 @@
 ﻿# Roadmap
 
+For current usage, begin at the [documentation index](index.md). This page records proposed work and release policy; the [changelog](../CHANGELOG.md) records completed changes.
+
 ## 1. Purpose and how to read this roadmap
 
 This page records the work planned between the current preview and 1.0, plus the
@@ -22,14 +24,10 @@ summary. Defects and deliberate non-features live in
 
 ## 2. Release policy
 
-The current version is whatever the [latest release](https://github.com/sintaxasn/Fluence.Wpf/releases/latest) says. `Directory.Build.props` is its single source in the tree.
-
-1.0 ships alongside PSAppDeployToolkit 4.2, which is the first downstream
-consumer of the library.
+The version in the source tree is defined in `Directory.Build.props`. Check [GitHub releases](https://github.com/sintaxasn/Fluence.Wpf/releases) for published versions.
 
 Until 1.0, breaking changes to the public API and to XAML resource keys are
 permitted. Every such change is recorded in
-[docs/migration-guide.md](migration-guide.md) and in
 [CHANGELOG.md](../CHANGELOG.md) in the same commit that makes it.
 
 From 1.0 the library follows Semantic Versioning. Minor releases are additive
@@ -45,18 +43,11 @@ those are pinned separately by
 `Fluence.Wpf.Tests/Theming/golden/PublicKeys.txt`, which fails on an addition
 as well as a removal.
 
-This page names PSAppDeployToolkit throughout. `AGENTS.md` section 12 restricts
-consumer-specific filesystem paths, build steps and deployment artifacts from
-the handbook and the public documentation set; it does not restrict naming the
-consumer whose release this one is coordinated with, which a reader needs in
-order to understand the 1.0 timing. That is a deliberate, recorded exemption
-and applies to this page only.
-
 ## 3. 1.0 readiness
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| WinUI parity pass | Done | The colour and role audit and its corrections are complete; the residue is written up in [docs/winui-parity.md](winui-parity.md) and `KNOWN_ISSUES.md`. |
+| WinUI parity pass | Done | The colour and role audit and its corrections are complete; the residue is written up in the [WinUI parity guide](https://fluencewpf.comdocs/winui-parity) and `KNOWN_ISSUES.md`. |
 | Test suite consolidation | Done | One sealed class per subject in five folders, one resource merge helper, per-class isolation through `IAsyncLifetime`, and the two-lane executable invocation. |
 | Public API review | Done | Four types internalised, nine template part constants made internal, four events given typed args, two routed events retyped, three enums renamed to their WinUI or .NET WPF names, and two vestigial members removed. Frozen by `PublicApiAnalyzers`. |
 | XAML key review | Done | Fourteen unconsumed keys removed, two WinUI-named aliases published, one key renamed. Frozen by `PublicKeys.txt`. |
@@ -73,9 +64,9 @@ the library's `net472` or `net8.0-windows10.0.26100.0` build for the host.
 The module provides dialogs, validated prompts, progress windows, full windows
 from XAML or a content scriptblock, and theme, accent and backdrop cmdlets.
 It handles assembly loading and STA hosting, including a module-owned UI
-runspace for an MTA caller. The module runs in-process; its
-[PSADT hosting guide](powershell/how-to/host-in-psadt.md) describes integration
-with an existing host application.
+runspace for an MTA caller. The module runs in-process. Its
+[existing host guide](powershell/how-to/use-in-existing-host.md) describes
+dispatcher ownership and supported threading modes.
 
 The [tutorial](powershell/tutorial.md) covers building or installing the module.
 The maintained scripting examples live in
@@ -86,48 +77,9 @@ stage the library binaries and package a self-contained zip and nupkg.
 
 ## 5. Documentation website
 
-The guides under `docs/` are the only documentation today, and there is no build
-or deploy workflow for a site: `.github/workflows/build.yml` has no job that
-builds or publishes one. [docs/controls.md](controls.md) used to link API types
-as `../../api/Fluence.Wpf.Controls.<Type>.html`, DocFX output layout for a site
-that was never built; those dead anchors were stripped for 1.0. A generated
-reference section is exactly what a documentation site would reintroduce.
+The project documentation is authored in Markdown and uses relative links. The [documentation index](index.md) leads to the Controls, C# Library, and PowerShell sections. These pages can be read directly on GitHub or through the Docusaurus website.
 
-Requirements: build from the existing `docs/*.md` without copying them, generate
-API reference from the XML documentation the build already produces, host free
-on GitHub Pages, and keep a stable version and a development version side by
-side.
-
-| Generator | .NET API reference | Uses `docs/*.md` in place | Versioning | Toolchain |
-| --- | --- | --- | --- | --- |
-| DocFX | Native. Reads the projects, or the assembly plus `Fluence.Wpf.xml`. | Yes, content globs point at the existing folder. | No built-in switcher. Publish each version to its own subfolder. | `dotnet tool`, already the repo's language. |
-| MkDocs Material with `mike` | None. Needs a second tool to produce API pages. | Yes, `docs_dir` can be the existing folder. | `mike` maintains versioned subfolders and a switcher. | Python, a second toolchain to install and pin. |
-| Docusaurus | None. Same second tool problem. | Yes, the docs plugin path can point outside the site folder. | Built in, with a version dropdown. | Node, a second toolchain, and MDX quirks in plain Markdown. |
-
-**Recommendation: DocFX.** It is the only one of the three that produces the API
-reference from the XML documentation the build already emits and already
-requires on every public member. It matches the `api/*.html` paths
-`docs/controls.md` was written against, so those links start working with no
-edit. It consumes the Markdown where it sits, so nothing is duplicated. It
-installs as a `dotnet tool`, adding no second language runtime to CI. The cost
-is versioning: DocFX has no version switcher, so stable and development builds
-publish to separate subfolders and a small banner or link handles the switch.
-
-**Workflow outline.** A second workflow, separate from `build.yml`:
-
-- On push to `main`, build the site and publish it to `/dev`.
-- On a `v*` tag, build the site and publish it to `/stable`, and optionally to
-  `/vX.Y` for an archived copy.
-- Deploy with the GitHub Pages actions, using the `pages` and `id-token`
-  permissions scoped to that workflow.
-- The API metadata step compiles the WPF projects, so it runs on
-  `windows-latest`, the same runner the build job already uses. No new agent
-  type is needed.
-
-**What changes in the repo.** A site configuration folder holding `docfx.json`,
-a table of contents, and a landing page; one new workflow file; and a link from
-`README.md`. No file under `docs/` moves or is duplicated. A custom domain is
-optional and needs only a `CNAME` entry.
+The C# API reference is generated from the compiled library and its XML documentation. Website builds read the generated Markdown alongside the guides. The publishing workflow prepares static output for the separate `gh-pages` branch, with public publication requiring approval. Versioned documentation remains a future decision. See [website development](../website/README.md) for the current build and publishing process.
 
 ## 6. Candidate items
 
@@ -144,7 +96,7 @@ For the owner to accept or strike. Each line gives the value, then the cost.
 | Performance baseline as a test gate | Startup time and theme switch time stop regressing silently. | Timing assertions are noisy on shared runners and need a tolerance nobody can tune from first principles. |
 | Split the four large library files | `NavigationView.cs` (2,345 lines), `FluenceWindow.cs` (2,066), `ColorPicker.cs` (1,337) and `ContentDialog.cs` (1,262) each mix three or four concerns, and `Themes/Controls/NavigationView.xaml` (1,039) holds three complete pane mode templates. | Pure internal restructuring with no API consequence, so it was deferred out of 1.0 rather than risking a late defect in the two most complex controls. The proposed split per file is recorded in the 1.0 readiness design spec. |
 | Six more automation peers | `BreadcrumbBarItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `CommandBarFlyoutPresenter`, `TabView` and `TabViewItem` would report their own roles. | Each is additive. The first three are covered today by their parent's peer or are decorative; `CommandBarFlyoutPresenter` needs the WinUI command bar pattern, which is a larger piece of work; the two TabView types get correct selection from the WPF `TabControl` and `TabItem` peers and are missing only the close button invoke. |
-| Rename the eight contract-free `PART_*` names | `PART_BadgeBackground`, `PART_LayoutRoot`, `PART_SelectedContentHost`, `PART_StrengthSegment0` to `3` and `PART_ToggleButton` read as a code contract they do not have. | They are template internal under the support rule in [docs/theming.md](theming.md), so freezing them costs nothing and the rename can wait. |
+| Rename the eight contract-free `PART_*` names | `PART_BadgeBackground`, `PART_LayoutRoot`, `PART_SelectedContentHost`, `PART_StrengthSegment0` to `3` and `PART_ToggleButton` read as a code contract they do not have. | They are template internal under the support rule in the [theming guide](https://fluencewpf.comdocs/theming), so freezing them costs nothing and the rename can wait. |
 | `NavigationViewPaneDisplayMode.Auto` and `LeftMinimal`, and the edge-aligned `TeachingTipPlacementMode` members | Closes the enum gap against WinUI. | Additive, so it does not have to precede the freeze. Each new member needs a layout path and tests. |
 | `NavigationView.PaneOpened` and `PaneClosing` | Completes the pane event pair; WinUI has all four and Fluence ships `PaneOpening` and `PaneClosed`. | Additive. `PaneClosing` needs cancel semantics, which is a design question rather than a mechanical addition. |
 | `KNOWN_ISSUES.md` entry for the display colour depth probe | `DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO` is superseded by `_INFO_2` from Windows 11 24H2. | The probe degrades to `default` on failure, so behaviour is safe today, but it may start reporting unknown on future builds and the limitation should be written down. |

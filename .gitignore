@@ -437,5 +437,8 @@ data/theme-golden/
 # Internal Docs
 /docs/_internal/
 
+# Website source lives in its own repository. This checkout may retain a local preview.
+/website/
+
 graphify-out/*
 .omc/*

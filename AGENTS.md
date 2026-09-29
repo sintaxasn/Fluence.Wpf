@@ -2,7 +2,9 @@
 
 Self-contained persistent memory for engineers (human and AI) working in this repository. Read top-to-bottom before touching code. This file is the single source of truth for conventions, architecture, reference authority, testing policy, and workflow; do **not** rely on out-of-repo agent bundles, external skill packs, or downstream-consumer-specific paths.
 
-> **Portability rule** - everything in this handbook must remain usable by anyone consuming `Fluence.Wpf`, regardless of downstream product. Consumer-specific guidance (e.g. for a particular deployment toolkit) belongs in that consumer's own repo, not here.
+> **Portability rule** - everything in this handbook must remain usable by anyone consuming `Fluence.Wpf`, regardless of downstream product. Consumer-specific guidance belongs in that consumer's own repo, not here.
+
+> **Website and documentation scope** - This repository owns the generated C# API pages in `docs/api/`, the generated PowerShell function pages in `docs/powershell/reference/`, and the authored `docs/controls.md`, `docs/theming.md`, and `docs/winui-parity.md`. The standalone [Fluence.Wpf.Website repository](https://github.com/sintaxasn/Fluence.Wpf.Website) receives copies of those pages and owns the [public website](https://fluencewpf.com), including Docusaurus authoring, navigation, styling, browser review, and publishing. This root handbook remains authoritative for C# and PowerShell behavior. Website-only work uses the website repository's build and review gates.
 
 ---
 
@@ -13,7 +15,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see [Section 4.3](#43-feasibility-test-for-net472)); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
-- **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `fluence`. 
+- **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `fluence`.
 
 ### Solution layout
 
@@ -29,7 +31,7 @@ Fluence.Wpf.sln
 
 #### PowerShell module
 
-`Fluence.Wpf.PowerShell.Module/` holds the `Fluence.Wpf.PowerShell` script module: declarative Fluent dialogs, prompts, progress and windows for Windows PowerShell 5.1 and PowerShell 7, built on the library. It is deliberately not a project in `Fluence.Wpf.sln`; `build/Build-Module.ps1` stages the library's Release `net472` and `net8.0-windows10.0.26100.0` outputs into `src/Fluence.Wpf.PowerShell/lib/` (gitignored), and `build/Package-Module.ps1` produces the zip and nupkg under `artifacts/`. The PowerShell code follows the PSADT conventions rather than the C# ones in this handbook: 5.1 and 7 compatible syntax only, one function per file with comment-based help and `[OutputType()]`, fully qualified .NET type names, Allman braces, UTF-8 BOM, and `PSScriptAnalyzerSettings.psd1` at the module root as the analyzer gate. It resolves the library's renamed enums at call time (`Resolve-FluenceLibraryType`), so it runs against the `BackdropType` and `WindowBackdropType` generations of the library alike. User documentation lives in [docs/powershell/](docs/powershell/README.md).
+`Fluence.Wpf.PowerShell.Module/` holds the `Fluence.Wpf.PowerShell` script module: declarative Fluent dialogs, prompts, progress and windows for Windows PowerShell 5.1 and PowerShell 7, built on the library. It is deliberately not a project in `Fluence.Wpf.sln`; `build/Build-Module.ps1` stages the library's Release `net472` and `net8.0-windows10.0.26100.0` outputs into `src/Fluence.Wpf.PowerShell/lib/` (gitignored), and `build/Package-Module.ps1` produces the zip and nupkg under `artifacts/`. The PowerShell code follows the module's own conventions rather than the C# ones in this handbook: 5.1 and 7 compatible syntax only, one function per file with comment-based help and `[OutputType()]`, fully qualified .NET type names, Allman braces, UTF-8 BOM, and `PSScriptAnalyzerSettings.psd1` at the module root as the analyzer gate. It resolves the library's renamed enums at call time (`Resolve-FluenceLibraryType`), so it runs against the `BackdropType` and `WindowBackdropType` generations of the library alike. User documentation lives in the [website repository's PowerShell section](https://github.com/sintaxasn/Fluence.Wpf.Website/tree/main/docs/powershell).
 
 ### CLR namespaces
 
@@ -171,6 +173,8 @@ There is no key promotion, no swap-vs-mutate split, and no per-key copy-up into 
 
 **High contrast** is just another color table. Its tokens are resolved from live `SystemColors` in `SpecialBrushes.AddHighContrastBrushes`; there is no `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply, which rebuilds and republishes the HC brushes from the current `SystemColors` snapshot. Those `SystemColors` members are part of the publish fingerprint, so an HC variant switch always gets through the gate while a duplicate broadcast for the same variant does not.
 
+**Theme transition overlay.** On a changed publish after initialization, `FluenceThemeEngine.PreparingPublish` lets realized `FluenceWindow` instances snapshot their WPF surface before slot `[0]` is replaced. After publication and synchronous change handlers finish, each captured surface fades out over 167 ms. Resource dictionaries, manager state, and public events remain immediate; brushes are not interpolated. High Contrast entry and exit, disabled motion, minimized or unrealized windows, failed captures, and snapshots exceeding 16 million pixels skip the fade. A normal WPF `Window` has no overlay. A WPF snapshot cannot interpolate native DWM backdrop pixels.
+
 ### Merge slots
 
 After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resources.MergedDictionaries` always contains exactly **three** dictionaries in this fixed order:
@@ -202,7 +206,7 @@ Names align with WinUI 3. [docs/theming.md](docs/theming.md) is the canonical li
 
 ## 4. Reference priority
 
-When a question arises about _"how should this look, behave, or be implemented?"_ - resolve it in this order. Never fabricate Fluent semantics from imagination; always cite an authoritative source.
+When a question arises about *"how should this look, behave, or be implemented?"* - resolve it in this order. Never fabricate Fluent semantics from imagination; always cite an authoritative source.
 
 ### 4.1 General priority (applies to every question)
 
@@ -215,15 +219,15 @@ Undocumented "looks right" choices are not acceptable in a PR. If nothing in the
 ### 4.2 Per-domain authority
 
 | Concern                                                                           | Primary authority                                                                                                                                               | Rationale                                                                            |
-| --------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------------------------------------	| ------------------------------------------------------------------------------------ |
-| Visual tokens (colors, brushes, typography, spacing, corner radii, timing curves) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)	| Canonical Microsoft-owned Fluent design tokens and control visuals.                  |
-| WPF-native window chrome (`WindowChrome`, DWM extension, caption buttons)         | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)			| WPF-specific idioms that WinUI 3 does not express; known to work on `net472`.        |
-| Navigation patterns (`NavigationView` layout, selection indicator, pane modes)    | WinUI 3 CommonStyles (visual) + .NET 10 WPF Themes (WPF translation)							| Visuals are Fluent-canonical; composition must respect WPF templating constraints.   |
-| Accent ramp generation and HSV tint math                                          | .NET 10 WPF Themes												| Includes a proven WPF implementation of the Windows accent ramp.                     |
-| System theme detection (Light/Dark/HighContrast)                                  | .NET 10 WPF Themes												| WPF-compatible registry reads and `WM_SETTINGCHANGE` handling suitable for `net472`. |
-| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, etc.) | WinUI 3 CommonStyles												| Canonical Fluent templates and visual states.                                        |
-| Acrylic / Mica backdrops, rounded corners                                         | .NET 10 WPF Themes + [DWM API docs on Microsoft Learn](https://learn.microsoft.com/windows/win32/api/dwmapi/)		| DWM interop is the mechanism; .NET 10 WPF demonstrates the WPF hook.                 |
-| Accessibility / automation peers                                                  | WinUI 3 CommonStyles + Windows UI Automation docs on Microsoft Learn							| Behavioural contract, not visual.                                                    |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Visual tokens (colors, brushes, typography, spacing, corner radii, timing curves) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles) | Canonical Microsoft-owned Fluent design tokens and control visuals.                  |
+| WPF-native window chrome (`WindowChrome`, DWM extension, caption buttons)         | [**.NET 11 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)   | WPF-specific idioms that WinUI 3 does not express; known to work on `net472`.        |
+| Navigation patterns (`NavigationView` layout, selection indicator, pane modes)    | WinUI 3 CommonStyles (visual) + .NET 10 WPF Themes (WPF translation)       | Visuals are Fluent-canonical; composition must respect WPF templating constraints.   |
+| Accent ramp generation and HSV tint math                                          | .NET 11 WPF Themes            | Includes a proven WPF implementation of the Windows accent ramp.                     |
+| System theme detection (Light/Dark/HighContrast)                                  | .NET 11 WPF Themes            | WPF-compatible registry reads and `WM_SETTINGCHANGE` handling suitable for `net472`. |
+| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, etc.) | WinUI 3 CommonStyles            | Canonical Fluent templates and visual states.                                        |
+| Acrylic / Mica backdrops, rounded corners                                         | .NET 11 WPF Themes + [DWM API docs on Microsoft Learn](https://learn.microsoft.com/windows/win32/api/dwmapi/)  | DWM interop is the mechanism; .NET 10 WPF demonstrates the WPF hook.                 |
+| Accessibility / automation peers                                                  | WinUI 3 CommonStyles + Windows UI Automation docs on Microsoft Learn       | Behavioural contract, not visual.                                                    |
 
 ### 4.3 Feasibility test for `net472`
 
@@ -419,27 +423,27 @@ flowchart TD
 
 ## 10. Documentation map
 
-Public and repository documentation:
+Repository documentation:
 
+- [Fluence.Wpf Website](https://fluencewpf.com)
 - [README.md](README.md)
 - [CHANGELOG.md](CHANGELOG.md)
+- [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [SUPPORT.md](SUPPORT.md)
 - [SECURITY.md](SECURITY.md)
-- [docs/getting-started.md](docs/getting-started.md)
+
+- [Fluence.Wpf Website Repository](https://github.com/sintaxasn/Fluence.Wpf.Website) - For updates to documentation
 - [docs/theming.md](docs/theming.md)
 - [docs/controls.md](docs/controls.md)
 - [docs/winui-parity.md](docs/winui-parity.md)
-- [docs/powershell/](docs/powershell/README.md) - the `Fluence.Wpf.PowerShell` module set; [docs/powershell.md](docs/powershell.md) is a stub pointing at it
-- [docs/migration-guide.md](docs/migration-guide.md)
+- [PowerShell documentation](https://fluencewpf.com/docs/powershell) - the `Fluence.Wpf.PowerShell` module set
 - [docs/roadmap.md](docs/roadmap.md)
 - [docs/release.md](docs/release.md)
-- [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
-Maintainer / AI context (this file and its siblings):
+Maintainer / LLM context (this file and its siblings):
 
 - [AGENTS.md](AGENTS.md) - this handbook
-- [CLAUDE.md](CLAUDE.md) - pointer to this handbook for Claude-class assistants
 - [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) - PR checklist shown to contributors
 - [.github/workflows/build.yml](.github/workflows/build.yml) - Release build, split-TFM tests, package artifacts
 
@@ -454,18 +458,18 @@ When you are editing this repository, you are acting as a **senior C#/.NET WPF e
 3. **Build clean**: `dotnet build Fluence.Wpf.sln -c Debug` with **zero** errors and **zero** warnings after your change on every TFM; Release must also remain clean for release and CI work.
 4. **Tests green**: both TFM lanes pass; every new control, public API, or behaviour change ships with an xUnit test that exercises it, and the HEAD-of-branch pass count is the floor.
 5. **Visual parity**: any template / XAML change is confirmed in `Fluence.Wpf.Demo` across Light, Dark, High Contrast, accent swap, and at least one backdrop. Capture screenshots (100% and 150% DPI) when visuals change materially.
-6. **Docs synced**: public changes update `CHANGELOG.md`, and any of `README.md` / `docs/controls.md` / `docs/theming.md` that a consumer would rely on.
+6. **Docs synced**: public changes update `CHANGELOG.md` and `README.md` here, and the relevant public guides in the website repository, including its `docs/controls.md` and `docs/theming.md` when applicable.
 7. **Scope discipline**: do not touch unrelated files or rename things unless explicitly asked; do not commit without the user's explicit request.
 
 ### Consumer build compatibility
 
-`Fluence.Wpf` has adopted the stricter consumer build requirements used by PSADT for release gating: warnings as errors, `latest-all` analyzers, code style enforcement, banned APIs, XML documentation generation, and the `net472` / `net8.0-windows10.0.26100.0` / `net10.0-windows10.0.26100.0` build matrix. Treat the stricter consumer policy as authoritative for release conformance. If this repo drifts from it, correct the drift unless an exception is explicit, documented in this handbook or the affected project file, and approved by the user.
+`Fluence.Wpf` uses strict consumer build requirements for release gating: warnings as errors, `latest-all` analyzers, code style enforcement, banned APIs, XML documentation generation, and the `net472` / `net8.0-windows10.0.26100.0` / `net10.0-windows10.0.26100.0` build matrix. Treat this policy as authoritative for release conformance. If this repo drifts from it, correct the drift unless an exception is explicit, documented in this handbook or the affected project file, and approved by the user.
 
-Consumer build compatibility is a release gate. For build-policy, public API, project metadata, resource-copy, or packaging changes that can affect downstream consumption, verify the standalone Fluence build and the current release-gate consumer build. PSADT-specific paths or build artifacts may be cited only as release-gate evidence; do not make this handbook depend on consumer-local layout.
+Consumer build compatibility is a release gate. For build-policy, public API, project metadata, resource-copy, or packaging changes that can affect downstream consumption, verify the standalone Fluence build and the current consumer build used in release gating. Do not make this handbook depend on consumer-local paths or artifact layouts.
 
 ---
 
-## 12. Exclusions (apply to _this_ handbook)
+## 12. Exclusions (apply to *this* handbook)
 
 - No filesystem paths, build steps, or deployment artifacts specific to a downstream consumer product, except concise release-gate evidence when validating consumer build compatibility.
 - No endorsement of, or dependency on, any particular third-party WPF library; keep comparisons, migration notes, and naming advice generic.
@@ -487,7 +491,7 @@ Read-only or scaffolding subagents. Use the one whose lane matches your change:
 | `theme-slot-auditor` | After any theme, brush, color, accent, or `ApplicationThemeManager` change - verifies the three-slot invariant, slot `[0]` rebuild, `DynamicResource` usage, `BrushFactory` auto-twinning, canonical key names, and the high-contrast rebuild. |
 | `winui-parity-reviewer` | To compare WPF templates, resources, and behavior against WinUI 3 CommonStyles and official Microsoft guidance (visual fidelity). |
 | `net472-feasibility-checker` | After adding APIs, language features, or dependencies - confirms the code still runs on the separate `net472` test lane (Section 4.3). |
-| `documentation-updater` | After code changes that cause doc drift, or when writing/updating READMEs, getting-started guides, API references, CHANGELOGs, inline docs, or GitHub special files. |
+| `documentation-updater` | After code changes that cause doc drift, or when writing/updating this repository's README, CHANGELOG, inline docs, GitHub special files, generated API and PowerShell reference pages, or authored controls/theming/parity pages. Other public guides belong in the website repository. |
 
 ### 13.2 Skills (`.claude/skills/`)
 
@@ -495,7 +499,7 @@ Step-by-step scaffolding playbooks that bake the checklists into the work:
 
 | Skill | Use when |
 | --- | --- |
-| `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, xUnit test class, docs/CHANGELOG). |
+| `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, xUnit test class, website documentation, and this repository's CHANGELOG). |
 | `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page. The full demo sample-page spec - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [.claude/skills/demo-sample-page/SPEC.md](.claude/skills/demo-sample-page/SPEC.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly. |
 
 ### 13.3 Hooks (`.claude/hooks/`)

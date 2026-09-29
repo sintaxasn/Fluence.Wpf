@@ -1,119 +1,98 @@
-﻿# ![Fluence.WPF Banner](./assets/Fluence_OGImage.png)
+﻿# Fluence.Wpf
 
-Windows 11 Fluent Design controls and theming for WPF, implemented in plain WPF with no Windows App SDK dependency.
+![Fluence.Wpf banner](assets/Fluence_OGImage.png)
 
-[![NuGet](https://img.shields.io/nuget/v/Fluence.Wpf.svg)](https://www.nuget.org/packages/Fluence.Wpf)
-[![Downloads](https://img.shields.io/nuget/dt/Fluence.Wpf.svg)](https://www.nuget.org/packages/Fluence.Wpf)
-[![Build](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml/badge.svg)](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml)
-[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
-[![Targets](https://img.shields.io/badge/targets-net472%20%7C%20net8.0--windows%20%7C%20net10.0--windows-informational.svg)](#requirements)
+## Introduction
 
-## Install
+Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2**, **.NET 8**, and **.NET 10** on **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-The package publishes to nuget.org from the `v0.9.0-pre` tag, so the two NuGet badges above stay
-blank and the command below fails until that tag is pushed. Until then, reference
-`Fluence.Wpf/Fluence.Wpf.csproj` directly, or build a local package with
-`dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release`.
+
+Fluence.Wpf brings Windows 11 Fluent and WinUI 3 inspired controls, themes, and window chrome to WPF. It uses WPF and Windows APIs without a Windows App SDK runtime dependency. The repository also contains a PowerShell module for dialogs and windows.
+
+[![NuGet](https://img.shields.io/nuget/v/Fluence.Wpf.svg)](https://www.nuget.org/packages/Fluence.Wpf) [![Downloads](https://img.shields.io/nuget/dt/Fluence.Wpf.svg)](https://github.com/sintaxasn/Fluence.Wpf/releases/latest) [![Build](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml/badge.svg)](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml) [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Targets](https://img.shields.io/badge/targets-net472%20%7C%20net8.0--windows%20%7C%20net10.0--windows-informational.svg)](#requirements)
+
+## Choose a starting point
+
+| If you are building... | Start here |
+| --- | --- |
+| A WPF application in C# or XAML | [C# basic usage](https://fluencewpf.com/docs/csharp/usage), then the [control catalog](https://fluencewpf.com/docs/controls) |
+| A Windows PowerShell or PowerShell 7 script | [PowerShell basic usage](https://fluencewpf.com/docs/powershell/usage), then the [functions reference](https://fluencewpf.com/docs/powershell/reference) |
+| The project from source | [Contributing](CONTRIBUTING.md) and the [developer handbook](AGENTS.md) |
+
+The [documentation site](https://fluencewpf.com) links tutorials, task guides, reference pages, and explanations. Its source is maintained separately in the [Fluence.Wpf.Website repository](https://github.com/sintaxasn/Fluence.Wpf.Website).
+
+## Build from source
+
+On Windows, clone the repository and build the library:
 
 ```powershell
-dotnet add package Fluence.Wpf
+dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
 ```
 
-```xml
-<PackageReference Include="Fluence.Wpf" />
+For a local application, add a project reference to `Fluence.Wpf/Fluence.Wpf.csproj`. To produce a local package:
+
+```powershell
+dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release
 ```
 
-## Use it
+The package is written under `Fluence.Wpf/bin/Release/`. Check [GitHub releases](https://github.com/sintaxasn/Fluence.Wpf/releases) for published versions before using a remote package feed.
+
+## Use the library
+
+Apply a theme before showing the first window:
 
 ```csharp
 using Fluence.Wpf;
 
-// App.xaml.cs, before the first window is shown.
 ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
 ```
 
+In XAML, add `xmlns:fluence="http://schemas.fluencewpf.com"` and use a Fluence control:
+
 ```xml
-<fluence:FluenceWindow
-    x:Class="MyApp.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:fluence="http://schemas.fluencewpf.com"
-    ExtendsContentIntoTitleBar="True"
-    SystemBackdropType="Mica"
-    Title="My App">
-    <fluence:FluenceWindow.TitleBar>
-        <fluence:TitleBar Title="My App" />
-    </fluence:FluenceWindow.TitleBar>
-    <fluence:Button Content="Click me" Appearance="Accent" Margin="24" />
-</fluence:FluenceWindow>
+<fluence:Button Content="Continue" Appearance="Accent" />
 ```
 
-[Getting started](docs/getting-started.md) has the full setup, including theme switching and the system theme watcher.
+The [C# basic usage guide](https://fluencewpf.com/docs/csharp/usage) builds a full window. The [control catalog](https://fluencewpf.com/docs/controls) lists the controls, and the [theming guide](https://fluencewpf.com/docs/theming) documents the shared resources.
 
-## Use it from PowerShell
+## Use the PowerShell module
 
-The **`Fluence.Wpf.PowerShell` module is the primary interface for scripts**. It provides cmdlets for dialogs, validated forms, progress and full windows, and handles assembly loading, STA hosting and theming for Windows PowerShell 5.1 and PowerShell 7.4 or later.
-
-Start with the [PowerShell tutorial](docs/powershell/tutorial.md) to build or install the module and show your first dialog. The [module examples](Fluence.Wpf.PowerShell.Module/examples/) cover simple messages through XAML-hosted windows; the [cmdlet reference](docs/powershell/reference/README.md) describes the full scripting interface.
-
-## Screenshots
-
-| Light Mode | Dark Mode       |
-|:----------:|:---------------:|
-| ![Home (Light)](./docs/screenshots/gallery-home-light.png) | ![Home (Dark)](./docs/screenshots/gallery-home-dark.png) |
-| ![Buttons (Light)](./docs/screenshots/gallery-buttons-light.png) | ![Buttons (Dark)](./docs/screenshots/gallery-buttons-dark.png) |
-| ![Status (Light)](./docs/screenshots/gallery-status-light.png) | ![Status (Dark)](./docs/screenshots/gallery-status-dark.png) |
-| ![MVVM (Light)](./docs/screenshots/mvvm-light.png) | ![MVVM (Dark)](./docs/screenshots/mvvm-dark.png) |
-| ![PowerShell (Light)](./docs/screenshots/powershell-light.png) | ![PowerShell (Dark)](./docs/screenshots/powershell-dark.png) |
-
-## What is in the box
-
-**62 public `Fluence.Wpf.Controls` types that derive from `FrameworkElement`**, from `Button` and `TextBox` through `NavigationView`, `TabView`, `ContentDialog`, `ColorPicker` and `TreeView`, each aligned with its WinUI 3 counterpart and covered by tests. See the [control catalog](docs/controls.md) for the full list and the per-control notes.
-
-**A theme engine** that resolves Light, Dark, High Contrast and Auto (follow Windows), generates the accent ramp from the OS palette or a colour you pin, and republishes every brush through `DynamicResource` so a running application re-themes with no restart and no per-control code. See [theming](docs/theming.md).
-
-**`FluenceWindow`**, a window with Mica, Acrylic and Tabbed DWM backdrops, rounded corners, configurable caption buttons, and a title-bar content slot for a search box or your own content.
-
-**Three target frameworks**, so the same UI runs on .NET Framework 4.7.2, .NET 8 and .NET 10, and from Windows PowerShell 5.1 and PowerShell 7.4 or later through the `Fluence.Wpf.PowerShell` module, with no Windows App SDK anywhere. See [PowerShell](docs/powershell/README.md).
-
-## Demos
-
-- **Gallery** (`Fluence.Wpf.Demo`): 17 catalog pages organized by control category, each with a live example and its source next to it, plus theme, accent and backdrop switching.
-- **MVVM Task Manager** (`Fluence.Wpf.Demo.Mvvm`): a minimal CommunityToolkit.Mvvm application with no interaction logic in code-behind.
-- **PowerShell module examples** ([`Fluence.Wpf.PowerShell.Module/examples/`](Fluence.Wpf.PowerShell.Module/examples/)): runnable dialogs, forms, progress and full-window examples for Windows PowerShell 5.1 and PowerShell 7.4 or later.
+Build the library, then stage the module's assemblies:
 
 ```powershell
-dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
+dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
 ```
+
+Follow [PowerShell basic usage](https://fluencewpf.com/docs/powershell/usage) for import and a first dialog. The module supports Windows PowerShell 5.1 and PowerShell 7.4 or later, with dialogs, forms, progress, and full windows. The [functions reference](https://fluencewpf.com/docs/powershell/reference) lists the exported commands.
+
+## Explore the demos
+
+```powershell
+dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug -f net10.0-windows10.0.26100.0
+dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj -c Debug
+```
+
+The [gallery](Fluence.Wpf.Demo/README.md) shows controls and example source. The [MVVM demo](Fluence.Wpf.Demo.Mvvm/README.md) shows a task manager built with CommunityToolkit.Mvvm. PowerShell examples live in [the module examples](Fluence.Wpf.PowerShell.Module/examples/README.md).
+
+## Visual examples
+
+| Gallery home | Gallery buttons | MVVM task manager | PowerShell ControlsTour |
+| --- | --- | --- | --- |
+| ![Gallery home in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-light.png)<br>Light | ![Button gallery in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-light.png)<br>Light | ![MVVM task manager in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-light.png)<br>Light | ![PowerShell ControlsTour in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-light.png)<br>Light |
+| ![Gallery home in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-dark.png)<br>Dark | ![Button gallery in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-dark.png)<br>Dark | ![MVVM task manager in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-dark.png)<br>Dark | ![PowerShell ControlsTour in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-dark.png)<br>Dark |
 
 ## Requirements
 
-- .NET Framework 4.7.2, .NET 8, or .NET 10 on Windows. The package ships `net472`, `net8.0-windows10.0.26100.0` and `net10.0-windows10.0.26100.0`.
-- Windows 10 version 1809 or later.
-- Windows 11 for Mica, Acrylic and Tabbed backdrops and for DWM rounded corners. On Windows 10 those degrade to a legacy acrylic or to an opaque surface, with no code change.
+Fluence.Wpf targets `net472`, `net8.0-windows10.0.26100.0`, and `net10.0-windows10.0.26100.0`. It requires Windows 10 version 1809 or later. Windows 11 enables Mica, Tabbed backdrops, and rounded DWM corners; fallback rendering is used where an effect is unavailable.
 
-## Documentation
+## Project information
 
-- [Getting started](docs/getting-started.md) - reference, startup calls, local pack
-- [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
-- [Controls](docs/controls.md) - catalog aligned with the demo gallery
-- [WinUI parity](docs/winui-parity.md) - where Fluence matches WinUI 3 and where it knowingly differs
-- [PowerShell](docs/powershell/README.md) - the `Fluence.Wpf.PowerShell` module: tutorial, how-to guides, cmdlet reference
-- [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
-- [Contributing](CONTRIBUTING.md) - build matrix, tests, PR notes
-- [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
-- [Roadmap](docs/roadmap.md) - release policy and what comes next
-- [Changelog](CHANGELOG.md) - every released change
+- [Documentation site](https://fluencewpf.com)
+- [Documentation website source](https://github.com/sintaxasn/Fluence.Wpf.Website)
+- [Changelog](CHANGELOG.md)
 - [Known issues](KNOWN_ISSUES.md)
-
-## Contributing
-
-The contributor guide is at [CONTRIBUTING.md](CONTRIBUTING.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
-
-For AI-assisted work, read [AGENTS.md](AGENTS.md) first.
-
-## License
-
-Licensed under the [BSD 3-Clause License](LICENSE).
-
-Copyright 2026 Dan Cunningham.
+- [Roadmap](docs/roadmap.md)
+- [Support](SUPPORT.md)
+- [Security policy](SECURITY.md)
+- [License](LICENSE)
