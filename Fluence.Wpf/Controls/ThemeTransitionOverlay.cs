@@ -118,7 +118,6 @@ namespace Fluence.Wpf.Controls
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
                     IsHitTestVisible = false,
-                    SnapsToDevicePixels = true,
                 };
                 _ = _host.Children.Add(snapshot);
                 _snapshot = snapshot;
