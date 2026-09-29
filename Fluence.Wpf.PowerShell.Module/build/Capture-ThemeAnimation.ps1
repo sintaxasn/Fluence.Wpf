@@ -159,6 +159,8 @@ $captureData = @{
 $null = Show-FluenceWindow -Xaml $xaml -Theme Light -Backdrop None -Accent ($hues[0].Color) -TitleBarIcon $iconPath -Data $captureData -Initialize {
     param($Window, $Data)
 
+    if ($null -eq $Data) { throw 'Capture state was not provided.' }
+
     $periodMilliseconds = 50
     $lastFrame = 528
     $captureFrame = {
