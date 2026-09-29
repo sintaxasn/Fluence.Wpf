@@ -1,5 +1,7 @@
 ﻿# Known issues and follow-ups
 
+See the [documentation site](https://fluencewpf.com) for usage, [CHANGELOG.md](CHANGELOG.md) for release and breaking-change notes, and [support](SUPPORT.md) to report a reproducible issue.
+
 This file tracks optional follow-ups and deliberate non-features. Filed bugs with
 reproductions live on the issue tracker; this is the consolidated view for
 maintainers.

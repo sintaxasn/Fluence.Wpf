@@ -174,7 +174,8 @@ jobs:
             nupkg/*.snupkg
           retention-days: 30
 
-  # Script-module tooling and tests cannot block library artifacts or the .NET release.
+  # Script-module tooling and tests do not block library artifact creation; both
+  # jobs must pass before the combined release publishes either package.
   # This job consumes the exact binaries uploaded by build; no second library build is needed.
   powershell:
     needs: build
@@ -253,17 +254,17 @@ jobs:
           path: TestResults/psmodule/
           retention-days: 14
 
-  # Version tags (v*) run the .NET build/test/pack gates above and then publish a
-  # GitHub release with the per-TFM library binaries, the demo, and the NuGet
-  # package attached, and push the package to nuget.org. Tags carrying a
+  # Version tags (v*) run the .NET and PowerShell build/test/package gates above,
+  # publish a GitHub release with both product packages attached, and publish
+  # the packages to nuget.org and PowerShell Gallery. Tags carrying a
   # SemVer prerelease identifier are marked as prereleases. Write permission is
   # scoped to this job only; the build job stays read-only.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, powershell]
     runs-on: windows-latest
-    # The job runs in the "release" environment so its two irreversible steps, creating the
-    # GitHub release and pushing to nuget.org, can sit behind a required reviewer. The gate itself
+    # The job runs in the "release" environment so its public release and package publication
+    # steps can sit behind a required reviewer. The gate itself
     # is repository configuration (Settings, Environments, "release", required reviewers), not
     # something this file can declare; docs/release.md lists it as a precondition. Without that
     # rule the environment exists but waits on nobody.
@@ -301,6 +302,12 @@ jobs:
           pattern: fluence-wpf-*
           path: artifacts
 
+      - name: Download PowerShell module package
+        uses: actions/download-artifact@v8
+        with:
+          name: fluence-ps-module-package
+          path: artifacts/fluence-ps-module-package
+
       - name: Stage release assets
         run: |
           New-Item -ItemType Directory dist | Out-Null
@@ -310,6 +317,9 @@ jobs:
           Compress-Archive -Path artifacts/fluence-wpf-demo/* -DestinationPath "dist/Fluence.Wpf.Demo-${{ github.ref_name }}-net472.zip"
           Copy-Item artifacts/fluence-wpf-nupkg/*.nupkg dist/
           Copy-Item artifacts/fluence-wpf-nupkg/*.snupkg dist/
+          Copy-Item artifacts/fluence-ps-module-package/*.zip dist/
+          Copy-Item artifacts/fluence-ps-module-package/*.nupkg dist/
+          Expand-Archive -Path (Get-ChildItem artifacts/fluence-ps-module-package/*.zip | Select-Object -First 1).FullName -DestinationPath module-release
 
       # The release notes are the CHANGELOG section for this version, not
       # commit-generated prose. A missing section fails the job: shipping a
@@ -334,6 +344,18 @@ jobs:
           Set-Content -Path release-notes.md -Value $slice -Encoding utf8NoBOM
           Write-Host "Release notes:"
           Get-Content release-notes.md
+
+      - name: Verify publication credentials are configured
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw 'NUGET_API_KEY is not configured for the release job.'
+          }
+          if ([string]::IsNullOrWhiteSpace($env:PSGALLERY_API_KEY)) {
+            throw 'PSGALLERY_API_KEY is not configured for the release job.'
+          }
 
       # gh release create fails outright if a release for this tag already exists,
       # which is exactly what a re-run after a failed NuGet push below hits: the
@@ -363,13 +385,33 @@ jobs:
             gh @ghArgs
           }
 
-      # Last, so a failure in the release creation does not leave a package on
-      # nuget.org that cannot be replaced. dotnet nuget push already pushes the
-      # sibling .snupkg from the same folder when one is present, so pushing the
-      # .nupkg alone is enough; --skip-duplicate means a re-run whose package
-      # already reached nuget.org does not fail on that account. The release
-      # step above is what actually makes a re-run after this step fails safe to
-      # retry: it skips recreating a release that already exists and lands here.
+      # After GitHub release creation, so a failure in that step does not leave a package on
+      # nuget.org that cannot be replaced. dotnet nuget push also pushes the
+      # sibling .snupkg. --skip-duplicate makes a retry safe after a successful
+      # push. The path is scoped to the library so the PowerShell Gallery package
+      # attached to the release is not sent to nuget.org.
       - name: Publish to NuGet
         run: |
-          dotnet nuget push dist/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push artifacts/fluence-wpf-nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      # The ZIP and Gallery-format NUPKG are attached to GitHub above. Publish
+      # the packaged module source to PSGallery only after the NuGet push
+      # succeeds. The release environment reviewer gates this public action too.
+      - name: Publish PowerShell module to PowerShell Gallery
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          $modulePath = Join-Path $PWD 'module-release/Fluence.Wpf.PowerShell'
+          $manifestPath = Join-Path $modulePath 'Fluence.Wpf.PowerShell.psd1'
+          $manifest = Import-PowerShellDataFile $manifestPath
+          $moduleName = Split-Path $modulePath -Leaf
+          $version = [string]$manifest.ModuleVersion
+          if (-not [string]::IsNullOrWhiteSpace($manifest.PrivateData.PSData.Prerelease)) {
+            $version = '{0}-{1}' -f $version, $manifest.PrivateData.PSData.Prerelease.TrimStart('-')
+          }
+          $published = Find-Module -Name $moduleName -RequiredVersion $version -AllowPrerelease -ErrorAction SilentlyContinue
+          if ($null -ne $published) {
+            Write-Host "PowerShell Gallery already contains $moduleName $version; skipping duplicate publication."
+          } else {
+            Publish-Module -Path $modulePath -Repository PSGallery -NuGetApiKey $env:PSGALLERY_API_KEY -Force
+          }
