@@ -28,37 +28,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #>
 
 
-function Set-FluenceWindowChrome
+function Set-FluenceWindowIcon
 {
     <#
     .SYNOPSIS
-        Applies a hashtable of FluenceWindow property names to a window.
-    .DESCRIPTION
-        Assigns each entry of the chrome hashtable onto the matching property of the window. The
-        hashtable holds only the chrome parameters the caller explicitly bound, so unset properties
-        keep the window's own defaults. A null hashtable is a no-op.
+        Loads a validated title bar icon on the UI thread and assigns it to a WPF window.
     .PARAMETER Window
-        The window to apply the chrome to.
-    .PARAMETER ChromeBound
-        A hashtable mapping FluenceWindow property names to values; null is treated as no chrome.
+        The window receiving the icon.
+    .PARAMETER IconSource
+        An absolute file: or pack: URI validated on the caller thread.
     .NOTES
-        Runs on the UI (STA) thread. Sets in-memory window properties only; changes no external state.
+        Must run on the UI (STA) thread.
     #>
     [CmdletBinding()]
+    [OutputType([void])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
-        Justification = 'Sets in-memory WPF window properties the caller explicitly bound; changes no external system state.')]
+        Justification = 'Sets an in-memory WPF window property only.')]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.Windows.Window]$Window,
 
         [Parameter()]
-        [hashtable]$ChromeBound
+        [string]$IconSource
     )
 
-    if ($null -eq $ChromeBound) { return }
-    foreach ($key in $ChromeBound.Keys)
+    if ([string]::IsNullOrWhiteSpace($IconSource))
     {
-        $Window.$key = $ChromeBound[$key]
+        return
     }
+
+    $frame = [System.Windows.Media.Imaging.BitmapFrame]::Create(
+        [System.Uri]$IconSource,
+        [System.Windows.Media.Imaging.BitmapCreateOptions]::None,
+        [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad)
+    $Window.Icon = $frame
 }
