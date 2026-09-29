@@ -1100,8 +1100,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     "Layout page should have a dedicated Expander DemoSampleControl.");
 
                 Controls.Expander dockPanelExpander = Assert.IsType<Controls.Expander>(FindVisualChildByName<Controls.Expander>(window, "DockPanelOptionsExpander"), exactMatch: false);
-                _ = Assert.IsType<DockPanel>(dockPanelExpander.Header, exactMatch: false);
-                _ = Assert.IsType<DockPanel>(dockPanelExpander.Content, exactMatch: false);
+                _ = Assert.IsType<Controls.DockPanel>(dockPanelExpander.Header, exactMatch: false);
+                _ = Assert.IsType<Controls.DockPanel>(dockPanelExpander.Content, exactMatch: false);
             });
         }
 
