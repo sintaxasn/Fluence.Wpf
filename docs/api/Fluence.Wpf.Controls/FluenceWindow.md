@@ -11,7 +11,7 @@ public class FluenceWindow : Window
 
 A top-level window that recreates the Windows 11 Fluent / WinUI 3 chrome on WPF: a DWM system backdrop (Mica, Acrylic, or Tabbed), rounded corners, an extendable title bar, and custom caption buttons that integrate with the Windows 11 snap-layout flyout.
 
-**Remarks:** The window collapses the native non-client frame through `WindowChrome` and drives every caption interaction (drag, resize, snap-layout hover, maximize/restore) from a Win32 message hook so the custom chrome stays authoritative. Theme, accent, and backdrop are applied directly to the HWND via DWM attributes and kept in sync with the shared theme managers for the lifetime of the realised window. A visible window fades its previous WPF surface over the newly applied theme, accent, or backdrop appearance for 167 ms when Windows client-area animation is enabled. High Contrast changes and reduced-motion settings apply immediately. Native DWM Mica, Acrylic, and caption composition are outside the WPF snapshot and change immediately.
+**Remarks:** The window collapses the native non-client frame through `WindowChrome` and drives every caption interaction (drag, resize, snap-layout hover, maximize/restore) from a Win32 message hook so the custom chrome stays authoritative. Theme, accent, and backdrop are applied directly to the HWND via DWM attributes and kept in sync with the shared theme managers for the lifetime of the realised window.
 
 **Base type:** [`Window`](https://learn.microsoft.com/dotnet/api/system.windows.window) (including inherited WPF and .NET members)
 
