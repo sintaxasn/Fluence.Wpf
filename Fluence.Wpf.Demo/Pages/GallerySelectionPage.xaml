@@ -137,8 +137,18 @@
                                     x:Name="WorkToggleStateText"
                                     Margin="{DynamicResource DemoInlineControlGapMargin}"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Text="On" />
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Off" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=WorkToggleSwitch}" Value="True">
+                                                    <Setter Property="Text" Value="On" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                                 <fluence:ProgressRing
                                     x:Name="WorkToggleProgressRing"
                                     Width="36"

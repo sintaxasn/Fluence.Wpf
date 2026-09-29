@@ -37,19 +37,21 @@ namespace Fluence.Wpf
     /// Manages system and custom accent colors and publishes them as <c language="xaml">DynamicResource</c> brush keys aligned with Windows 11.
     /// </summary>
     /// <remarks>
-    /// Call <see cref="ApplySystemAccent"/> or <see cref="ApplyCustomAccent(Color)"/> after
-    /// <see cref="ApplicationThemeManager.Apply"/> so theme-dependent primary/secondary/tertiary accents resolve correctly.
+    /// <see cref="ApplicationThemeManager.Apply"/> uses the Windows accent palette by default.
+    /// Call <see cref="ApplyCustomAccent(Color)"/> to pin a custom accent, or
+    /// <see cref="ApplySystemAccent"/> to return to the Windows palette.
     /// </remarks>
     /// <example>
     /// <code language="csharp">
     /// ApplicationThemeManager.Apply(ApplicationTheme.Auto, WindowBackdropType.Mica);
-    /// ApplicationAccentColorManager.ApplySystemAccent();
+    /// ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Colors.CornflowerBlue);
     /// </code>
     /// </example>
     public static class ApplicationAccentColorManager
     {
         /// <summary>
-        /// Occurs after accent ramp colors and application resources have been updated.
+        /// Occurs after the theme engine publishes application resources, whether the publish
+        /// follows a theme apply or an accent apply. A redundant apply raises no event.
         /// </summary>
         public static event EventHandler<EventArgs>? AccentColorChanged;
 
@@ -81,7 +83,8 @@ namespace Fluence.Wpf
         private static bool IsDark => FluenceThemeEngine.ResolvedTheme is ApplicationTheme.Dark;
 
         /// <summary>
-        /// Gets the current base system accent color (ARGB). Default is a Windows blue until <see cref="ApplySystemAccent"/> runs.
+        /// Gets the current base accent color (ARGB). A theme apply loads the Windows accent
+        /// palette by default; before the first apply, this returns the fallback blue.
         /// </summary>
         public static Color SystemAccentColor => Palette.Accent;
 

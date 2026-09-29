@@ -89,6 +89,13 @@ namespace Fluence.Wpf.Theming
         internal static event EventHandler<EventArgs>? Published;
 
         /// <summary>
+        /// Raised after a changed computed dictionary is built but before it replaces slot [0].
+        /// Realised windows can capture their previous appearance without changing the resource
+        /// pipeline. The event is skipped for the initial publication and fingerprint no-ops.
+        /// </summary>
+        internal static event EventHandler<ThemePublishEventArgs>? PreparingPublish;
+
+        /// <summary>
         /// Sets the accent intent that the next <see cref="Apply"/> call will use.
         /// </summary>
         /// <param name="intent">The accent intent to set.</param>
@@ -122,6 +129,7 @@ namespace Fluence.Wpf.Theming
         /// redundant or when <see cref="Publish"/> found no <see cref="Application.Current"/>.</returns>
         internal static bool Apply(ApplicationTheme request)
         {
+            ApplicationTheme previousTheme = ResolvedTheme;
             ApplicationTheme theme = ThemeResolver.Resolve(request);
             AccentPalette palette = AccentResolver.Resolve(_intent, theme);
             Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: _deterministicChromeForTesting);
@@ -137,6 +145,10 @@ namespace Fluence.Wpf.Theming
             }
 
             ResourceDictionary dict = BuildComputedDictionary(colors, theme);
+            if (_publishedFingerprint is not null && IsPublishedDictionaryInstalled())
+            {
+                PreparingPublish?.Invoke(sender: null, new ThemePublishEventArgs(previousTheme, theme));
+            }
             if (!Publish(dict))
             {
                 // Application.Current was null. Leave the stored fingerprint alone so the next call

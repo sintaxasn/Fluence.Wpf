@@ -79,9 +79,8 @@ namespace Fluence.Wpf.Tests.Control.Rules
         /// A determinate bar still reads correctly when frozen, because its fill width carries the
         /// information. An indeterminate bar carries no value at all - the movement *is* the
         /// message - so parking it produces a control that looks like a stalled determinate bar
-        /// and tells the user the operation has hung. That is what happened in PSAppDeployToolkit:
-        /// <c language="powershell">Show-ADTInstallationProgress</c> returned normally but its dialog sat motionless on
-        /// any machine with animation effects off, and the install looked frozen. Screen-reader
+        /// and tells the user the operation has hung. A progress dialog that returns normally but
+        /// sits motionless on a machine with animation effects off makes the work look frozen. Screen-reader
         /// users, the exact audience the reduced-motion work was for, very often have animation
         /// effects off.
         /// </para>

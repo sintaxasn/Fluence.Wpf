@@ -585,9 +585,9 @@ namespace Fluence.Wpf.Controls
             // different - its fill width still carries the information when frozen - so
             // UpdateFillWidth does honour the gate.
             //
-            // This regressed PSAppDeployToolkit: Show-ADTInstallationProgress returned normally but
-            // its dialog sat motionless on any machine with animation effects off, and the install
-            // looked frozen. ProgressRing solves the same problem the other way, by rendering a
+            // Without this exception, an operation with animation effects off could return normally
+            // while its progress dialog sat motionless and made the work look frozen. ProgressRing
+            // solves the same problem the other way, by rendering a
             // meaningful static resting arc; a bar has no equivalent resting frame that reads as
             // "busy" rather than "stopped part-way".
             //

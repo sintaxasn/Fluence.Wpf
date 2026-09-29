@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests.Windowing
     // [InternalsVisibleTo("Fluence.Wpf.Tests")]). WindowPolicy is pure logic: it maps
     // the requested WindowBackdropType + OS capabilities to an effective backdrop, a DWM plan,
     // and a template frame plan. These tests pin those mappings so a future OS-caps
-    // refactor cannot silently regress the downgrade behaviour PSADT relies on for
+    // refactor cannot silently regress the downgrade behaviour WPF hosts rely on for
     // Windows 10 1809+ baseline support.
     public class WindowPolicyTests
     {

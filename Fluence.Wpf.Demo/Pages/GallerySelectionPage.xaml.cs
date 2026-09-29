@@ -197,8 +197,18 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "            <TextBlock\n" +
                                                             "                x:Name=\"WorkToggleStateText\"\n" +
                                                             "                Margin=\"12,0,0,0\"\n" +
-                                                            "                VerticalAlignment=\"Center\"\n" +
-                                                            "                Text=\"On\" />\n" +
+                                                            "                VerticalAlignment=\"Center\">\n" +
+                                                            "                <TextBlock.Style>\n" +
+                                                            "                    <Style TargetType=\"TextBlock\">\n" +
+                                                            "                        <Setter Property=\"Text\" Value=\"Off\" />\n" +
+                                                            "                        <Style.Triggers>\n" +
+                                                            "                            <DataTrigger Binding=\"{Binding IsChecked, ElementName=WorkToggleSwitch}\" Value=\"True\">\n" +
+                                                            "                                <Setter Property=\"Text\" Value=\"On\" />\n" +
+                                                            "                            </DataTrigger>\n" +
+                                                            "                        </Style.Triggers>\n" +
+                                                            "                    </Style>\n" +
+                                                            "                </TextBlock.Style>\n" +
+                                                            "            </TextBlock>\n" +
                                                             "            <fluence:ProgressRing\n" +
                                                             "                x:Name=\"WorkToggleProgressRing\"\n" +
                                                             "                Width=\"36\"\n" +

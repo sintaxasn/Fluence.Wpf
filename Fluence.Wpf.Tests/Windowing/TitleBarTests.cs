@@ -1001,9 +1001,9 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         [Fact]
-        public Task MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderPsadtConfigAsync()
+        public Task MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderHostConfigAsync()
         {
-            // Reproduces the exact PSADT FluentDialog topology: Topmost=True + ResizeMode=NoResize
+            // Reproduces a hosted Fluent dialog topology: Topmost=True + ResizeMode=NoResize
             // + ExtendsContentIntoTitleBar=True + IsMinimizeButtonVisible flipped from
             // Collapsed (XAML baseline) to Visible (IsMinimizeButtonVisible=Visibility.Visible). The
             // test drives the Button via its ICommand to mirror the real click path (WPF
@@ -1037,7 +1037,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     window.Show();
                     await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Loaded, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
 
-                    // Flip visibility after Show() to mirror PSADT's IsMinimizeButtonVisible=Visibility.Visible.
+                    // Flip visibility after Show() to match the host's IsMinimizeButtonVisible=Visibility.Visible setting.
                     window.IsMinimizeButtonVisible = Visibility.Visible;
                     window.IsMinimizable = true;
                     await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
@@ -1047,11 +1047,11 @@ namespace Fluence.Wpf.Tests.Windowing
                     System.Windows.Controls.Button minBtn = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(window, "_minimizeButton"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, minBtn.Visibility);
                     Assert.True(minBtn.IsEnabled,
-                        "PSADT flow: Button.IsEnabled must be true so clicks dispatch the command.");
+                        "The visible button must be enabled so clicks dispatch the command.");
 
                     Assert.True(
                         SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, minBtn),
-                        "PSADT flow: MinimizeWindowCommand.CanExecute must be true once DPs are flipped and IsMinimizable=true.");
+                        "MinimizeWindowCommand.CanExecute must be true once DPs are set and IsMinimizable=true.");
 
                     Assert.Equal(WindowState.Normal, window.WindowState);
 
@@ -1072,12 +1072,11 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         [Fact]
-        public Task MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfigAsync()
+        public Task MinimizeButton_EndToEnd_WorksUnderShowDialogModalHostConfigAsync()
         {
-            // Same topology as the Show() variant above, but uses ShowDialog() which is what
-            // PSADT's DialogManager actually invokes (see DialogManager.ShowModalDialog -> dialog.ShowDialog()).
+            // Same topology as the Show() variant above, but uses ShowDialog() to cover a modal host.
             // Modal WPF windows push a nested Dispatcher frame, disable their owner, and in the
-            // PSADT case are also Topmost - a combination that can mask bugs a Show() test misses.
+            // hosted case are also Topmost - a combination that can mask bugs a Show() test misses.
             // We schedule the click via Dispatcher.BeginInvoke(ApplicationIdle) from Loaded so
             // the command fires after the modal frame is pumping, then verify WindowState.
             return WpfTestSta.RunOnStaAsync(static () =>
@@ -1157,9 +1156,9 @@ namespace Fluence.Wpf.Tests.Windowing
 
                     Assert.Equal(Visibility.Visible, minimizeButtonVisibility);
                     Assert.True(minimizeButtonIsEnabled,
-                        "PSADT ShowDialog flow: Button.IsEnabled must be true inside the modal dispatcher frame.");
+                        "Button.IsEnabled must be true inside the modal dispatcher frame.");
                     Assert.True(minimizeCommandCanExecute,
-                        "PSADT ShowDialog flow: MinimizeWindowCommand.CanExecute must be true inside the modal dispatcher frame.");
+                        "MinimizeWindowCommand.CanExecute must be true inside the modal dispatcher frame.");
                     Assert.Equal(WindowState.Minimized, observedStateAfterMinimize);
                 }
                 finally

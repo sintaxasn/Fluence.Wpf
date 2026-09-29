@@ -1,5 +1,4 @@
-﻿/*
- *
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +26,23 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows.Media;
+using System;
 
-namespace Fluence.Wpf.Demo.Pages
+namespace Fluence.Wpf.Theming
 {
     /// <summary>
-    /// Row model for the High Contrast brush mapping table.
+    /// The resolved themes on either side of a computed resource publication.
     /// </summary>
-    public sealed class HcBrushEntry
+    internal sealed class ThemePublishEventArgs : EventArgs
     {
-        /// <summary>
-        /// Gets or sets the Fluence resource key (e.g. <c language="xaml">TextFillColorPrimaryBrush</c>).
-        /// </summary>
-        public string? Key { get; set; }
+        internal ThemePublishEventArgs(ApplicationTheme previousTheme, ApplicationTheme nextTheme)
+        {
+            PreviousTheme = previousTheme;
+            NextTheme = nextTheme;
+        }
 
-        /// <summary>
-        /// Gets or sets the Windows HC system colour name (e.g. <c language="text">WindowText</c>).
-        /// </summary>
-        public string? HcMapping { get; set; }
+        internal ApplicationTheme PreviousTheme { get; }
 
-        /// <summary>
-        /// Gets or sets the live brush resolved from the current theme dictionary.
-        /// </summary>
-        public Brush? Brush { get; set; }
+        internal ApplicationTheme NextTheme { get; }
     }
 }

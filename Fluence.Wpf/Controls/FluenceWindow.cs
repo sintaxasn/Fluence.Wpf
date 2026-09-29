@@ -39,6 +39,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
+using Fluence.Wpf.Theming;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -63,6 +64,8 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_MaximizeButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PART_RestoreButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_ThemeTransitionRoot, Type = typeof(Grid))]
+    [TemplatePart(Name = PART_ThemeTransitionOverlayHost, Type = typeof(Grid))]
     public class FluenceWindow : Window
     {
         #region Constants
@@ -86,6 +89,10 @@ namespace Fluence.Wpf.Controls
         /// Template part name for the close caption button.
         /// </summary>
         private const string PART_CloseButton = "PART_CloseButton";
+
+        private const string PART_ThemeTransitionRoot = "PART_ThemeTransitionRoot";
+
+        private const string PART_ThemeTransitionOverlayHost = "PART_ThemeTransitionOverlayHost";
 
         /// <summary>
         /// Default <see cref="TitleBarHeight"/>. Matches the WinUI 3 canonical expanded title-bar
@@ -579,11 +586,19 @@ namespace Fluence.Wpf.Controls
         {
             // Be tolerant of incomplete design-time templates: missing caption parts should
             // disable only caption-button behavior rather than failing the whole window.
+            _themeTransitionOverlay?.Clear();
+            _themeTransitionOverlay = null;
+            _themeTransitionCaptured = false;
             base.OnApplyTemplate();
             _minimizeButton = GetTemplateChild(PART_MinimizeButton) as System.Windows.Controls.Button;
             _maximizeButton = GetTemplateChild(PART_MaximizeButton) as System.Windows.Controls.Button;
             _restoreButton = GetTemplateChild(PART_RestoreButton) as System.Windows.Controls.Button;
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
+            if (GetTemplateChild(PART_ThemeTransitionRoot) is Grid root &&
+                GetTemplateChild(PART_ThemeTransitionOverlayHost) is Grid host)
+            {
+                _themeTransitionOverlay = new ThemeTransitionOverlay(this, root, host);
+            }
             UpdateCaptionButtons();
         }
 
@@ -602,6 +617,8 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Changed += OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
+            FluenceThemeEngine.PreparingPublish += OnPreparingThemePublish;
+            FluenceThemeEngine.Published += OnThemePublished;
 
             // SizeToContent leaves the template root arranged one layout pass behind the realised
             // client size (see FillClientAreaForSizeToContent); correct it once the window has its
@@ -672,6 +689,11 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.UnWatch(this);
             ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
+            FluenceThemeEngine.PreparingPublish -= OnPreparingThemePublish;
+            FluenceThemeEngine.Published -= OnThemePublished;
+            _themeTransitionOverlay?.Clear();
+            _themeTransitionOverlay = null;
+            _themeTransitionCaptured = false;
             SizeChanged -= OnSizeChangedForSizeToContent;
 
             // A FromHwnd source is WPF-owned; release the hook and the reference without disposing.
@@ -741,6 +763,36 @@ namespace Fluence.Wpf.Controls
         #endregion Dependency property change callbacks
 
         #region Theme and accent manager handlers
+
+        private void OnPreparingThemePublish(object? sender, ThemePublishEventArgs e)
+        {
+            _themeTransitionCaptured = false;
+            if (!Dispatcher.CheckAccess())
+            {
+                return;
+            }
+
+            if (!IsVisible || WindowState is WindowState.Minimized ||
+                !MotionHelper.IsMotionEnabled || e.PreviousTheme is ApplicationTheme.HighContrast ||
+                e.NextTheme is ApplicationTheme.HighContrast)
+            {
+                _themeTransitionOverlay?.Clear();
+                return;
+            }
+
+            _themeTransitionCaptured = _themeTransitionOverlay?.Capture() ?? false;
+        }
+
+        private void OnThemePublished(object? sender, EventArgs e)
+        {
+            if (!_themeTransitionCaptured)
+            {
+                return;
+            }
+
+            _themeTransitionCaptured = false;
+            _themeTransitionOverlay?.Play();
+        }
 
         private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
@@ -2010,6 +2062,10 @@ namespace Fluence.Wpf.Controls
         /// The close caption button template part, or <see langword="null"/> if absent.
         /// </summary>
         private System.Windows.Controls.Button? _closeButton;
+
+        private ThemeTransitionOverlay? _themeTransitionOverlay;
+
+        private bool _themeTransitionCaptured;
 
         /// <summary>
         /// The WPF-owned <see cref="HwndSource"/> for the realised window, used for the message hook,
