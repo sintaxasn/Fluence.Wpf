@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
     d:DesignHeight="800"
     d:DesignWidth="900"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -20,16 +21,24 @@
         <fluence:ThemeDictionary>
             <fluence:ThemeDictionary.ThemeDictionaries>
                 <fluence:ThemeResourceDictionary ThemeKey="Light">
-                    <StaticResource x:Key="HomeHeroImageSource" ResourceKey="FluenceHeaderLightDrawingImage" />
+                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
+                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Light.svg" />
+                    </Style>
                 </fluence:ThemeResourceDictionary>
                 <fluence:ThemeResourceDictionary ThemeKey="Dark">
-                    <StaticResource x:Key="HomeHeroImageSource" ResourceKey="FluenceHeaderDarkDrawingImage" />
+                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
+                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Dark.svg" />
+                    </Style>
                 </fluence:ThemeResourceDictionary>
                 <fluence:ThemeResourceDictionary ThemeKey="HighContrastBlack">
-                    <StaticResource x:Key="HomeHeroImageSource" ResourceKey="FluenceHeaderDarkDrawingImage" />
+                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
+                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Dark.svg" />
+                    </Style>
                 </fluence:ThemeResourceDictionary>
                 <fluence:ThemeResourceDictionary ThemeKey="HighContrastWhite">
-                    <StaticResource x:Key="HomeHeroImageSource" ResourceKey="FluenceHeaderLightDrawingImage" />
+                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
+                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Light.svg" />
+                    </Style>
                 </fluence:ThemeResourceDictionary>
             </fluence:ThemeDictionary.ThemeDictionaries>
         </fluence:ThemeDictionary>
@@ -40,11 +49,13 @@
             SizeChanged="PageContent_SizeChanged"
             Style="{StaticResource GalleryPageContentStackStyle}">
             <StackPanel x:Name="HeroContent" Margin="{DynamicResource HomeHeroMargin}">
-                <Image
+                <svgc:SvgViewbox
                     x:Name="BrandHeroImage"
                     AutomationProperties.Name="Fluence.WPF"
-                    Source="{DynamicResource HomeHeroImageSource}"
-                    Style="{StaticResource HomeBrandImageStyle}" />
+                    HorizontalAlignment="Stretch"
+                    MaxWidth="620"
+                    Stretch="Uniform"
+                    Style="{DynamicResource HomeHeroSvgStyle}" />
                 <TextBlock
                     Style="{StaticResource HomeIntroStyle}"
                     Text="Fluent design for native WPF apps." />

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fluence.Wpf\Fluence.Wpf.csproj" />
+    <PackageReference Include="SharpVectors.Wpf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +24,8 @@
     <Resource Include="Resources\ControlImages\*.png" />
     <Resource Include="Resources\SampleMedia\*.png" />
     <Resource Include="Resources\SegoeFluentIcons.tsv" />
+    <Resource Include="..\assets\Fluence_Lockup_SideBySide_Light.svg" Link="Resources\Fluence_Lockup_SideBySide_Light.svg" />
+    <Resource Include="..\assets\Fluence_Lockup_SideBySide_Dark.svg" Link="Resources\Fluence_Lockup_SideBySide_Dark.svg" />
     <Content Include="Resources\BootstrapIcons.LICENSE.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

@@ -67,20 +67,20 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Image image = Assert.IsType<Image>(DemoTestHost.FindByName<Image>(page, "BrandHeroImage"), exactMatch: false);
+                    SharpVectors.Converters.SvgViewbox image = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
 
-                    DrawingImage light = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderLightDrawingImage"));
-                    DrawingImage dark = Assert.IsType<DrawingImage>(Application.Current.TryFindResource("FluenceHeaderDarkDrawingImage"));
+                    const string light = "/Resources/Fluence_Lockup_SideBySide_Light.svg";
+                    const string dark = "/Resources/Fluence_Lockup_SideBySide_Dark.svg";
 
-                    // The hero shows the lockup drawn for the active theme and swaps on
+                    // The hero renders the SVG for the active theme and swaps on
                     // theme changes via the page's ThemeDictionary (no code-behind).
-                    Assert.Same(light, image.Source);
+                    Assert.EndsWith(light, image.Source.OriginalString, StringComparison.Ordinal);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(dark, image.Source);
+                    Assert.EndsWith(dark, image.Source.OriginalString, StringComparison.Ordinal);
 
                     // High contrast has no fixed polarity, so the page picks whichever
                     // variant reads against the live system window color.
@@ -88,14 +88,15 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.True(ReferenceEquals(image.Source, light) || ReferenceEquals(image.Source, dark),
-                        "High contrast should show one of the two header lockups.");
+                    Assert.True(image.Source.OriginalString.EndsWith(light, StringComparison.Ordinal)
+                        || image.Source.OriginalString.EndsWith(dark, StringComparison.Ordinal),
+                        "High contrast should show one of the two SVG lockups.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(light, image.Source);
+                    Assert.EndsWith(light, image.Source.OriginalString, StringComparison.Ordinal);
                 }
                 finally
                 {
@@ -113,7 +114,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Image brand = Find<Image>(page, "BrandHeroImage");
+                    SharpVectors.Converters.SvgViewbox brand = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
                     Assert.InRange(brand.ActualWidth, 560, 640);
                     Assert.Equal(Stretch.Uniform, brand.Stretch);
                     Assert.Equal("Fluence.WPF", AutomationProperties.GetName(brand), StringComparer.Ordinal);
@@ -207,7 +208,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Image brand = Find<Image>(page, "BrandHeroImage");
+                    SharpVectors.Converters.SvgViewbox brand = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
                     UniformGrid catalog = Find<UniformGrid>(page, "FeaturedControlsGrid");
                     UniformGrid foundations = Find<UniformGrid>(page, "FoundationLinksGrid");
                     Controls.SmoothScrollViewer scroll = Assert.Single(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page));

@@ -20,6 +20,7 @@
     <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.12" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageVersion Include="SharpVectors.Wpf" Version="1.8.6" />
     <!-- Fluence.Wpf.Demo.Mvvm -->
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <!-- Fluence.Wpf.Tests -->
