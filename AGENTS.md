@@ -26,6 +26,7 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 ├── Fluence.Wpf.Tests/       xunit.v3 suite (net472 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Tests.Smoke/ xunit.v3 smoke lane (net8.0-windows10.0.26100.0)
+├── Fluence.Wpf.Docs.Walkthroughs/ Runnable C# documentation walkthroughs (net10.0-windows10.0.26100.0)
 └── Fluence.Wpf.PowerShell.Module/   Script module (not in the solution): src/, tests/, examples/, build/
 ```
 

@@ -33,10 +33,10 @@ using System.Windows.Media;
 
 namespace Fluence.Wpf.Docs.Walkthroughs
 {
-    internal sealed class WalkthroughWindow : Fluence.Wpf.Controls.FluenceWindow
+    internal sealed class WalkthroughWindow : Controls.FluenceWindow
     {
         private readonly StackPanel _content;
-        private readonly Fluence.Wpf.Controls.ComboBox _scenarioSelector;
+        private readonly Controls.ComboBox _scenarioSelector;
 
         internal (string Slug, string Title)[] Scenarios { get; }
 
@@ -51,13 +51,13 @@ namespace Fluence.Wpf.Docs.Walkthroughs
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             SystemBackdropType = WindowBackdropType.Mica;
             ExtendsContentIntoTitleBar = true;
-            TitleBar = new Fluence.Wpf.Controls.TitleBar { Title = "Fluence WPF walkthroughs", Subtitle = "Documentation sample" };
+            TitleBar = new Controls.TitleBar { Title = "Fluence WPF walkthroughs", Subtitle = "Documentation sample" };
             SetResourceReference(BackgroundProperty, "ApplicationBackgroundBrush");
 
             Grid root = new() { Margin = new Thickness(40, 32, 40, 28) };
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            _scenarioSelector = new Fluence.Wpf.Controls.ComboBox { Width = 260, HorizontalAlignment = HorizontalAlignment.Right };
+            _scenarioSelector = new Controls.ComboBox { Width = 260, HorizontalAlignment = HorizontalAlignment.Right };
             foreach ((_, string title) in scenarios)
             {
                 _ = _scenarioSelector.Items.Add(title);
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Docs.Walkthroughs
             _ = root.Children.Add(_scenarioSelector);
 
             _content = new StackPanel { Margin = new Thickness(24), VerticalAlignment = VerticalAlignment.Center };
-            Fluence.Wpf.Controls.Card surface = new() { Content = _content, Margin = new Thickness(0, 24, 0, 0) };
+            Controls.Card surface = new() { Content = _content, Margin = new Thickness(0, 24, 0, 0) };
             Grid.SetRow(surface, 1);
             _ = root.Children.Add(surface);
             Content = root;
@@ -99,21 +99,21 @@ namespace Fluence.Wpf.Docs.Walkthroughs
             {
                 case "basic-usage":
                     AddHeading("My first Fluent window", "A Mica window with a text box and an accent button.");
-                    Fluence.Wpf.Controls.TextBox name = new() { Width = 330, PlaceholderText = "Your name", Text = "Taylor" };
+                    Controls.TextBox name = new() { Width = 330, PlaceholderText = "Your name", Text = "Taylor" };
                     Add(name);
-                    Fluence.Wpf.Controls.TextBlock greeting = new() { Text = "Hello, Taylor!" };
+                    Controls.TextBlock greeting = new() { Text = "Hello, Taylor!" };
                     AddButton("Say hello", () => greeting.Text = $"Hello, {name.Text}!");
                     Add(greeting);
                     break;
                 case "window-and-title-bar":
                     AddHeading("Configure the window", "A custom title bar can host navigation and search.");
-                    Fluence.Wpf.Controls.TitleBar exampleTitleBar = new()
+                    Controls.TitleBar exampleTitleBar = new()
                     {
                         Title = "Project workspace",
                         Subtitle = "Documents",
                         IsBackButtonVisible = true,
                         IsPaneToggleButtonVisible = true,
-                        CustomContent = new Fluence.Wpf.Controls.TextBox { Width = 230, PlaceholderText = "Search documents" },
+                        CustomContent = new Controls.TextBox { Width = 230, PlaceholderText = "Search documents" },
                     };
                     Add(exampleTitleBar);
                     AddLabel("The shell requests Mica and rounded corners where Windows supports them.");
@@ -128,21 +128,21 @@ namespace Fluence.Wpf.Docs.Walkthroughs
                     break;
                 case "inputs-and-data":
                     AddHeading("Inputs and data", "Collect values, then display submitted entries.");
-                    Add(new Fluence.Wpf.Controls.TextBox { Width = 330, PlaceholderText = "Display name", Text = "Taylor" });
-                    Add(new Fluence.Wpf.Controls.NumberBox { Width = 190, PlaceholderText = "Quantity", Value = 3 });
-                    Fluence.Wpf.Controls.ListView entries = new() { Height = 120, Width = 420 };
+                    Add(new Controls.TextBox { Width = 330, PlaceholderText = "Display name", Text = "Taylor" });
+                    Add(new Controls.NumberBox { Width = 190, PlaceholderText = "Quantity", Value = 3 });
+                    Controls.ListView entries = new() { Height = 120, Width = 420 };
                     _ = entries.Items.Add("Taylor   ·   3 items");
                     _ = entries.Items.Add("Morgan   ·   5 items");
                     Add(entries);
                     break;
                 case "navigation-and-tabs":
                     AddHeading("Navigation and tabs", "Use destinations for pages and tabs for parallel work.");
-                    Fluence.Wpf.Controls.NavigationView navigation = new() { Height = 260, IsPaneOpen = true };
-                    _ = navigation.Items.Add(new Fluence.Wpf.Controls.NavigationViewItem { Content = "Home" });
-                    _ = navigation.Items.Add(new Fluence.Wpf.Controls.NavigationViewItem { Content = "Settings" });
-                    Fluence.Wpf.Controls.TabView tabs = new() { Height = 215, IsAddTabButtonVisible = true };
-                    _ = tabs.Items.Add(new Fluence.Wpf.Controls.TabViewItem { Header = "Overview", Content = "Overview content" });
-                    _ = tabs.Items.Add(new Fluence.Wpf.Controls.TabViewItem { Header = "Notes", Content = "Notes content" });
+                    Controls.NavigationView navigation = new() { Height = 260, IsPaneOpen = true };
+                    _ = navigation.Items.Add(new Controls.NavigationViewItem { Content = "Home" });
+                    _ = navigation.Items.Add(new Controls.NavigationViewItem { Content = "Settings" });
+                    Controls.TabView tabs = new() { Height = 215, IsAddTabButtonVisible = true };
+                    _ = tabs.Items.Add(new Controls.TabViewItem { Header = "Overview", Content = "Overview content" });
+                    _ = tabs.Items.Add(new Controls.TabViewItem { Header = "Notes", Content = "Notes content" });
                     navigation.Content = tabs;
                     Add(navigation);
                     break;
@@ -150,7 +150,7 @@ namespace Fluence.Wpf.Docs.Walkthroughs
                     AddHeading("Dialogs and feedback", "Ask for a decision and show progress or status inline.");
                     AddButton("Ask for confirmation", static () =>
                     {
-                        Fluence.Wpf.Controls.ContentDialog dialog = new()
+                        Controls.ContentDialog dialog = new()
                         {
                             Title = "Continue?",
                             Content = "Review this action before proceeding.",
@@ -159,13 +159,13 @@ namespace Fluence.Wpf.Docs.Walkthroughs
                         };
                         _ = dialog.ShowAsync();
                     });
-                    Add(new Fluence.Wpf.Controls.InfoBar { Title = "Saved", Message = "Your changes are up to date.", Severity = InfoBarSeverity.Success, IsOpen = true });
-                    Add(new Fluence.Wpf.Controls.ProgressBar { Width = 420, Value = 65 });
+                    Add(new Controls.InfoBar { Title = "Saved", Message = "Your changes are up to date.", Severity = InfoBarSeverity.Success, IsOpen = true });
+                    Add(new Controls.ProgressBar { Width = 420, Value = 65 });
                     break;
                 case "controls-from-csharp":
                     AddHeading("Create controls in C#", "Construct a window and its content without XAML.");
                     AddLabel("Every element on this page was created in code.");
-                    Fluence.Wpf.Controls.TextBlock status = new() { Text = "Ready to continue." };
+                    Controls.TextBlock status = new() { Text = "Ready to continue." };
                     Add(status);
                     AddButton("Continue", () => status.Text = "The button was clicked.");
                     break;
@@ -187,7 +187,7 @@ namespace Fluence.Wpf.Docs.Walkthroughs
 
         private void AddButton(string label, Action click)
         {
-            Fluence.Wpf.Controls.Button button = new()
+            Controls.Button button = new()
             {
                 Content = label,
                 Appearance = ControlAppearance.Accent,
