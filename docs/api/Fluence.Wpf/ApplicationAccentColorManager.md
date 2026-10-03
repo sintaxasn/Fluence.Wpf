@@ -11,7 +11,7 @@ public static class ApplicationAccentColorManager
 
 Manages system and custom accent colors and publishes them as `DynamicResource` brush keys aligned with Windows 11.
 
-**Remarks:** [Apply](ApplicationThemeManager.md#api-317c377bb209) uses the Windows accent palette by default. Call [ApplyCustomAccent](ApplicationAccentColorManager.md#api-e3ee20c8a77b) to pin a custom accent, or [ApplySystemAccent](ApplicationAccentColorManager.md#api-194f672c8db4) to return to the Windows palette.
+**Remarks:** [Apply](ApplicationThemeManager.md#api-317c377bb209) uses the Windows accent palette by default. Call [ApplyCustomAccent](ApplicationAccentColorManager.md#api-e3ee20c8a77b) to pin a custom ramp seed, [ApplyCustomAccentExact](ApplicationAccentColorManager.md#api-ca99c2ce264f) for an exact visible light-theme primary, or [ApplySystemAccent](ApplicationAccentColorManager.md#api-194f672c8db4) to return to the Windows palette.
 
 **Example**
 
@@ -52,7 +52,7 @@ Gets the current base accent color (ARGB). A theme apply loads the Windows accen
 public static Color SystemAccentColorDark1 { get; }
 ```
 
-Gets the first dark shade on the generated accent ramp.
+Gets the first dark shade on the resolved accent ramp.
 
 <a id="api-33761434f7ff"></a>
 
@@ -62,7 +62,7 @@ Gets the first dark shade on the generated accent ramp.
 public static Color SystemAccentColorDark2 { get; }
 ```
 
-Gets the second dark shade on the generated accent ramp.
+Gets the second dark shade on the resolved accent ramp.
 
 <a id="api-65ccdb75272a"></a>
 
@@ -72,7 +72,7 @@ Gets the second dark shade on the generated accent ramp.
 public static Color SystemAccentColorDark3 { get; }
 ```
 
-Gets the darkest shade on the generated accent ramp.
+Gets the darkest shade on the resolved accent ramp.
 
 <a id="api-8132c3dcc448"></a>
 
@@ -82,7 +82,7 @@ Gets the darkest shade on the generated accent ramp.
 public static Color SystemAccentColorLight1 { get; }
 ```
 
-Gets the first light tint on the generated accent ramp. Default matches [SystemAccentColor](ApplicationAccentColorManager.md#api-a0be6a791d95) until the ramp is loaded.
+Gets the first light tint on the resolved accent ramp. Default matches [SystemAccentColor](ApplicationAccentColorManager.md#api-a0be6a791d95) until the ramp is loaded.
 
 <a id="api-80394f6b3e4b"></a>
 
@@ -92,7 +92,7 @@ Gets the first light tint on the generated accent ramp. Default matches [SystemA
 public static Color SystemAccentColorLight2 { get; }
 ```
 
-Gets the second light tint on the generated accent ramp.
+Gets the second light tint on the resolved accent ramp.
 
 <a id="api-b9568a468733"></a>
 
@@ -102,7 +102,7 @@ Gets the second light tint on the generated accent ramp.
 public static Color SystemAccentColorLight3 { get; }
 ```
 
-Gets the lightest tint on the generated accent ramp.
+Gets the lightest tint on the resolved accent ramp.
 
 <a id="api-0770d0d64b6f"></a>
 
@@ -174,7 +174,7 @@ Gets the window border color (titlebar active on Win11, blended on Win10).
 public static void ApplyCustomAccent(Color lightThemeAccent, Color darkThemeAccent)
 ```
 
-Applies per-theme custom accent seeds and regenerates the accent ramp and theme resources. The intent is sticky: every later theme change regenerates the ramp from the seed matching the newly resolved theme, with no re-apply call needed.
+Applies per-theme custom accent seeds and republishes theme resources. A seed matching the active Windows accent captures its seven-rung palette; other seeds use generated ramps. The selected palette stays pinned across later theme changes.
 
 **Parameter `lightThemeAccent`:** The ramp seed used on the light theme.
 
@@ -188,9 +188,35 @@ Applies per-theme custom accent seeds and regenerates the accent ramp and theme 
 public static void ApplyCustomAccent(Color color)
 ```
 
-Applies a custom base accent color and regenerates the accent ramp and theme resources.
+Applies a custom accent seed and republishes theme resources. When the seed matches the active Windows accent, its seven-rung palette is captured; otherwise a ramp is generated.
 
 **Parameter `color`:** The accent color to use as the ramp base.
+
+<a id="api-3006181574b3"></a>
+
+### ApplyCustomAccentExact
+
+```csharp
+public static void ApplyCustomAccentExact(Color lightThemeAccent, Color darkThemeAccent)
+```
+
+Applies exact visible primary accents on light and dark themes. The intent follows subsequent theme changes. High contrast retains its system state colors and uses the dark-theme color as its raw ramp seed.
+
+**Parameter `lightThemeAccent`:** The exact primary accent color on the light theme.
+
+**Parameter `darkThemeAccent`:** The exact primary accent color on the dark theme.
+
+<a id="api-ca99c2ce264f"></a>
+
+### ApplyCustomAccentExact
+
+```csharp
+public static void ApplyCustomAccentExact(Color lightThemeAccent)
+```
+
+Applies an exact visible primary accent on the light theme. The dark-theme primary is derived from the resolved ramp, and the intent follows subsequent theme changes. High contrast retains its system state colors and uses this color as its raw ramp seed.
+
+**Parameter `lightThemeAccent`:** The exact primary accent color on the light theme.
 
 <a id="api-194f672c8db4"></a>
 

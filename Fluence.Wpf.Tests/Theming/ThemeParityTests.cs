@@ -46,6 +46,12 @@ namespace Fluence.Wpf.Tests.Theming
     /// </summary>
     public class ThemeParityTests
     {
+        private static void ApplyGeneratedBlue()
+        {
+            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustomGenerated(Color.FromRgb(0x00, 0x78, 0xD4)));
+            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
+        }
+
         /// <summary>
         /// HighContrast brush keys that <c language="csharp">SpecialBrushes.AddHighContrastBrushes</c> binds to the
         /// live <c language="csharp">SystemColors.HighlightColor</c>. That color tracks the host machine's OS accent
@@ -108,7 +114,7 @@ namespace Fluence.Wpf.Tests.Theming
                 // covered by DesignTimeResourceTests.
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
                 ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                ApplyGeneratedBlue();
             }).ConfigureAwait(true);
 
             Dictionary<string, (Color, Color)> map = new(StringComparer.Ordinal);
@@ -201,7 +207,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                ApplyGeneratedBlue();
 
                 ResourceDictionary res = app.Resources;
                 Color strongStroke = Assert.IsType<Color>(res["ControlStrongStrokeColorDefault"]);
@@ -256,7 +262,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                ApplyGeneratedBlue();
 
                 ResourceDictionary res = app.Resources;
                 LinearGradientBrush control = Assert.IsType<LinearGradientBrush>(res["ControlElevationBorderBrush"]);
@@ -279,8 +285,8 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         /// <summary>
-        /// Verifies that AccentResolver.Resolve produces structurally sound palettes for both
-        /// System and Custom intents, and that the Custom path uses the generator ramp.
+        /// Verifies that AccentResolver.Resolve produces structurally sound palettes for the
+        /// system intent and the deterministic custom fixture's generated ramp.
         /// </summary>
         [Fact]
         public void AccentResolver_System_PrefersOsPaletteThenGenerates()
@@ -289,9 +295,9 @@ namespace Fluence.Wpf.Tests.Theming
             AccentPalette sys = AccentResolver.Resolve(AccentIntent.System, ApplicationTheme.Light);
             Assert.Equal((byte)0xFF, sys.Accent.A);
 
-            // Custom(#0078D4) must use the generated ramp: Light2 must equal what the generator produces.
+            // The generated-only fixture must use the generator even when Windows currently uses blue.
             Color customBase = Color.FromRgb(0x00, 0x78, 0xD4);
-            AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustom(customBase), ApplicationTheme.Light);
+            AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustomGenerated(customBase), ApplicationTheme.Light);
             Helpers.HsvColorHelper.GenerateAccentRampWinaccent(customBase,
                 out _, out Color l2, out _, out _, out _, out _);
             Assert.Equal(l2, custom.Light2);
@@ -408,7 +414,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                ApplyGeneratedBlue();
 
                 Color highlight = SystemColors.HighlightColor;
                 ResourceDictionary res = Application.Current.Resources;
@@ -438,7 +444,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationAccentColorManager.ResetForTesting();
                 FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                ApplyGeneratedBlue();
 
                 Color highlightText = SystemColors.HighlightTextColor;
                 ResourceDictionary res = Application.Current.Resources;

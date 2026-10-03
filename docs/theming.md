@@ -83,7 +83,25 @@ The color keys `SystemAccentColorPrimary`, `Secondary`, and `Tertiary` express t
 
 ## Accent, backdrop, and design time
 
-The system accent is the default intent. `ApplyCustomAccent` pins one seed or separate light and dark seeds; `ApplySystemAccent` returns to Windows. `FluenceWindow` uses backdrop policy independently of the color tokens; see [window configuration](how-to/window-and-title-bar.md).
+The system accent is the default intent. `ApplyCustomAccent` pins one seed or separate light and dark seeds. When a seed exactly matches the current Windows accent base and the OS palette is available, Fluence snapshots all seven Windows shades for that custom intent; the pinned snapshot stays fixed if Windows later changes. Other custom seeds use a generated ramp. The visible primary accent fill uses a theme-selected shade of the selected palette, so an arbitrary seed is not guaranteed to appear unchanged on a button. The generated ramp is an approximation of Windows behavior for arbitrary custom colors, not a proven exact Windows color transform. `ApplySystemAccent` returns to the live Windows palette.
+
+Use `ApplyCustomAccentExact` when the visible primary fill must equal a supplied color. The one-color overload makes `AccentFillColorDefault` and `SystemAccentColorPrimary` equal the light color in Light mode and uses the resolved palette's `Light2` tint in Dark mode. That palette is a Windows snapshot if the seed matches the current Windows base, or a generated fallback otherwise. The two-color overload makes those roles equal the supplied light and dark colors respectively. Both forms keep the selected palette for other accent roles, and the selection remains sticky across theme changes. For example:
+
+```csharp
+using System.Windows.Media;
+using Fluence.Wpf;
+
+Color light = Color.FromRgb(0x87, 0xAB, 0xC8);
+Color dark = Color.FromRgb(0xAC, 0xCB, 0xDF);
+
+ApplicationAccentColorManager.ApplyCustomAccent(light);            // OS snapshot if the seed matches; otherwise generated.
+ApplicationAccentColorManager.ApplyCustomAccent(light, dark);      // Select the matching snapshot or generated ramp per theme.
+ApplicationAccentColorManager.ApplyCustomAccentExact(light);       // Exact Light fill, resolved Dark Light2 tint.
+ApplicationAccentColorManager.ApplyCustomAccentExact(light, dark); // Exact Light and Dark fills.
+ApplicationAccentColorManager.ApplySystemAccent();                 // Follow Windows again.
+```
+
+High Contrast control fills and text continue to follow live `SystemColors` roles, even with an exact custom accent. The raw `SystemAccentColor` remains the selected ramp seed. `FluenceWindow` uses backdrop policy independently of these color tokens; see [window configuration](how-to/window-and-title-bar.md).
 
 The XAML designer cannot run the full theme engine. The library includes generated Light and Dark design-time resource dictionaries under `Fluence.Wpf/Properties/`, plus `DesignTimeResources.xaml` for default preview. These are snapshots for the designer and are not merged at runtime. Check the final appearance in the gallery, especially high contrast and DWM surfaces.
 

@@ -1279,6 +1279,8 @@ override Fluence.Wpf.TabViewTabCloseRequestedEventArgs.InvokeEventHandler(System
 static Fluence.Wpf.ApplicationAccentColorManager.AccentColorChanged -> System.EventHandler<System.EventArgs!>?
 static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color color) -> void
 static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color lightThemeAccent, System.Windows.Media.Color darkThemeAccent) -> void
+static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccentExact(System.Windows.Media.Color lightThemeAccent) -> void
+static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccentExact(System.Windows.Media.Color lightThemeAccent, System.Windows.Media.Color darkThemeAccent) -> void
 static Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent() -> void
 static Fluence.Wpf.ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled.get -> bool
 static Fluence.Wpf.ApplicationAccentColorManager.SystemAccentColor.get -> System.Windows.Media.Color

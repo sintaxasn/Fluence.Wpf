@@ -38,7 +38,8 @@ namespace Fluence.Wpf
     /// </summary>
     /// <remarks>
     /// <see cref="ApplicationThemeManager.Apply"/> uses the Windows accent palette by default.
-    /// Call <see cref="ApplyCustomAccent(Color)"/> to pin a custom accent, or
+    /// Call <see cref="ApplyCustomAccent(Color)"/> to pin a custom ramp seed,
+    /// <see cref="ApplyCustomAccentExact(Color)"/> for an exact visible light-theme primary, or
     /// <see cref="ApplySystemAccent"/> to return to the Windows palette.
     /// </remarks>
     /// <example>
@@ -89,39 +90,39 @@ namespace Fluence.Wpf
         public static Color SystemAccentColor => Palette.Accent;
 
         /// <summary>
-        /// Gets the first light tint on the generated accent ramp. Default matches <see cref="SystemAccentColor"/> until the ramp is loaded.
+        /// Gets the first light tint on the resolved accent ramp. Default matches <see cref="SystemAccentColor"/> until the ramp is loaded.
         /// </summary>
         public static Color SystemAccentColorLight1 => Palette.Light1;
 
         /// <summary>
-        /// Gets the second light tint on the generated accent ramp.
+        /// Gets the second light tint on the resolved accent ramp.
         /// </summary>
         public static Color SystemAccentColorLight2 => Palette.Light2;
 
         /// <summary>
-        /// Gets the lightest tint on the generated accent ramp.
+        /// Gets the lightest tint on the resolved accent ramp.
         /// </summary>
         public static Color SystemAccentColorLight3 => Palette.Light3;
 
         /// <summary>
-        /// Gets the first dark shade on the generated accent ramp.
+        /// Gets the first dark shade on the resolved accent ramp.
         /// </summary>
         public static Color SystemAccentColorDark1 => Palette.Dark1;
 
         /// <summary>
-        /// Gets the second dark shade on the generated accent ramp.
+        /// Gets the second dark shade on the resolved accent ramp.
         /// </summary>
         public static Color SystemAccentColorDark2 => Palette.Dark2;
 
         /// <summary>
-        /// Gets the darkest shade on the generated accent ramp.
+        /// Gets the darkest shade on the resolved accent ramp.
         /// </summary>
         public static Color SystemAccentColorDark3 => Palette.Dark3;
 
         /// <summary>
         /// Gets the primary accent color used for emphasis surfaces.
         /// </summary>
-        public static Color SystemAccentColorPrimary => IsDark ? Palette.Light2 : Palette.Dark1;
+        public static Color SystemAccentColorPrimary => Palette.PrimaryOverride ?? (IsDark ? Palette.Light2 : Palette.Dark1);
 
         /// <summary>
         /// Gets the secondary accent color used for layered emphasis.
@@ -163,7 +164,8 @@ namespace Fluence.Wpf
         }
 
         /// <summary>
-        /// Applies a custom base accent color and regenerates the accent ramp and theme resources.
+        /// Applies a custom accent seed and republishes theme resources. When the seed matches
+        /// the active Windows accent, its seven-rung palette is captured; otherwise a ramp is generated.
         /// </summary>
         /// <param name="color">The accent color to use as the ramp base.</param>
         public static void ApplyCustomAccent(Color color)
@@ -173,15 +175,40 @@ namespace Fluence.Wpf
         }
 
         /// <summary>
-        /// Applies per-theme custom accent seeds and regenerates the accent ramp and theme
-        /// resources. The intent is sticky: every later theme change regenerates the ramp from
-        /// the seed matching the newly resolved theme, with no re-apply call needed.
+        /// Applies per-theme custom accent seeds and republishes theme resources. A seed matching
+        /// the active Windows accent captures its seven-rung palette; other seeds use generated
+        /// ramps. The selected palette stays pinned across later theme changes.
         /// </summary>
         /// <param name="lightThemeAccent">The ramp seed used on the light theme.</param>
         /// <param name="darkThemeAccent">The ramp seed used on dark and high-contrast themes.</param>
         public static void ApplyCustomAccent(Color lightThemeAccent, Color darkThemeAccent)
         {
             FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustom(lightThemeAccent, darkThemeAccent));
+            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
+        }
+
+        /// <summary>
+        /// Applies an exact visible primary accent on the light theme. The dark-theme primary
+        /// is derived from the resolved ramp, and the intent follows subsequent theme changes.
+        /// High contrast retains its system state colors and uses this color as its raw ramp seed.
+        /// </summary>
+        /// <param name="lightThemeAccent">The exact primary accent color on the light theme.</param>
+        public static void ApplyCustomAccentExact(Color lightThemeAccent)
+        {
+            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustomExact(lightThemeAccent));
+            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
+        }
+
+        /// <summary>
+        /// Applies exact visible primary accents on light and dark themes. The intent follows
+        /// subsequent theme changes. High contrast retains its system state colors and uses the
+        /// dark-theme color as its raw ramp seed.
+        /// </summary>
+        /// <param name="lightThemeAccent">The exact primary accent color on the light theme.</param>
+        /// <param name="darkThemeAccent">The exact primary accent color on the dark theme.</param>
+        public static void ApplyCustomAccentExact(Color lightThemeAccent, Color darkThemeAccent)
+        {
+            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustomExact(lightThemeAccent, darkThemeAccent));
             _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
         }
 

@@ -7,10 +7,10 @@ Generated from the .NET 10 Fluence.Wpf assembly and its compiler XML documentati
 | types | 154 |
 | constructors | 119 |
 | properties | 359 |
-| methods | 353 |
+| methods | 355 |
 | events | 40 |
 | fields | 410 |
-| documented | 1377 |
+| documented | 1379 |
 | Implicit constructors | 58 |
 | Members without XML comments | 0 |
 

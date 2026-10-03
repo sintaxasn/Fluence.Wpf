@@ -70,12 +70,13 @@ namespace Fluence.Wpf.Theming
             m["SystemAccentColorDark3"] = p.Dark3;
 
             // Theme-adaptive primary/secondary/tertiary (from UpdateThemeAdaptiveColors)
-            m["SystemAccentColorPrimary"] = dark ? p.Light2 : p.Dark1;
+            Color primary = p.PrimaryOverride ?? (dark ? p.Light2 : p.Dark1);
+            m["SystemAccentColorPrimary"] = primary;
             m["SystemAccentColorSecondary"] = dark ? p.Light1 : p.Dark2;
             m["SystemAccentColorTertiary"] = dark ? p.Accent : p.Dark3;
 
             // Accent fill (from UpdateResources isDark branch). Secondary/Tertiary carry alpha.
-            Color fill = dark ? p.Light2 : p.Dark1;
+            Color fill = primary;
             m["AccentFillColorDefault"] = fill;
             m["AccentFillColorSecondary"] = HsvColorHelper.WithAlpha(fill, 0xE6);
             m["AccentFillColorTertiary"] = HsvColorHelper.WithAlpha(fill, 0xCC);

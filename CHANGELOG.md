@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Version headings are the SemVer version. The git tag for a version is `v` plus that version exactly, enforced by CI. Tags up to and including `v0.8.19-pre` used a `-pre` suffix that did not match the `-preview` version they shipped, which is why some links below point at the releases page instead of a comparison. From `0.9.0-pre` the suffix is `pre`, so the tag and the version are the same string.
 
+## [Unreleased]
+
+### Added
+
+- `ApplicationAccentColorManager.ApplyCustomAccentExact` pins the visible primary accent fill to the supplied light color and, optionally, an explicit dark color; the existing `ApplyCustomAccent` overloads keep their theme-selected-shade behavior. Six regression cases per target framework cover exact colors, theme changes, system reset, matching Windows snapshots, and unmatched generated fallbacks (46 `AccentTests` cases per framework).
+
+### Changed
+
+- `ApplyCustomAccent` now pins a snapshot of the Windows seven-shade palette when a supplied seed equals the current Windows accent base. Other custom seeds continue to use the generated approximation; `ApplySystemAccent` continues to follow Windows changes live.
+
+
 ## [0.9.0-pre] - 2026-09-26
 
 This is the last preview before 1.0 and it carries the whole 1.0 readiness pass, breaking changes included. The public CLR surface and the public XAML resource key set take the shape they will freeze in: `Microsoft.CodeAnalysis.PublicApiAnalyzers` enforces the CLR half and a key inventory test enforces the XAML half, so a change to either is a build failure rather than a review miss. The freeze itself starts at 1.0, when minor releases become additive only and removals or signature changes wait for a major release. Until then this section can still move, and any further break lands in another pre-1.0 preview. Breaking changes are listed below.

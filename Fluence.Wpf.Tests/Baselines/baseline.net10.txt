@@ -226,6 +226,12 @@
   Fluence.Wpf.Tests.Theming.AccentTests.ApplyCustomAccent_PerThemeSeeds_FollowResolvedThemeAsync
   Fluence.Wpf.Tests.Theming.AccentTests.ApplyCustomAccent_PerThemeSeeds_RaisesAccentColorChangedOnceAsync
   Fluence.Wpf.Tests.Theming.AccentTests.ThemeChange_UpdatesAdaptiveAccentsAsync
+  Fluence.Wpf.Tests.Theming.AccentTests.MatchingCustomSeed_UsesCapturedPaletteAcrossThemesAsync
+  Fluence.Wpf.Tests.Theming.AccentTests.UnmatchedCustomSeed_UsesGeneratedRampEvenWhenRgbMatches
+  Fluence.Wpf.Tests.Theming.AccentTests.CurrentSystemSeed_CustomIntentUsesCapturedPaletteAsync
+  Fluence.Wpf.Tests.Theming.AccentTests.ApplyCustomAccentExact_OneColor_PreservesLightAndDerivesDarkAsync
+  Fluence.Wpf.Tests.Theming.AccentTests.ApplyCustomAccentExact_TwoColors_FollowThemeWithoutRewritingRampAsync
+  Fluence.Wpf.Tests.Theming.AccentTests.ApplyCustomAccentExact_EqualPair_RemainsExactInDarkAndSystemResetRestoresAdaptiveAsync
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_IsDeterministic(r: 0, g: 120, b: 212)
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_IsDeterministic(r: 202, g: 80, b: 16)
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_IsDeterministic(r: 0, g: 183, b: 195)
