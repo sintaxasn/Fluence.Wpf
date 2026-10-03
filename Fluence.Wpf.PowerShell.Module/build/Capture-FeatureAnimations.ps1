@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     remain under artifacts/feature-animation for review.
 .PARAMETER Only
     Optional animation name, for example controls-light.
+.PARAMETER KeepDesktop
+    Skip the default reversible minimization of other desktop windows during capture.
 .EXAMPLE
     powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File build/Capture-FeatureAnimations.ps1
 #>
@@ -48,7 +50,10 @@ param
     [Parameter()]
     [ValidateSet('controls-light', 'controls-dark', 'themes-light', 'themes-dark',
         'accents-light', 'accents-dark', 'backdrops-light', 'backdrops-dark')]
-    [string]$Only
+    [string]$Only,
+
+    [Parameter()]
+    [switch]$KeepDesktop
 )
 
 $ErrorActionPreference = 'Stop'
@@ -160,11 +165,36 @@ foreach ($variant in $variants)
         ProgressTranslate = $null
         ProgressTranslate2 = $null
     }
-    $initialAccent = $hues[0].Color
+    if ($variant.Kind -eq 'accents') { Set-FluenceAccent -Color $hues[0].Color }
+    else { Set-FluenceAccent -System }
     $initialBackdrop = 'None'
+    $desktopStatePath = Join-Path ([System.IO.Path]::GetTempPath()) ('fluence-feature-desktop-{0}-{1}.json' -f $variant.Name, [guid]::NewGuid().ToString('N'))
+    $desktopState = [ordered]@{
+        capture = 'Capture-FeatureAnimations.ps1'
+        variant = $variant.Name
+        startedUtc = [DateTime]::UtcNow.ToString('o')
+        minimizeRequested = -not $KeepDesktop
+        minimizeAttempted = $false
+        minimized = $false
+        restoreAttempted = $false
+        restored = $false
+        accentReset = $false
+        captureError = $null
+        restoreError = $null
+        accentResetError = $null
+    }
+    $desktopShell = $null
+    [System.IO.File]::WriteAllText($desktopStatePath, (($desktopState | ConvertTo-Json) + "`n"), [System.Text.UTF8Encoding]::new($false))
     try
     {
-    $null = Show-FluenceWindow -Xaml $xaml -Theme $variant.Theme -Backdrop $initialBackdrop -Accent $initialAccent -TitleBarIcon $iconPath -Data $data -Initialize {
+    if (-not $KeepDesktop)
+    {
+        $desktopShell = New-Object -ComObject Shell.Application
+        $desktopState.minimizeAttempted = $true
+        $desktopShell.MinimizeAll()
+        $desktopState.minimized = $true
+    }
+    $null = Show-FluenceWindow -Xaml $xaml -Theme $variant.Theme -Backdrop $initialBackdrop -TitleBarIcon $iconPath -Data $data -Initialize {
         param($Window, $Data)
 
         $periodMilliseconds = 1000.0 / $Data.Fps
@@ -290,8 +320,34 @@ foreach ($variant in $variants)
     }
     catch
     {
+        $desktopState.captureError = $_.Exception.Message
         if ($data.Failure) { throw "$($variant.Name): $($data.Failure)" }
         throw
+    }
+    finally
+    {
+        if ($data.Failure) { $desktopState.captureError = $data.Failure }
+        try
+        {
+            Set-FluenceAccent -System
+            $desktopState.accentReset = $true
+        }
+        catch { $desktopState.accentResetError = $_.Exception.Message }
+        if ($desktopState.minimizeAttempted)
+        {
+            $desktopState.restoreAttempted = $true
+            try
+            {
+                $desktopShell.UndoMinimizeALL()
+                $desktopState.restored = $true
+            }
+            catch { $desktopState.restoreError = $_.Exception.Message }
+        }
+        $desktopState.finishedUtc = [DateTime]::UtcNow.ToString('o')
+        [System.IO.File]::WriteAllText($desktopStatePath, (($desktopState | ConvertTo-Json) + "`n"), [System.Text.UTF8Encoding]::new($false))
+        Write-Output "Desktop capture state: $desktopStatePath"
+        if ($desktopState.restoreError) { throw "Desktop windows could not be restored: $($desktopState.restoreError). State: $desktopStatePath" }
+        if ($desktopState.accentResetError) { throw "System accent could not be restored: $($desktopState.accentResetError). State: $desktopStatePath" }
     }
 
     if ($data.Failure) { throw "$($variant.Name): $($data.Failure)" }

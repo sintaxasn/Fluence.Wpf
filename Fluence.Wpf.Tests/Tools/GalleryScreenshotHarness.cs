@@ -51,7 +51,9 @@ namespace Fluence.Wpf.Tests.Tools
     /// <remarks>
     /// Capture is gated behind the <c language="text">FLUENCE_CAPTURE_SCREENSHOTS</c> environment variable, so a
     /// normal test run reports these tests as inconclusive and never overwrites the committed
-    /// images; set the variable to <c language="text">1</c> to regenerate them. Only the WPF visual tree is
+    /// images; set the variable to <c language="text">1</c> to regenerate them. Set
+    /// <c language="text">FLUENCE_CAPTURE_OUTPUT_DIRECTORY</c> to render into a separate directory.
+    /// Only the WPF visual tree is
     /// captured. DWM Mica / Acrylic backdrops and transparent window shadows are composited
     /// outside WPF and are not included in <see cref="RenderTargetBitmap"/> output. The harness
     /// does not simulate them. These screenshots document control surfaces and theme resources.
@@ -61,6 +63,7 @@ namespace Fluence.Wpf.Tests.Tools
     {
         private const string OptInEnvironmentVariable = "FLUENCE_CAPTURE_SCREENSHOTS";
         private const string ControlsOnlyEnvironmentVariable = "FLUENCE_CAPTURE_CONTROLS_ONLY";
+        private const string OutputDirectoryEnvironmentVariable = "FLUENCE_CAPTURE_OUTPUT_DIRECTORY";
         private const int GalleryCaptureWidth = 1280;
         private const int GalleryCaptureHeight = 900;
         private const double CardCaptureScale = 0.8;
@@ -194,7 +197,10 @@ namespace Fluence.Wpf.Tests.Tools
 
         private static string EnsureOutputDirectory()
         {
-            string path = Path.Join(FindRepoRoot(), "docs", "screenshots");
+            string? outputOverride = Environment.GetEnvironmentVariable(OutputDirectoryEnvironmentVariable);
+            string path = string.IsNullOrWhiteSpace(outputOverride)
+                ? Path.Join(FindRepoRoot(), "docs", "screenshots")
+                : Path.GetFullPath(outputOverride);
             _ = Directory.CreateDirectory(path);
             return path;
         }
@@ -773,12 +779,14 @@ namespace Fluence.Wpf.Tests.Tools
             };
             Application application = Application.Current ?? throw new InvalidOperationException("No WPF Application is running.");
             application.MainWindow = window;
-            _ = dialog.ShowAsync();
+            Task dialogCompletion = dialog.ShowAsync();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             string dialogFile = Invariant("menus-content-dialog-open-{0}.png", theme);
             await SaveElementPngAsync(window, ReferenceScale, Path.Join(directory, dialogFile)).ConfigureAwait(true);
             entries.Add(new CaptureEntry("overlay", "menus", "Content dialog open", theme, "open", dialogFile));
             dialog.Hide();
+            // Hide animates the smoke layer out. Wait for teardown before capturing the next route.
+            await dialogCompletion.ConfigureAwait(true);
         }
 
         private static async Task CaptureGalleryScrolledStateAsync(

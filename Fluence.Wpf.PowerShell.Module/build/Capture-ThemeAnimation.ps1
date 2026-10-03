@@ -30,17 +30,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <#
 .SYNOPSIS
-    Captures a 26-second theme and accent sequence from a live PowerShell FluenceWindow.
+    Captures a 31-second theme and accent sequence from a live PowerShell FluenceWindow.
 .DESCRIPTION
     Opens a compact control sample and renders its WPF visual to 20 PNG frames per second.
-    Seven accent hues last 1.5 seconds each in Light, then repeat in Dark. High Contrast with
-    the system accent follows for 5 seconds. Frame 520 requests the return to Light and red;
-    frames 0-519 form the 26-second loop. Extra frames record the return state. Screen composition
-    can lag the requested theme change, so frame 520 is not guaranteed to match frame zero.
+    A Light, Dark, Light theme prelude uses the Windows system accent. Seven named accent
+    hues then last 1.5 seconds each in Light and repeat in Dark. High Contrast with the
+    system accent follows for 5 seconds. Frame 610 returns to Light with the system accent;
+    frames 0-609 form the loop. Extra frames record the return state. Screen composition
+    can lag the requested theme change, so frame 610 may differ from frame zero.
     The library supplies any visible theme transition; this script does not synthesize a fade.
     Captures the visible window's screen pixels within its WPF window bounds.
 .PARAMETER OutputDirectory
     Destination for frames, posters, and timeline.json. Defaults to artifacts/theme-animation.
+.PARAMETER KeepDesktop
+    Skip the default reversible minimization of other desktop windows during capture.
 .EXAMPLE
     powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File build/Capture-ThemeAnimation.ps1
 #>
@@ -49,7 +52,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 param
 (
     [Parameter()]
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+
+    [Parameter()]
+    [switch]$KeepDesktop
 )
 
 $ErrorActionPreference = 'Stop'
@@ -79,22 +85,26 @@ $hues = @(
     [pscustomobject]@{ Name = 'Indigo'; Color = [System.Windows.Media.Color]::FromRgb(0x4F, 0x6B, 0xED) }
     [pscustomobject]@{ Name = 'Violet'; Color = [System.Windows.Media.Color]::FromRgb(0x74, 0x37, 0xC9) }
 )
-$steps = @()
+$steps = @(
+    [pscustomobject]@{ Frame = 0; Theme = 'Light'; Accent = 'System'; Color = $null }
+    [pscustomobject]@{ Frame = 30; Theme = 'Dark'; Accent = 'System'; Color = $null }
+    [pscustomobject]@{ Frame = 60; Theme = 'Light'; Accent = 'System'; Color = $null }
+)
 foreach ($themeName in @('Light', 'Dark'))
 {
     $cycle = if ($themeName -eq 'Light') { 0 } else { 1 }
     for ($hueIndex = 0; $hueIndex -lt $hues.Count; $hueIndex++)
     {
         $steps += [pscustomobject]@{
-            Frame = (($cycle * 7) + $hueIndex) * 30
+            Frame = 90 + ((($cycle * 7) + $hueIndex) * 30)
             Theme = $themeName
             Accent = $hues[$hueIndex].Name
             Color = $hues[$hueIndex].Color
         }
     }
 }
-$steps += [pscustomobject]@{ Frame = 420; Theme = 'HighContrast'; Accent = 'System'; Color = $null }
-$steps += [pscustomobject]@{ Frame = 520; Theme = 'Light'; Accent = 'Red'; Color = $hues[0].Color }
+$steps += [pscustomobject]@{ Frame = 510; Theme = 'HighContrast'; Accent = 'System'; Color = $null }
+$steps += [pscustomobject]@{ Frame = 610; Theme = 'Light'; Accent = 'System'; Color = $null }
 
 $xaml = @'
 <fluence:FluenceWindow
@@ -149,31 +159,52 @@ $captureData = @{
     Failure = $null
     Clock = $null
     CurrentTheme = 'Light'
-    CurrentAccent = 'Red'
+    CurrentAccent = 'System'
     Steps = $steps
     ProgressBounds = $null
     ProgressTranslate = $null
     ProgressTranslate2 = $null
 }
 
-$null = Show-FluenceWindow -Xaml $xaml -Theme Light -Backdrop None -Accent ($hues[0].Color) -TitleBarIcon $iconPath -Data $captureData -Initialize {
+Set-FluenceAccent -System
+$desktopStatePath = Join-Path ([System.IO.Path]::GetTempPath()) ('fluence-theme-desktop-{0}.json' -f [guid]::NewGuid().ToString('N'))
+$desktopState = [ordered]@{
+    capture = 'Capture-ThemeAnimation.ps1'
+    startedUtc = [DateTime]::UtcNow.ToString('o')
+    minimizeRequested = -not $KeepDesktop
+    minimizeAttempted = $false
+    minimized = $false
+    restoreAttempted = $false
+    restored = $false
+    accentReset = $false
+    captureError = $null
+    restoreError = $null
+    accentResetError = $null
+}
+$desktopShell = $null
+[System.IO.File]::WriteAllText($desktopStatePath, (($desktopState | ConvertTo-Json) + "`n"), [System.Text.UTF8Encoding]::new($false))
+try
+{
+if (-not $KeepDesktop)
+{
+    $desktopShell = New-Object -ComObject Shell.Application
+    $desktopState.minimizeAttempted = $true
+    $desktopShell.MinimizeAll()
+    $desktopState.minimized = $true
+}
+$null = Show-FluenceWindow -Xaml $xaml -Theme Light -Backdrop None -TitleBarIcon $iconPath -Data $captureData -Initialize {
     param($Window, $Data)
 
     if ($null -eq $Data) { throw 'Capture state was not provided.' }
 
     $periodMilliseconds = 50
-    $lastFrame = 528
+    $lastFrame = 618
     $captureFrame = {
         param([int]$index)
 
         foreach ($step in $Data.Steps)
         {
             if ($step.Frame -ne $index) { continue }
-            if ($step.Frame -eq 520)
-            {
-                Set-FluenceAccent -Color $step.Color
-                $Data.CurrentAccent = $step.Accent
-            }
             if ($step.Theme -ne $Data.CurrentTheme)
             {
                 Set-FluenceTheme -Theme $step.Theme
@@ -306,19 +337,50 @@ $null = Show-FluenceWindow -Xaml $xaml -Theme Light -Backdrop None -Accent ($hue
         $warmup.Start()
     }.GetNewClosure())
 }
+}
+catch
+{
+    $desktopState.captureError = $_.Exception.Message
+    throw
+}
+finally
+{
+    if ($captureData.Failure) { $desktopState.captureError = $captureData.Failure }
+    try
+    {
+        Set-FluenceAccent -System
+        $desktopState.accentReset = $true
+    }
+    catch { $desktopState.accentResetError = $_.Exception.Message }
+    if ($desktopState.minimizeAttempted)
+    {
+        $desktopState.restoreAttempted = $true
+        try
+        {
+            $desktopShell.UndoMinimizeALL()
+            $desktopState.restored = $true
+        }
+        catch { $desktopState.restoreError = $_.Exception.Message }
+    }
+    $desktopState.finishedUtc = [DateTime]::UtcNow.ToString('o')
+    [System.IO.File]::WriteAllText($desktopStatePath, (($desktopState | ConvertTo-Json) + "`n"), [System.Text.UTF8Encoding]::new($false))
+    Write-Output "Desktop capture state: $desktopStatePath"
+    if ($desktopState.restoreError) { throw "Desktop windows could not be restored: $($desktopState.restoreError). State: $desktopStatePath" }
+    if ($desktopState.accentResetError) { throw "System accent could not be restored: $($desktopState.accentResetError). State: $desktopStatePath" }
+}
 
 if ($captureData.Failure) { throw $captureData.Failure }
-if ($captureData.Frames.Count -ne 529)
+if ($captureData.Frames.Count -ne 619)
 {
-    throw "Capture stopped after $($captureData.Frames.Count) frames; expected 529."
+    throw "Capture stopped after $($captureData.Frames.Count) frames; expected 619."
 }
 
 Copy-Item -LiteralPath (Join-Path $framesDirectory 'frame-0000.png') -Destination (Join-Path $OutputDirectory 'poster-light.png') -Force
-Copy-Item -LiteralPath (Join-Path $framesDirectory 'frame-0220.png') -Destination (Join-Path $OutputDirectory 'poster-dark.png') -Force
-Copy-Item -LiteralPath (Join-Path $framesDirectory 'frame-0430.png') -Destination (Join-Path $OutputDirectory 'poster-high-contrast.png') -Force
+Copy-Item -LiteralPath (Join-Path $framesDirectory 'frame-0045.png') -Destination (Join-Path $OutputDirectory 'poster-dark.png') -Force
+Copy-Item -LiteralPath (Join-Path $framesDirectory 'frame-0550.png') -Destination (Join-Path $OutputDirectory 'poster-high-contrast.png') -Force
 
 $frameZeroHash = (Get-FileHash -LiteralPath (Join-Path $framesDirectory 'frame-0000.png') -Algorithm SHA256).Hash
-$returnLightHash = (Get-FileHash -LiteralPath (Join-Path $framesDirectory 'frame-0520.png') -Algorithm SHA256).Hash
+$returnLightHash = (Get-FileHash -LiteralPath (Join-Path $framesDirectory 'frame-0610.png') -Algorithm SHA256).Hash
 $timeline = [ordered]@{
     source = 'Fluence.Wpf.PowerShell.Module/build/Capture-ThemeAnimation.ps1'
     libraryAssemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName($libraryPath).Version.ToString()
@@ -329,7 +391,7 @@ $timeline = [ordered]@{
     framesPerSecond = 20
     totalFrames = $captureData.Frames.Count
     loopStartFrame = 0
-    loopEndExclusiveFrame = 520
+    loopEndExclusiveFrame = 610
     transitions = @($steps | ForEach-Object {
         [ordered]@{ second = $_.Frame / 20; frame = $_.Frame; theme = $_.Theme; accent = $_.Accent;
             color = if ($null -eq $_.Color) { $null } else { $_.Color.ToString() } }

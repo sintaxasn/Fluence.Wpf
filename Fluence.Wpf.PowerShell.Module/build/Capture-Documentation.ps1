@@ -47,6 +47,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     when no interactive screen DC is available; this mode has no DWM shadow.
 .PARAMETER Include
     Optional scene names to capture. Omit for the complete set.
+.PARAMETER KeepDesktop
+    Skip the default reversible minimization of other desktop windows during capture.
+.PARAMETER ParentDesktopIsolated
+    Internal child-process flag: the parent already owns desktop minimization and restoration.
 .EXAMPLE
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File build/Capture-Documentation.ps1
 .NOTES
@@ -78,7 +82,13 @@ param
     [string]$CaptureMode = 'WpfRender',
 
     [Parameter()]
-    [string[]]$Include
+    [string[]]$Include,
+
+    [Parameter()]
+    [switch]$KeepDesktop,
+
+    [Parameter()]
+    [switch]$ParentDesktopIsolated
 )
 
 $ErrorActionPreference = 'Stop'
@@ -99,6 +109,7 @@ $xamlPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\examples\MainWindow.x
 if ($Scene -ne 'All')
 {
     Import-Module $modulePath -Force
+    Set-FluenceAccent -System
     if ($CaptureMode -eq 'WpfRender')
     {
         Add-Type -AssemblyName PresentationFramework
@@ -145,7 +156,36 @@ if ($Scene -ne 'All')
     }
     $theme = if ($Scene.EndsWith('-dark', [System.StringComparison]::Ordinal)) { 'Dark' } else { 'Light' }
     $common = @{ Theme = $theme; TitleBarIcon = $iconPath; Backdrop = 'Mica' }
+    $isolateScene = $CaptureMode -eq 'Desktop' -and -not $KeepDesktop -and -not $ParentDesktopIsolated
+    $sceneShell = $null
+    $sceneMinimizeAttempted = $false
+    if ($isolateScene)
+    {
+        $sceneStatePath = Join-Path ([System.IO.Path]::GetTempPath()) ("fluence-documentation-$Scene-$PID.json")
+        $sceneState = [ordered]@{
+            Scene = $Scene
+            StartedUtc = [DateTime]::UtcNow.ToString('o')
+            MinimizeAttempted = $false
+            MinimizeSucceeded = $false
+            RestoreAttempted = $false
+            RestoreSucceeded = $false
+            CaptureError = $null
+            RestoreError = $null
+            CompletedUtc = $null
+        }
+        $sceneState | ConvertTo-Json | Set-Content -LiteralPath $sceneStatePath -Encoding UTF8
+    }
 
+    try
+    {
+        if ($isolateScene)
+        {
+            $sceneShell = New-Object -ComObject Shell.Application
+            $sceneMinimizeAttempted = $true
+            $sceneState.MinimizeAttempted = $true
+            $sceneShell.MinimizeAll()
+            $sceneState.MinimizeSucceeded = $true
+        }
     switch ($Scene)
     {
         { $_ -in @('message-light', 'message-dark') }
@@ -230,6 +270,41 @@ if ($Scene -ne 'All')
             break
         }
     }
+    }
+    catch
+    {
+        if ($isolateScene) { $sceneState.CaptureError = $_.Exception.Message }
+        throw
+    }
+    finally
+    {
+        if ($isolateScene)
+        {
+            try
+            {
+                if ($sceneMinimizeAttempted)
+                {
+                    $sceneState.RestoreAttempted = $true
+                    try
+                    {
+                        $sceneShell.UndoMinimizeALL()
+                        $sceneState.RestoreSucceeded = $true
+                    }
+                    catch
+                    {
+                        $sceneState.RestoreError = $_.Exception.Message
+                        throw
+                    }
+                }
+            }
+            finally
+            {
+                $sceneState.CompletedUtc = [DateTime]::UtcNow.ToString('o')
+                $sceneState | ConvertTo-Json | Set-Content -LiteralPath $sceneStatePath -Encoding UTF8
+                Write-Output "Desktop capture state: $sceneStatePath"
+            }
+        }
+    }
     return
 }
 
@@ -273,22 +348,54 @@ if ($Include)
     $scenes = @($scenes | Where-Object { $Include -contains $_ })
 }
 
+$desktopStatePath = Join-Path ([System.IO.Path]::GetTempPath()) ("fluence-documentation-batch-$PID.json")
+$desktopState = [ordered]@{
+    CaptureMode = $CaptureMode
+    Scenes = $scenes
+    StartedUtc = [DateTime]::UtcNow.ToString('o')
+    MinimizeRequested = -not [bool]$KeepDesktop
+    MinimizeAttempted = $false
+    MinimizeSucceeded = $false
+    RestoreAttempted = $false
+    RestoreSucceeded = $false
+    CaptureError = $null
+    RestoreError = $null
+    CompletedUtc = $null
+}
+$desktopState | ConvertTo-Json | Set-Content -LiteralPath $desktopStatePath -Encoding UTF8
+$desktopShell = $null
+try
+{
+    if (-not $KeepDesktop)
+    {
+        $desktopShell = New-Object -ComObject Shell.Application
+        $desktopState.MinimizeAttempted = $true
+        $desktopShell.MinimizeAll()
+        $desktopState.MinimizeSucceeded = $true
+    }
 foreach ($item in $scenes)
 {
     $output = Join-Path $OutputDirectory "$item.png"
     $started = [DateTime]::UtcNow
+    $captureStage = 'starting child process'
+    $captureFailure = $null
+    $childKillRequested = $false
     $windowsPowerShell = Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
     $stdoutPath = [System.IO.Path]::GetTempFileName()
     $stderrPath = [System.IO.Path]::GetTempFileName()
-    $child = Start-Process -FilePath $windowsPowerShell -ArgumentList @(
+    $childArguments = @(
         '-NoProfile', '-STA', '-ExecutionPolicy', 'Bypass', '-File', ('"' + $PSCommandPath + '"'),
         '-Scene', $item, '-CaptureMode', $CaptureMode, '-OutputDirectory', ('"' + $OutputDirectory + '"')
-    ) -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+    )
+    if ($KeepDesktop) { $childArguments += '-KeepDesktop' }
+    else { $childArguments += '-ParentDesktopIsolated' }
+    $child = Start-Process -FilePath $windowsPowerShell -ArgumentList $childArguments -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
     $handle = [IntPtr]::Zero
     try
     {
         if ($CaptureMode -eq 'WpfRender')
         {
+            $captureStage = 'waiting for WPF render output'
             $rendered = $false
             for ($attempt = 0; $attempt -lt 360; $attempt++)
             {
@@ -314,6 +421,7 @@ foreach ($item in $scenes)
             Write-Output $output
             continue
         }
+        $captureStage = 'waiting for child window'
         for ($attempt = 0; $attempt -lt 80; $attempt++)
         {
             Start-Sleep -Milliseconds 250
@@ -328,6 +436,7 @@ foreach ($item in $scenes)
         if ($handle -eq [IntPtr]::Zero) { throw "Scene '$item' did not display a window within 20 seconds." }
         $null = [FluenceCaptureNative]::SetForegroundWindow($handle)
         Start-Sleep -Milliseconds 700
+        $captureStage = 'reading child window bounds'
         $bounds = [FluenceCaptureNative+RECT]::new()
         if (-not [FluenceCaptureNative]::GetWindowRect($handle, [ref]$bounds))
         {
@@ -341,6 +450,7 @@ foreach ($item in $scenes)
         $bitmap = [System.Drawing.Bitmap]::new($right - $left, $bottom - $top)
         try
         {
+            $captureStage = 'copying desktop pixels'
             $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
             try
             {
@@ -352,6 +462,11 @@ foreach ($item in $scenes)
         }
         finally { $bitmap.Dispose() }
     }
+    catch
+    {
+        $captureFailure = $_
+        throw
+    }
     finally
     {
         if ($null -ne $child -and -not $child.HasExited)
@@ -360,9 +475,84 @@ foreach ($item in $scenes)
             {
                 $null = [FluenceCaptureNative]::PostMessage($handle, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero)
             }
-            if (-not $child.WaitForExit(3000)) { $child.Kill() }
+            if (-not $child.WaitForExit(3000))
+            {
+                $childKillRequested = $true
+                $child.Kill()
+                $null = $child.WaitForExit(3000)
+            }
+        }
+        if ($null -ne $captureFailure)
+        {
+            try
+            {
+                $diagnosticDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('fluence-documentation-failure-{0}-{1}' -f $item, [guid]::NewGuid().ToString('N'))
+                $null = [System.IO.Directory]::CreateDirectory($diagnosticDirectory)
+                $stdoutCopy = Join-Path $diagnosticDirectory 'child-stdout.log'
+                $stderrCopy = Join-Path $diagnosticDirectory 'child-stderr.log'
+                Copy-Item -LiteralPath $stdoutPath -Destination $stdoutCopy
+                Copy-Item -LiteralPath $stderrPath -Destination $stderrCopy
+                $child.Refresh()
+                $outputFile = if (Test-Path -LiteralPath $output) { Get-Item -LiteralPath $output } else { $null }
+                $diagnostic = [ordered]@{
+                    Scene = $item
+                    CaptureMode = $CaptureMode
+                    Stage = $captureStage
+                    StartedUtc = $started.ToString('o')
+                    FailedUtc = [DateTime]::UtcNow.ToString('o')
+                    Error = $captureFailure.Exception.Message
+                    ChildId = $child.Id
+                    ChildExited = $child.HasExited
+                    ChildExitCode = if ($child.HasExited) { $child.ExitCode } else { $null }
+                    ChildKillRequested = $childKillRequested
+                    ChildWindowHandle = $handle.ToInt64()
+                    OutputPath = $output
+                    OutputLastWriteUtc = if ($null -ne $outputFile) { $outputFile.LastWriteTimeUtc.ToString('o') } else { $null }
+                    OutputBytes = if ($null -ne $outputFile) { $outputFile.Length } else { $null }
+                    StdoutPath = $stdoutCopy
+                    StderrPath = $stderrCopy
+                }
+                $diagnostic | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $diagnosticDirectory 'failure.json') -Encoding UTF8
+                Write-Warning "Scene '$item' diagnostics preserved in $diagnosticDirectory"
+            }
+            catch
+            {
+                Write-Warning "Scene '$item' diagnostics could not be preserved: $($_.Exception.Message)"
+            }
         }
         $child.Dispose()
         Remove-Item -LiteralPath $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
+    }
+}
+}
+catch
+{
+    $desktopState.CaptureError = $_.Exception.Message
+    throw
+}
+finally
+{
+    try
+    {
+        if ($desktopState.MinimizeAttempted)
+        {
+            $desktopState.RestoreAttempted = $true
+            try
+            {
+                $desktopShell.UndoMinimizeALL()
+                $desktopState.RestoreSucceeded = $true
+            }
+            catch
+            {
+                $desktopState.RestoreError = $_.Exception.Message
+                throw
+            }
+        }
+    }
+    finally
+    {
+        $desktopState.CompletedUtc = [DateTime]::UtcNow.ToString('o')
+        $desktopState | ConvertTo-Json | Set-Content -LiteralPath $desktopStatePath -Encoding UTF8
+        Write-Output "Desktop capture state: $desktopStatePath"
     }
 }

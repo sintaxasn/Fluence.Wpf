@@ -18,7 +18,9 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
    One line, `#nullable enable`, means empty. To fold the additions in, fold `PublicAPI.Unshipped.txt` into `PublicAPI.Shipped.txt`, sort the result, and reset the unshipped file to `#nullable enable`. Folding in is not a plain append. A `*REMOVED*` line is an instruction to delete the named member from `PublicAPI.Shipped.txt`, so apply it and drop the marker rather than carrying it across, or the shipped baseline ends up holding an entry form that does not belong in it. Both files also begin with `#nullable enable`, so keep one and drop the duplicate.
 4. **Breaking changes are called out in `CHANGELOG.md`.** The release policy in [the roadmap](roadmap.md) requires a clear entry for each public API or XAML resource-key change. After 1.0 there should be no breaking changes in a minor release.
-5. **Screenshots are current.** If gallery visuals changed, regenerate `docs/screenshots/` before tagging:
+5. **Screenshots are current.** Before capture, select the Windows Light appearance for apps and the system, the native default-blue accent palette (`#0078D4` base), and enabled transparency effects. Turn off accent coloring on title bars and window borders. Record these OS settings with the capture; restore any setting changed only for the capture afterward. Capture scripts select Light and Dark explicitly for their labeled pairs, and named custom-accent examples intentionally use their stated colors.
+
+   Regenerate `docs/screenshots/` with both gallery passes. The four-case pass writes the gallery routes, cards, and top-level images; the separate controls-only case writes the control images. Together they produce 378 PNGs plus `gallery/manifest.json`:
 
    ```powershell
    $env:FLUENCE_CAPTURE_SCREENSHOTS = '1'
@@ -30,7 +32,9 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
    Remove-Item Env:FLUENCE_CAPTURE_SCREENSHOTS
    ```
 
-   The gallery harness writes route and sample captures plus `docs/screenshots/gallery/manifest.json`. Control reference images live in `docs/screenshots/controls/`: each captures the control visual without the gallery sample frame, with 64 pixels of space above and below and 32 pixels on each side at 96 DPI. Keep both light and dark captures current, including the documented state changes. Review each regenerated control image to confirm the control, theme, state, and padding are visible. For PowerShell dialogs and windows, build and stage the module, then run its documentation capture script:
+   The harness writes to `docs/screenshots/` by default. If another process has a screenshot mapped open, set `FLUENCE_CAPTURE_OUTPUT_DIRECTORY` to a fresh empty directory before both passes. Review the complete output there, then copy its contents into `docs/screenshots/` and compare file hashes. Clear the override afterward; do not import a partial or failed pass.
+
+   Control reference images live in `docs/screenshots/controls/`: each captures the control visual without the gallery sample frame, with 64 pixels of space above and below and 32 pixels on each side at 96 DPI. Keep both light and dark captures current, including the documented state changes. Review each regenerated control image to confirm the control, theme, state, and padding are visible. For PowerShell dialogs and windows, build and stage the module, then run its documentation capture script:
 
    ```powershell
    dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
@@ -38,7 +42,16 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
    powershell.exe -NoProfile -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-Documentation.ps1
    ```
 
-   Import the reviewed captures into the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website), under its `docs/screenshots/` and `docs/powershell/images/` paths. Review the [gallery screenshot manifest](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/screenshots/gallery/manifest.json) and [PowerShell capture notes](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/powershell/images/CAPTURE.md) for render methods and limits. Neither offscreen capture includes native DWM shadows or backdrops.
+   Capture the live feature animations and the diagnostic theme sequence sequentially after module staging:
+
+   ```powershell
+   powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-FeatureAnimations.ps1
+   powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-ThemeAnimation.ps1
+   ```
+
+   The PowerShell documentation and both live-screen scripts minimize other desktop windows by default and undo that minimization after each capture. Run one capture process at a time: the Shell undo action restores the state before its most recent minimize call. Review each script's desktop-state log and output frames before importing the eight feature GIFs and posters. The accent animations deliberately cycle labeled custom hues; other scenes begin with the Windows system accent. The theme sequence stays under ignored `artifacts/theme-animation/` for diagnosis.
+
+   Import the reviewed captures into the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website), under its `docs/screenshots/`, `docs/powershell/images/`, and `website/static/images/features/` paths. Review the [gallery screenshot manifest](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/screenshots/gallery/manifest.json) and [PowerShell capture notes](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/powershell/images/CAPTURE.md) for render methods and limits. The gallery and PowerShell documentation captures render WPF offscreen and omit native DWM shadows or backdrops.
 6. **The `NUGET_API_KEY` and `PSGALLERY_API_KEY` secrets are set.** The release job uses them to publish the library package to nuget.org and the module to PowerShell Gallery. It checks that both keys are present before creating the GitHub release. Verify that neither key has expired before tagging.
 7. **The `release` environment has a required reviewer.** The release job runs in this GitHub Environment so creating the release and publishing either package waits for approval. Configure the rule in repository settings (Settings, Environments, `release`, Required reviewers). GitHub creates an environment on first use without rules; without a reviewer, the job runs unattended. Store publication keys as environment secrets where possible so only this job can read them.
 8. **The C# API reference matches the library.** After building the current source, regenerate the checked-in pages and confirm there is no documentation drift:
