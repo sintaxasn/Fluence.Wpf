@@ -1167,7 +1167,8 @@ namespace Fluence.Wpf.Controls
                 IsActive,
                 ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled,
                 capabilities,
-                ApplicationAccentColorManager.SystemAccentColor);
+                ApplicationAccentColorManager.SystemAccentColor,
+                isHighContrast: ApplicationThemeManager.GetResolvedTheme() is ApplicationTheme.HighContrast);
 
             SetCurrentValue(BorderBrushProperty, TryFindResource(plan.TemplateBorderBrushResourceKey) as Brush ?? Brushes.Transparent);
             SetCurrentValue(BorderThicknessProperty, plan.TemplateBorderThickness);

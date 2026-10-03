@@ -18,12 +18,13 @@ The [control catalog](controls.md) and [theme reference](theming.md) define the 
 | Runtime | Controls are WPF types and templates. A consuming app does not need the Windows App SDK. |
 | XAML namespace | Use `xmlns:fluence="http://schemas.fluencewpf.com"`; write `{fluence:ThemeResource Key}` with the prefix. |
 | App resources | `ApplicationThemeManager.Apply` publishes a WPF merged-dictionary stack. Use `DynamicResource` or `ThemeResource` for live values. |
-| Per-control keys | The library publishes application-wide roles, but no WinUI-style key per control state. Replace a specific control template to restyle that state. |
+| Per-control keys | The computed dictionary publishes control state roles such as `AccentButtonBackgroundPressedBrush` and `CheckBoxCheckBackgroundFillCheckedBrush`. They update every consumer of that key; replace a template to restyle one control instance. |
 | Acrylic surfaces | WPF has no equivalent per-element backdrop brush, so acrylic resource roles are painted fallback colors. Window backdrop requests use the available Windows DWM or legacy path. |
 | Navigation | `NavigationView` derives from WPF `Selector`; its page host belongs in `NavigationView.Content`, and the app owns navigation history. |
 | Date picker | The Fluence picker has its own selected-date API and is not a subclass of WPF `DatePicker`. |
 | Text and images | Fluence `TextBlock` and `Image` are templated controls rather than subclasses of the native WPF elements. |
 | Password entry | Native WPF `PasswordBox` is styled implicitly and extended with attached properties because it is sealed. |
+| Selected text | `TextBox`, `PasswordBox`, and `NumberBox`'s native text editor use WPF's default translucent selection overlay and WPF selected-text foreground behavior. The `net472` baseline cannot use the `SelectionTextBrush` property added in .NET Framework 4.8. Published selection color roles alone do not guarantee identical WinUI selected-text rendering; see [known issues](https://github.com/sintaxasn/Fluence.Wpf/blob/main/KNOWN_ISSUES.md#selected-text-rendering-in-native-wpf-editors). |
 
 ## Visual and platform boundaries
 

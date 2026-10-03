@@ -191,6 +191,7 @@
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_Normal_Inactive_UsesSurfaceStrokeKey
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_NoBorderColorCapability_KeepsDwmDefault
+  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_HighContrast_SuppressesAccentBorder
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_BorderColorSupported_Active_TemplateThicknessIsZero
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_BorderColorSupported_Inactive_TemplateThicknessIsZero
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildFramePlan_BorderColorUnsupported_Active_TemplateThicknessIsOne
@@ -217,6 +218,7 @@
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.ShouldApplyContentLayerPreBlend_Acrylic_ReturnsFalse
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.BuildBackdropPlan_Acrylic_FallsBackToMica_WhenMicaEffectButNoSystemBackdrop
   Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CaptureGalleryShellNavigationModesAsync
+  Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CaptureGalleryCatalogAndCardsAsync
   Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CapturePowerShellControlsTourAsync
   Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CaptureMvvmTaskManagerAsync
   Fluence.Wpf.Tests.Theming.AccentTests.ApplySystemAccent_PopulatesRampAsync
@@ -316,6 +318,7 @@
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.ColorMap_Build_Light_ContainsRawRampKeysAsync
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.ColorMap_Build_Light_ContainsTitleBarActiveColorAsync
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.ColorMap_Build_HighContrast_ContainsSystemAccentColorAsync
+  Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.ColorMap_Build_HighContrast_UsesSystemAccentStateColorsAsync
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.BrushFactory_Build_ProducesFrozenBrushForColorKeyAsync
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.BrushFactory_Build_PreservesAlphaChannelAsync
   Fluence.Wpf.Tests.Theming.ThemeEngineUnitTests.BaseColorTables_Load_ReturnsColorsAsync(theme: Light, minimumCount: 10)
@@ -363,6 +366,7 @@
   Fluence.Wpf.Tests.Theming.ThemeParityTests.Rebuilt_MatchesGoldenResolvedValuesAsync(theme: HighContrast)
   Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlightAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightTextAsync
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_GrayTextDerivedAccentBrushes_BindToLiveSystemGrayTextAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.ApplyTheme_Alone_UsesSystemAccentPaletteAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.FirstApply_RaisesAccentColorChanged_BeforeAnyOtherThemeAccessAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync
@@ -471,7 +475,7 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_InDarkTheme_StartsWithThemeForegroundAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ContentStretchesToTheShellWidthAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesProminentBrandAndAccessibleSocialLinksAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesProminentAccessibleBrandAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeActions_NavigateToTheirControlPagesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeLayout_ReflowsWithoutHorizontalOverflowAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryIconsPageTests.GalleryIconsPage_IconographyHeaderAndSearchFollowWinUiGalleryAsync
@@ -537,6 +541,7 @@
   Fluence.Wpf.Tests.Control.ButtonTests.Button_FontProperties_ReachTheContentTextAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_AccentDisabled_DarkTheme_UsesVisibleDisabledAccentTokensAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_AccentDisabled_DarkThemeWithoutAccentRefresh_UsesVisibleDisabledAccentTokensAsync
+  Fluence.Wpf.Tests.Control.ButtonTests.Button_HighContrast_ActualStateBrushesSurviveThemeTransitionsAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_RestFill_InsetByStrokeExceptForAccentAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_ExplicitToolTip_IsNotClearedByTruncationFallbackAsync
   Fluence.Wpf.Tests.Control.ButtonTests.Button_IconOnly_CentersGlyphAndRestoresGapWithContentAsync
@@ -572,6 +577,7 @@
   Fluence.Wpf.Tests.Control.CheckBoxTests.CheckBox_DescriptionChanges_UpdatesAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.CheckBoxTests.CheckBox_NullDescription_ClearsAutomationHelpTextAsync
   Fluence.Wpf.Tests.Control.CheckBoxTests.Stage3_CheckBox_Content_RoundtripsAsync
+  Fluence.Wpf.Tests.Control.CheckBoxTests.CheckBox_HighContrast_IndeterminateStatePairsAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_DefaultStyle_AppliesTemplatePartsAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SpectrumBitmap_IsGenerated256x256AfterTemplateApplyAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SetColor_RaisesColorChangedAndUpdatesHexTextAsync
@@ -1212,6 +1218,7 @@
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_DefaultStyle_TemplateExposesRestFillAndBackdropAsync
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_Checked_UsesAccentFillBackdropAndOnAccentTextAsync
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_CheckedPressed_UsesAccentTertiaryFillAsync
+  Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_HighContrast_CheckedPressedUsesControlStatePairAsync
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_Indeterminate_RestKeepsDefaultFillAsync
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_IndeterminatePressed_UsesControlTertiaryFillAsync
   Fluence.Wpf.Tests.Control.ToggleButtonTests.ToggleButton_IndeterminateDisabled_UsesDisabledFillAndTextAsync

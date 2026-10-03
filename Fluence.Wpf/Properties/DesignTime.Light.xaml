@@ -9,6 +9,14 @@
     <!--  Colors  -->
     <Color x:Key="AccentAcrylicBackgroundFillColorBase">#FF8DCDFF</Color>
     <Color x:Key="AccentAcrylicBackgroundFillColorDefault">#FF8DCDFF</Color>
+    <Color x:Key="AccentButtonBackground">#FF005BA1</Color>
+    <Color x:Key="AccentButtonBackgroundDisabled">#37000000</Color>
+    <Color x:Key="AccentButtonBackgroundPointerOver">#E6005BA1</Color>
+    <Color x:Key="AccentButtonBackgroundPressed">#CC005BA1</Color>
+    <Color x:Key="AccentButtonForeground">#FFFFFFFF</Color>
+    <Color x:Key="AccentButtonForegroundDisabled">#FFFFFFFF</Color>
+    <Color x:Key="AccentButtonForegroundPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="AccentButtonForegroundPressed">#B3FFFFFF</Color>
     <Color x:Key="AccentFillBackdrop">#FFFFFFFF</Color>
     <Color x:Key="AccentFillColorDefault">#FF005BA1</Color>
     <Color x:Key="AccentFillColorDisabled">#37000000</Color>
@@ -27,6 +35,22 @@
     <Color x:Key="CardBackgroundFillColorTertiary">#FFFFFFFF</Color>
     <Color x:Key="CardStrokeColorDefault">#0F000000</Color>
     <Color x:Key="CardStrokeColorDefaultSolid">#FFEBEBEB</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillChecked">#FF005BA1</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillCheckedDisabled">#37000000</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver">#E6005BA1</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillCheckedPressed">#CC005BA1</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillIndeterminate">#FF005BA1</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled">#37000000</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver">#E6005BA1</Color>
+    <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed">#CC005BA1</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundChecked">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">#B3FFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundIndeterminate">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabled">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundIndeterminatePointerOver">#FFFFFFFF</Color>
+    <Color x:Key="CheckBoxCheckGlyphForegroundIndeterminatePressed">#B3FFFFFF</Color>
     <Color x:Key="ControlAltFillColorDisabled">#00FFFFFF</Color>
     <Color x:Key="ControlAltFillColorQuarternary">#18000000</Color>
     <Color x:Key="ControlAltFillColorSecondary">#06000000</Color>
@@ -58,6 +82,10 @@
     <Color x:Key="DividerStrokeColorDefault">#0F000000</Color>
     <Color x:Key="FocusStrokeColorInner">#B3FFFFFF</Color>
     <Color x:Key="FocusStrokeColorOuter">#E4000000</Color>
+    <Color x:Key="HyperlinkButtonForeground">#FF003E6E</Color>
+    <Color x:Key="HyperlinkButtonForegroundDisabled">#5C000000</Color>
+    <Color x:Key="HyperlinkButtonForegroundPointerOver">#FF00213B</Color>
+    <Color x:Key="HyperlinkButtonForegroundPressed">#FF005BA1</Color>
     <Color x:Key="LayerFillColorAlt">#FFFFFFFF</Color>
     <Color x:Key="LayerFillColorDefault">#80FFFFFF</Color>
     <Color x:Key="LayerOnAccentAcrylicFillColorDefault">#40FFFFFF</Color>
@@ -67,6 +95,22 @@
     <Color x:Key="LayerOnMicaBaseAltFillColorTertiary">#FFF9F9F9</Color>
     <Color x:Key="LayerOnMicaBaseAltFillColorTransparent">#00000000</Color>
     <Color x:Key="NavigationViewContentBackground">#80FFFFFF</Color>
+    <Color x:Key="RadioButtonCheckGlyphFill">#FFFFFFFF</Color>
+    <Color x:Key="RadioButtonCheckGlyphFillDisabled">#FFFFFFFF</Color>
+    <Color x:Key="RadioButtonCheckGlyphFillPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="RadioButtonCheckGlyphFillPressed">#B3FFFFFF</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedFill">#FF005BA1</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedFillDisabled">#37000000</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedFillPointerOver">#E6005BA1</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedFillPressed">#CC005BA1</Color>
+    <Color x:Key="SliderThumbBackground">#FF005BA1</Color>
+    <Color x:Key="SliderThumbBackgroundDisabled">#37000000</Color>
+    <Color x:Key="SliderThumbBackgroundPointerOver">#E6005BA1</Color>
+    <Color x:Key="SliderThumbBackgroundPressed">#CC005BA1</Color>
+    <Color x:Key="SliderTrackValueFill">#FF005BA1</Color>
+    <Color x:Key="SliderTrackValueFillDisabled">#37000000</Color>
+    <Color x:Key="SliderTrackValueFillPointerOver">#E6005BA1</Color>
+    <Color x:Key="SliderTrackValueFillPressed">#CC005BA1</Color>
     <Color x:Key="SmokeFillColorDefault">#4D000000</Color>
     <Color x:Key="SolidBackgroundFillColorBase">#FFF3F3F3</Color>
     <Color x:Key="SolidBackgroundFillColorBaseAlt">#FFDADADA</Color>
@@ -76,6 +120,14 @@
     <Color x:Key="SolidBackgroundFillColorSenary">#FFFFFFFF</Color>
     <Color x:Key="SolidBackgroundFillColorTertiary">#FFF9F9F9</Color>
     <Color x:Key="SolidBackgroundFillColorTransparent">#00F3F3F3</Color>
+    <Color x:Key="SplitButtonBackgroundChecked">#FF005BA1</Color>
+    <Color x:Key="SplitButtonBackgroundCheckedDisabled">#37000000</Color>
+    <Color x:Key="SplitButtonBackgroundCheckedPointerOver">#E6005BA1</Color>
+    <Color x:Key="SplitButtonBackgroundCheckedPressed">#CC005BA1</Color>
+    <Color x:Key="SplitButtonForegroundChecked">#FFFFFFFF</Color>
+    <Color x:Key="SplitButtonForegroundCheckedDisabled">#5C000000</Color>
+    <Color x:Key="SplitButtonForegroundCheckedPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="SplitButtonForegroundCheckedPressed">#B3FFFFFF</Color>
     <Color x:Key="SubtleFillColorDisabled">#00FFFFFF</Color>
     <Color x:Key="SubtleFillColorSecondary">#09000000</Color>
     <Color x:Key="SubtleFillColorTertiary">#06000000</Color>
@@ -118,6 +170,22 @@
     <Color x:Key="TextOnAccentFillColorSelectedText">#FFFFFFFF</Color>
     <Color x:Key="TitleBarActiveColor">#FFFFFFFF</Color>
     <Color x:Key="TitleBarInactiveColor">#FFFFFFFF</Color>
+    <Color x:Key="ToggleButtonBackgroundChecked">#FF005BA1</Color>
+    <Color x:Key="ToggleButtonBackgroundCheckedDisabled">#37000000</Color>
+    <Color x:Key="ToggleButtonBackgroundCheckedPointerOver">#E6005BA1</Color>
+    <Color x:Key="ToggleButtonBackgroundCheckedPressed">#CC005BA1</Color>
+    <Color x:Key="ToggleButtonForegroundChecked">#FFFFFFFF</Color>
+    <Color x:Key="ToggleButtonForegroundCheckedDisabled">#FFFFFFFF</Color>
+    <Color x:Key="ToggleButtonForegroundCheckedPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="ToggleButtonForegroundCheckedPressed">#B3FFFFFF</Color>
+    <Color x:Key="ToggleSwitchFillOn">#FF005BA1</Color>
+    <Color x:Key="ToggleSwitchFillOnDisabled">#37000000</Color>
+    <Color x:Key="ToggleSwitchFillOnPointerOver">#E6005BA1</Color>
+    <Color x:Key="ToggleSwitchFillOnPressed">#CC005BA1</Color>
+    <Color x:Key="ToggleSwitchKnobFillOn">#FFFFFFFF</Color>
+    <Color x:Key="ToggleSwitchKnobFillOnDisabled">#FFFFFFFF</Color>
+    <Color x:Key="ToggleSwitchKnobFillOnPointerOver">#FFFFFFFF</Color>
+    <Color x:Key="ToggleSwitchKnobFillOnPressed">#B3FFFFFF</Color>
     <Color x:Key="WindowBorderColor">#FFFFFFFF</Color>
     <Color x:Key="WindowCloseButtonBackgroundPointerOver">#FFC42B1C</Color>
     <Color x:Key="WindowCloseButtonBackgroundPressed">#FFB4271C</Color>
@@ -126,6 +194,14 @@
     <!--  Solid color brushes  -->
     <SolidColorBrush x:Key="AccentAcrylicBackgroundFillColorBaseBrush" Color="#FF8DCDFF" />
     <SolidColorBrush x:Key="AccentAcrylicBackgroundFillColorDefaultBrush" Color="#FF8DCDFF" />
+    <SolidColorBrush x:Key="AccentButtonBackgroundBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="AccentButtonBackgroundDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="AccentButtonBackgroundPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="AccentButtonBackgroundPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="AccentButtonForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="AccentButtonForegroundDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="AccentButtonForegroundPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="AccentButtonForegroundPressedBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="AccentFillBackdropBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#FF005BA1" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="#37000000" />
@@ -145,6 +221,22 @@
     <SolidColorBrush x:Key="CardBackgroundFillColorTertiaryBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#0F000000" />
     <SolidColorBrush x:Key="CardStrokeColorDefaultSolidBrush" Color="#FFEBEBEB" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressedBrush" Color="#B3FFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminateBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminatePointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminatePressedBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="ControlAltFillColorDisabledBrush" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="ControlAltFillColorQuarternaryBrush" Color="#18000000" />
     <SolidColorBrush x:Key="ControlAltFillColorSecondaryBrush" Color="#06000000" />
@@ -176,6 +268,10 @@
     <SolidColorBrush x:Key="DividerStrokeColorDefaultBrush" Color="#0F000000" />
     <SolidColorBrush x:Key="FocusStrokeColorInnerBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="FocusStrokeColorOuterBrush" Color="#E4000000" />
+    <SolidColorBrush x:Key="HyperlinkButtonForegroundBrush" Color="#FF003E6E" />
+    <SolidColorBrush x:Key="HyperlinkButtonForegroundDisabledBrush" Color="#5C000000" />
+    <SolidColorBrush x:Key="HyperlinkButtonForegroundPointerOverBrush" Color="#FF00213B" />
+    <SolidColorBrush x:Key="HyperlinkButtonForegroundPressedBrush" Color="#FF005BA1" />
     <SolidColorBrush x:Key="InfoBadgeAttentionForegroundBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="InfoBadgeCautionForegroundBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="InfoBadgeCriticalForegroundBrush" Color="#FFFFFFFF" />
@@ -191,7 +287,25 @@
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTransparentBrush" Color="#00000000" />
     <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="#80FFFFFF" />
     <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="PersonPictureBadgeForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="PickerSelectedForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="RadioButtonCheckGlyphFillBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="RadioButtonCheckGlyphFillDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="RadioButtonCheckGlyphFillPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="RadioButtonCheckGlyphFillPressedBrush" Color="#B3FFFFFF" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPressedBrush" Color="#CC005BA1" />
     <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#FFF9F9F9" />
+    <SolidColorBrush x:Key="SliderThumbBackgroundBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="SliderThumbBackgroundDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="SliderThumbBackgroundPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="SliderThumbBackgroundPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="SliderTrackValueFillBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="SliderTrackValueFillDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="SliderTrackValueFillPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="SliderTrackValueFillPressedBrush" Color="#CC005BA1" />
     <SolidColorBrush x:Key="SmokeFillColorDefaultBrush" Color="#4D000000" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseAltBrush" Color="#FFDADADA" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#FFF3F3F3" />
@@ -201,6 +315,14 @@
     <SolidColorBrush x:Key="SolidBackgroundFillColorSenaryBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorTertiaryBrush" Color="#FFF9F9F9" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorTransparentBrush" Color="#00F3F3F3" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundCheckedBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundCheckedDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundCheckedPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundCheckedPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="SplitButtonForegroundCheckedBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="SplitButtonForegroundCheckedDisabledBrush" Color="#5C000000" />
+    <SolidColorBrush x:Key="SplitButtonForegroundCheckedPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="SplitButtonForegroundCheckedPressedBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="SubtleFillColorDisabledBrush" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="SubtleFillColorSecondaryBrush" Color="#09000000" />
     <SolidColorBrush x:Key="SubtleFillColorTertiaryBrush" Color="#06000000" />
@@ -218,6 +340,8 @@
     <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush" Color="#FF003E6E" />
     <SolidColorBrush x:Key="SystemAccentColorSecondaryBrush" Color="#FF00213B" />
     <SolidColorBrush x:Key="SystemAccentColorTertiaryBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="SystemControlDisabledAccentBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="SystemControlHighlightAccentBrush" Color="#FF005BA1" />
     <SolidColorBrush x:Key="SystemFillColorAttentionBackgroundBrush" Color="#80F6F6F6" />
     <SolidColorBrush x:Key="SystemFillColorAttentionBrush" Color="#FF0078D4" />
     <SolidColorBrush x:Key="SystemFillColorCautionBackgroundBrush" Color="#FFFFF4CE" />
@@ -232,6 +356,7 @@
     <SolidColorBrush x:Key="SystemFillColorSuccessBackgroundBrush" Color="#FFDFF6DD" />
     <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="#FF0F7B0F" />
     <SolidColorBrush x:Key="TeachingTipTopHighlightBrush" Color="#99FFFFFF" />
+    <SolidColorBrush x:Key="TextControlSelectionHighlightBrush" Color="#FF0078D4" />
     <SolidColorBrush x:Key="TextFillColorDisabledBrush" Color="#5C000000" />
     <SolidColorBrush x:Key="TextFillColorInverseBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#E4000000" />
@@ -243,6 +368,22 @@
     <SolidColorBrush x:Key="TextOnAccentFillColorSelectedTextBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="TitleBarActiveColorBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="TitleBarInactiveColorBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="ToggleButtonBackgroundCheckedPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="ToggleButtonForegroundCheckedBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleButtonForegroundCheckedDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleButtonForegroundCheckedPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleButtonForegroundCheckedPressedBrush" Color="#B3FFFFFF" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnBrush" Color="#FF005BA1" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOverBrush" Color="#E6005BA1" />
+    <SolidColorBrush x:Key="ToggleSwitchFillOnPressedBrush" Color="#CC005BA1" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnDisabledBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOverBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressedBrush" Color="#B3FFFFFF" />
     <SolidColorBrush x:Key="WindowBorderColorBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="WindowCloseButtonBackgroundPointerOverBrush" Color="#FFC42B1C" />
     <SolidColorBrush x:Key="WindowCloseButtonBackgroundPressedBrush" Color="#FFB4271C" />

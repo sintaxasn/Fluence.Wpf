@@ -67,20 +67,22 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    SharpVectors.Converters.SvgViewbox image = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
+                    Image image = Find<Image>(page, "BrandHeroImage");
+                    DrawingImage drawing = Assert.IsType<DrawingImage>(image.Source);
+                    Assert.False(drawing.Drawing.Bounds.IsEmpty);
 
-                    const string light = "/Resources/Fluence_Lockup_SideBySide_Light.svg";
-                    const string dark = "/Resources/Fluence_Lockup_SideBySide_Dark.svg";
+                    const string light = "HomeHeroLightDrawingImage";
+                    const string dark = "HomeHeroDarkDrawingImage";
 
-                    // The hero renders the SVG for the active theme and swaps on
+                    // The hero renders a native WPF DrawingImage and swaps on
                     // theme changes via the page's ThemeDictionary (no code-behind).
-                    Assert.EndsWith(light, image.Source.OriginalString, StringComparison.Ordinal);
+                    Assert.Same(page.FindResource(dark), image.Source);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.EndsWith(dark, image.Source.OriginalString, StringComparison.Ordinal);
+                    Assert.Same(page.FindResource(light), image.Source);
 
                     // High contrast has no fixed polarity, so the page picks whichever
                     // variant reads against the live system window color.
@@ -88,15 +90,15 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.True(image.Source.OriginalString.EndsWith(light, StringComparison.Ordinal)
-                        || image.Source.OriginalString.EndsWith(dark, StringComparison.Ordinal),
-                        "High contrast should show one of the two SVG lockups.");
+                    Color background = SystemColors.WindowColor;
+                    double luminance = (0.299 * background.R) + (0.587 * background.G) + (0.114 * background.B);
+                    Assert.Same(page.FindResource(luminance < 128.0 ? light : dark), image.Source);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.EndsWith(light, image.Source.OriginalString, StringComparison.Ordinal);
+                    Assert.Same(page.FindResource(dark), image.Source);
                 }
                 finally
                 {
@@ -106,7 +108,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         }
 
         [Fact]
-        public Task GalleryHomePage_UsesProminentBrandAndAccessibleSocialLinksAsync()
+        public Task GalleryHomePage_UsesProminentAccessibleBrandAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -114,38 +116,18 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    SharpVectors.Converters.SvgViewbox brand = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
+                    Image brand = Find<Image>(page, "BrandHeroImage");
                     Assert.InRange(brand.ActualWidth, 560, 640);
                     Assert.Equal(Stretch.Uniform, brand.Stretch);
                     Assert.Equal("Fluence.WPF", AutomationProperties.GetName(brand), StringComparer.Ordinal);
-
-                    (string Name, string Destination, string AccessibleName)[] links =
-                    [
-                        ("GitHubLink", "https://github.com/sintaxasn/fluence.wpf", "Fluence.WPF on GitHub"),
-                        ("LinkedInLink", "https://linkedin.com/in/sintaxasn", "Dan Cunningham on LinkedIn"),
-                    ];
-                    foreach ((string name, string destination, string accessibleName) in links)
-                    {
-                        Controls.HyperlinkButton link = Find<Controls.HyperlinkButton>(page, name);
-                        Assert.Equal(destination, link.NavigateUri.AbsoluteUri, StringComparer.Ordinal);
-                        Assert.Equal(accessibleName, AutomationProperties.GetName(link), StringComparer.Ordinal);
-                        Assert.Equal(accessibleName, link.ToolTip);
-                        Assert.True(link.Focusable);
-                        Assert.InRange(link.ActualWidth, 36, 48);
-                        Assert.InRange(link.ActualHeight, 36, 48);
-                        System.Windows.Shapes.Path icon = Assert.IsType<System.Windows.Shapes.Path>(link.Icon);
-                        Assert.False(icon.Data.IsEmpty());
-                        Assert.True(icon.IsVisible);
-                        Assert.InRange(icon.ActualWidth, 17.0, 19.0);
-                        Assert.InRange(icon.ActualHeight, 17.0, 19.0);
-                        RenderTargetBitmap renderedIcon = new(18, 18, 96, 96, PixelFormats.Pbgra32);
-                        renderedIcon.Render(icon);
-                        byte[] pixels = new byte[18 * 18 * 4];
-                        renderedIcon.CopyPixels(pixels, 18 * 4, 0);
-                        Assert.Contains(pixels, static channel => channel > 0);
-                        Assert.Equal(link.Foreground, icon.Fill);
-                        Assert.True(link.TranslatePoint(default, page).Y >= brand.TranslatePoint(default, page).Y + brand.ActualHeight);
-                    }
+                    Assert.True(brand.IsVisible);
+                    RenderTargetBitmap renderedBrand = new(620, 156, 96, 96, PixelFormats.Pbgra32);
+                    renderedBrand.Render(brand);
+                    byte[] pixels = new byte[620 * 156 * 4];
+                    renderedBrand.CopyPixels(pixels, 620 * 4, 0);
+                    Assert.Contains(pixels, static channel => channel > 0);
+                    UniformGrid catalog = Find<UniformGrid>(page, "FeaturedControlsGrid");
+                    Assert.True(catalog.TranslatePoint(default, page).Y >= brand.TranslatePoint(default, page).Y + brand.ActualHeight);
 
                     Assert.Null(DemoTestHost.FindByName<FrameworkElement>(page, "HeroPreviewCard"));
                 }
@@ -188,7 +170,10 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     window.NavigateTo("home");
                     Settle(window);
                     GalleryHomePage page = Assert.IsType<GalleryHomePage>(frame.Content);
-                    Invoke(Find<Controls.Button>(page, "ExploreControlsButton"));
+                    Controls.Card buttonCard = Assert.Single(DemoTestHost.FindVisualChildren<Controls.Card>(page),
+                        static candidate => string.Equals(candidate.Tag as string, "buttons", StringComparison.Ordinal));
+                    Assert.True(buttonCard.IsClickable);
+                    Invoke(buttonCard);
                     Settle(window);
                     _ = Assert.IsType<GalleryButtonsPage>(frame.Content);
                 }
@@ -208,7 +193,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    SharpVectors.Converters.SvgViewbox brand = Find<SharpVectors.Converters.SvgViewbox>(page, "BrandHeroImage");
+                    Image brand = Find<Image>(page, "BrandHeroImage");
                     UniformGrid catalog = Find<UniformGrid>(page, "FeaturedControlsGrid");
                     UniformGrid foundations = Find<UniformGrid>(page, "FoundationLinksGrid");
                     Controls.SmoothScrollViewer scroll = Assert.Single(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page));

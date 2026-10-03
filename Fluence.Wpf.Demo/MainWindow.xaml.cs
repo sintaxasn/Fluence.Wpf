@@ -776,12 +776,12 @@ namespace Fluence.Wpf.Demo
         {
             if (_titleBarIconView is null)
             {
-                // WinUI 3 Gallery title-bar icon parity: 16x16, not the 20x20 chrome max the
-                // TitleBar template reserves for PART_IconPresenter.
+                // The gallery title-bar icon fills the 20x20 chrome slot reserved by
+                // the TitleBar template for PART_IconPresenter.
                 _titleBarIconView = new System.Windows.Controls.Image
                 {
-                    Width = 16,
-                    Height = 16,
+                    Width = 20,
+                    Height = 20,
                     VerticalAlignment = VerticalAlignment.Center,
                 };
                 RenderOptions.SetBitmapScalingMode(_titleBarIconView, BitmapScalingMode.HighQuality);

@@ -198,14 +198,17 @@ namespace Fluence.Wpf.Controls
         /// </param>
         /// <param name="capabilities">The OS capability snapshot.</param>
         /// <param name="accentColor">The current system accent color.</param>
+        /// <param name="isHighContrast">Whether the resolved theme is high contrast.</param>
         /// <returns>A <see cref="FramePlan"/> describing the border to apply.</returns>
         internal static FramePlan BuildFramePlan(
             bool isActive,
             bool isAccentBorderEnabled,
             WindowCapabilities capabilities,
-            Color accentColor)
+            Color accentColor,
+            bool isHighContrast = false)
         {
-            string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
+            bool useAccentBorder = isActive && isAccentBorderEnabled && !isHighContrast;
+            string templateBorderBrushResourceKey = !useAccentBorder
                 ? "SurfaceStrokeColorDefaultBrush"
                 : "SystemAccentColorBrush";
 
@@ -214,7 +217,7 @@ namespace Fluence.Wpf.Controls
                 : new Thickness(1);
 
             uint dwmBorderColor = PInvoke.DWMWA_COLOR_DEFAULT;
-            if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
+            if (capabilities.SupportsBorderColor && useAccentBorder)
             {
                 dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
             }

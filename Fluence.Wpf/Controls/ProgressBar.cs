@@ -547,7 +547,7 @@ namespace Fluence.Wpf.Controls
         {
             string brushKey = ShowError
                 ? "SystemFillColorCriticalBrush"
-                : ShowPaused ? "SystemFillColorCautionBrush" : "AccentFillColorDefaultBrush";
+                : ShowPaused ? "SystemFillColorCautionBrush" : "SystemControlHighlightAccentBrush";
             _fill?.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
             _indeterminateBar?.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
             _indeterminateBar2?.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);

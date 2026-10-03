@@ -128,7 +128,7 @@
                                         FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
                                         Foreground="{TemplateBinding Foreground}"
-                                        SelectionBrush="{DynamicResource AccentFillColorSelectedTextBackgroundBrush}"
+                                        SelectionBrush="{DynamicResource TextControlSelectionHighlightBrush}"
                                         Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <!--
@@ -200,7 +200,7 @@
                                     Grid.Row="1"
                                     Height="1.5"
                                     HorizontalAlignment="Stretch"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Background="{DynamicResource SystemControlHighlightAccentBrush}"
                                     CornerRadius="0,0,4,4"
                                     Opacity="0" />
                             </Grid>

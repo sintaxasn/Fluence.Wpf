@@ -1584,8 +1584,8 @@ namespace Fluence.Wpf.Tests.Gallery
                     ContentPresenter titleIcon = Assert.IsType<ContentPresenter>(DemoTestHost.FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, titleIcon.Visibility);
                     Image titleIconImage = Assert.IsType<Image>(DemoTestHost.FindVisualChildren<Image>(titleIcon).FirstOrDefault(), exactMatch: false);
-                    Assert.Equal(16.0, titleIconImage.ActualWidth, 0.5);
-                    Assert.Equal(16.0, titleIconImage.ActualHeight, 0.5);
+                    Assert.Equal(20.0, titleIconImage.ActualWidth, 0.5);
+                    Assert.Equal(20.0, titleIconImage.ActualHeight, 0.5);
                     Assert.True(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
                         "Title identity should start after the title-bar navigation slot.");
 

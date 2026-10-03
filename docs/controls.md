@@ -1,6 +1,6 @@
 ﻿# Control catalog
 
-This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:fluence="http://schemas.fluencewpf.com"` in XAML and call `ApplicationThemeManager.Apply` before creating the first window. The [gallery](../Fluence.Wpf.Demo/README.md) groups live examples by task. The [C# API reference](api/index.md) documents each type's constructors, properties, methods, and events. To build your visual tree in code, follow [Create controls in C#](how-to/controls-from-csharp.md).
+This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:fluence="http://schemas.fluencewpf.com"` in XAML and call `ApplicationThemeManager.Apply` before creating the first window. The [gallery](../Fluence.Wpf.Demo/README.md) groups live examples by task. The [C# API reference](api/index.md) documents each type's constructors, properties, methods, and events. Follow the [Basic walkthrough](https://fluencewpf.com/docs/csharp/usage) for a runnable XAML example.
 
 ## Window and application shell
 

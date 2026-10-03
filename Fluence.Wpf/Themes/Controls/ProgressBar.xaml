@@ -9,7 +9,7 @@
         <!--  ProgressBarBorderBrush (:8); thickness stays 0 until high-contrast reintroduces the 1 px outline.  -->
         <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
         <Setter Property="Height" Value="Auto" />
         <Setter Property="Maximum" Value="100" />
         <Setter Property="MinHeight" Value="3.2" />
@@ -47,7 +47,7 @@
                                     Width="0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Background="{DynamicResource SystemControlHighlightAccentBrush}"
                                     RenderTransformOrigin="0,0.5">
                                     <Border.RenderTransform>
                                         <ScaleTransform x:Name="PART_FillScale" ScaleX="0" ScaleY="1" />
@@ -58,7 +58,7 @@
                                     Width="0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Background="{DynamicResource SystemControlHighlightAccentBrush}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Visibility="Collapsed">
                                     <Border.RenderTransform>
@@ -70,7 +70,7 @@
                                     Width="0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Background="{DynamicResource SystemControlHighlightAccentBrush}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Visibility="Collapsed">
                                     <Border.RenderTransform>

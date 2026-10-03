@@ -301,8 +301,7 @@
       "fluence.wpf.demo": {
         "type": "Project",
         "dependencies": {
-          "Fluence.Wpf": "[0.9.0-pre, )",
-          "SharpVectors.Wpf": "[1.8.6, )"
+          "Fluence.Wpf": "[0.9.1-pre, )"
         }
       },
       "Microsoft.Bcl.Memory": {
@@ -315,12 +314,6 @@
           "System.Runtime.CompilerServices.Unsafe": "6.1.2",
           "System.ValueTuple": "4.6.2"
         }
-      },
-      "SharpVectors.Wpf": {
-        "type": "CentralTransitive",
-        "requested": "[1.8.6, )",
-        "resolved": "1.8.6",
-        "contentHash": "FjD8w5D+nBHBLlVOxr4tZpmqN6XOHhMllKKI9PZDeqjet4wS4PUDdpV/7p71SPQoeowvMivYFoKXsszFUmPpfg=="
       },
       "System.Memory": {
         "type": "CentralTransitive",
@@ -546,15 +539,14 @@
       "fluence.wpf.demo": {
         "type": "Project",
         "dependencies": {
-          "Fluence.Wpf": "[0.9.0-pre, )",
-          "SharpVectors.Wpf": "[1.8.6, )"
+          "Fluence.Wpf": "[0.9.1-pre, )"
         }
       },
       "fluence.wpf.demo.mvvm": {
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Mvvm": "[8.4.2, )",
-          "Fluence.Wpf": "[0.9.0-pre, )"
+          "Fluence.Wpf": "[0.9.1-pre, )"
         }
       },
       "CommunityToolkit.Mvvm": {
@@ -562,12 +554,6 @@
         "requested": "[8.4.2, )",
         "resolved": "8.4.2",
         "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
-      },
-      "SharpVectors.Wpf": {
-        "type": "CentralTransitive",
-        "requested": "[1.8.6, )",
-        "resolved": "1.8.6",
-        "contentHash": "FjD8w5D+nBHBLlVOxr4tZpmqN6XOHhMllKKI9PZDeqjet4wS4PUDdpV/7p71SPQoeowvMivYFoKXsszFUmPpfg=="
       }
     }
   }

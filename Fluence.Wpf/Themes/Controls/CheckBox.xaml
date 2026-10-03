@@ -74,22 +74,22 @@
                                     Opacity="0" />
                                 <Border
                                     x:Name="IndicatorChecked"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                    BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Background="{DynamicResource CheckBoxCheckBackgroundFillCheckedBrush}"
+                                    BorderBrush="{DynamicResource CheckBoxCheckBackgroundFillCheckedBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
                                 <Border
                                     x:Name="IndicatorCheckedHover"
-                                    Background="{DynamicResource AccentFillColorSecondaryBrush}"
-                                    BorderBrush="{DynamicResource AccentFillColorSecondaryBrush}"
+                                    Background="{DynamicResource CheckBoxCheckBackgroundFillCheckedPointerOverBrush}"
+                                    BorderBrush="{DynamicResource CheckBoxCheckBackgroundFillCheckedPointerOverBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
                                 <Border
                                     x:Name="IndicatorCheckedPressed"
-                                    Background="{DynamicResource AccentFillColorTertiaryBrush}"
-                                    BorderBrush="{DynamicResource AccentFillColorTertiaryBrush}"
+                                    Background="{DynamicResource CheckBoxCheckBackgroundFillCheckedPressedBrush}"
+                                    BorderBrush="{DynamicResource CheckBoxCheckBackgroundFillCheckedPressedBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
@@ -104,7 +104,7 @@
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
                                     Stretch="Uniform"
-                                    Stroke="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    Stroke="{DynamicResource CheckBoxCheckGlyphForegroundCheckedBrush}"
                                     StrokeEndLineCap="Round"
                                     StrokeLineJoin="Round"
                                     StrokeStartLineCap="Round"
@@ -119,7 +119,7 @@
                                     Height="2"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Background="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    Background="{DynamicResource CheckBoxCheckGlyphForegroundIndeterminateBrush}"
                                     CornerRadius="1"
                                     Opacity="0" />
                             </Grid>
@@ -175,6 +175,9 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="IndicatorCheckedHover" Property="Opacity" Value="1" />
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="0" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush}" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="BorderBrush" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush}" />
+                            <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource CheckBoxCheckGlyphForegroundIndeterminatePointerOverBrush}" />
                         </MultiTrigger>
 
                         <MultiTrigger>
@@ -198,7 +201,9 @@
                             <Setter TargetName="IndicatorCheckedPressed" Property="Opacity" Value="1" />
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Opacity" Value="0" />
-                            <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminatePressedBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="BorderBrush" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminatePressedBrush}" />
+                            <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource CheckBoxCheckGlyphForegroundIndeterminatePressedBrush}" />
                             <Setter TargetName="IndicatorHost" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
@@ -270,6 +275,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Opacity" Value="1" />
+                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource CheckBoxCheckGlyphForegroundCheckedPointerOverBrush}" />
                         </MultiTrigger>
                         <!--  WinUI parity: CheckBoxCheckGlyphForegroundCheckedPressed (CheckBox_themeresources.xaml:71) is TextOnAccentFillColorSecondaryBrush, not the rest-state Primary.  -->
                         <MultiTrigger>
@@ -280,7 +286,7 @@
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorCheckedPressed" Property="Opacity" Value="1" />
-                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
+                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource CheckBoxCheckGlyphForegroundCheckedPressedBrush}" />
                             <Setter TargetName="CheckGlyph" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
@@ -302,6 +308,8 @@
                             <Setter TargetName="IndicatorHover" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorPressed" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="1" />
+                            <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminateBrush}" />
+                            <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminateBrush}" />
                             <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="1" />
                             <Setter TargetName="CheckGlyph" Property="Opacity" Value="0" />
                             <Setter TargetName="IndeterminateDash" Property="Opacity" Value="1" />
@@ -313,23 +321,27 @@
                                 <Condition Property="IsChecked" Value="True" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillCheckedDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillCheckedDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillCheckedDisabledBrush}" />
                             <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="0" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
+                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource CheckBoxCheckGlyphForegroundCheckedDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="{x:Null}" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminateDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminateDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillIndeterminateDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedHover" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorCheckedPressed" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource CheckBoxCheckGlyphForegroundIndeterminateDisabledBrush}" />
                             <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="0" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />

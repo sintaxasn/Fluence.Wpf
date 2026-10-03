@@ -5,9 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-    d:DesignHeight="800"
-    d:DesignWidth="900"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
     <!--
@@ -18,30 +15,35 @@
         without code-behind theme subscriptions.
     -->
     <Page.Resources>
-        <fluence:ThemeDictionary>
-            <fluence:ThemeDictionary.ThemeDictionaries>
-                <fluence:ThemeResourceDictionary ThemeKey="Light">
-                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
-                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Light.svg" />
-                    </Style>
-                </fluence:ThemeResourceDictionary>
-                <fluence:ThemeResourceDictionary ThemeKey="Dark">
-                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
-                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Dark.svg" />
-                    </Style>
-                </fluence:ThemeResourceDictionary>
-                <fluence:ThemeResourceDictionary ThemeKey="HighContrastBlack">
-                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
-                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Dark.svg" />
-                    </Style>
-                </fluence:ThemeResourceDictionary>
-                <fluence:ThemeResourceDictionary ThemeKey="HighContrastWhite">
-                    <Style x:Key="HomeHeroSvgStyle" TargetType="{x:Type svgc:SvgViewbox}">
-                        <Setter Property="Source" Value="/Resources/Fluence_Lockup_SideBySide_Light.svg" />
-                    </Style>
-                </fluence:ThemeResourceDictionary>
-            </fluence:ThemeDictionary.ThemeDictionaries>
-        </fluence:ThemeDictionary>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Fluence.Wpf.Demo;component/Resources/HomeHeroDrawings.xaml" />
+                <fluence:ThemeDictionary>
+                    <fluence:ThemeDictionary.ThemeDictionaries>
+                        <fluence:ThemeResourceDictionary ThemeKey="Light">
+                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkDrawingImage}" />
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                        <fluence:ThemeResourceDictionary ThemeKey="Dark">
+                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightDrawingImage}" />
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                        <fluence:ThemeResourceDictionary ThemeKey="HighContrastBlack">
+                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightDrawingImage}" />
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                        <fluence:ThemeResourceDictionary ThemeKey="HighContrastWhite">
+                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkDrawingImage}" />
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                    </fluence:ThemeDictionary.ThemeDictionaries>
+                </fluence:ThemeDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Page.Resources>
     <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel
@@ -49,50 +51,27 @@
             SizeChanged="PageContent_SizeChanged"
             Style="{StaticResource GalleryPageContentStackStyle}">
             <StackPanel x:Name="HeroContent" Margin="{DynamicResource HomeHeroMargin}">
-                <svgc:SvgViewbox
-                    x:Name="BrandHeroImage"
-                    AutomationProperties.Name="Fluence.WPF"
-                    HorizontalAlignment="Stretch"
-                    MaxWidth="620"
-                    Stretch="Uniform"
-                    Style="{DynamicResource HomeHeroSvgStyle}" />
+                <Grid HorizontalAlignment="Stretch" MaxWidth="620">
+                    <Image
+                        IsHitTestVisible="False"
+                        Source="{StaticResource HomeHeroIconShadowDrawingImage}"
+                        Stretch="Uniform">
+                        <Image.Effect>
+                            <DropShadowEffect BlurRadius="16" Color="Black" Direction="270" Opacity="0.2" ShadowDepth="10" />
+                        </Image.Effect>
+                    </Image>
+                    <Image
+                        x:Name="BrandHeroImage"
+                        AutomationProperties.Name="Fluence.WPF"
+                        HorizontalAlignment="Stretch"
+                        MaxWidth="620"
+                        Stretch="Uniform"
+                        Style="{DynamicResource HomeHeroImageStyle}" />
+                </Grid>
                 <TextBlock
                     Style="{StaticResource HomeIntroStyle}"
-                    Text="Fluent design for native WPF apps." />
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Margin="{DynamicResource HomeSocialLinksMargin}"
-                    Orientation="Horizontal">
-                    <fluence:HyperlinkButton
-                        x:Name="GitHubLink"
-                        AutomationProperties.Name="Fluence.WPF on GitHub"
-                        NavigateUri="https://github.com/sintaxasn/fluence.wpf"
-                        Style="{StaticResource HomeSocialLinkStyle}"
-                        ToolTip="Fluence.WPF on GitHub">
-                        <fluence:HyperlinkButton.Icon>
-                            <Path Data="{StaticResource HomeGitHubGeometry}" Style="{StaticResource HomeSocialIconStyle}" />
-                        </fluence:HyperlinkButton.Icon>
-                    </fluence:HyperlinkButton>
-                    <fluence:HyperlinkButton
-                        x:Name="LinkedInLink"
-                        AutomationProperties.Name="Dan Cunningham on LinkedIn"
-                        NavigateUri="https://linkedin.com/in/sintaxasn"
-                        Style="{StaticResource HomeSocialLinkStyle}"
-                        ToolTip="Dan Cunningham on LinkedIn">
-                        <fluence:HyperlinkButton.Icon>
-                            <Path Data="{StaticResource HomeLinkedInGeometry}" Style="{StaticResource HomeSocialIconStyle}" />
-                        </fluence:HyperlinkButton.Icon>
-                    </fluence:HyperlinkButton>
-                </StackPanel>
-                <fluence:Button
-                    x:Name="ExploreControlsButton"
-                    HorizontalAlignment="Center"
-                    Appearance="Accent"
-                    AutomationProperties.Name="Explore controls"
-                    Click="Card_Click"
-                    Content="Explore controls"
-                    Margin="{DynamicResource HomeActionsMargin}"
-                    Tag="buttons" />
+
+                    Text="WinUI3, but for WPF." Margin="0,0,0,16" FontSize="16"/>
             </StackPanel>
 
             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Explore the controls" />
@@ -232,7 +211,7 @@
             </UniformGrid>
 
             <TextBlock
-                Margin="{DynamicResource HomeFoundationsHeadingMargin}"
+                Margin="16,8,16,16"
                 Style="{StaticResource SubtitleTextBlockStyle}"
                 Text="Make it yours" />
             <UniformGrid

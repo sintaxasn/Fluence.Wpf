@@ -380,7 +380,7 @@ $landingLines = New-Lines
 $landingLines.Add('# C# API reference'); $landingLines.Add('')
 $landingLines.Add('Public and protected members of the Fluence.Wpf assembly, generated from the compiled .NET 10 API and its XML documentation. Protected members are labeled for control authors. Framework members inherited from WPF are linked through the base type; they are not repeated on every page.'); $landingLines.Add('')
 $landingLines.Add('For task-oriented examples, see the [control catalog](../controls.md), [getting started](https://fluencewpf.com/docs/getting-started), and [theme resources](../theming.md).'); $landingLines.Add('')
-$landingLines.Add('The [C# usage guide](https://fluencewpf.com/docs/how-to/controls-from-csharp) shows how to create controls without XAML.'); $landingLines.Add('')
+$landingLines.Add('The [Basic walkthrough](https://fluencewpf.com/docs/csharp/usage) shows how to build a window with Fluence controls in XAML.'); $landingLines.Add('')
 $landingLines.Add('## Namespaces'); $landingLines.Add('')
 foreach ($group in $namespaces) { $landingLines.Add('- [' + $group.Name + '](' + $group.Name + '/index.md) (' + $group.Count + ' types)') }
 Save-Page 'index.md' $landingLines

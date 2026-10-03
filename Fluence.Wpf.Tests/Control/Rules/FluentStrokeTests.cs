@@ -192,7 +192,8 @@ namespace Fluence.Wpf.Tests.Control.Rules
                         "Checked CheckBox state should show the check glyph once the check-in animation settles.");
                     Assert.Equal(0.0, indeterminateDash.Opacity, 0.01);
                     Assert.Equal(indeterminateDash.Height, checkGlyph.StrokeThickness, 0.01);
-                    Assert.Same(indeterminateDash.Background, checkGlyph.Stroke);
+                    Assert.Same(checkBox.FindResource("CheckBoxCheckGlyphForegroundCheckedBrush"), checkGlyph.Stroke);
+                    Assert.Same(checkBox.FindResource("CheckBoxCheckGlyphForegroundIndeterminateBrush"), indeterminateDash.Background);
                 }
                 finally
                 {

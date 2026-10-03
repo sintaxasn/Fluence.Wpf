@@ -96,7 +96,7 @@ $manifest = Import-PowerShellDataFile -Path $psd1
 $version  = $manifest.ModuleVersion
 
 # A prerelease lives in PSData.Prerelease, not in ModuleVersion, so the manifest version alone
-# would name the artifacts 0.9.0 while Publish-Module stamps the package 0.9.0-pre. Fold it in
+# would omit the prerelease suffix while Publish-Module includes it. Fold it in
 # so the ZIP, the NUPKG and the package metadata all carry the same string.
 $prerelease = $manifest.PrivateData.PSData.Prerelease
 if (-not [string]::IsNullOrWhiteSpace($prerelease))

@@ -18,6 +18,24 @@ containers from `SelectedItems`; it does not add data-model selection propagatio
 This limitation needs a separate API and realization-policy decision before any
 claim of complete data-bound cascading support.
 
+## Selected text rendering in native WPF editors
+
+`TextBox`, `PasswordBox`, and the native text editor inside `NumberBox` use WPF's
+selection renderer. Their Fluence templates set a theme-aware `SelectionBrush`
+but retain WPF's default `SelectionOpacity` of 0.4. The selection highlight is
+therefore translucent, and selected-text foreground rendering follows WPF rather
+than a separate WinUI text-on-selection brush. WPF's `SelectionTextBrush` was
+added in .NET Framework 4.8 and is unavailable to the library's `net472`
+compile target. Setting `SelectionOpacity` to 1 is not a compatible substitute:
+WPF documents that an opaque selection brush hides the selected text.
+
+The shared templates retain this idiomatic WPF fallback across target
+frameworks. Resource-key parity for selected-text colors does not guarantee
+identical rendered selection to WinUI in every theme or high-contrast scheme.
+See Microsoft's documentation for [TextBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.primitives.textboxbase.selectionopacity?view=netframework-4.8.1),
+[PasswordBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.selectionopacity?view=netframework-4.8.1),
+and the [.NET Framework 4.8 SelectionTextBrush addition](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility).
+
 ## Current follow-ups (not defects)
 
 - **Inline STA and embedded hosts own final dispatcher cleanup** - removing the

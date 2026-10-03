@@ -278,7 +278,7 @@
                                 x:Name="FocusAccentLine"
                                 Height="2"
                                 VerticalAlignment="Bottom"
-                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                Background="{DynamicResource SystemControlHighlightAccentBrush}"
                                 CornerRadius="0,0,4,4"
                                 Opacity="0"
                                 Visibility="Collapsed" />

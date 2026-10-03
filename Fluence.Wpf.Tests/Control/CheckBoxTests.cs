@@ -27,11 +27,16 @@
  */
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Media;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
+using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Control
 {
@@ -39,11 +44,24 @@ namespace Fluence.Wpf.Tests.Control
     /// Fluent <see cref="CheckBox"/> control: Description surfaces as
     /// AutomationProperties.HelpText.
     /// </summary>
-    public sealed class CheckBoxTests : IClassFixture<LightThemeFixture>
+    public sealed class CheckBoxTests : IAsyncLifetime
     {
-        public CheckBoxTests(LightThemeFixture fixture)
+        public ValueTask InitializeAsync()
         {
-            _ = fixture;
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        private sealed class PressableCheckBoxProbe : CheckBox
+        {
+            public void SetPressed(bool value)
+            {
+                IsPressed = value;
+            }
         }
 
         // ---------------------------------------------------------------------------
@@ -114,6 +132,62 @@ namespace Fluence.Wpf.Tests.Control
                 CheckBox cb = new() { Content = "Test" };
                 Assert.Equal("Test", cb.Content as string, StringComparer.Ordinal);
             });
+        }
+
+        [Fact]
+        public Task CheckBox_HighContrast_IndeterminateStatePairsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
+                ApplicationAccentColorManager.ApplyCustomAccent(Colors.Red);
+                PressableCheckBoxProbe checkBox = new() { Content = "Contrast", IsThreeState = true, IsChecked = null, IsHitTestVisible = false };
+                Window window = new() { Content = checkBox };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Border plate = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(checkBox, "IndicatorChecked"), exactMatch: false);
+                    System.Windows.Controls.Border dash = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(checkBox, "IndeterminateDash"), exactMatch: false);
+                    Assert.Equal(SystemColors.HighlightColor, SolidColor(plate.Background));
+                    Assert.Equal(SystemColors.HighlightTextColor, SolidColor(dash.Background));
+
+                    MultiTrigger hover = Assert.Single(checkBox.Template.Triggers.OfType<MultiTrigger>(),
+                        static trigger => trigger.Conditions.Count is 2
+                            && trigger.Conditions.Any(static condition => condition.Property == UIElement.IsMouseOverProperty && Equals(condition.Value, true))
+                            && trigger.Conditions.Any(static condition => condition.Property == System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty && condition.Value is null));
+                    Assert.Equal("CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush",
+                        ResourceKey(hover, "IndicatorCheckedHover", System.Windows.Controls.Border.BackgroundProperty));
+                    Assert.Equal("CheckBoxCheckGlyphForegroundIndeterminatePointerOverBrush",
+                        ResourceKey(hover, "IndeterminateDash", System.Windows.Controls.Border.BackgroundProperty));
+                    Application application = WpfTestSta.EnsureApplication();
+                    Assert.Equal(SystemColors.HighlightTextColor,
+                        ResolvedColor(application, "CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush"));
+                    Assert.Equal(SystemColors.HighlightColor,
+                        ResolvedColor(application, "CheckBoxCheckGlyphForegroundIndeterminatePointerOverBrush"));
+
+                    checkBox.SetPressed(value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    System.Windows.Controls.Border pressedPlate = Assert.IsType<System.Windows.Controls.Border>(FindVisualChildByName<System.Windows.Controls.Border>(checkBox, "IndicatorCheckedPressed"), exactMatch: false);
+                    Assert.Equal(1.0, pressedPlate.Opacity);
+                    Assert.Equal(SystemColors.HighlightColor, SolidColor(pressedPlate.Background));
+                    Assert.Equal(SystemColors.HighlightTextColor, SolidColor(dash.Background));
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        private static object ResourceKey(MultiTrigger trigger, string targetName, DependencyProperty property)
+        {
+            Setter setter = Assert.Single(trigger.Setters.OfType<Setter>(), setter =>
+                string.Equals(setter.TargetName, targetName, StringComparison.Ordinal) && setter.Property == property);
+            return Assert.IsType<DynamicResourceExtension>(setter.Value).ResourceKey;
         }
     }
 }

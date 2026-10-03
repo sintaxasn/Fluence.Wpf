@@ -113,7 +113,7 @@
                                 x:Name="CheckedEllipse"
                                 Width="20"
                                 Height="20"
-                                Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                Fill="{DynamicResource RadioButtonOuterEllipseCheckedFillBrush}"
                                 Opacity="0" />
 
                             <!--  Checked: hover accent  -->
@@ -121,7 +121,7 @@
                                 x:Name="CheckedEllipseHover"
                                 Width="20"
                                 Height="20"
-                                Fill="{DynamicResource AccentFillColorSecondaryBrush}"
+                                Fill="{DynamicResource RadioButtonOuterEllipseCheckedFillPointerOverBrush}"
                                 Opacity="0" />
 
                             <!--  Checked: pressed accent  -->
@@ -129,7 +129,7 @@
                                 x:Name="CheckedEllipsePressed"
                                 Width="20"
                                 Height="20"
-                                Fill="{DynamicResource AccentFillColorTertiaryBrush}"
+                                Fill="{DynamicResource RadioButtonOuterEllipseCheckedFillPressedBrush}"
                                 Opacity="0" />
 
                             <!--
@@ -144,7 +144,7 @@
                                 Height="0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Fill="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                Fill="{DynamicResource RadioButtonCheckGlyphFillBrush}"
                                 Stroke="{DynamicResource CircleElevationBorderBrush}"
                                 StrokeThickness="1" />
                         </Grid>
@@ -286,6 +286,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipseHover" Property="Opacity" Value="1" />
+                            <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillPointerOverBrush}" />
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard x:Name="RadioDotHoverStoryboard">
                                     <Storyboard>
@@ -323,6 +324,7 @@
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipseHover" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipsePressed" Property="Opacity" Value="1" />
+                            <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillPressedBrush}" />
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard x:Name="RadioDotPressedStoryboard">
                                     <Storyboard>
@@ -356,10 +358,10 @@
                             <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipseHover" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipsePressed" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                            <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillDisabledBrush}" />
+                            <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillDisabledBrush}" />
+                            <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillDisabledBrush}" />
+                            <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillDisabledBrush}" />
                             <Setter TargetName="InnerDot" Property="Stroke" Value="{DynamicResource ControlElevationBorderBrush}" />
                             <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="0" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />

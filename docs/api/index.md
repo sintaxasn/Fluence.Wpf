@@ -4,7 +4,7 @@ Public and protected members of the Fluence.Wpf assembly, generated from the com
 
 For task-oriented examples, see the [control catalog](../controls.md), [getting started](https://fluencewpf.com/docs/getting-started), and [theme resources](../theming.md).
 
-The [C# usage guide](https://fluencewpf.com/docs/how-to/controls-from-csharp) shows how to create controls without XAML.
+The [Basic walkthrough](https://fluencewpf.com/docs/csharp/usage) shows how to build a window with Fluence controls in XAML.
 
 ## Namespaces
 

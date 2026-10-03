@@ -63,13 +63,14 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightDerivedBrushKeys = new(StringComparer.Ordinal)
         {
-            "AccentAcrylicBackgroundFillColorBaseBrush",
-            "AccentAcrylicBackgroundFillColorDefaultBrush",
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
-            "LayerOnAccentAcrylicFillColorDefaultBrush",
             "NavigationViewSelectionIndicatorForeground",
-            "SystemFillColorAttentionBrush",
+            "SystemAccentColorPrimaryBrush",
+            "SystemAccentColorSecondaryBrush",
+            "SystemAccentColorTertiaryBrush",
+            "SystemControlHighlightAccentBrush",
+            "TextControlSelectionHighlightBrush",
             "TextControlElevationBorderFocusedBrush",
             "WindowCloseButtonBackgroundPointerOverBrush",
             "WindowCloseButtonBackgroundPressedBrush",
@@ -85,9 +86,32 @@ namespace Fluence.Wpf.Tests.Theming
         /// </summary>
         private static readonly HashSet<string> HighContrastHighlightTextDerivedBrushKeys = new(StringComparer.Ordinal)
         {
-            "InfoBadgeAttentionForegroundBrush",
+            "ControlStrokeColorOnAccentDefaultBrush",
+            "ControlStrokeColorOnAccentSecondaryBrush",
+            "ControlStrokeColorOnAccentTertiaryBrush",
+            "FocusStrokeColorInnerBrush",
+            "PersonPictureBadgeForegroundBrush",
+            "PickerSelectedForegroundBrush",
             "WindowCloseButtonForegroundPointerOverBrush",
         };
+
+        /// <summary>
+        /// HighContrast accent state tokens that follow <see cref="SystemColors.GrayTextColor"/>.
+        /// </summary>
+        private static readonly HashSet<string> HighContrastGrayTextDerivedKeys = new(StringComparer.Ordinal)
+        {
+            "AccentTextFillColorDisabled",
+            "AccentTextFillColorDisabledBrush",
+            "TextOnAccentFillColorDisabled",
+            "TextOnAccentFillColorDisabledBrush",
+        };
+
+        private static readonly string[] HighContrastControlStatePrefixes =
+        [
+            "AccentButton", "ToggleButton", "SplitButton", "CheckBoxCheck", "RadioButtonOuterEllipseChecked",
+            "RadioButtonCheckGlyph", "ToggleSwitchFillOn", "ToggleSwitchKnobFillOn", "SliderThumbBackground",
+            "SliderTrackValueFill", "HyperlinkButtonForeground",
+        ];
 
         /// <summary>
         /// Applies <paramref name="theme"/> with a pinned accent and returns a map of every
@@ -142,7 +166,9 @@ namespace Fluence.Wpf.Tests.Theming
                     // and HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightText.
                     if (theme is ApplicationTheme.HighContrast
                             && (HighContrastHighlightDerivedBrushKeys.Contains(ks)
-                            || HighContrastHighlightTextDerivedBrushKeys.Contains(ks)))
+                            || HighContrastHighlightTextDerivedBrushKeys.Contains(ks)
+                            || HighContrastGrayTextDerivedKeys.Contains(ks)
+                            || HighContrastControlStatePrefixes.Any(prefix => ks.StartsWith(prefix, StringComparison.Ordinal))))
                     {
                         continue;
                     }
@@ -453,6 +479,41 @@ namespace Fluence.Wpf.Tests.Theming
                     _ = Assert.IsType<SolidColorBrush>(res[key], exactMatch: false);
                     SolidColorBrush brush = (SolidColorBrush)res[key];
                     Assert.Equal(highlightText, brush.Color);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Hermetic guard for disabled accent brushes. Disabled controls use the live system gray
+        /// text color rather than a palette tint or a fixed high-contrast fallback.
+        /// </summary>
+        [Fact]
+        public Task HighContrast_GrayTextDerivedAccentBrushes_BindToLiveSystemGrayTextAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                app.Resources.MergedDictionaries.Clear();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                FluenceThemeEngine.SetDeterministicChromeForTesting(enabled: true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
+                ApplyGeneratedBlue();
+
+                Color grayText = SystemColors.GrayTextColor;
+                ResourceDictionary res = Application.Current.Resources;
+                foreach (string key in HighContrastGrayTextDerivedKeys)
+                {
+                    object? value = res[key];
+                    if (value is Color color)
+                    {
+                        Assert.Equal(grayText, color);
+                    }
+                    else
+                    {
+                        SolidColorBrush brush = Assert.IsType<SolidColorBrush>(value, exactMatch: false);
+                        Assert.Equal(grayText, brush.Color);
+                    }
                 }
             });
         }

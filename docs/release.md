@@ -53,18 +53,18 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
 ## 1.0 approval checkpoint
 
-Before the 1.0 version bump, complete the integration review and keep the package versions at `0.9.0-pre`. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and both publication credentials and the required reviewer are configured.
+Before the 1.0 version bump, complete the integration review and keep the package versions at `0.9.1-pre`. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and both publication credentials and the required reviewer are configured.
 
 ## Bump
 
 Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. The PowerShell module manifest is a separate version source and must be updated as described below:
 
 ```xml
-<VersionPrefix>0.9.0</VersionPrefix>
+<VersionPrefix>0.9.1</VersionPrefix>
 <VersionSuffix>pre</VersionSuffix>
 ```
 
-An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `pre`, which produces `0.9.0-pre`, or `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
+An empty `VersionSuffix` is a stable release. A prerelease sets it, for example `pre`, which produces `0.9.1-pre`, or `rc.1`, which produces `1.0.0-rc.1`. The SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion` and `InformationalVersion` from these two; do not add them back, and never restate a version in a csproj, where it would win over this file.
 
 The one version outside the solution is the PowerShell module manifest, `Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1`, which the SDK does not generate. Set `ModuleVersion` to the same `VersionPrefix` and `PSData.Prerelease` to the same `VersionSuffix` (with no leading hyphen), so `Package-Module.ps1` names its artifacts with the same string the library nupkg carries. `Build-Module.ps1` enforces exact agreement before building or touching staging, and packaging invokes that same guard. For a stable release, clear both suffixes; switching only one fails the gate.
 
@@ -114,7 +114,7 @@ Then package and inspect the module artifacts locally. This creates files only; 
 pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
 ```
 
-`Fluence.Wpf.PowerShell.Module/artifacts/` must hold `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg`, where the version is `ModuleVersion` from the manifest with the `PSData.Prerelease` tag appended, so `0.9.0` plus `pre` names the artifacts `0.9.0-pre`. Inspect the ZIP contents, install the module from the ZIP in both supported PowerShell editions, and confirm the README and command references describe the current cmdlet set. The tag workflow attaches both artifacts to GitHub and publishes the module to PowerShell Gallery.
+`Fluence.Wpf.PowerShell.Module/artifacts/` must hold `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg`, where the version is `ModuleVersion` from the manifest with the `PSData.Prerelease` tag appended, so `0.9.1` plus `pre` names the artifacts `0.9.1-pre`. Inspect the ZIP contents, install the module from the ZIP in both supported PowerShell editions, and confirm the README and command references describe the current cmdlet set. The tag workflow attaches both artifacts to GitHub and publishes the module to PowerShell Gallery.
 
 ## Pack check
 

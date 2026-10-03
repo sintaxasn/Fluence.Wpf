@@ -4,7 +4,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 > **Portability rule** - everything in this handbook must remain usable by anyone consuming `Fluence.Wpf`, regardless of downstream product. Consumer-specific guidance belongs in that consumer's own repo, not here.
 
-> **Website and documentation scope** - This repository owns the generated C# API pages in `docs/api/`, the generated PowerShell function pages in `docs/powershell/reference/`, and the authored `docs/controls.md`, `docs/theming.md`, and `docs/winui-parity.md`. The standalone [Fluence.Wpf.Website repository](https://github.com/sintaxasn/Fluence.Wpf.Website) receives copies of those pages and owns the [public website](https://fluencewpf.com), including Docusaurus authoring, navigation, styling, browser review, and publishing. This root handbook remains authoritative for C# and PowerShell behavior. Website-only work uses the website repository's build and review gates.
+> **Website and documentation scope** - This repository owns the generated C# API pages in `docs/api/`, the generated PowerShell function pages in `docs/powershell/reference/`, and the authored `docs/controls.md`, `docs/theming.md`, and `docs/winui-parity.md`. The standalone [Fluence.Wpf.Website repository](https://github.com/sintaxasn/Fluence.Wpf.Website) receives copies of those pages and owns the [public website](https://fluencewpf.com), including Docusaurus authoring, navigation, styling, browser review, publishing, and runnable documentation walkthroughs with their screenshot workflow. This root handbook remains authoritative for C# and PowerShell behavior. Website-only work uses the website repository's build and review gates.
 
 ---
 
@@ -26,7 +26,6 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 ├── Fluence.Wpf.Tests/       xunit.v3 suite (net472 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Tests.Smoke/ xunit.v3 smoke lane (net8.0-windows10.0.26100.0)
-├── Fluence.Wpf.Docs.Walkthroughs/ Runnable C# documentation walkthroughs (net10.0-windows10.0.26100.0)
 └── Fluence.Wpf.PowerShell.Module/   Script module (not in the solution): src/, tests/, examples/, build/
 ```
 
@@ -336,6 +335,8 @@ The suite runs on Microsoft Testing Platform: run the built executable, not `dot
 
 ### Package management and lock files
 
+**Do not add new third-party libraries or package dependencies.** Use built-in WPF and .NET capabilities and the dependencies already in this repository. This rule applies to the library, demos, tests, and tooling.
+
 Package versions are managed centrally in [Directory.Packages.props](Directory.Packages.props). Do not put `Version` attributes on individual `PackageReference` items.
 
 [nuget.config](nuget.config) closes the supply chain:
@@ -384,7 +385,7 @@ flowchart TD
 - `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="True"` in source, `SystemBackdropType="Mica"`, and a custom `TitleBar` slot hosting the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. Navigation remains tag-driven, with a lightweight visited-page stack only for the shell Back button.
-- `GalleryHomePage` shows a theme-aware hero lockup (the `FluenceHeaderLightDrawingImage` vector on light themes, `FluenceHeaderDarkDrawingImage` on dark themes, swapped declaratively by a `ThemeDictionary` in the page resources; the `HighContrastBlack` / `HighContrastWhite` polarity tables pick by system window luminance, no code-behind subscription) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
+- `GalleryHomePage` shows a theme-aware hero lockup (`HomeHeroDarkDrawingImage` on light themes and `HomeHeroLightDrawingImage` on dark themes, named for the vector ink colour). A `ThemeDictionary` in the page resources swaps them declaratively; the `HighContrastBlack` / `HighContrastWhite` polarity tables pick by system window luminance, with no code-behind subscription. Large **clickable `Card`** tiles route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
 - 17 navigation-catalog pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility. Settings is a `NavigationView.FooterMenuItems` entry (a real, selectable footer nav item with the shared selection indicator), not a `DemoNavigationCatalog` item; footer navigation is routed through `DemoNav.ItemInvoked`.
 - Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 

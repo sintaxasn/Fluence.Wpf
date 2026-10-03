@@ -935,6 +935,20 @@ namespace Fluence.Wpf.Tests.Windowing
             Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
+        [Fact]
+        public void BuildFramePlan_HighContrast_SuppressesAccentBorder()
+        {
+            FramePlan plan = WindowPolicy.BuildFramePlan(
+                isActive: true,
+                isAccentBorderEnabled: true,
+                capabilities: Caps(borderColor: true),
+                accentColor: Colors.Blue,
+                isHighContrast: true);
+
+            Assert.Equal("SurfaceStrokeColorDefaultBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
+            Assert.Equal(PInvoke.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
+        }
+
         #endregion BuildFramePlan - accent border selection
 
         #region BuildFramePlan - template border thickness and inactive brush key
