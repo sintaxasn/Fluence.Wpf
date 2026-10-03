@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     FormatsToProcess     = @('Formats/Fluence.Format.ps1xml')
     PrivateData          = @{
         PSData = @{
-            Prerelease   = 'pre'
+            Prerelease   = ''
             Tags         = @('GUI', 'WPF', 'Fluent', 'Windows11', 'Dialog', 'Windows', 'PSEdition_Desktop', 'PSEdition_Core')
             ProjectUri   = 'https://github.com/sintaxasn/Fluence.Wpf'
             LicenseUri   = 'https://github.com/sintaxasn/Fluence.Wpf/blob/main/LICENSE'
