@@ -85,7 +85,15 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $modulePath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1'
 $iconPath = Join-Path $repo 'assets\Fluence_Icon.ico'
-$imagePath = Join-Path $repo 'assets\Fluence_Lockup_Stacked_Gradient.png'
+$imageName = if ($Scene.EndsWith('-dark', [System.StringComparison]::Ordinal))
+{
+    'Fluence_Lockup_Stacked_Dark.png'
+}
+else
+{
+    'Fluence_Lockup_Stacked_Light.png'
+}
+$imagePath = Join-Path $repo (Join-Path 'assets' $imageName)
 $xamlPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\examples\MainWindow.xaml'
 
 if ($Scene -ne 'All')
@@ -282,7 +290,7 @@ foreach ($item in $scenes)
         if ($CaptureMode -eq 'WpfRender')
         {
             $rendered = $false
-            for ($attempt = 0; $attempt -lt 100; $attempt++)
+            for ($attempt = 0; $attempt -lt 360; $attempt++)
             {
                 Start-Sleep -Milliseconds 250
                 if (Test-Path -LiteralPath $output)
@@ -300,7 +308,7 @@ foreach ($item in $scenes)
             if (-not $rendered)
             {
                 $detail = Get-Content -LiteralPath $stderrPath -Raw
-                throw "Scene '$item' failed to render within 25 seconds. $detail"
+                throw "Scene '$item' failed to render within 90 seconds. $detail"
             }
             Stop-Process -Id $child.Id -Force -ErrorAction SilentlyContinue
             Write-Output $output

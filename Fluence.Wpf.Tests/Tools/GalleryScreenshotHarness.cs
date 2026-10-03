@@ -973,7 +973,6 @@ namespace Fluence.Wpf.Tests.Tools
             contextMenu.IsOpen = true;
             await SettleGalleryAsync(window).ConfigureAwait(true);
             await SaveNamedControlAsync(contextMenu, "context-menu", theme, directory).ConfigureAwait(true);
-            await SaveNamedControlAsync(contextMenu, "context-menu", theme, directory, "open").ConfigureAwait(true);
             contextMenu.IsOpen = false;
 
             Demo.Pages.DemoSampleControl toolTipCard = cards[2];
@@ -1007,7 +1006,6 @@ namespace Fluence.Wpf.Tests.Tools
             foreach (string slug in new[] { "flyout", "flyout-base", "flyout-presenter" })
             {
                 await SaveNamedControlAsync(flyoutPresenter, slug, theme, directory).ConfigureAwait(true);
-                await SaveNamedControlAsync(flyoutPresenter, slug, theme, directory, "open").ConfigureAwait(true);
             }
 
             flyout.Hide();
@@ -1034,15 +1032,13 @@ namespace Fluence.Wpf.Tests.Tools
                 throw new InvalidOperationException("Menus sample has no CommandBarFlyout to capture.");
             }
 
+            await SaveNamedControlAsync(commandButton, "command-bar-flyout", theme, directory).ConfigureAwait(true);
             commandFlyout.ShowAt(commandButton);
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement commandPresenter = commandFlyout.Presenter
                 ?? throw new InvalidOperationException("CommandBarFlyout did not create a presenter.");
-            foreach (string slug in new[] { "command-bar-flyout", "command-bar-flyout-presenter" })
-            {
-                await SaveNamedControlAsync(commandPresenter, slug, theme, directory).ConfigureAwait(true);
-                await SaveNamedControlAsync(commandPresenter, slug, theme, directory, "open").ConfigureAwait(true);
-            }
+            await SaveNamedControlAsync(commandPresenter, "command-bar-flyout", theme, directory, "open").ConfigureAwait(true);
+            await SaveNamedControlAsync(commandPresenter, "command-bar-flyout-presenter", theme, directory, "open").ConfigureAwait(true);
 
             if (FindDescendant<Controls.AppBarButton>(commandPresenter) is not Controls.AppBarButton appBarButton)
             {
@@ -1050,7 +1046,6 @@ namespace Fluence.Wpf.Tests.Tools
             }
 
             await SaveNamedControlAsync(appBarButton, "app-bar-button", theme, directory).ConfigureAwait(true);
-            await SaveNamedControlAsync(appBarButton, "app-bar-button", theme, directory, "open").ConfigureAwait(true);
             commandFlyout.Hide();
 
             Controls.ContentDialog dialog = new()
@@ -1066,7 +1061,6 @@ namespace Fluence.Wpf.Tests.Tools
             _ = dialog.ShowAsync();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             await SaveNamedControlAsync(dialog, "content-dialog", theme, directory).ConfigureAwait(true);
-            await SaveNamedControlAsync(dialog, "content-dialog", theme, directory, "open").ConfigureAwait(true);
             dialog.Hide();
         }
 
