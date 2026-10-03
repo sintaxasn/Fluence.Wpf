@@ -84,8 +84,8 @@ param
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $modulePath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1'
-$iconPath = Join-Path $repo 'assets\Fluence_Icon_NoBacklground.ico'
-$imagePath = Join-Path $repo 'assets\Fluence_OGImage_Light.png'
+$iconPath = Join-Path $repo 'assets\Fluence_Icon.ico'
+$imagePath = Join-Path $repo 'assets\Fluence_Lockup_Stacked_Gradient.png'
 $xamlPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\examples\MainWindow.xaml'
 
 if ($Scene -ne 'All')

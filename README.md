@@ -1,6 +1,6 @@
 ﻿# Fluence.Wpf
 
-![Fluence.Wpf banner](assets/Fluence_OGImage.png)
+![Fluence.Wpf brand](assets/Fluence_Lockup_Stacked_Gradient.png)
 
 ## Introduction
 
@@ -81,7 +81,7 @@ The [gallery](Fluence.Wpf.Demo/README.md) shows controls and example source. The
 | ![Gallery home in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-light.png)<br>Light | ![Button gallery in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-light.png)<br>Light | ![MVVM task manager in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-light.png)<br>Light | ![PowerShell ControlsTour in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-light.png)<br>Light |
 | ![Gallery home in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-dark.png)<br>Dark | ![Button gallery in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-dark.png)<br>Dark | ![MVVM task manager in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-dark.png)<br>Dark | ![PowerShell ControlsTour in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-dark.png)<br>Dark |
 
-The [brand assets](assets/) include the editable `Fluence.Wpf.af` design file alongside SVG and PNG exports for icons, textmarks, logomarks, and horizontal and vertical lockups. These are authored artwork; they are separate from generated build outputs.
+The [brand assets](assets/README.md) include the editable `Fluence.Wpf.af` design file and the supplied icon, horizontal lockup, and stacked lockup exports. The asset guide lists the formats and theme variants. These are authored artwork, separate from generated build outputs.
 
 ## Requirements
 

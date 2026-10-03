@@ -68,21 +68,26 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 try
                 {
                     Image image = Find<Image>(page, "BrandHeroImage");
-                    DrawingImage drawing = Assert.IsType<DrawingImage>(image.Source);
-                    Assert.False(drawing.Drawing.Bounds.IsEmpty);
+                    BitmapImage bitmap = Assert.IsType<BitmapImage>(image.Source);
+                    Assert.Equal(3878, bitmap.PixelWidth);
+                    Assert.Equal(1025, bitmap.PixelHeight);
+                    DrawingImage brandIcon = Assert.IsType<DrawingImage>(
+                        Application.Current.TryFindResource("FluenceIconBrandDrawingImage"));
+                    Assert.InRange(brandIcon.Drawing.Bounds.Width, 1024, 1025);
+                    Assert.Equal(1024, brandIcon.Drawing.Bounds.Height);
 
-                    const string light = "HomeHeroLightDrawingImage";
-                    const string dark = "HomeHeroDarkDrawingImage";
+                    const string light = "Fluence_Lockup_Horizontal_Light.png";
+                    const string dark = "Fluence_Lockup_Horizontal_Dark.png";
 
-                    // The hero renders a native WPF DrawingImage and swaps on
+                    // The hero uses the supplied lockup artwork and swaps on
                     // theme changes via the page's ThemeDictionary (no code-behind).
-                    Assert.Same(page.FindResource(dark), image.Source);
+                    Assert.EndsWith(light, bitmap.UriSource.AbsoluteUri, StringComparison.Ordinal);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(page.FindResource(light), image.Source);
+                    Assert.EndsWith(dark, Assert.IsType<BitmapImage>(image.Source).UriSource.AbsoluteUri, StringComparison.Ordinal);
 
                     // High contrast has no fixed polarity, so the page picks whichever
                     // variant reads against the live system window color.
@@ -92,13 +97,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Color background = SystemColors.WindowColor;
                     double luminance = (0.299 * background.R) + (0.587 * background.G) + (0.114 * background.B);
-                    Assert.Same(page.FindResource(luminance < 128.0 ? light : dark), image.Source);
+                    Assert.EndsWith(luminance < 128.0 ? dark : light,
+                        Assert.IsType<BitmapImage>(image.Source).UriSource.AbsoluteUri, StringComparison.Ordinal);
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(page.FindResource(dark), image.Source);
+                    Assert.EndsWith(light, Assert.IsType<BitmapImage>(image.Source).UriSource.AbsoluteUri, StringComparison.Ordinal);
                 }
                 finally
                 {

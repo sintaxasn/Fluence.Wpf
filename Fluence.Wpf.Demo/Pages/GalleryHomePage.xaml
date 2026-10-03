@@ -17,27 +17,30 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluence.Wpf.Demo;component/Resources/HomeHeroDrawings.xaml" />
+                <ResourceDictionary>
+                    <BitmapImage x:Key="HomeHeroLightBitmap" UriSource="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_Horizontal_Light.png" />
+                    <BitmapImage x:Key="HomeHeroDarkBitmap" UriSource="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_Horizontal_Dark.png" />
+                </ResourceDictionary>
                 <fluence:ThemeDictionary>
                     <fluence:ThemeDictionary.ThemeDictionaries>
                         <fluence:ThemeResourceDictionary ThemeKey="Light">
                             <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkDrawingImage}" />
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightBitmap}" />
                             </Style>
                         </fluence:ThemeResourceDictionary>
                         <fluence:ThemeResourceDictionary ThemeKey="Dark">
                             <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightDrawingImage}" />
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkBitmap}" />
                             </Style>
                         </fluence:ThemeResourceDictionary>
                         <fluence:ThemeResourceDictionary ThemeKey="HighContrastBlack">
                             <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightDrawingImage}" />
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkBitmap}" />
                             </Style>
                         </fluence:ThemeResourceDictionary>
                         <fluence:ThemeResourceDictionary ThemeKey="HighContrastWhite">
                             <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeHeroDarkDrawingImage}" />
+                                <Setter Property="Source" Value="{DynamicResource HomeHeroLightBitmap}" />
                             </Style>
                         </fluence:ThemeResourceDictionary>
                     </fluence:ThemeDictionary.ThemeDictionaries>
@@ -52,14 +55,6 @@
             Style="{StaticResource GalleryPageContentStackStyle}">
             <StackPanel x:Name="HeroContent" Margin="{DynamicResource HomeHeroMargin}">
                 <Grid HorizontalAlignment="Stretch" MaxWidth="620">
-                    <Image
-                        IsHitTestVisible="False"
-                        Source="{StaticResource HomeHeroIconShadowDrawingImage}"
-                        Stretch="Uniform">
-                        <Image.Effect>
-                            <DropShadowEffect BlurRadius="16" Color="Black" Direction="270" Opacity="0.2" ShadowDepth="10" />
-                        </Image.Effect>
-                    </Image>
                     <Image
                         x:Name="BrandHeroImage"
                         AutomationProperties.Name="Fluence.WPF"

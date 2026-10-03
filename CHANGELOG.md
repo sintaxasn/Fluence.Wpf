@@ -12,11 +12,12 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 - `ApplicationAccentColorManager.ApplyCustomAccentExact` pins the visible primary accent fill to the supplied light color and, optionally, an explicit dark color; the existing `ApplyCustomAccent` overloads keep their theme-selected-shade behavior. Six regression cases per target framework cover exact colors, theme changes, system reset, matching Windows snapshots, and unmatched generated fallbacks (46 `AccentTests` cases per framework).
 - CheckBox publishes eight indeterminate plate and dash state colors with brush twins. Their High Contrast roles follow WinUI's distinct indeterminate palette; Light and Dark retain the corresponding checked-state accent colors.
-- Added editable brand artwork (`assets/Fluence.Wpf.af`) and a set of SVG and PNG icon, textmark, logomark, and horizontal and vertical lockup exports under `assets/`.
+- Added editable brand artwork (`assets/Fluence.Wpf.af`) and standardized icon, horizontal lockup, and stacked lockup exports under `assets/`.
 
 ### Changed
 
 - `ApplyCustomAccent` now pins a snapshot of the Windows seven-shade palette when a supplied seed equals the current Windows accent base. Other custom seeds continue to use the generated approximation; `ApplySystemAccent` continues to follow Windows changes live.
+- The gallery hero and library header drawings use the supplied horizontal lockups for Light, Dark, and high contrast. The package, demos, and documentation captures use the standardized icon exports; the color icon remains a native WPF vector drawing.
 - Added test cases for high-contrast accent states, a high-contrast window border, and opt-in gallery capture. The discovery baselines include these cases: 1,388 for net472 and 1,391 for net10. The Release test runs exclude two and four screenshot cases, respectively; a renamed gallery home assertion does not change the count.
 
 ## [0.9.1-pre]

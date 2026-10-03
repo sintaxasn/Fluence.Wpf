@@ -1167,7 +1167,7 @@ namespace Fluence.Wpf.Tests.Gallery
             string libraryProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Fluence.Wpf.csproj").ConfigureAwait(true);
             Assert.False(libraryProject.Contains("Fluence.ico", StringComparison.Ordinal),
                 "The library should no longer embed assets\\Fluence.ico now that the brand icon is a XAML vector.");
-            Assert.Contains("<PackageIcon>Fluence_Icon_Light_128.png</PackageIcon>", libraryProject, StringComparison.Ordinal);
+            Assert.Contains("<PackageIcon>Fluence_Icon_128.png</PackageIcon>", libraryProject, StringComparison.Ordinal);
 
             // The three brand DrawingImages live in a dedicated icon dictionary that is merged into
             // Generic.xaml so the keys resolve from application resources.
@@ -1183,10 +1183,10 @@ namespace Fluence.Wpf.Tests.Gallery
             // shows the brand mark in Explorer and on a pre-launch taskbar pin.
             string galleryProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj").ConfigureAwait(true);
             Assert.Contains("<ApplicationIcon>", galleryProject, StringComparison.Ordinal);
-            Assert.Contains("Fluence_Icon_Light.ico", galleryProject, StringComparison.Ordinal);
+            Assert.Contains("Fluence_Icon.ico", galleryProject, StringComparison.Ordinal);
             string mvvmProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj").ConfigureAwait(true);
             Assert.Contains("<ApplicationIcon>", mvvmProject, StringComparison.Ordinal);
-            Assert.Contains("Fluence_Icon_Light.ico", mvvmProject, StringComparison.Ordinal);
+            Assert.Contains("Fluence_Icon.ico", mvvmProject, StringComparison.Ordinal);
 
             Assert.False((await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "MainWindow.xaml").ConfigureAwait(true)).Contains("Icon=\"", StringComparison.Ordinal),
                 "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");

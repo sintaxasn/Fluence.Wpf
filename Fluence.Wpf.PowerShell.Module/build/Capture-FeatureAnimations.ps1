@@ -60,7 +60,7 @@ if ([System.Threading.Thread]::CurrentThread.GetApartmentState() -ne [System.Thr
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $modulePath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1'
 $libraryPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\lib\net472\Fluence.Wpf.dll'
-$iconPath = Join-Path $repo 'assets\Fluence_Icon_NoBacklground.ico'
+$iconPath = Join-Path $repo 'assets\Fluence_Icon.ico'
 $assetDirectory = Join-Path $repo 'website\static\images\features'
 $captureDirectory = Join-Path $repo 'artifacts\feature-animation'
 $null = [System.IO.Directory]::CreateDirectory($assetDirectory)
