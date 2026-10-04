@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -116,30 +117,85 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         [Fact]
         public Task GalleryIconsPage_ClickingTileSelectsIconAndPopulatesSidebarAsync()
         {
-            return DemoTestHost.RunDemoPageTestAsync(static () => new GalleryIconsPage(), static window =>
+            return WpfTestSta.RunOnStaAsync(static async () =>
             {
-                Controls.ListView list = Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "IconCatalogList"), exactMatch: false);
+                GalleryIconsPage page = new();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    Controls.ListView list = Assert.IsType<Controls.ListView>(FindVisualChildByName<Controls.ListView>(window, "IconCatalogList"), exactMatch: false);
+                    List<Button> tiles = [.. FindVisualChildren<Button>(list)
+                        .Where(static tile => tile.DataContext is GalleryIconsPage.IconCatalogItem)];
+                    Assert.True(tiles.Count >= 2, "The initial viewport should realize icon tiles.");
 
-                List<Button> tiles = [.. FindVisualChildren<Button>(list)
-                    .Where(static tile => tile.DataContext is GalleryIconsPage.IconCatalogItem)];
-                Assert.True(tiles.Count >= 2, "The initial viewport should realize icon tiles.");
+                    GalleryIconsPage.IconCatalogItem first = (GalleryIconsPage.IconCatalogItem)tiles[0].DataContext;
+                    GalleryIconsPage.IconCatalogItem second = (GalleryIconsPage.IconCatalogItem)tiles[1].DataContext;
+                    Border firstRing = GetSelectionRing(tiles[0]);
+                    Border secondRing = GetSelectionRing(tiles[1]);
+                    Assert.True(first.IsSelected, "The first icon should be selected initially so the sidebar is never empty.");
+                    Assert.False(second.IsSelected, "The second icon should start unselected.");
+                    Assert.Equal(1.0, firstRing.Opacity, 3);
+                    Assert.Equal(0.0, secondRing.Opacity, 3);
 
-                GalleryIconsPage.IconCatalogItem first = (GalleryIconsPage.IconCatalogItem)tiles[0].DataContext;
-                GalleryIconsPage.IconCatalogItem second = (GalleryIconsPage.IconCatalogItem)tiles[1].DataContext;
-                Assert.True(first.IsSelected, "The first icon should be selected initially so the sidebar is never empty.");
-                Assert.False(second.IsSelected, "The second icon should start unselected.");
+                    tiles[1].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    TextBlock nameValue = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "IconNameValueText"), exactMatch: false);
+                    Controls.FontIcon preview = Assert.IsType<Controls.FontIcon>(FindVisualChildByName<Controls.FontIcon>(window, "IconPreviewGlyph"), exactMatch: false);
+                    Assert.True(second.IsSelected, "Clicking a tile should select its icon immediately.");
+                    Assert.False(first.IsSelected, "Selecting a tile should clear the previous selection.");
+                    Assert.Equal(second.Name, nameValue.Text, StringComparer.Ordinal);
+                    Assert.Equal(second.Glyph, preview.Glyph, StringComparer.Ordinal);
 
-                tiles[1].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    tiles[0].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    tiles[1].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    Assert.True(second.IsSelected, "The last rapid click should win.");
+                    Assert.Equal(second.Glyph, preview.Glyph, StringComparer.Ordinal);
+                    if (SystemParameters.HighContrast
+                        || ApplicationThemeManager.ResolvedTheme is ApplicationTheme.HighContrast
+                        || !SystemParameters.ClientAreaAnimation
+                        || (RenderCapability.Tier >> 16) <= 0)
+                    {
+                        Assert.Equal(0.0, firstRing.Opacity, 3);
+                        Assert.Equal(1.0, secondRing.Opacity, 3);
+                        Assert.False(DependencyPropertyHelper.GetValueSource(secondRing, UIElement.OpacityProperty).IsAnimated);
+                    }
 
-                Assert.True(second.IsSelected, "Clicking a tile should select its icon.");
-                Assert.False(first.IsSelected, "Selecting a tile should clear the previous selection.");
+                    await Task.Delay(180, TestContext.Current.CancellationToken).ConfigureAwait(true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(0.0, firstRing.Opacity, 3);
+                    Assert.Equal(1.0, secondRing.Opacity, 3);
+                    Assert.False(DependencyPropertyHelper.GetValueSource(firstRing, UIElement.OpacityProperty).IsAnimated);
+                    Assert.False(DependencyPropertyHelper.GetValueSource(secondRing, UIElement.OpacityProperty).IsAnimated);
 
-                TextBlock nameValue = Assert.IsType<TextBlock>(FindVisualChildByName<TextBlock>(window, "IconNameValueText"), exactMatch: false);
-                Controls.FontIcon preview = Assert.IsType<Controls.FontIcon>(FindVisualChildByName<Controls.FontIcon>(window, "IconPreviewGlyph"), exactMatch: false);
-                Assert.Equal(second.Name, nameValue.Text, StringComparer.Ordinal);
-                Assert.Equal(second.Glyph, preview.Glyph, StringComparer.Ordinal);
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(FindVisualChildByName<Controls.AutoSuggestBox>(window, "IconSearchBox"), exactMatch: false);
+                    search.Text = "E71F";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Button selectedTile = Assert.IsType<Button>(FindVisualChildren<Button>(list)
+                        .FirstOrDefault(static tile => tile.DataContext is GalleryIconsPage.IconCatalogItem { IsSelected: true }), exactMatch: false);
+                    Border searchRing = GetSelectionRing(selectedTile);
+                    Assert.Equal(1.0, searchRing.Opacity, 3);
+                    Assert.False(DependencyPropertyHelper.GetValueSource(searchRing, UIElement.OpacityProperty).IsAnimated);
+
+                    search.Text = "";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast);
+                    List<Button> highContrastTiles = [.. FindVisualChildren<Button>(list)
+                        .Where(static tile => tile.DataContext is GalleryIconsPage.IconCatalogItem)];
+                    Border highContrastRing = GetSelectionRing(highContrastTiles[1]);
+                    highContrastTiles[1].RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    Assert.Equal(ApplicationTheme.HighContrast, ApplicationThemeManager.ResolvedTheme);
+                    Assert.Equal(1.0, highContrastRing.Opacity, 3);
+                    Assert.False(DependencyPropertyHelper.GetValueSource(highContrastRing, UIElement.OpacityProperty).IsAnimated);
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
             });
+        }
+
+        private static Border GetSelectionRing(Button tile)
+        {
+            return Assert.IsType<Border>(tile.Template.FindName("SelectionRing", tile), exactMatch: false);
         }
 
         // This test drives the page's icon search box, so it builds its own instance rather

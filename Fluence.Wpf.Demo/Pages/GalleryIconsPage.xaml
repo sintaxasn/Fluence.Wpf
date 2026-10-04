@@ -26,12 +26,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border
-                            x:Name="SelectionRing"
-                            BorderBrush="Transparent"
-                            BorderThickness="2"
-                            CornerRadius="6">
+                        <Grid>
                             <Border
+                                Margin="2"
                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
@@ -67,10 +64,17 @@
                                     </Grid>
                                 </Grid>
                             </Border>
-                        </Border>
+                            <Border
+                                x:Name="SelectionRing"
+                                BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                                BorderThickness="2"
+                                CornerRadius="6"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="SelectionRing" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                <Setter TargetName="SelectionRing" Property="Opacity" Value="1" />
                             </DataTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="HoverLayer" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
