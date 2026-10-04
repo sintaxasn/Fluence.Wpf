@@ -42,18 +42,19 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
    powershell.exe -NoProfile -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-Documentation.ps1
    ```
 
-   Capture the live feature animations and the diagnostic theme sequence sequentially after module staging:
+   Capture the live feature animations and the diagnostic theme sequence sequentially after module staging. Keep the interactive Windows desktop unlocked and visible. Set `wallpaperPath` to the absolute path of `website/static/images/features/backdrops-coronascape.webp` in your website checkout; the backdrop scenes require that image behind the live capture window:
 
    ```powershell
-   powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-FeatureAnimations.ps1
+   $wallpaperPath = 'C:\path\to\Fluence.Wpf.Website\website\static\images\features\backdrops-coronascape.webp'
+   powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-FeatureAnimations.ps1 -WallpaperPath $wallpaperPath
    powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-ThemeAnimation.ps1
    ```
 
-   The PowerShell documentation and both live-screen scripts minimize other desktop windows by default and undo that minimization after each capture. Run one capture process at a time: the Shell undo action restores the state before its most recent minimize call. Review each script's desktop-state log and output frames before importing the eight feature GIFs and posters. The accent animations deliberately cycle labeled custom hues; other scenes begin with the Windows system accent. The theme sequence stays under ignored `artifacts/theme-animation/` for diagnosis.
+   The PowerShell documentation and both live-screen scripts minimize other desktop windows by default and undo that minimization after each capture. Run one capture process at a time: the Shell undo action restores the state before its most recent minimize call. Review each script's desktop-state log and output frames before importing the eight feature GIFs and posters. The accent animations deliberately cycle labeled custom hues; other scenes begin with the Windows system accent. Each backdrop GIF uses one live window: the Light version moves from Light Mica to Light Acrylic to Dark Acrylic, while the Dark version moves from Dark Mica to Dark Acrylic to Light Acrylic. Each poster shows the settled Acrylic stage in its starting theme. The theme sequence stays under ignored `artifacts/theme-animation/` for diagnosis.
 
    Import the reviewed captures into the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website), under its `docs/screenshots/`, `docs/powershell/images/`, and `website/static/images/features/` paths. Review the [gallery screenshot manifest](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/screenshots/gallery/manifest.json) and [PowerShell capture notes](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/powershell/images/CAPTURE.md) for render methods and limits. The gallery and PowerShell documentation captures render WPF offscreen and omit native DWM shadows or backdrops.
-6. **The `NUGET_API_KEY` and `PSGALLERY_API_KEY` secrets are set.** The release job uses them to publish the library package to nuget.org and the module to PowerShell Gallery. It checks that both keys are present before creating the GitHub release. Verify that neither key has expired before tagging.
-7. **The `release` environment has a required reviewer.** The release job runs in this GitHub Environment so creating the release and publishing either package waits for approval. Configure the rule in repository settings (Settings, Environments, `release`, Required reviewers). GitHub creates an environment on first use without rules; without a reviewer, the job runs unattended. Store publication keys as environment secrets where possible so only this job can read them.
+6. **NuGet trusted publishing and the PowerShell Gallery key are configured.** Set the nonsecret `NUGET_USER` variable in the GitHub `release` environment to the nuget.org profile username that owns `Fluence.Wpf` (currently `sintaxasn`, not an email address), and keep `PSGALLERY_API_KEY` there as a secret. The nuget.org account needs a trusted-publishing policy for `Fluence.Wpf` that names GitHub repository owner `sintaxasn`, repository `Fluence.Wpf`, workflow file `build.yml`, and environment `release`. The job exchanges its GitHub OIDC token through `NuGet/login@v1` and checks that it received a temporary API key before creating the GitHub release. Verify that the PowerShell Gallery key remains valid; a long-lived `NUGET_API_KEY` secret is not required.
+7. **The `release` environment has a required reviewer.** The release job runs in this GitHub Environment so creating the release and publishing either package waits for approval. Configure the rule in repository settings (Settings, Environments, `release`, Required reviewers). GitHub creates an environment on first use without rules; without a reviewer, the job runs unattended. Keep the PowerShell Gallery key as an environment secret so only this job can read it.
 8. **The C# API reference matches the library.** After building the current source, regenerate the checked-in pages and confirm there is no documentation drift:
 
    ```powershell
@@ -66,7 +67,7 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
 ## 1.0 approval checkpoint
 
-The 0.9.1 stable release does not start the 1.0 API freeze. Before a future 1.0 version bump, complete the integration review. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and both publication credentials and the required reviewer are configured.
+The 0.9.1 stable release does not start the 1.0 API freeze. Before a future 1.0 version bump, complete the integration review. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and NuGet trusted publishing, the PowerShell Gallery key, and the required reviewer are configured.
 
 ## Bump
 
@@ -139,13 +140,13 @@ dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFram
 
 The `build` job owns the .NET restore, build, formatting, test, pack and artifact steps. A separate `powershell` job downloads its `fluence-wpf-release-dotnet472` and `fluence-wpf-release-dotnet8` artifacts into the corresponding Release output folders, stages the module, installs pinned tools in dedicated setup steps, and runs the PowerShell 7 STA, PowerShell 7 MTA and Windows PowerShell 5.1 STA logic lanes. It uploads `fluence-ps-module-package` and a separate `fluence-ps-module-test-results` artifact. The render lane stays local.
 
-On a tag push, `release` waits for both the .NET build job and PowerShell module job to pass, then downloads their package artifacts. It then:
+On a tag push, `release` waits for both the .NET build job and PowerShell module job to pass, then downloads their package artifacts. This job alone has `id-token: write` permission for the NuGet OIDC exchange. It then:
 
 1. Checks the tag against the tree version and fails if they differ.
-2. Zips the per-target-framework library binaries and the demo.
-3. Slices the `CHANGELOG.md` section for the version into the release notes.
+2. Zips the per-target-framework library binaries and the demo, and slices the `CHANGELOG.md` section for the release notes.
+3. Checks `NUGET_USER` and `PSGALLERY_API_KEY`, signs in through `NuGet/login@v1`, and requires a temporary NuGet API key before creating a public release.
 4. Creates the GitHub release with the per-TFM library ZIPs, demo ZIP, library `.nupkg` and `.snupkg`, plus the PowerShell module ZIP and Gallery-format `.nupkg`. It marks prerelease tags accordingly. If a release for the tag already exists, the step leaves it alone so a failed later publication can be retried.
-5. Pushes the library `.nupkg` and sibling `.snupkg` to nuget.org using `NUGET_API_KEY`; `--skip-duplicate` makes a retry safe.
+5. Pushes the library `.nupkg` and sibling `.snupkg` to nuget.org using the temporary key from NuGet login; `--skip-duplicate` makes a retry safe.
 6. Publishes the packaged PowerShell module to PowerShell Gallery using `PSGALLERY_API_KEY`. It checks for the exact version first and skips an already-published version so a retry does not try to replace an immutable package.
 
 ## Afterwards

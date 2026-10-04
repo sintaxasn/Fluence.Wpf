@@ -268,6 +268,7 @@ jobs:
     environment: release
     permissions:
       contents: write
+      id-token: write
 
     steps:
       - name: Checkout the tag
@@ -342,16 +343,32 @@ jobs:
           Write-Host "Release notes:"
           Get-Content release-notes.md
 
-      - name: Verify publication credentials are configured
+      - name: Verify publication identity and credentials are configured
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_USER: ${{ vars.NUGET_USER }}
           PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
-            throw 'NUGET_API_KEY is not configured for the release job.'
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_USER)) {
+            throw 'NUGET_USER must be set to the nuget.org profile username in the release environment.'
           }
           if ([string]::IsNullOrWhiteSpace($env:PSGALLERY_API_KEY)) {
             throw 'PSGALLERY_API_KEY is not configured for the release job.'
+          }
+
+      # Exchange the release job's GitHub OIDC token before creating a public release.
+      # A missing or mismatched nuget.org trusted-publishing policy fails here.
+      - name: NuGet login (OIDC)
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Verify NuGet login returned a temporary API key
+        env:
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw 'NuGet login did not return a temporary API key.'
           }
 
       # gh release create fails outright if a release for this tag already exists,
@@ -388,8 +405,10 @@ jobs:
       # push. The path is scoped to the library so the PowerShell Gallery package
       # attached to the release is not sent to nuget.org.
       - name: Publish to NuGet
+        env:
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
         run: |
-          dotnet nuget push artifacts/fluence-wpf-nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push artifacts/fluence-wpf-nupkg/*.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       # The ZIP and Gallery-format NUPKG are attached to GitHub above. Publish
       # the packaged module source to PSGallery only after the NuGet push
