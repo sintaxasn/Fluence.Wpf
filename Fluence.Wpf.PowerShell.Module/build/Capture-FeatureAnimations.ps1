@@ -32,16 +32,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Captures the Features page animations from a live FluenceWindow.
 .DESCRIPTION
     ProgressDurationTime is the ProgressBar's 2.0-second repeat period. Each
-    theme, accent, or backdrop state lasts one complete period. Captures the
+    theme, accent, or backdrop stage lasts one complete period. Each backdrop scene
+    moves from its initial theme's Mica to Acrylic, then switches to the opposite
+    theme while keeping Acrylic in one live window. Captures the
     visible screen pixels at 30 frames per second and encodes eight looping GIFs
     plus section-specific posters with ffmpeg. Raw frames and capture timing
     remain under artifacts/feature-animation for review.
 .PARAMETER Only
     Optional animation name, for example controls-light.
+.PARAMETER WallpaperPath
+    Path to the website backdrop wallpaper image. Required when capturing either
+    backdrop variant so Acrylic samples that image from a real window behind it.
 .PARAMETER KeepDesktop
     Skip the default reversible minimization of other desktop windows during capture.
 .EXAMPLE
-    powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File build/Capture-FeatureAnimations.ps1
+    powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File build/Capture-FeatureAnimations.ps1 -WallpaperPath C:\Images\backdrops-coronascape.webp
 #>
 [CmdletBinding()]
 [OutputType([void])]
@@ -53,13 +58,115 @@ param
     [string]$Only,
 
     [Parameter()]
+    [string]$WallpaperPath,
+
+    [Parameter()]
     [switch]$KeepDesktop
 )
 
 $ErrorActionPreference = 'Stop'
+
+function Get-CaptureSha256([string]$Path)
+{
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try
+    {
+        $stream = [System.IO.File]::OpenRead($Path)
+        try { return [System.BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '') }
+        finally { $stream.Dispose() }
+    }
+    finally { $sha.Dispose() }
+}
+
 if ([System.Threading.Thread]::CurrentThread.GetApartmentState() -ne [System.Threading.ApartmentState]::STA)
 {
     throw 'Run Capture-FeatureAnimations.ps1 with powershell.exe -STA.'
+}
+
+$captureBackdrops = -not $Only -or $Only.StartsWith('backdrops-', [System.StringComparison]::OrdinalIgnoreCase)
+if ($captureBackdrops)
+{
+    if (-not ('FluenceFeatureCaptureGuard' -as [type]))
+    {
+        Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+public static class FluenceFeatureCaptureGuard
+{
+    [StructLayout(LayoutKind.Explicit)]
+    private struct WtsInfoExData
+    {
+        [FieldOffset(0)] public long Alignment;
+        [FieldOffset(0)] public uint SessionId;
+        [FieldOffset(4)] public int SessionState;
+        [FieldOffset(8)] public int SessionFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WtsInfoExHeader
+    {
+        public uint Level;
+        public WtsInfoExData Data;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool ProcessIdToSessionId(uint processId, out uint sessionId);
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    private static extern bool WTSQuerySessionInformationW(
+        IntPtr server, uint sessionId, int infoClass, out IntPtr buffer, out int bytesReturned);
+
+    [DllImport("wtsapi32.dll")]
+    private static extern void WTSFreeMemory(IntPtr buffer);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmGetWindowAttribute(IntPtr hwnd, int attribute, out int value, int size);
+
+    public static int GetSessionLockFlag()
+    {
+        uint sessionId;
+        if (!ProcessIdToSessionId((uint)Process.GetCurrentProcess().Id, out sessionId))
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+
+        IntPtr buffer;
+        int bytesReturned;
+        // WTSSessionInfoEx is 25; Level 1 contains SessionId, SessionState and SessionFlags.
+        if (!WTSQuerySessionInformationW(IntPtr.Zero, sessionId, 25, out buffer, out bytesReturned))
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+
+        try
+        {
+            int dataOffset = Marshal.OffsetOf(typeof(WtsInfoExHeader), "Data").ToInt32();
+            if (bytesReturned < dataOffset + 12 || Marshal.ReadInt32(buffer) != 1 ||
+                Marshal.ReadInt32(buffer, dataOffset) != (int)sessionId)
+                throw new InvalidOperationException("Windows returned an unexpected session-state layout.");
+
+            return Marshal.ReadInt32(buffer, dataOffset + 8);
+        }
+        finally { WTSFreeMemory(buffer); }
+    }
+
+    public static int GetCloakState(IntPtr hwnd)
+    {
+        int cloakState;
+        int result = DwmGetWindowAttribute(hwnd, 14, out cloakState, sizeof(int));
+        if (result < 0) Marshal.ThrowExceptionForHR(result);
+        return cloakState;
+    }
+}
+'@
+    }
+    $sessionLockFlag = [FluenceFeatureCaptureGuard]::GetSessionLockFlag()
+    if ($sessionLockFlag -ne 1)
+    {
+        throw "Backdrop capture requires an unlocked Windows session (session flag $sessionLockFlag). Unlock the desktop and try again."
+    }
 }
 
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -98,9 +205,23 @@ $variants = @(
     [pscustomobject]@{ Name = 'themes-dark'; Theme = 'Dark'; Kind = 'themes'; States = @('Dark', 'Light', 'HighContrast') }
     [pscustomobject]@{ Name = 'accents-light'; Theme = 'Light'; Kind = 'accents'; States = @($hues) }
     [pscustomobject]@{ Name = 'accents-dark'; Theme = 'Dark'; Kind = 'accents'; States = @($hues) }
-    [pscustomobject]@{ Name = 'backdrops-light'; Theme = 'Light'; Kind = 'backdrops'; States = @('None', 'Mica', 'Acrylic') }
-    [pscustomobject]@{ Name = 'backdrops-dark'; Theme = 'Dark'; Kind = 'backdrops'; States = @('None', 'Mica', 'Acrylic') }
+    [pscustomobject]@{ Name = 'backdrops-light'; Theme = 'Light'; Kind = 'backdrops'; States = @('LightMica', 'LightAcrylic', 'DarkAcrylic') }
+    [pscustomobject]@{ Name = 'backdrops-dark'; Theme = 'Dark'; Kind = 'backdrops'; States = @('DarkMica', 'DarkAcrylic', 'LightAcrylic') }
 )
+
+$resolvedWallpaperPath = $null
+if ($captureBackdrops)
+{
+    if ([string]::IsNullOrWhiteSpace($WallpaperPath))
+    {
+        throw 'Supply -WallpaperPath with the website backdrop wallpaper when capturing backdrops.'
+    }
+    $resolvedWallpaperPath = (Resolve-Path -LiteralPath $WallpaperPath -ErrorAction Stop).ProviderPath
+    if (-not (Test-Path -LiteralPath $resolvedWallpaperPath -PathType Leaf))
+    {
+        throw "Backdrop wallpaper is not a file: $resolvedWallpaperPath"
+    }
+}
 
 $xaml = @'
 <fluence:FluenceWindow
@@ -150,6 +271,11 @@ foreach ($variant in $variants)
 {
     if ($Only -and $variant.Name -ne $Only) { continue }
 
+    if ($variant.Kind -eq 'backdrops' -and [FluenceFeatureCaptureGuard]::GetSessionLockFlag() -ne 1)
+    {
+        throw "Backdrop capture requires an unlocked Windows session before $($variant.Name)."
+    }
+
     $frameDirectory = Join-Path $captureDirectory $variant.Name
     $null = [System.IO.Directory]::CreateDirectory($frameDirectory)
     $data = @{
@@ -164,10 +290,12 @@ foreach ($variant in $variants)
         CurrentState = $variant.States[0]
         ProgressTranslate = $null
         ProgressTranslate2 = $null
+        WallpaperHost = $null
+        Wallpaper = $null
     }
     if ($variant.Kind -eq 'accents') { Set-FluenceAccent -Color $hues[0].Color }
     else { Set-FluenceAccent -System }
-    $initialBackdrop = 'None'
+    $initialBackdrop = if ($variant.Kind -eq 'backdrops') { 'Mica' } else { 'None' }
     $desktopStatePath = Join-Path ([System.IO.Path]::GetTempPath()) ('fluence-feature-desktop-{0}-{1}.json' -f $variant.Name, [guid]::NewGuid().ToString('N'))
     $desktopState = [ordered]@{
         capture = 'Capture-FeatureAnimations.ps1'
@@ -179,20 +307,85 @@ foreach ($variant in $variants)
         restoreAttempted = $false
         restored = $false
         accentReset = $false
+        wallpaperHostShown = $false
+        wallpaperHostClosed = $false
+        wallpaperTempDeleted = $false
         captureError = $null
         restoreError = $null
         accentResetError = $null
+        wallpaperCleanupError = $null
     }
     $desktopShell = $null
+    $wallpaperHost = $null
+    $wallpaperCanvas = $null
+    $wallpaperPngPath = $null
     [System.IO.File]::WriteAllText($desktopStatePath, (($desktopState | ConvertTo-Json) + "`n"), [System.Text.UTF8Encoding]::new($false))
     try
     {
+    if ($variant.Kind -eq 'backdrops')
+    {
+        $wallpaperPngPath = Join-Path ([System.IO.Path]::GetTempPath()) ('fluence-feature-wallpaper-{0}.png' -f [guid]::NewGuid().ToString('N'))
+        & $ffmpeg -hide_banner -loglevel error -y -i $resolvedWallpaperPath -frames:v 1 $wallpaperPngPath
+        if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $wallpaperPngPath -PathType Leaf))
+        {
+            throw "ffmpeg could not decode the backdrop wallpaper: $resolvedWallpaperPath"
+        }
+    }
     if (-not $KeepDesktop)
     {
         $desktopShell = New-Object -ComObject Shell.Application
         $desktopState.minimizeAttempted = $true
         $desktopShell.MinimizeAll()
         $desktopState.minimized = $true
+    }
+    if ($variant.Kind -eq 'backdrops')
+    {
+        $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+        if ($null -eq $screen) { throw 'No primary screen is available for the backdrop wallpaper host.' }
+        $bounds = $screen.Bounds
+        $wallpaperImage = [System.Drawing.Image]::FromFile($wallpaperPngPath)
+        try
+        {
+            $coverScale = [Math]::Max([double]$bounds.Width / $wallpaperImage.Width,
+                [double]$bounds.Height / $wallpaperImage.Height)
+            $drawWidth = [int][Math]::Ceiling($wallpaperImage.Width * $coverScale)
+            $drawHeight = [int][Math]::Ceiling($wallpaperImage.Height * $coverScale)
+            $wallpaperCanvas = [System.Drawing.Bitmap]::new($bounds.Width, $bounds.Height)
+            $wallpaperGraphics = [System.Drawing.Graphics]::FromImage($wallpaperCanvas)
+            try
+            {
+                $wallpaperGraphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                $wallpaperGraphics.DrawImage($wallpaperImage,
+                    [System.Drawing.Rectangle]::new(0, 0, $drawWidth, $drawHeight))
+            }
+            finally { $wallpaperGraphics.Dispose() }
+        }
+        finally { $wallpaperImage.Dispose() }
+
+        $wallpaperHost = [System.Windows.Forms.Form]::new()
+        $wallpaperHost.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
+        $wallpaperHost.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
+        $wallpaperHost.Bounds = $bounds
+        $wallpaperHost.ShowInTaskbar = $false
+        $wallpaperHost.TopMost = $false
+        $wallpaperHost.BackgroundImage = $wallpaperCanvas
+        $wallpaperHost.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::None
+        $wallpaperHost.Show()
+        $wallpaperHost.Refresh()
+        $desktopState.wallpaperHostShown = $wallpaperHost.Visible
+        $data.WallpaperHost = $wallpaperHost
+        $data.Wallpaper = [ordered]@{
+            sourceSha256 = Get-CaptureSha256 $resolvedWallpaperPath
+            sourcePath = $resolvedWallpaperPath
+            hostX = $bounds.X
+            hostY = $bounds.Y
+            hostWidth = $bounds.Width
+            hostHeight = $bounds.Height
+            coverScale = [Math]::Round($coverScale, 6)
+            imageDrawWidth = $drawWidth
+            imageDrawHeight = $drawHeight
+            positioning = 'left top / cover'
+        }
     }
     $null = Show-FluenceWindow -Xaml $xaml -Theme $variant.Theme -Backdrop $initialBackdrop -TitleBarIcon $iconPath -Data $data -Initialize {
         param($Window, $Data)
@@ -210,12 +403,40 @@ foreach ($variant in $variants)
                 {
                     'themes' { Set-FluenceTheme -Theme $state }
                     'accents' { Set-FluenceAccent -Color $state.Color }
-                    'backdrops' { Set-FluenceBackdrop -Backdrop $state -Window $Window }
+                    'backdrops'
+                    {
+                        switch ($stateIndex)
+                        {
+                            1 { Set-FluenceBackdrop -Backdrop Acrylic -Window $Window }
+                            2
+                            {
+                                $oppositeTheme = if ($Data.Variant.Theme -eq 'Light') { 'Dark' } else { 'Light' }
+                                Set-FluenceTheme -Theme $oppositeTheme
+                            }
+                            default { throw "Unknown backdrop stage index: $stateIndex" }
+                        }
+                    }
                 }
                 $Data.CurrentState = $state
             }
             $Window.UpdateLayout()
             if (-not $Window.IsActive) { $null = $Window.Activate() }
+
+            $nativeForeground = $null
+            $windowCloak = $null
+            $wallpaperHostCloak = $null
+            if ($Data.Variant.Kind -eq 'backdrops')
+            {
+                $windowHandle = [System.Windows.Interop.WindowInteropHelper]::new($Window).Handle
+                $nativeForeground = [FluenceFeatureCaptureGuard]::GetForegroundWindow()
+                $windowCloak = [FluenceFeatureCaptureGuard]::GetCloakState($windowHandle)
+                $wallpaperHostCloak = [FluenceFeatureCaptureGuard]::GetCloakState($Data.WallpaperHost.Handle)
+                if (-not $Window.IsActive -or $nativeForeground -ne $windowHandle -or
+                    $windowCloak -ne 0 -or $wallpaperHostCloak -ne 0)
+                {
+                    throw "Backdrop capture requires a visible foreground window and wallpaper host (foreground $($nativeForeground.ToInt64()), window $($windowHandle.ToInt64()), cloak $windowCloak, host cloak $wallpaperHostCloak)."
+                }
+            }
 
             if ($index -eq 0)
             {
@@ -232,8 +453,20 @@ foreach ($variant in $variants)
 
             $origin = $Window.PointToScreen([System.Windows.Point]::new(0, 0))
             $end = $Window.PointToScreen([System.Windows.Point]::new($Window.ActualWidth, $Window.ActualHeight))
+            $captureX = [int][Math]::Round($origin.X)
+            $captureY = [int][Math]::Round($origin.Y)
             $width = [Math]::Max(1, [int][Math]::Round($end.X - $origin.X))
             $height = [Math]::Max(1, [int][Math]::Round($end.Y - $origin.Y))
+            if ($null -ne $Data.Wallpaper)
+            {
+                $wallpaper = $Data.Wallpaper
+                if ($captureX -lt $wallpaper.hostX -or $captureY -lt $wallpaper.hostY -or
+                    ($captureX + $width) -gt ($wallpaper.hostX + $wallpaper.hostWidth) -or
+                    ($captureY + $height) -gt ($wallpaper.hostY + $wallpaper.hostHeight))
+                {
+                    throw "Backdrop capture rectangle ($captureX, $captureY, $width, $height) is outside wallpaper host ($($wallpaper.hostX), $($wallpaper.hostY), $($wallpaper.hostWidth), $($wallpaper.hostHeight))."
+                }
+            }
             $framePath = Join-Path $Data.FrameDirectory ('frame-{0:D4}.png' -f $index)
             $bitmap = [System.Drawing.Bitmap]::new($width, $height)
             try
@@ -241,8 +474,7 @@ foreach ($variant in $variants)
                 $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
                 try
                 {
-                    $graphics.CopyFromScreen([int][Math]::Round($origin.X),
-                        [int][Math]::Round($origin.Y), 0, 0,
+                    $graphics.CopyFromScreen($captureX, $captureY, 0, 0,
                         [System.Drawing.Size]::new($width, $height))
                 }
                 finally { $graphics.Dispose() }
@@ -255,6 +487,7 @@ foreach ($variant in $variants)
             finally { $bitmap.Dispose() }
 
             $stateLabel = if ($Data.Variant.Kind -eq 'accents') { $Data.CurrentState.Name } else { [string]$Data.CurrentState }
+            $wallpaperHostVisible = if ($null -ne $Data.WallpaperHost) { [bool]$Data.WallpaperHost.Visible } else { $null }
             $Data.Frames.Add([ordered]@{
                 index = $index
                 expectedMilliseconds = [Math]::Round($index * $periodMilliseconds, 2)
@@ -262,6 +495,15 @@ foreach ($variant in $variants)
                 state = $stateLabel
                 progressX = [Math]::Round($Data.ProgressTranslate.X, 2)
                 progress2X = [Math]::Round($Data.ProgressTranslate2.X, 2)
+                captureX = $captureX
+                captureY = $captureY
+                windowActive = [bool]$Window.IsActive
+                nativeForeground = if ($null -ne $nativeForeground) { $nativeForeground.ToInt64() } else { $null }
+                windowCloak = $windowCloak
+                wallpaperHostCloak = $wallpaperHostCloak
+                windowBackdrop = [string]$Window.SystemBackdropType
+                applicationTheme = [string][Fluence.Wpf.ApplicationThemeManager]::CurrentTheme
+                wallpaperHostVisible = $wallpaperHostVisible
                 width = $width
                 height = $height
             })
@@ -327,6 +569,31 @@ foreach ($variant in $variants)
     finally
     {
         if ($data.Failure) { $desktopState.captureError = $data.Failure }
+        if ($null -ne $wallpaperHost)
+        {
+            try
+            {
+                $wallpaperHost.BackgroundImage = $null
+                $wallpaperHost.Close()
+                $wallpaperHost.Dispose()
+                $desktopState.wallpaperHostClosed = $true
+            }
+            catch { $desktopState.wallpaperCleanupError = $_.Exception.Message }
+        }
+        if ($null -ne $wallpaperCanvas)
+        {
+            try { $wallpaperCanvas.Dispose() }
+            catch { $desktopState.wallpaperCleanupError = $_.Exception.Message }
+        }
+        if ($null -ne $wallpaperPngPath -and (Test-Path -LiteralPath $wallpaperPngPath))
+        {
+            try
+            {
+                [System.IO.File]::Delete($wallpaperPngPath)
+                $desktopState.wallpaperTempDeleted = $true
+            }
+            catch { $desktopState.wallpaperCleanupError = $_.Exception.Message }
+        }
         try
         {
             Set-FluenceAccent -System
@@ -348,6 +615,7 @@ foreach ($variant in $variants)
         Write-Output "Desktop capture state: $desktopStatePath"
         if ($desktopState.restoreError) { throw "Desktop windows could not be restored: $($desktopState.restoreError). State: $desktopStatePath" }
         if ($desktopState.accentResetError) { throw "System accent could not be restored: $($desktopState.accentResetError). State: $desktopStatePath" }
+        if ($desktopState.wallpaperCleanupError) { throw "Backdrop wallpaper host could not be cleaned up: $($desktopState.wallpaperCleanupError). State: $desktopStatePath" }
     }
 
     if ($data.Failure) { throw "$($variant.Name): $($data.Failure)" }
@@ -363,15 +631,16 @@ foreach ($variant in $variants)
         framesPerSecond = $fps
         framesPerState = $framesPerState
         states = @($variant.States | ForEach-Object { if ($_ -is [string]) { $_ } else { $_.Name } })
-        librarySha256 = (Get-FileHash -LiteralPath $libraryPath -Algorithm SHA256).Hash
+        librarySha256 = Get-CaptureSha256 $libraryPath
         capture = 'Visible screen pixels of live FluenceWindow within its WPF window bounds'
+        wallpaper = $data.Wallpaper
         frames = $data.Frames.ToArray()
     }
     [System.IO.File]::WriteAllText((Join-Path $frameDirectory 'timeline.json'),
         (($metadata | ConvertTo-Json -Depth 7) + "`n"), [System.Text.UTF8Encoding]::new($true))
 
     $poster = Join-Path $assetDirectory ($variant.Name + '.png')
-    $posterIndex = if ($variant.Kind -eq 'backdrops') { (2 * $framesPerState) + 30 } else { 0 }
+    $posterIndex = if ($variant.Kind -eq 'backdrops') { $framesPerState + 30 } else { 0 }
     Copy-Item -LiteralPath (Join-Path $frameDirectory ('frame-{0:D4}.png' -f $posterIndex)) -Destination $poster -Force
 
     $gif = Join-Path $assetDirectory ($variant.Name + '.gif')
