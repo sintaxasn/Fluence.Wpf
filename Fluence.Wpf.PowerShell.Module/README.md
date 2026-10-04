@@ -2,7 +2,7 @@
 
 `Fluence.Wpf.PowerShell` is a script module for Fluent dialogs and windows on Windows PowerShell 5.1 and PowerShell 7.4 or later. It uses the [Fluence.Wpf](../README.md) control library. Scripts can show messages, collect validated input, display progress, change appearance, and host custom XAML without compiling a WPF application.
 
-The [PowerShell documentation](https://fluencewpf.comdocs/powershell/) contains a [first dialog tutorial](https://fluencewpf.comdocs/powershell/tutorial), task guides, [command reference](https://fluencewpf.comdocs/powershell/reference/), and [module design](https://fluencewpf.comdocs/powershell/explanation). This page covers module setup and development.
+The [PowerShell documentation](https://fluencewpf.com/docs/powershell/) contains a [first dialog tutorial](https://fluencewpf.com/docs/powershell/tutorial), task guides, [command reference](https://fluencewpf.com/docs/powershell/reference/), and [module design](https://fluencewpf.com/docs/powershell/explanation). This page covers module setup and development.
 
 ## Requirements
 
@@ -83,9 +83,9 @@ if ($result.Connect)
 }
 ```
 
-The [examples catalogue](examples/README.md) has six complete scripts. The [result object reference](https://fluencewpf.comdocs/powershell/reference/result-objects) describes the properties returned by each command.
+The [examples catalogue](examples/README.md) has six complete scripts. The [result object reference](https://fluencewpf.com/docs/powershell/reference/result-objects) describes the properties returned by each command.
 
-Every window-opening command supports title-bar customization: `-Title` (also `-TitleBarText`) sets its text, and `-TitleBarIcon` accepts a local path, `file:` URI, or `pack:` URI. Only `Show-FluenceWindow` supports `-ShowIcon:$false` to hide the built-in host icon. For dialogs, `-Icon` remains the body severity/question glyph and `-Image` remains a body image; neither sets the title-bar icon. See the [dialog guide](https://fluencewpf.comdocs/powershell/how-to/dialogs) and [hosted-window guide](https://fluencewpf.comdocs/powershell/how-to/windows-from-xaml).
+Every window-opening command supports title-bar customization: `-Title` (also `-TitleBarText`) sets its text, and `-TitleBarIcon` accepts a local path, `file:` URI, or `pack:` URI. Only `Show-FluenceWindow` supports `-ShowIcon:$false` to hide the built-in host icon. For dialogs, `-Icon` remains the body severity/question glyph and `-Image` remains a body image; neither sets the title-bar icon. See the [dialog guide](https://fluencewpf.com/docs/powershell/how-to/dialogs) and [hosted-window guide](https://fluencewpf.com/docs/powershell/how-to/windows-from-xaml).
 
 ## Build reference and packages
 

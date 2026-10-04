@@ -40,7 +40,7 @@ The [module README](Fluence.Wpf.PowerShell.Module/README.md) documents prerequis
 
 - Keep the repository's BSD 3-Clause header on every C# source file. Document public APIs with XML comments.
 - Follow the nullable and analyzer settings in `Directory.Build.props` and `.editorconfig`. Warnings are build errors.
-- Use the existing theme architecture and canonical resource keys. The [theming guide](https://fluencewpf.comdocs/theming) and [developer handbook](AGENTS.md) describe the contract.
+- Use the existing theme architecture and canonical resource keys. The [theming guide](https://fluencewpf.com/docs/theming) and [developer handbook](AGENTS.md) describe the contract.
 - Public documentation is maintained in the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Use that repository for Docusaurus authoring and publishing; use this repository for library source and its release materials.
 - Preserve release facts in [CHANGELOG.md](CHANGELOG.md) and document breaking changes in the changelog and [release guide](docs/release.md).
 

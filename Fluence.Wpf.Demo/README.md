@@ -10,7 +10,7 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug -f net10.
 
 Use `-f net472` to run the .NET Framework build. In `App.xaml.cs`, `OnStartup` applies the Fluence theme and system accent before creating `MainWindow`. `MainWindow` hosts the navigation shell; examples live under `Pages/`, with shared sample presentation in `Controls/`.
 
-For the setup behind the example, see the [first WPF application tutorial](https://fluencewpf.comdocs/tutorials/first-wpf-app). Browse the [control catalog](https://fluencewpf.comdocs/controls), [theming guide](https://fluencewpf.comdocs/theming), or full [documentation index](https://fluencewpf.comdocs) for consumer guidance.
+For the setup behind the example, see the [first WPF application tutorial](https://fluencewpf.com/docs/tutorials/first-wpf-app). Browse the [control catalog](https://fluencewpf.com/docs/controls), [theming guide](https://fluencewpf.com/docs/theming), or full [documentation index](https://fluencewpf.com/docs) for consumer guidance.
 
 ## Visual examples
 

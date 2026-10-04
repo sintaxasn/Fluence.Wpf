@@ -16,4 +16,4 @@ Build from the repository root:
 dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release
 ```
 
-Start with the [first WPF application tutorial](https://fluencewpf.comdocs/tutorials/first-wpf-app), then use the [control catalog](https://fluencewpf.comdocs/controls) and [theming guide](https://fluencewpf.comdocs/theming). Browse the [documentation website](https://fluencewpf.com) for the full set. For project conventions and theme engine internals, read [AGENTS.md](../AGENTS.md).
+Start with the [first WPF application tutorial](https://fluencewpf.com/docs/tutorials/first-wpf-app), then use the [control catalog](https://fluencewpf.com/docs/controls) and [theming guide](https://fluencewpf.com/docs/theming). Browse the [documentation website](https://fluencewpf.com) for the full set. For project conventions and theme engine internals, read [AGENTS.md](../AGENTS.md).
