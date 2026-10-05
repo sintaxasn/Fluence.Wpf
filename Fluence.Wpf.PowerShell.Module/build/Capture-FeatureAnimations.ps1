@@ -43,6 +43,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .PARAMETER WallpaperPath
     Path to the website backdrop wallpaper image. Required when capturing either
     backdrop variant so Acrylic samples that image from a real window behind it.
+.PARAMETER WallpaperOverscan
+    Multiplier applied to the wallpaper's cover scale. Defaults to 1.0; larger
+    values enlarge the centered wallpaper while keeping the capture window centered.
+.PARAMETER BackdropCaptureX
+    Optional physical pixel X offset of the backdrop window from the wallpaper host's left edge.
+    Supply with BackdropCaptureY. By default the window is centered in the host.
+.PARAMETER BackdropCaptureY
+    Optional physical pixel Y offset of the backdrop window from the wallpaper host's top edge.
+    Supply with BackdropCaptureX. By default the window is centered in the host.
 .PARAMETER KeepDesktop
     Skip the default reversible minimization of other desktop windows during capture.
 .EXAMPLE
@@ -59,6 +68,18 @@ param
 
     [Parameter()]
     [string]$WallpaperPath,
+
+    [Parameter()]
+    [ValidateRange(1.0, 4.0)]
+    [double]$WallpaperOverscan = 1.0,
+
+    [Parameter()]
+    [ValidateRange(0, 2147483647)]
+    [int]$BackdropCaptureX,
+
+    [Parameter()]
+    [ValidateRange(0, 2147483647)]
+    [int]$BackdropCaptureY,
 
     [Parameter()]
     [switch]$KeepDesktop
@@ -84,6 +105,20 @@ if ([System.Threading.Thread]::CurrentThread.GetApartmentState() -ne [System.Thr
 }
 
 $captureBackdrops = -not $Only -or $Only.StartsWith('backdrops-', [System.StringComparison]::OrdinalIgnoreCase)
+$hasBackdropCaptureX = $PSBoundParameters.ContainsKey('BackdropCaptureX')
+$hasBackdropCaptureY = $PSBoundParameters.ContainsKey('BackdropCaptureY')
+if ($hasBackdropCaptureX -ne $hasBackdropCaptureY)
+{
+    throw 'Supply both -BackdropCaptureX and -BackdropCaptureY, or neither.'
+}
+if ($hasBackdropCaptureX -and -not $captureBackdrops)
+{
+    throw 'Backdrop capture coordinates are only used for backdrop variants.'
+}
+if ($PSBoundParameters.ContainsKey('WallpaperOverscan') -and -not $captureBackdrops)
+{
+    throw 'Wallpaper overscan is only used for backdrop variants.'
+}
 if ($captureBackdrops)
 {
     if (-not ('FluenceFeatureCaptureGuard' -as [type]))
@@ -292,6 +327,9 @@ foreach ($variant in $variants)
         ProgressTranslate2 = $null
         WallpaperHost = $null
         Wallpaper = $null
+        BackdropCaptureX = if ($hasBackdropCaptureX) { $BackdropCaptureX } else { $null }
+        BackdropCaptureY = if ($hasBackdropCaptureY) { $BackdropCaptureY } else { $null }
+        RequestedCapture = $null
     }
     if ($variant.Kind -eq 'accents') { Set-FluenceAccent -Color $hues[0].Color }
     else { Set-FluenceAccent -System }
@@ -348,15 +386,18 @@ foreach ($variant in $variants)
         {
             $coverScale = [Math]::Max([double]$bounds.Width / $wallpaperImage.Width,
                 [double]$bounds.Height / $wallpaperImage.Height)
-            $drawWidth = [int][Math]::Ceiling($wallpaperImage.Width * $coverScale)
-            $drawHeight = [int][Math]::Ceiling($wallpaperImage.Height * $coverScale)
+            $imageScale = $coverScale * $WallpaperOverscan
+            $drawWidth = [int][Math]::Ceiling($wallpaperImage.Width * $imageScale)
+            $drawHeight = [int][Math]::Ceiling($wallpaperImage.Height * $imageScale)
+            $drawX = [int][Math]::Floor(($bounds.Width - $drawWidth) / 2.0)
+            $drawY = [int][Math]::Floor(($bounds.Height - $drawHeight) / 2.0)
             $wallpaperCanvas = [System.Drawing.Bitmap]::new($bounds.Width, $bounds.Height)
             $wallpaperGraphics = [System.Drawing.Graphics]::FromImage($wallpaperCanvas)
             try
             {
                 $wallpaperGraphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
                 $wallpaperGraphics.DrawImage($wallpaperImage,
-                    [System.Drawing.Rectangle]::new(0, 0, $drawWidth, $drawHeight))
+                    [System.Drawing.Rectangle]::new($drawX, $drawY, $drawWidth, $drawHeight))
             }
             finally { $wallpaperGraphics.Dispose() }
         }
@@ -382,13 +423,24 @@ foreach ($variant in $variants)
             hostWidth = $bounds.Width
             hostHeight = $bounds.Height
             coverScale = [Math]::Round($coverScale, 6)
+            overscan = $WallpaperOverscan
+            imageScale = [Math]::Round($imageScale, 6)
+            imageDrawX = $drawX
+            imageDrawY = $drawY
             imageDrawWidth = $drawWidth
             imageDrawHeight = $drawHeight
-            positioning = 'left top / cover'
+            positioning = 'center center / cover'
         }
     }
     $null = Show-FluenceWindow -Xaml $xaml -Theme $variant.Theme -Backdrop $initialBackdrop -TitleBarIcon $iconPath -Data $data -Initialize {
         param($Window, $Data)
+
+        if ($Data.Variant.Kind -eq 'backdrops')
+        {
+            $Window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::Manual
+            $Window.Left = 0
+            $Window.Top = 0
+        }
 
         $periodMilliseconds = 1000.0 / $Data.Fps
         $frameCount = $Data.Variant.States.Count * $Data.FramesPerState
@@ -434,7 +486,9 @@ foreach ($variant in $variants)
                 if (-not $Window.IsActive -or $nativeForeground -ne $windowHandle -or
                     $windowCloak -ne 0 -or $wallpaperHostCloak -ne 0)
                 {
-                    throw "Backdrop capture requires a visible foreground window and wallpaper host (foreground $($nativeForeground.ToInt64()), window $($windowHandle.ToInt64()), cloak $windowCloak, host cloak $wallpaperHostCloak)."
+                    $observed = $Window.PointToScreen([System.Windows.Point]::new(0, 0))
+                    $requested = $Data.RequestedCapture
+                    throw "Backdrop capture requires a visible foreground window and wallpaper host (foreground $($nativeForeground.ToInt64()), window $($windowHandle.ToInt64()), active $($Window.IsActive), cloak $windowCloak, host cloak $wallpaperHostCloak, observed origin $([int][Math]::Round($observed.X)),$([int][Math]::Round($observed.Y)), requested origin $($requested.x),$($requested.y))."
                 }
             }
 
@@ -460,6 +514,12 @@ foreach ($variant in $variants)
             if ($null -ne $Data.Wallpaper)
             {
                 $wallpaper = $Data.Wallpaper
+                $requested = $Data.RequestedCapture
+                if ($null -eq $requested -or $captureX -ne $requested.x -or $captureY -ne $requested.y -or
+                    $width -ne $requested.width -or $height -ne $requested.height)
+                {
+                    throw "Backdrop capture geometry ($captureX, $captureY, $width, $height) differs from requested geometry ($($requested.x), $($requested.y), $($requested.width), $($requested.height))."
+                }
                 if ($captureX -lt $wallpaper.hostX -or $captureY -lt $wallpaper.hostY -or
                     ($captureX + $width) -gt ($wallpaper.hostX + $wallpaper.hostWidth) -or
                     ($captureY + $height) -gt ($wallpaper.hostY + $wallpaper.hostHeight))
@@ -539,6 +599,56 @@ foreach ($variant in $variants)
             $renderFrame = $captureFrame
             $samplingTimer = $timer
             $hostWindow = $Window
+            if ($state.Variant.Kind -eq 'backdrops')
+            {
+                try
+                {
+                    $wallpaper = $state.Wallpaper
+                    $origin = $hostWindow.PointToScreen([System.Windows.Point]::new(0, 0))
+                    $end = $hostWindow.PointToScreen([System.Windows.Point]::new($hostWindow.ActualWidth, $hostWindow.ActualHeight))
+                    $width = [Math]::Max(1, [int][Math]::Round($end.X - $origin.X))
+                    $height = [Math]::Max(1, [int][Math]::Round($end.Y - $origin.Y))
+                    $relativeX = if ($null -ne $state.BackdropCaptureX) { [int]$state.BackdropCaptureX }
+                        else { [int][Math]::Floor(($wallpaper.hostWidth - $width) / 2.0) }
+                    $relativeY = if ($null -ne $state.BackdropCaptureY) { [int]$state.BackdropCaptureY }
+                        else { [int][Math]::Floor(($wallpaper.hostHeight - $height) / 2.0) }
+                    if ($relativeX -lt 0 -or $relativeY -lt 0 -or
+                        ($relativeX + $width) -gt $wallpaper.hostWidth -or
+                        ($relativeY + $height) -gt $wallpaper.hostHeight)
+                    {
+                        throw "Requested backdrop rectangle ($relativeX, $relativeY, $width, $height) does not fit wallpaper host $($wallpaper.hostWidth)x$($wallpaper.hostHeight)."
+                    }
+                    $targetX = $wallpaper.hostX + $relativeX
+                    $targetY = $wallpaper.hostY + $relativeY
+                    $source = [System.Windows.PresentationSource]::FromVisual($hostWindow)
+                    if ($null -eq $source -or $null -eq $source.CompositionTarget)
+                    {
+                        throw 'WPF has no presentation source for backdrop window placement.'
+                    }
+                    $deviceDelta = [System.Windows.Vector]::new($targetX - $origin.X, $targetY - $origin.Y)
+                    $logicalDelta = $source.CompositionTarget.TransformFromDevice.Transform($deviceDelta)
+                    $hostWindow.Left += $logicalDelta.X
+                    $hostWindow.Top += $logicalDelta.Y
+                    $hostWindow.UpdateLayout()
+                    $null = $hostWindow.Activate()
+                    $state.RequestedCapture = [ordered]@{
+                        mode = if ($null -ne $state.BackdropCaptureX) { 'explicit host-relative physical pixels' }
+                            else { 'centered in wallpaper host' }
+                        hostRelativeX = $relativeX
+                        hostRelativeY = $relativeY
+                        x = $targetX
+                        y = $targetY
+                        width = $width
+                        height = $height
+                    }
+                }
+                catch
+                {
+                    $state.Failure = $_.ToString()
+                    $hostWindow.Close()
+                    return
+                }
+            }
             $warmup = [System.Windows.Threading.DispatcherTimer]::new()
             $warmup.Interval = [TimeSpan]::FromMilliseconds(300)
             $warmup.add_Tick({
@@ -634,6 +744,11 @@ foreach ($variant in $variants)
         librarySha256 = Get-CaptureSha256 $libraryPath
         capture = 'Visible screen pixels of live FluenceWindow within its WPF window bounds'
         wallpaper = $data.Wallpaper
+        requestedCapture = $data.RequestedCapture
+        actualCapture = if ($variant.Kind -eq 'backdrops') {
+            [ordered]@{ x = $data.Frames[0].captureX; y = $data.Frames[0].captureY;
+                width = $data.Frames[0].width; height = $data.Frames[0].height }
+        } else { $null }
         frames = $data.Frames.ToArray()
     }
     [System.IO.File]::WriteAllText((Join-Path $frameDirectory 'timeline.json'),
