@@ -745,7 +745,8 @@ foreach ($variant in $variants)
         capture = 'Visible screen pixels of live FluenceWindow within its WPF window bounds'
         wallpaper = $data.Wallpaper
         requestedCapture = $data.RequestedCapture
-        actualCapture = if ($variant.Kind -eq 'backdrops') {
+        actualCapture = if ($variant.Kind -eq 'backdrops')
+        {
             [ordered]@{ x = $data.Frames[0].captureX; y = $data.Frames[0].captureY;
                 width = $data.Frames[0].width; height = $data.Frames[0].height }
         } else { $null }
