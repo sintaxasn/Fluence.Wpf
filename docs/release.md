@@ -67,14 +67,14 @@ Confirm all of these before tagging. CI enforces the first two; the rest are jud
 
 ## 1.0 approval checkpoint
 
-The 0.9.1 stable release does not start the 1.0 API freeze. Before a future 1.0 version bump, complete the integration review. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and NuGet trusted publishing, the PowerShell Gallery key, and the required reviewer are configured.
+The 0.9.2 stable release does not start the 1.0 API freeze. Before a future 1.0 version bump, complete the integration review. CI builds, tests, and packages the module in a separate `powershell` job after the .NET build succeeds. Require both jobs before merging. The tag workflow attaches the module ZIP and Gallery-format `.nupkg` to the GitHub release, publishes the library package to NuGet, and publishes the module to PowerShell Gallery. Do not create a 1.0 tag until the final test round passes and NuGet trusted publishing, the PowerShell Gallery key, and the required reviewer are configured.
 
 ## Bump
 
 Edit `VersionPrefix` and `VersionSuffix` in `Directory.Build.props`. The PowerShell module manifest is a separate version source and must be updated as described below:
 
 ```xml
-<VersionPrefix>0.9.1</VersionPrefix>
+<VersionPrefix>0.9.2</VersionPrefix>
 <VersionSuffix></VersionSuffix>
 ```
 
@@ -128,7 +128,7 @@ Then package and inspect the module artifacts locally. This creates files only; 
 pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1 -Configuration Release
 ```
 
-`Fluence.Wpf.PowerShell.Module/artifacts/` must hold `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg`, where the version is `ModuleVersion` from the manifest with the `PSData.Prerelease` tag appended when present. The stable 0.9.1 manifest produces `Fluence.Wpf.PowerShell-0.9.1.zip` and `Fluence.Wpf.PowerShell.0.9.1.nupkg`. Inspect the ZIP contents, install the module from the ZIP in both supported PowerShell editions, and confirm the README and command references describe the current cmdlet set. The tag workflow attaches both artifacts to GitHub and publishes the module to PowerShell Gallery.
+`Fluence.Wpf.PowerShell.Module/artifacts/` must hold `Fluence.Wpf.PowerShell-<version>.zip` and `Fluence.Wpf.PowerShell.<version>.nupkg`, where the version is `ModuleVersion` from the manifest with the `PSData.Prerelease` tag appended when present. The stable 0.9.2 manifest produces `Fluence.Wpf.PowerShell-0.9.2.zip` and `Fluence.Wpf.PowerShell.0.9.2.nupkg`. Inspect the ZIP contents, install the module from the ZIP in both supported PowerShell editions, and confirm the README and command references describe the current cmdlet set. The tag workflow attaches both artifacts to GitHub and publishes the module to PowerShell Gallery.
 
 ## Pack check
 

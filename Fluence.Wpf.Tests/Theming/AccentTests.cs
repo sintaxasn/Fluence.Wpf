@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -568,6 +569,77 @@ namespace Fluence.Wpf.Tests.Theming
             Assert.True(d2V <= d1V, $"Dark2 V should be <= Dark1 V for {Hex(baseColor)}");
         }
 
+        [Fact]
+        public void GeneratedRamp_HeldOutWindowsPalettes_StaysWithinRgbErrorBudget()
+        {
+            // Captured Windows palettes held out from the 21 ramps used to fit the L* targets.
+            // Each row is requested seed, Windows-applied accent, then Light1/2/3 and Dark1/2/3.
+            string[] rows =
+            [
+                "D32F2F D93533 DF4D47 EF8B7D F8AF9C BF2523 921B1A 650A09",
+                "F44336 E23029 E7483D F38671 FAAA90 C7201B 991815 690907",
+                "EF6C00 CC4F00 E76200 FFA031 FFC159 AF3E00 892800 5E0E00",
+                "FF9800 B95F00 D47600 FFB81D FFD445 9E4A00 7D3000 561100",
+                "F9A825 AC6800 CB8200 FFC71D FFDF4B 935100 733400 4E1300",
+                "FDD835 8D7600 AE9700 FFED06 FFF937 785C00 5D3B00 3D1500",
+                "2E7D32 368438 42A342 87CC84 AAE9A4 2A6C2C 1B4E1C 0A2B0A",
+                "66BB6A 30873B 3BA547 7DD183 A3E9A5 256F2E 18501E 092C0B",
+                "1565C0 3373D0 4D89D8 90C3EB B7E4F7 285AB4 1A3A90 091666",
+                "42A5F5 007DC9 009AEF 51D3FF 8AEFFF 0064AC 004488 001F5E",
+                "3949AB 636AD2 7B80D9 B9B9EC DDDAF7 3B43C7 2C2F97 121367",
+                "5C6BC0 606EC3 7784CD B4BDE6 D7DEF4 424FB0 303784 11145C",
+                "6A1B9A 9F50CF AE66D7 D7A1EB EEC3F6 8434BC 5D278F 330E64",
+                "AB47BC AE4ABF BB61C9 DD9CE4 F0BEF3 913AA3 6D2580 430D57",
+            ];
+            Assert.Equal(14, rows.Length);
+            int[] errorTotals = new int[6];
+            int reportedAccentDifferences = 0;
+
+            foreach (string row in rows)
+            {
+                string[] values = row.Split(' ');
+                Assert.Equal(8, values.Length);
+                Color seed = ParseRgb(values[0]);
+                Color windowsAccent = ParseRgb(values[1]);
+                AccentPalette palette = AccentResolver.Resolve(
+                    AccentIntent.FromCustomGenerated(seed), ApplicationTheme.Light);
+                Assert.Equal(seed, palette.Accent);
+                if (seed != windowsAccent)
+                {
+                    reportedAccentDifferences++;
+                    Assert.NotEqual(windowsAccent, palette.Accent);
+                }
+
+                Color[] generated = [palette.Light1, palette.Light2, palette.Light3,
+                    palette.Dark1, palette.Dark2, palette.Dark3];
+                for (int i = 0; i < generated.Length; i++)
+                {
+                    Color expected = ParseRgb(values[i + 2]);
+                    Color actual = generated[i];
+                    errorTotals[i] += Math.Abs(actual.R - expected.R)
+                        + Math.Abs(actual.G - expected.G)
+                        + Math.Abs(actual.B - expected.B);
+                }
+            }
+
+            Assert.True(reportedAccentDifferences > 0,
+                "Held-out rows must include Windows-reported accents that differ from the requested seed.");
+            double[] budgets = [25, 52, 52, 22, 25, 35];
+            string[] labels = ["Light1", "Light2", "Light3", "Dark1", "Dark2", "Dark3"];
+            int totalError = 0;
+            for (int i = 0; i < errorTotals.Length; i++)
+            {
+                double mean = errorTotals[i] / (double)rows.Length;
+                Assert.True(mean <= budgets[i], string.Format(CultureInfo.InvariantCulture,
+                    "{0} mean RGB L1 error {1:F2} exceeds {2:F2}.", labels[i], mean, budgets[i]));
+                totalError += errorTotals[i];
+            }
+
+            double overallMean = totalError / (double)(rows.Length * errorTotals.Length);
+            Assert.True(overallMean <= 36, string.Format(CultureInfo.InvariantCulture,
+                "Overall mean RGB L1 error {0:F2} exceeds 36.", overallMean));
+        }
+
         /// <summary>
         /// Sanity check: when a system <c language="text">AccentPalette</c> is present, the registry helper
         /// must return seven distinct opaque colors. This pins the contract relied on by
@@ -602,6 +674,12 @@ namespace Fluence.Wpf.Tests.Theming
         private static string Hex(Color c)
         {
             return $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+        }
+
+        private static Color ParseRgb(string hex)
+        {
+            return Color.FromRgb(Convert.ToByte(hex[..2], 16),
+                Convert.ToByte(hex[2..4], 16), Convert.ToByte(hex[4..6], 16));
         }
     }
 }

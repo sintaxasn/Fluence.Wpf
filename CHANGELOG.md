@@ -8,6 +8,16 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-10-08
+
+### Changed
+
+- The generated fallback accent ramp for arbitrary custom colors now matches fixed CIELAB L* targets fitted from 21 captured Windows palettes while preserving the requested seed. Because Windows may correct that seed before building its palette, generated shade slots are not constrained relative to the raw seed. Against 14 held-out palettes, mean CIEDE2000 error improved from 14.40 to 5.82 and mean RGB L1 error per shade from 114.57 to 34.32. Use `ApplyCustomAccentExact` when the visible primary fill must equal a configured color. This remains an approximation, not a recovered Windows formula.
+
+### Added
+
+- Added held-out Windows accent palette regression coverage. Discovery baselines now contain 1,389 net472 and 1,392 net10 cases; the CI lane floors are 1,387 and 1,388 after screenshot filtering.
+
 ## [0.9.1] - 2026-10-03
 
 ### Added
@@ -698,7 +708,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2...main
+[0.9.2]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...v0.9.1
 [0.9.0-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v0.9.0-pre
 [0.8.19-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.18-pre...v0.8.19-pre

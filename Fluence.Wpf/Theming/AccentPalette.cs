@@ -32,7 +32,9 @@ using System.Windows.Media;
 namespace Fluence.Wpf.Theming
 {
     /// <summary>
-    /// The seven-rung Windows accent ramp, lightest to darkest.
+    /// The seven colors used by the Windows-aligned accent palette. Generated shade slots
+    /// approximate Windows' corrected palette and are not guaranteed to be lighter or darker
+    /// than the raw custom seed retained as <see cref="Accent"/>.
     /// </summary>
     /// <param name="light3">The lightest tint on the generated accent ramp.</param>
     /// <param name="light2">The second light tint on the generated accent ramp.</param>

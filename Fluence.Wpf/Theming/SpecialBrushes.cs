@@ -145,6 +145,10 @@ namespace Fluence.Wpf.Theming
             // can reach the drop-down item through a supported key.
             dict["ComboBoxItemCornerRadius"] = new CornerRadius(3);
 
+            // WPF has no ThemeShadow equivalent. This fixed effect is a fallback for transient
+            // surfaces, not a numeric reproduction of WinUI's theme- and elevation-aware shadow.
+            // Keep its values conservative until controlled Windows captures can calibrate
+            // separate WPF effects for the documented surface elevations.
             DropShadowEffect flyoutShadow = new()
             {
                 BlurRadius = 18,

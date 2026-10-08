@@ -94,7 +94,7 @@ jobs:
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1386; 'net10' = 1387 }
+          $floor = @{ 'net472' = 1387; 'net10' = 1388 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {

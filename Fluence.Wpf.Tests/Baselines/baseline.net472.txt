@@ -265,6 +265,7 @@
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_DarkVariants_OrderedFromBrightToDim(r: 82, g: 94, b: 84)
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_DarkVariants_OrderedFromBrightToDim(r: 73, g: 130, b: 5)
   Fluence.Wpf.Tests.Theming.AccentTests.GenerateAccentRampWinaccent_DarkVariants_OrderedFromBrightToDim(r: 0, g: 178, b: 148)
+  Fluence.Wpf.Tests.Theming.AccentTests.GeneratedRamp_HeldOutWindowsPalettes_StaysWithinRgbErrorBudget
   Fluence.Wpf.Tests.Theming.AccentTests.TryGetAccentPalette_WhenPresent_ReturnsSevenOpaqueColors
   Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_AreCurrentAsync
   Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_Load_RepresentativeKeysResolveAsync
@@ -472,7 +473,7 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_CopyButton_CueAgreesWithWhetherTheCopyLandedAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_InDarkTheme_StartsWithThemeForegroundAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryColorsPageTests.GalleryColorsPage_ContentStretchesToTheShellWidthAsync
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsHeaderLockupWithThemeAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsSvgDerivedBannerWithThemeAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesProminentAccessibleBrandAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeActions_NavigateToTheirControlPagesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeLayout_ReflowsWithoutHorizontalOverflowAsync
