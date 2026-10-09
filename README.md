@@ -1,4 +1,4 @@
-﻿![Fluence.Wpf brand](assets/Fluence_Lockup_Stacked_Gradient.svg)
+﻿![Fluence.Wpf brand](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf/main/assets/Fluence_Lockup_Stacked_Gradient.svg)
 
 ## Introduction
 
