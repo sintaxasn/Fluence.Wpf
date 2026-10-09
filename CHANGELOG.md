@@ -12,11 +12,15 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
-- The generated fallback accent ramp for arbitrary custom colors now matches fixed CIELAB L* targets fitted from 21 captured Windows palettes while preserving the requested seed. Because Windows may correct that seed before building its palette, generated shade slots are not constrained relative to the raw seed. Against 14 held-out palettes, mean CIEDE2000 error improved from 14.40 to 5.82 and mean RGB L1 error per shade from 114.57 to 34.32. Use `ApplyCustomAccentExact` when the visible primary fill must equal a configured color. This remains an approximation, not a recovered Windows formula.
+- Custom accent colors now produce Light and Dark shades that more closely match Windows 11. The generated shades keep the requested color as their starting point, while `ApplyCustomAccentExact` remains available when the visible accent fill must use an exact color.
+- The gallery home page has refreshed Fluence banners and illustrated featured-control cards. On the Icons page, the selected tile highlight now fades smoothly while the details update immediately.
+- The website's Mica and Acrylic feature animations have been recaptured in Light and Dark themes with the wallpaper centered behind the window, making the transparency easier to see.
+- Refreshed the Fluence brand artwork throughout the library and gallery, along with the related gallery and documentation screenshots.
+- Updated the getting-started, theming, and WinUI parity guides with clearer setup, custom-accent, transparency-layer, and elevation guidance.
 
-### Added
+### Security
 
-- Added held-out Windows accent palette regression coverage. Discovery baselines now contain 1,389 net472 and 1,392 net10 cases; the CI lane floors are 1,387 and 1,388 after screenshot filtering.
+- NuGet releases now use GitHub Actions OIDC trusted publishing, so publishing uses a temporary credential instead of a long-lived NuGet API key.
 
 ## [0.9.1] - 2026-10-03
 
