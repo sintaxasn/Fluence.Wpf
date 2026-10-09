@@ -406,7 +406,13 @@ jobs:
         env:
           NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
         run: |
-          dotnet nuget push artifacts/fluence-wpf-nupkg/*.nupkg --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+          # PowerShell does not expand wildcards for native commands, so resolve
+          # the package path before passing it to dotnet.
+          $packages = @(Get-ChildItem -Path 'artifacts/fluence-wpf-nupkg' -Filter '*.nupkg' -File)
+          if ($packages.Count -ne 1) {
+            throw "Expected one Fluence.Wpf NuGet package, found $($packages.Count)."
+          }
+          dotnet nuget push $packages[0].FullName --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       # The ZIP and Gallery-format NUPKG are attached to GitHub above. Publish
       # the packaged module source to PSGallery only after the NuGet push
