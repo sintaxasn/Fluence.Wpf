@@ -419,10 +419,12 @@ ehthumbs.db
 Thumbs.db
 
 # Unwanted AI generated files
+.superpowers/**
 .pi/**
 .omc/**
 .claude/settings.local.json
 .codex/**
+graphify-out/*
 
 # Regenerable theme-golden artifacts (authoritative copies live in Fluence.Wpf.Tests/Theming/golden/)
 data/theme-golden/
@@ -439,6 +441,3 @@ data/theme-golden/
 
 # Website source lives in its own repository. This checkout may retain a local preview.
 /website/
-
-graphify-out/*
-.omc/*
