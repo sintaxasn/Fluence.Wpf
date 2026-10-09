@@ -1,6 +1,4 @@
-﻿# Fluence.Wpf
-
-![Fluence.Wpf brand](assets/Fluence_Lockup_Stacked_Gradient.png)
+﻿![Fluence.Wpf brand](assets/Fluence_Lockup_Stacked_Gradient.png)
 
 ## Introduction
 
@@ -26,7 +24,6 @@ The [documentation site](https://fluencewpf.com) links tutorials, task guides, r
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | ![Gallery home in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-light.png)<br>Light | ![Button gallery in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-light.png)<br>Light | ![MVVM task manager in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-light.png)<br>Light | ![PowerShell ControlsTour in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-light.png)<br>Light |
 | ![Gallery home in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-dark.png)<br>Dark | ![Button gallery in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-dark.png)<br>Dark | ![MVVM task manager in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-dark.png)<br>Dark | ![PowerShell ControlsTour in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-dark.png)<br>Dark |
-
 
 
 ## Use the library
