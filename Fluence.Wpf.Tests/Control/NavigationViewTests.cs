@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -2839,11 +2840,22 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => window.IsLoaded && footer.IsLoaded).ConfigureAwait(true),
+                        "The window and footer must be loaded before connecting UI Automation.");
+                    window.UpdateLayout();
                     // Ask UIA for the window root so provider conversion does not depend on
                     // an external accessibility client having already connected the peer tree.
+                    // Its synchronous native handshake belongs on a dedicated MTA thread:
+                    // thread-pool queueing must not consume the connection timeout.
                     IntPtr windowHandle = new WindowInteropHelper(window).Handle;
-                    Task<AutomationElement> rootTask = Task.Run(() => AutomationElement.FromHandle(windowHandle), TestContext.Current.CancellationToken);
-                    Assert.True(await WaitUntilAsync(window.Dispatcher, 5000, () => rootTask.IsCompleted).ConfigureAwait(true), "UI Automation did not connect the window root.");
+                    Task<AutomationElement> rootTask = Task.Factory.StartNew(() =>
+                    {
+                        Assert.Equal(ApartmentState.MTA, Thread.CurrentThread.GetApartmentState());
+                        Assert.False(Thread.CurrentThread.IsThreadPoolThread);
+                        return AutomationElement.FromHandle(windowHandle);
+                    }, TestContext.Current.CancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 5000, () => rootTask.IsCompleted).ConfigureAwait(true),
+                        $"UI Automation did not connect the window root. Client task status: {rootTask.Status}.");
                     AutomationElement root = await rootTask.ConfigureAwait(true);
                     Assert.NotNull(root);
                     NavigationViewItemAutomationPeer peer = Assert.IsType<NavigationViewItemAutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(footer));
