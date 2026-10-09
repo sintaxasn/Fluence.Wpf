@@ -11,7 +11,7 @@ Fluence.Wpf follows the Windows 11 Fluent visual language and many WinUI 3 contr
 
 The [control catalog](controls.md) and [theme reference](theming.md) define the actual shipped surface. The public API and resource-key baselines in the repository are the exact inventories.
 
-## Differences to account for
+## Differences to account for																																						
 
 | Concern | Fluence.Wpf behavior |
 | --- | --- |

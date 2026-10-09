@@ -1,4 +1,4 @@
-﻿# Known issues and follow-ups
+# Known issues and follow-ups
 
 See the [documentation site](https://fluencewpf.com) for usage, [CHANGELOG.md](CHANGELOG.md) for release and breaking-change notes, and [support](SUPPORT.md) to report a reproducible issue.
 
@@ -14,9 +14,11 @@ checking the parent does not select those unrealized data items, and newly
 realized child containers do not inherit that earlier checked state. Applications
 that need selection of an entire data hierarchy should maintain that selection in
 their data model. The removal/reset reconciliation in this branch removes detached
-containers from `SelectedItems`; it does not add data-model selection propagation. A checked collapsed parent keeps its state when its bound children change but remain unrealized; only a genuinely empty child collection clears that parent state.
-This limitation needs a separate API and realization-policy decision before any
-claim of complete data-bound cascading support.
+containers from `SelectedItems`; it does not add data-model selection propagation. 
+A checked collapsed parent keeps its state when its bound children change but 
+remain unrealized; only a genuinely empty child collection clears that parent state. 
+This limitation needs a separate API and realization-policy decision before 
+any claim of complete data-bound cascading support.
 
 ## Selected text rendering in native WPF editors
 
@@ -33,8 +35,7 @@ The shared templates retain this idiomatic WPF fallback across target
 frameworks. Resource-key parity for selected-text colors does not guarantee
 identical rendered selection to WinUI in every theme or high-contrast scheme.
 See Microsoft's documentation for [TextBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.primitives.textboxbase.selectionopacity?view=netframework-4.8.1),
-[PasswordBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.selectionopacity?view=netframework-4.8.1),
-and the [.NET Framework 4.8 SelectionTextBrush addition](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility).
+[PasswordBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.selectionopacity?view=netframework-4.8.1), and the [.NET Framework 4.8 SelectionTextBrush addition](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility).
 
 ## Current follow-ups (not defects)
 
