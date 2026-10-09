@@ -8,7 +8,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
-## [0.9.2] - 2026-10-08
+## [0.9.2-pre] - 2026-10-08
 
 ### Changed
 
@@ -253,7 +253,7 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 - Five new module cmdlets: `Show-FluenceProgress`, `Update-FluenceProgress` and `Close-FluenceProgress` (a non-modal, topmost progress window with message, detail and a determinate or indeterminate bar, updated from the caller across the inline, runspace and host threading modes), `Show-FluenceRestartPrompt` (Restart now / Restart later with a countdown, returning `Restart`, `Later` or `TimedOut`) and `Show-FluenceListSelection`; `New-FluencePrompt -InputType List` with `-MultiSelect`. `Get-FluenceInput` carries `-ValidateSet` and `-As` so its `Choice` input type is reachable; `List` is deliberately not offered there, because `Show-FluenceListSelection` owns that shape. A dialog applies a theme, a backdrop or an accent only when the caller passes one, so `Set-FluenceTheme`, `Set-FluenceBackdrop` and `Set-FluenceAccent` survive a later dialog instead of being reset to `Auto`, `Mica` and the system accent; the first Fluence call in a process still seeds those three. `Set-FluenceBackdrop` accepts `Auto` like every other backdrop parameter. Five defects found in the same review are fixed: `Show-FluenceWindow -XamlFile` resolves a missing path with `-ErrorAction Stop`, so it fails on the caller thread with the path instead of on the UI thread with an empty-string XAML error; `Close-FluenceProgress` raises `CloseRequested` inside the queued work item rather than before it, closing a race that could throw "The Fluence UI pump ended" out of a `finally` block and mask the caller's own exception; a XAML `Window` root guards `-Owner` with `Dispatcher.CheckAccess()` and warns, as the other two window paths already did, instead of throwing a cross-thread error on an MTA host; a `$null` item in `-Prompts` or `-Buttons` names itself instead of failing inside the diagnostic; and a `-ValidateScript` that throws is written to the verbose stream rather than being indistinguishable from a rejected value. The gate gained two teeth: a second analyzer pass for `PSPlaceOpenBrace`, which enforces the Allman brace style the handbook requires (the default rule set leaves formatting rules out, and `IncludeRules` in the settings file would replace the run set rather than add to it), and a check on Pester's overall result, so a discovery failure fails the run instead of quietly contributing no cases. The eight test files that dot-sourced a copy of a private helper now run `InModuleScope` against the imported module, as AGENTS.md requires.
 - Dialog options: `-Timeout` and `-Countdown` on every dialog cmdlet (a `DispatcherTimer` on the UI thread closes the dialog and sets `TimedOut`), `-DefaultButton` on `Show-FluenceMessage`, and `-Image` (`file:` and `pack:` sources only), `-MessageAlignment` and `-Position` (`Center`, `TopRight`, `BottomRight`) on `Show-FluenceDialog` and `Show-FluenceMessage`.
 - `Show-FluenceMessage -Icon None` now binds, so an image-led dialog can suppress the severity glyph. The wrapper forwards `-Icon` verbatim to `Show-FluenceDialog`, which has always accepted `None`, but its own `ValidateSet` omitted the value, so `examples/ImageDialog.ps1` and the image example in the dialogs how-to failed at parameter binding. A test now pins the two sets together.
-- Module gate and CI: `Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1` runs PSScriptAnalyzer with the shipped settings and the Pester v5 suite (212 cases: the default logic lane passes 184, skips the 2 MTA-only transport cases on an STA host and leaves the 26 UI-tagged render cases not run; `-IncludeUi` runs them), `Build-Module.ps1` stages the Release `net472` and `net8.0-windows10.0.26100.0` outputs, `Package-Module.ps1` writes the zip and nupkg to `artifacts/`, and `build.yml` stages, tests on `pwsh` and `powershell.exe`, packages and uploads the module. The text-policy check now also scans `.ps1xml`. AGENTS.md and `docs/release.md` describe the two Pester lanes and their counts.
+- Module gate and CI: Test-Module.ps1 runs PSScriptAnalyzer and Pester; Build-Module.ps1 stages the Release net472 and net8.0-windows10.0.26100.0 outputs; Package-Module.ps1 creates the zip and nupkg; build.yml runs the PowerShell logic lanes and uploads module artifacts. The text-policy check now scans .ps1xml.
 - Documentation: `docs/powershell/` organised by Diataxis quadrant, with a tutorial, how-to guides for dialogs, forms and validation, windows from XAML, progress, theming at runtime, existing WPF hosts, and use of the bare library, plus one reference page per cmdlet generated from comment-based help by `build/Export-ModuleReference.ps1`, result-object and input-type tables, and explanations of the loader, threading modes, theme seeding and in-process design. `docs/powershell.md` remains as a stub pointing at the new set.
 
 ### Fixed
@@ -708,8 +708,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2...main
-[0.9.2]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...main
+[0.9.2-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2-pre
 [0.9.1]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...v0.9.1
 [0.9.0-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v0.9.0-pre
 [0.8.19-preview]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.18-pre...v0.8.19-pre
