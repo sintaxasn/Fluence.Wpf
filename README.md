@@ -1,6 +1,4 @@
-﻿# Fluence.Wpf
-
-![Fluence.Wpf brand](assets/Fluence_Lockup_Stacked_Gradient.png)
+﻿![Fluence.Wpf brand](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf/main/assets/Fluence_Lockup_Stacked_Gradient.svg)
 
 ## Introduction
 
@@ -22,10 +20,18 @@ The [documentation site](https://fluencewpf.com) links tutorials, task guides, r
 
 ## Screenshots
 
-| Gallery home                                                 | Gallery buttons                                              | MVVM task manager                                            | PowerShell Controls Tour                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![Gallery home in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-light.png)<br>Light | ![Button gallery in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-light.png)<br>Light | ![MVVM task manager in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-light.png)<br>Light | ![PowerShell ControlsTour in light mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-light.png)<br>Light |
-| ![Gallery home in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-dark.png)<br>Dark | ![Button gallery in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-dark.png)<br>Dark | ![MVVM task manager in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/mvvm-dark.png)<br>Dark | ![PowerShell ControlsTour in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-dark.png)<br>Dark |
+| Gallery Home Light Mode | Gallery Home Dark Mode |
+|---------------------|-----------------|
+| ![LightMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-light.png) | ![DarkMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-home-dark.png)
+
+| Gallery Buttons Light Mode | Gallery Buttons Dark Mode |
+|---------------------|-----------------|
+| ![LightMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-light.png) | ![DarkMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/gallery-buttons-dark.png)
+
+
+| PowerShell Light | PowerShell Dark |
+|---------------------|-----------------|
+| ![PowerShellLightMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-light.png) | ![PowerShellDarkMode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/screenshots/powershell-dark.png)
 
 
 
