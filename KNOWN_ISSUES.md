@@ -1,4 +1,4 @@
-# Known issues and follow-ups
+﻿# Known issues and follow-ups
 
 See the [documentation site](https://fluencewpf.com) for usage, [CHANGELOG.md](CHANGELOG.md) for release and breaking-change notes, and [support](SUPPORT.md) to report a reproducible issue.
 
@@ -61,7 +61,7 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
   second after 1 minute 56 seconds, about 591 tests in. The abort point moved
   between runs, so it is non-deterministic, and neither run named a test. Class
   filtering is unaffected: the same assembly completes when it is split, and the
-  two complementary lanes AGENTS.md section 6 describes cover all cases in about
+  two complementary lanes described in Fluence.Wpf.Tests/AGENTS.md cover all cases in about
   2 minutes 57 seconds. CI and the pull-request template therefore run both TFMs
   as two lanes and sum the case counts, which keeps the union provably equal to
   the whole assembly. Nothing here is known to be a product defect; the
@@ -89,7 +89,7 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
   flaky-test notes named this test. This is grouped with the whole-assembly
   abort above as a suspected symptom of the same `net472` resource pressure
   late in a long single-process run, not a defect in the accent-fill
-  assertion; the two-lane split in AGENTS.md section 6 covers this test
+  assertion; the two-lane split in Fluence.Wpf.Tests/AGENTS.md covers this test
   without reproducing the failure.
 
 - **`GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggleAsync`

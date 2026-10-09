@@ -15,7 +15,7 @@ The library targets .NET Framework 4.7.2, .NET 8 for Windows, and .NET 10 for Wi
 
 ## Run the .NET tests
 
-The xunit.v3 suite uses Microsoft Testing Platform. Build the solution, then run the executable for the target framework. The .NET Framework suite needs two complementary class filters because its whole-assembly process can abort. See the [test project README](Fluence.Wpf.Tests/README.md) for both lane commands.
+The xunit.v3 suite uses Microsoft Testing Platform. Build the solution, then run the executable for the target framework. Run the .NET Framework suite as two complementary class filters because its whole-assembly process can abort. The .NET 10 suite can run in one pass locally; CI splits both target frameworks into two lanes. See the [test project README](Fluence.Wpf.Tests/README.md) for exact commands.
 
 ```powershell
 Fluence.Wpf.Tests/bin/Debug/net10.0-windows10.0.26100.0/Fluence.Wpf.Tests.exe --filter-not-trait "Category=Screenshots" --no-ansi --progress off
@@ -41,8 +41,8 @@ The [module README](Fluence.Wpf.PowerShell.Module/README.md) documents prerequis
 - Keep the repository's BSD 3-Clause header on every C# source file. Document public APIs with XML comments.
 - Follow the nullable and analyzer settings in `Directory.Build.props` and `.editorconfig`. Warnings are build errors.
 - Use the existing theme architecture and canonical resource keys. The [theming guide](https://fluencewpf.com/docs/theming) and [developer handbook](AGENTS.md) describe the contract.
-- Public documentation is maintained in the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Use that repository for Docusaurus authoring and publishing; use this repository for library source and its release materials.
-- Preserve release facts in [CHANGELOG.md](CHANGELOG.md) and document breaking changes in the changelog and [release guide](docs/release.md).
+- Public website authoring and publishing are maintained in the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Use this repository for library source, the public changelog, and authored product guides.
+- Preserve public change facts in [CHANGELOG.md](CHANGELOG.md) and document breaking changes there. The workflow in [.github/workflows/build.yml](.github/workflows/build.yml) is the source of truth for CI packaging and publication behavior.
 
 Check the text policy before opening a pull request:
 
@@ -53,4 +53,4 @@ git diff --check
 
 ## Pull requests
 
-Describe the user-facing change, affected target frameworks, and the verification you ran. Include screenshots for visual changes in Light, Dark, and High Contrast when relevant. Link the documentation page or example that teaches the new behavior. The [release guide](docs/release.md) describes packaging and publication.
+Describe the user-facing change, affected target frameworks, and the verification you ran. Include screenshots for visual changes in Light, Dark, and High Contrast when relevant. Link the documentation page or example that teaches the new behavior. The workflow in [.github/workflows/build.yml](.github/workflows/build.yml) is the source of truth for CI packaging and publication behavior.
