@@ -8,7 +8,7 @@ Security fixes are considered for the current main branch and the latest tagged 
 
 ## Report a vulnerability
 
-Use GitHub's private vulnerability reporting from this repository's **Security** tab. If that option is unavailable, open a public issue asking for a private contact channel. Do not include exploit details or secrets in the public issue.
+Use GitHub's private vulnerability reporting from this repository's **Security** tab, or email [security@fluencewpf.com](mailto:security@fluencewpf.com). Do not include exploit details or secrets in public issues.
 
 Include the affected version or commit, Windows version, target framework or PowerShell host, a minimal reproduction, expected and observed behavior, and the impact. If native interop or process termination is involved, include the relevant exception or crash details.
 
