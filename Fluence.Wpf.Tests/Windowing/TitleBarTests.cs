@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -919,6 +920,87 @@ namespace Fluence.Wpf.Tests.Windowing
                 w.IsMaximizable = true;
                 Assert.True(InvokeCanHandler(w, "OnCanResizeWindow", CreateCanExecuteArgs(SystemCommands.MaximizeWindowCommand)),
                     "Explicit IsMaximizeButtonVisible=Visible + IsMaximizable=true must allow MaximizeWindowCommand even under NoResize.");
+            });
+        }
+
+        [Fact]
+        public Task CaptionButtonStyleVisible_UnderNoResize_OverridesBaselineAsync()
+        {
+            return RunWithShownWindowAsync(async static w =>
+            {
+                Style baseStyle = Assert.IsType<Style>(w.Style, exactMatch: false);
+                Style consumerStyle = new(typeof(FluenceWindow), baseStyle);
+                consumerStyle.Setters.Add(new Setter(FluenceWindow.IsMinimizeButtonVisibleProperty, Visibility.Visible));
+                consumerStyle.Setters.Add(new Setter(FluenceWindow.IsMaximizeButtonVisibleProperty, Visibility.Visible));
+                w.Style = consumerStyle;
+                w.ResizeMode = ResizeMode.NoResize;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+
+                Assert.Equal(BaseValueSource.Style,
+                    DependencyPropertyHelper.GetValueSource(w, FluenceWindow.IsMinimizeButtonVisibleProperty).BaseValueSource);
+                Assert.Equal(BaseValueSource.Style,
+                    DependencyPropertyHelper.GetValueSource(w, FluenceWindow.IsMaximizeButtonVisibleProperty).BaseValueSource);
+
+                System.Windows.Controls.Button minimize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_minimizeButton"), exactMatch: false);
+                System.Windows.Controls.Button maximize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_maximizeButton"), exactMatch: false);
+                Assert.Equal(Visibility.Visible, minimize.Visibility);
+                Assert.Equal(Visibility.Visible, maximize.Visibility);
+                Assert.True(minimize.IsEnabled);
+                Assert.True(maximize.IsEnabled);
+                Assert.True(SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, w));
+                Assert.True(SystemCommands.MaximizeWindowCommand.CanExecute(parameter: null, w));
+            });
+        }
+
+        [Fact]
+        public Task CaptionButtonBindingVisible_UnderNoResize_OverridesBaselineAsync()
+        {
+            return RunWithShownWindowAsync(async static w =>
+            {
+                w.Tag = Visibility.Visible;
+                _ = w.SetBinding(FluenceWindow.IsMinimizeButtonVisibleProperty, new Binding(nameof(FrameworkElement.Tag)) { Source = w });
+                _ = w.SetBinding(FluenceWindow.IsMaximizeButtonVisibleProperty, new Binding(nameof(FrameworkElement.Tag)) { Source = w });
+                w.ResizeMode = ResizeMode.NoResize;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+
+                ValueSource minimizeSource = DependencyPropertyHelper.GetValueSource(w, FluenceWindow.IsMinimizeButtonVisibleProperty);
+                ValueSource maximizeSource = DependencyPropertyHelper.GetValueSource(w, FluenceWindow.IsMaximizeButtonVisibleProperty);
+                Assert.Equal(BaseValueSource.Local, minimizeSource.BaseValueSource);
+                Assert.True(minimizeSource.IsExpression);
+                Assert.Equal(BaseValueSource.Local, maximizeSource.BaseValueSource);
+                Assert.True(maximizeSource.IsExpression);
+
+                System.Windows.Controls.Button minimize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_minimizeButton"), exactMatch: false);
+                System.Windows.Controls.Button maximize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_maximizeButton"), exactMatch: false);
+                Assert.Equal(Visibility.Visible, minimize.Visibility);
+                Assert.Equal(Visibility.Visible, maximize.Visibility);
+                Assert.True(minimize.IsEnabled);
+                Assert.True(maximize.IsEnabled);
+                Assert.True(SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, w));
+                Assert.True(SystemCommands.MaximizeWindowCommand.CanExecute(parameter: null, w));
+            });
+        }
+
+        [Theory]
+        [InlineData(Visibility.Hidden)]
+        [InlineData(Visibility.Collapsed)]
+        public Task CaptionButtonHidden_UnderCanResize_DisablesButtonsButKeepsRoutedCommandsAsync(Visibility visibility)
+        {
+            return RunWithShownWindowAsync(async w =>
+            {
+                w.ResizeMode = ResizeMode.CanResize;
+                w.IsMinimizeButtonVisible = visibility;
+                w.IsMaximizeButtonVisible = visibility;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+
+                System.Windows.Controls.Button minimize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_minimizeButton"), exactMatch: false);
+                System.Windows.Controls.Button maximize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_maximizeButton"), exactMatch: false);
+                Assert.Equal(visibility, minimize.Visibility);
+                Assert.Equal(visibility, maximize.Visibility);
+                Assert.False(minimize.IsEnabled);
+                Assert.False(maximize.IsEnabled);
+                Assert.True(SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, w));
+                Assert.True(SystemCommands.MaximizeWindowCommand.CanExecute(parameter: null, w));
             });
         }
 

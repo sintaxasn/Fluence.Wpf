@@ -1330,10 +1330,8 @@ namespace Fluence.Wpf.Controls
         #region Caption-button reflow
 
         /// <summary>
-        /// Recomputes the visibility and enabled state of all four caption buttons by blending the
-        /// <see cref="CaptionButtonChrome"/> baselines (derived from <see cref="Window.ResizeMode"/>
-        /// and <see cref="Window.WindowState"/>) with any explicitly-set caption-chrome DP overrides,
-        /// then reflows the button slots so collapsed buttons leave no gap.
+        /// Applies the effective caption-button policy and reflows the button slots so collapsed
+        /// buttons leave no gap.
         /// </summary>
         private void UpdateCaptionButtons()
         {
@@ -1342,59 +1340,34 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            // Minimize: an explicit IsMinimizeButtonVisible (e.g. flipped back to Visible under
-            // ResizeMode=NoResize) wins over the ResizeMode-derived baseline; otherwise keep the
-            // chrome defaults. IsMinimizable gates the enabled state.
-            CaptionButtonChrome.GetMinimizeChrome(ResizeMode, out Visibility minimizeVisibility, out bool minimizeEnabled);
-            if (IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty))
-            {
-                minimizeVisibility = IsMinimizeButtonVisible;
-                minimizeEnabled = minimizeVisibility is Visibility.Visible;
-            }
-            if (!IsMinimizable)
-            {
-                minimizeEnabled = false;
-            }
+            CaptionButtonChrome.GetMinimizeChrome(
+                ResizeMode,
+                GetCaptionVisibilityOverride(IsMinimizeButtonVisibleProperty),
+                IsMinimizable,
+                out Visibility minimizeVisibility,
+                out bool minimizeEnabled);
             _minimizeButton.Visibility = minimizeVisibility;
             _minimizeButton.IsEnabled = minimizeEnabled;
 
-            // Maximize / restore: the pair shares one slot; the visible member tracks WindowState.
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode,
                 WindowState,
+                GetCaptionVisibilityOverride(IsMaximizeButtonVisibleProperty),
+                IsMaximizable,
                 out Visibility maxVis,
                 out Visibility restVis,
                 out bool maxEn,
                 out bool restEn);
-            if (IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty))
-            {
-                ApplyMaximizeRestoreVisibilityOverride(IsMaximizeButtonVisible, out maxVis, out restVis);
-                bool explicitlyVisible = IsMaximizeButtonVisible is Visibility.Visible;
-                maxEn = explicitlyVisible && WindowState is not WindowState.Maximized;
-                restEn = explicitlyVisible && WindowState is WindowState.Maximized;
-            }
-            if (!IsMaximizable)
-            {
-                maxEn = false;
-                restEn = false;
-            }
             _maximizeButton.Visibility = maxVis;
             _restoreButton.Visibility = restVis;
             _maximizeButton.IsEnabled = maxEn;
             _restoreButton.IsEnabled = restEn;
 
-            // Close: always present from the chrome baseline; an explicit override or IsClosable=false
-            // can hide or disable it.
-            CaptionButtonChrome.GetCloseChrome(out Visibility closeVisibility, out bool closeEnabled);
-            if (IsCaptionChromeOverrideExplicit(IsCloseButtonVisibleProperty))
-            {
-                closeVisibility = IsCloseButtonVisible;
-                closeEnabled = closeVisibility is Visibility.Visible;
-            }
-            if (!IsClosable)
-            {
-                closeEnabled = false;
-            }
+            CaptionButtonChrome.GetCloseChrome(
+                GetCaptionVisibilityOverride(IsCloseButtonVisibleProperty),
+                IsClosable,
+                out Visibility closeVisibility,
+                out bool closeEnabled);
             _closeButton.Visibility = closeVisibility;
             _closeButton.IsEnabled = closeEnabled;
 
@@ -1446,41 +1419,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Translates an explicit <see cref="IsMaximizeButtonVisible"/> value into the concrete
-        /// maximize / restore visibilities for the current window state (only one of the pair is ever
-        /// shown).
+        /// Returns the effective caption visibility when its value comes from an explicit source,
+        /// including a style or binding; otherwise returns <see langword="null"/>.
         /// </summary>
-        /// <param name="visibility">The explicit visibility value to apply.</param>
-        /// <param name="maximizeVisibility">The resulting visibility of the maximize button.</param>
-        /// <param name="restoreVisibility">The resulting visibility of the restore button.</param>
-        private void ApplyMaximizeRestoreVisibilityOverride(Visibility visibility, out Visibility maximizeVisibility, out Visibility restoreVisibility)
-        {
-            if (visibility is Visibility.Visible)
-            {
-                maximizeVisibility = WindowState is WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
-                restoreVisibility = WindowState is WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
-                return;
-            }
-            if (visibility is Visibility.Hidden)
-            {
-                maximizeVisibility = WindowState is WindowState.Maximized ? Visibility.Collapsed : Visibility.Hidden;
-                restoreVisibility = WindowState is WindowState.Maximized ? Visibility.Hidden : Visibility.Collapsed;
-                return;
-            }
-            maximizeVisibility = Visibility.Collapsed;
-            restoreVisibility = Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// Returns <see langword="true"/> when the caption-chrome override property has been explicitly assigned
-        /// (via code, XAML local value, style, binding, etc.) rather than left at its declared default.
-        /// </summary>
-        /// <param name="dp">The dependency property to check.</param>
-        /// <returns><see langword="true"/> if the property has been explicitly assigned; otherwise, <see langword="false"/>.</returns>
-        private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
+        /// <param name="dp">The caption visibility dependency property.</param>
+        private Visibility? GetCaptionVisibilityOverride(DependencyProperty dp)
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
-            return source.BaseValueSource is not BaseValueSource.Default and not BaseValueSource.Inherited;
+            return source.BaseValueSource is not BaseValueSource.Default and not BaseValueSource.Inherited
+                ? (Visibility)GetValue(dp)
+                : null;
         }
 
         #endregion Caption-button reflow
@@ -1947,22 +1895,18 @@ namespace Fluence.Wpf.Controls
 
         private void OnCanResizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
-            bool allowedByResizeMode =
-                ResizeMode is ResizeMode.CanResize or
-                ResizeMode.CanResizeWithGrip;
-            bool allowedByExplicitDp =
-                IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty) &&
-                IsMaximizeButtonVisible is Visibility.Visible;
-            e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMaximizable;
+            e.CanExecute = CaptionButtonChrome.CanMaximize(
+                ResizeMode,
+                GetCaptionVisibilityOverride(IsMaximizeButtonVisibleProperty),
+                IsMaximizable);
         }
 
         private void OnCanMinimizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
-            bool allowedByResizeMode = ResizeMode is not ResizeMode.NoResize;
-            bool allowedByExplicitDp =
-                IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty) &&
-                IsMinimizeButtonVisible is Visibility.Visible;
-            e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMinimizable;
+            e.CanExecute = CaptionButtonChrome.CanMinimize(
+                ResizeMode,
+                GetCaptionVisibilityOverride(IsMinimizeButtonVisibleProperty),
+                IsMinimizable);
         }
 
         private void OnCloseWindow(object sender, ExecutedRoutedEventArgs e)

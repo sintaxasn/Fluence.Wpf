@@ -11,6 +11,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 ### Changed
 
 - Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
+- Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.
 
 ## [0.9.2-pre] - 2026-10-08
 
