@@ -476,6 +476,7 @@ namespace Fluence.Wpf.Controls
         public static ImageSource? DefaultIcon { get; } = CreateDefaultIcon();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is an internal resource URI.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The optional icon must fail to null; an exception escaping this static initializer would prevent every FluenceWindow from being constructed.")]
         private static ImageSource? CreateDefaultIcon()
         {
             try
@@ -502,13 +503,9 @@ namespace Fluence.Wpf.Controls
             // or session-0 host such as PSADT running as SYSTEM) must degrade to a null icon, never
             // escape this static field initializer and fault the FluenceWindow type with a
             // TypeInitializationException - that would break every window construction in the process.
-            // The when-filter is always true (Exception.Message is never null); it catches broadly while
-            // satisfying the no-general-catch analyzers, matching the filtered-catch idiom used elsewhere
-            // in this assembly.
             catch
             {
                 return null;
-                throw;
             }
         }
 
