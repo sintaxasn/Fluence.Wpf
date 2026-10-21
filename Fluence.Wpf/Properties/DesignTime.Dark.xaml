@@ -43,6 +43,7 @@
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled">#28FFFFFF</Color>
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver">#E658B6FF</Color>
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed">#CC58B6FF</Color>
+    <Color x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOver">#E658B6FF</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundChecked">#FF000000</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#87FFFFFF</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">#FF000000</Color>
@@ -233,6 +234,7 @@
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabledBrush" Color="#28FFFFFF" />
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush" Color="#E658B6FF" />
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePressedBrush" Color="#CC58B6FF" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOverBrush" Color="#E658B6FF" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabledBrush" Color="#87FFFFFF" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOverBrush" Color="#FF000000" />

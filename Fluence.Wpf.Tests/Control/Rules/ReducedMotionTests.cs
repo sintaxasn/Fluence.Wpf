@@ -82,6 +82,41 @@ namespace Fluence.Wpf.Tests.Control.Rules
         }
 
         [Fact]
+        public Task ReducedMotion_CheckBox_SnapsCheckAndDashWithoutClocksAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MotionHelper.OverrideIsMotionEnabled = false;
+                Controls.CheckBox checkBox = new() { Content = "Option", IsThreeState = true, IsChecked = false, IsHitTestVisible = false };
+                Window window = new() { Content = checkBox, Width = 240, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Path check = Assert.IsType<Path>(checkBox.Template.FindName("PART_CheckGlyph", checkBox));
+                    Path dash = Assert.IsType<Path>(checkBox.Template.FindName("PART_IndeterminateGlyph", checkBox));
+
+                    checkBox.IsChecked = true;
+                    Assert.Equal(1.0, check.Opacity);
+                    Assert.Equal(0.0, check.StrokeDashOffset);
+                    Assert.False(check.HasAnimatedProperties);
+
+                    checkBox.IsChecked = null;
+                    Assert.Equal(0.0, check.Opacity);
+                    Assert.Equal(1.0, dash.Opacity);
+                    Assert.False(dash.HasAnimatedProperties);
+
+                    checkBox.IsChecked = false;
+                    Assert.Equal(0.0, dash.Opacity);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task ReducedMotion_RadioButton_SnapsGlyphSizesWithoutClocksAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>

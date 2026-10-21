@@ -1,3 +1,5 @@
 ﻿#nullable enable
 override Fluence.Wpf.Controls.RadioButton.OnApplyTemplate() -> void
 override Fluence.Wpf.Controls.RadioButton.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void
+override Fluence.Wpf.Controls.CheckBox.OnApplyTemplate() -> void
+override Fluence.Wpf.Controls.CheckBox.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void

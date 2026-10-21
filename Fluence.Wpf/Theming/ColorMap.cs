@@ -258,6 +258,7 @@ namespace Fluence.Wpf.Theming
                 m["CheckBoxCheckGlyphForegroundCheckedDisabled"] = window;
                 m["CheckBoxCheckBackgroundFillIndeterminate"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminatePointerOver"] = highlightText;
+                m["CheckBoxCheckBackgroundStrokeIndeterminatePointerOver"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminatePressed"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminateDisabled"] = grayText;
                 m["CheckBoxCheckGlyphForegroundIndeterminate"] = highlightText;
@@ -340,6 +341,7 @@ namespace Fluence.Wpf.Theming
             m["CheckBoxCheckGlyphForegroundCheckedDisabled"] = m[TextOnAccentDisabledKey];
             m["CheckBoxCheckBackgroundFillIndeterminate"] = m[AccentFillDefaultKey];
             m["CheckBoxCheckBackgroundFillIndeterminatePointerOver"] = m[AccentFillSecondaryKey];
+            m["CheckBoxCheckBackgroundStrokeIndeterminatePointerOver"] = m[AccentFillSecondaryKey];
             m["CheckBoxCheckBackgroundFillIndeterminatePressed"] = m[AccentFillTertiaryKey];
             m["CheckBoxCheckBackgroundFillIndeterminateDisabled"] = m[AccentFillDisabledKey];
             m["CheckBoxCheckGlyphForegroundIndeterminate"] = m[TextOnAccentPrimaryKey];

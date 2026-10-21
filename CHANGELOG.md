@@ -11,9 +11,11 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 ### Added
 
 - Added four RadioButton checked outer-ring stroke color states (base, pointer-over, pressed, and disabled), each with a brush twin.
+- Added the CheckBox indeterminate pointer-over stroke color and brush resources so its High Contrast outline can follow `Highlight` independently of the `HighlightText` fill.
 
 ### Fixed
 
+- Updated the CheckBox checkmark to follow WinUI path-trim geometry and state-route timing while retaining native WPF selection and input behavior. The 20-DIP box keeps a 1-DIP outline, the indeterminate dash stays static, disabled motion snaps to the resolved glyph, and unload cancels active routes. Discovery adds five test cases per target framework across CheckBox interaction, route-queue, and reduced-motion coverage.
 - Corrected the RadioButton visual states to match WinUI geometry and timing while preserving native WPF grouping, keyboard, and UI Automation behavior. Selection opacity changes immediately; hover and press size transitions take 250 ms, disabled sizing takes 167 ms, and the pressed glyph overlay scales from 4 to 10 DIP in 167 ms.
 - Corrected the default ProgressBar indicator alignment so its 3 DIP indicator and 1 DIP track share a vertical centerline. Two focused layout theories add ten test cases per full target framework: eight height/border combinations each check 0%, 50%, and 100% progress, and two cover Auto-height sizing when `TrackHeight` exceeds `MinHeight`.
 
