@@ -609,7 +609,6 @@ namespace Fluence.Wpf.Controls
             _handle = new WindowInteropHelper(this).EnsureHandle();
             _hwndSource = HwndSource.FromHwnd(_handle);
             _hwndSource?.AddHook(WndProc);
-            UpdateWindowChrome();
             ApplyWindowShell();
 
             // Subscribe AFTER realisation (not in the constructor) so only shown windows are pinned
@@ -831,6 +830,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void ApplyWindowShell()
         {
+            UpdateWindowChrome();
+
             if (_handle != IntPtr.Zero)
             {
                 HideNativeCaptionButtons();
