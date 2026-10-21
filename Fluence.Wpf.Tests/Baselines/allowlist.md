@@ -508,3 +508,22 @@ filtering, preserving the existing explicit regeneration skip.
 - `PowerShellDemoScripts_FollowCanonicalBootstrap` is renamed to `PowerShellModuleExamples_UseModule`. It now verifies that the four window examples import the module manifest and use `Show-FluenceWindow`; the module owns the former manual bootstrap.
 - `PowerShellDemoXaml_UsesCurrentFluenceWindowProperties` is renamed to `PowerShellModuleXaml_UsesCurrentFluenceWindowProperties` and validates `Fluence.Wpf.PowerShell.Module/examples/MainWindow.xaml`.
 - Both names are updated in the net472 and net10 baselines. Test case counts are unchanged.
+
+## Window and control branch integration
+
+The merged baseline inventories were checked as multisets against fresh Debug
+`--list-tests json` discovery: 1420 net472 case rows and 1456 net10 case rows.
+Both method inventories also match their framework's discovered method names.
+The merge combines the window branch's new Windowing cases with the ProgressBar,
+RadioButton, and CheckBox cases from the control branch; no additional test was
+removed during merge resolution.
+
+The ordinary CI floors are 1451 net472 and 1452 net10 after filtering out
+`Category=Screenshots`. The floors combine the measured parent-branch TRX deltas
+from their shared base. In the merged net472 output, six Windowing theory
+methods occupy six discovery rows but execute 39 cases, a difference of 33;
+the affected Windowing run confirmed 263 runtime cases versus 230 listed rows.
+The existing slider orientation theory described above likewise has one
+net472 discovery row and two runtime cases. These runtime expansions account
+for the difference between the net472 filtered discovery count of 1417 and
+its CI floor of 1451. The net10 filtered discovery count is 1452.

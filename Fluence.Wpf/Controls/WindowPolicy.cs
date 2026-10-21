@@ -41,57 +41,11 @@ namespace Fluence.Wpf.Controls
     /// Pure-logic policy layer for <see cref="FluenceWindow"/>. All methods are stateless and
     /// side-effect-free so they can be unit tested without a window handle. The class maps the
     /// requested <see cref="WindowBackdropType"/> and OS capabilities to concrete DWM instructions and
-    /// WPF <see cref="WindowChrome"/> parameters, insulating the window code-behind from the
+    /// WPF <see cref="WindowChrome"/> adjustments, insulating the window code-behind from the
     /// capability-detection and downgrade rules.
     /// </summary>
     internal static class WindowPolicy
     {
-        /// <summary>
-        /// Constructs a canonical <see cref="WindowChrome"/> for a <see cref="FluenceWindow"/>.
-        /// The chrome is fixed regardless of backdrop or resize mode; per-state adjustments are
-        /// made afterward via <see cref="GetResizeBorderThickness"/> and
-        /// <see cref="GetGlassFrameThickness"/>.
-        /// </summary>
-        /// <remarks>
-        /// Parameter choices:
-        /// <list type="bullet">
-        ///   <item><term>CaptionHeight = 0</term><description>
-        ///     Routes all title-bar hits through <c language="csharp">WM_NCHITTEST</c> so the custom caption can
-        ///     distinguish drag, resize, snap, and button regions.
-        ///   </description></item>
-        ///   <item><term>GlassFrameThickness = -1</term><description>
-        ///     Extends DWM glass into the full client area; overridden per-window by
-        ///     <see cref="GetGlassFrameThickness"/> when no backdrop is active.
-        ///   </description></item>
-        ///   <item><term>ResizeBorderThickness = 4</term><description>
-        ///     Matches the WinUI 3 / .NET 10 WPF FluentWindow invisible hit margin.
-        ///   </description></item>
-        ///   <item><term>UseAeroCaptionButtons = false</term><description>
-        ///     Disables the native Aero caption buttons; Fluence renders its own.
-        ///   </description></item>
-        ///   <item><term>NonClientFrameEdges = None</term><description>
-        ///     Lets the client area extend into the caption strip.
-        ///   </description></item>
-        ///   <item><term>CornerRadius = 0</term><description>
-        ///     WPF-side rounding is off; rounded corners are driven by
-        ///     <c language="csharp">DWMWA_WINDOW_CORNER_PREFERENCE</c> to avoid clipping the DWM backdrop.
-        ///   </description></item>
-        /// </list>
-        /// </remarks>
-        /// <returns>A new <see cref="WindowChrome"/> with the canonical Fluence settings.</returns>
-        internal static WindowChrome CreateWindowChrome()
-        {
-            return new WindowChrome
-            {
-                CaptionHeight = 0,
-                CornerRadius = new CornerRadius(0),
-                GlassFrameThickness = new Thickness(-1),
-                ResizeBorderThickness = new Thickness(4),
-                UseAeroCaptionButtons = false,
-                NonClientFrameEdges = NonClientFrameEdges.None,
-            };
-        }
-
         /// <summary>
         /// Returns the <see cref="WindowChrome.GlassFrameThickness"/> appropriate for the given
         /// backdrop and shadow state.

@@ -13,6 +13,13 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 - Added four RadioButton checked outer-ring stroke color states (base, pointer-over, pressed, and disabled), each with a brush twin.
 - Added the CheckBox indeterminate pointer-over stroke color and brush resources so its High Contrast outline can follow `Highlight` independently of the `HighlightText` fill.
 
+### Changed
+
+- Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
+- Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.
+- Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.
+- Moved theme-transition readiness and eligibility into ThemeTransitionOverlay, preserving custom title-bar and transition behavior, with seven new lifecycle tests and refreshed test inventories.
+
 ### Fixed
 
 - Updated the CheckBox checkmark to follow WinUI path-trim geometry and state-route timing while retaining native WPF selection and input behavior. The 20-DIP box keeps a 1-DIP outline, the indeterminate dash stays static, disabled motion snaps to the resolved glyph, and unload cancels active routes. Discovery adds five test cases per target framework across CheckBox interaction, route-queue, and reduced-motion coverage.
