@@ -11,6 +11,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 ### Changed
 
 - Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
+- Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.
 - Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.
 - Moved theme-transition readiness and eligibility into ThemeTransitionOverlay, preserving custom title-bar and transition behavior, with seven new lifecycle tests and refreshed test inventories.
 

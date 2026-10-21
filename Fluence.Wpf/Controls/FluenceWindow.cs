@@ -1705,19 +1705,16 @@ namespace Fluence.Wpf.Controls
             // windows whose IsMaximizable=false, or on Windows 10 where the flyout doesn't
             // exist at all. In those cases, fall through to 0 so WPF input routing handles
             // the click as a normal button press.
-            bool shouldExposeSnapFlyout = SnapLayoutHelper.IsSnapLayoutEnabled()
-                && IsMaximizable
-                && OsVersionHelper.IsWindows11;
-            if (_maximizeButton?.Visibility is Visibility.Visible &&
+            if ((_maximizeButton?.Visibility is Visibility.Visible &&
                 _maximizeButton.IsEnabled &&
-                IsOverElement(_maximizeButton, point))
-            {
-                return shouldExposeSnapFlyout ? PInvoke.HTMAXBUTTON : 0;
-            }
-            if (_restoreButton?.Visibility is Visibility.Visible &&
+                IsOverElement(_maximizeButton, point)) ||
+                (_restoreButton?.Visibility is Visibility.Visible &&
                 _restoreButton.IsEnabled &&
-                IsOverElement(_restoreButton, point))
+                IsOverElement(_restoreButton, point)))
             {
+                bool shouldExposeSnapFlyout = SnapLayoutHelper.IsSnapLayoutEnabled()
+                    && IsMaximizable
+                    && OsVersionHelper.IsWindows11;
                 return shouldExposeSnapFlyout ? PInvoke.HTMAXBUTTON : 0;
             }
 

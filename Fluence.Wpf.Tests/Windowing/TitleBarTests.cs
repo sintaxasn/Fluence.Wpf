@@ -40,6 +40,7 @@ using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
 using Xunit;
@@ -540,6 +541,48 @@ namespace Fluence.Wpf.Tests.Windowing
                 Assert.False(btn.IsEnabled);
 
                 Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.NotEqual(PInvoke.HTMAXBUTTON, hit);
+            });
+        }
+
+        [Fact]
+        public Task HitTestTitleBar_RestoreButton_UsesCurrentSnapLayoutPolicyAsync()
+        {
+            return RunWithShownWindowAsync(async static w =>
+            {
+                w.WindowState = WindowState.Maximized;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+
+                System.Windows.Controls.Button maximize = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_maximizeButton"), exactMatch: false);
+                System.Windows.Controls.Button restore = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_restoreButton"), exactMatch: false);
+                Assert.Equal(Visibility.Collapsed, maximize.Visibility);
+                Assert.Equal(Visibility.Visible, restore.Visibility);
+                Assert.True(restore.IsEnabled);
+
+                Point center = restore.PointToScreen(new Point(restore.RenderSize.Width / 2, restore.RenderSize.Height / 2));
+                uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                uint expected = SnapLayoutHelper.IsSnapLayoutEnabled() && w.IsMaximizable && OsVersionHelper.IsWindows11
+                    ? PInvoke.HTMAXBUTTON
+                    : 0u;
+                Assert.Equal(expected, hit);
+            });
+        }
+
+        [Fact]
+        public Task HitTestTitleBar_RestoreButtonHidden_DoesNotReturnHtMaxButtonAsync()
+        {
+            return RunWithShownWindowAsync(async static w =>
+            {
+                w.WindowState = WindowState.Maximized;
+                w.IsMaximizeButtonVisible = Visibility.Hidden;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+
+                System.Windows.Controls.Button restore = Assert.IsType<System.Windows.Controls.Button>(GetCaptionButtonField(w, "_restoreButton"), exactMatch: false);
+                Assert.Equal(Visibility.Hidden, restore.Visibility);
+                Assert.False(restore.IsEnabled);
+
+                Point center = restore.PointToScreen(new Point(restore.RenderSize.Width / 2, restore.RenderSize.Height / 2));
                 uint? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.NotEqual(PInvoke.HTMAXBUTTON, hit);
             });
