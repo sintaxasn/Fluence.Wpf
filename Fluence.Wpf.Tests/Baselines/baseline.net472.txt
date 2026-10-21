@@ -1000,6 +1000,16 @@
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_PausedMode_TracksCautionBrushAcrossThemeChangeAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_ErrorMode_UsesCriticalBrushAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_DefaultStyle_UsesWinUiThinTrackMetricsAsync
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 0, borderThickness: 0)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 0, borderThickness: 1)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 8, borderThickness: 0)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 8, borderThickness: 1)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 24, borderThickness: 0)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 24, borderThickness: 1)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 25, borderThickness: 0)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_TrackAndFill_RenderOnTheSameCenterlineAsync(height: 25, borderThickness: 1)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_AutoHeight_ReservesCustomTrackHeightAsync(borderThickness: 0)
+  Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_AutoHeight_ReservesCustomTrackHeightAsync(borderThickness: 1)
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_ReturningToStandardMode_RestoresAccentBrushAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_IndicatorHost_IsClippedToRoundedGeometryAsync
   Fluence.Wpf.Tests.Control.ProgressBarTests.ProgressBar_IndeterminateBars_UseWinUiWidthRatiosAsync

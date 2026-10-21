@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Fixed
+
+- Corrected the default ProgressBar indicator alignment so its 3 DIP indicator and 1 DIP track share a vertical centerline. Two focused layout theories add ten test cases per full target framework: eight height/border combinations each check 0%, 50%, and 100% progress, and two cover Auto-height sizing when `TrackHeight` exceeds `MinHeight`.
+
 ## [0.9.2-pre] - 2026-10-08
 
 ### Changed

@@ -81,6 +81,8 @@ The theme also styles some native framework elements used inside these controls.
 | [Border](controls/border.md), [StackPanel](controls/stack-panel.md), [DockPanel](controls/dock-panel.md), [Separator](controls/separator.md), [Expander](controls/expander.md) | Layout and grouped content | WPF layout patterns with Fluent defaults |
 | [SmoothScrollViewer](controls/smooth-scroll-viewer.md), [ScrollBarExtensions](controls/scroll-bar-extensions.md) | Scrolling and native scroll bar behavior | Smooth scrolling and attached extensions |
 
+The ProgressBar uses a 1 DIP track and a 3 DIP indicator by default. Their vertical centerlines align in the determinate presentation. Custom `TrackHeight` or `MinHeight` values can have half-pixel offsets from device-pixel rounding.
+
 ## Text, icons, and images
 
 | Types | Use them for | Key detail |
