@@ -29,7 +29,6 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Shell;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
 using Windows.Win32;
@@ -809,53 +808,6 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         #endregion GetCornerPreference - enum → DWMWCP_* mapping
-
-        #region CreateWindowChrome - canonical FluenceWindow chrome contract
-
-        [Fact]
-        public void CreateWindowChrome_CaptionHeight_IsZero()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.Equal(0d, chrome.CaptionHeight);
-        }
-
-        [Fact]
-        public void CreateWindowChrome_GlassFrameThickness_IsMinusOneForShadow()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.Equal(new Thickness(-1), chrome.GlassFrameThickness);
-        }
-
-        [Fact]
-        public void CreateWindowChrome_ResizeBorderThickness_Is4()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.Equal(new Thickness(4), chrome.ResizeBorderThickness);
-        }
-
-        [Fact]
-        public void CreateWindowChrome_DisablesAeroCaptionButtons()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.False(chrome.UseAeroCaptionButtons,
-                "Fluence renders its own caption buttons; the native WPF Aero caption must stay off.");
-        }
-
-        [Fact]
-        public void CreateWindowChrome_NonClientFrameEdges_IsNone()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.Equal(NonClientFrameEdges.None, chrome.NonClientFrameEdges);
-        }
-
-        [Fact]
-        public void CreateWindowChrome_CornerRadius_IsZero()
-        {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
-            Assert.Equal(new CornerRadius(0), chrome.CornerRadius);
-        }
-
-        #endregion CreateWindowChrome - canonical FluenceWindow chrome contract
 
         #region GetResizeBorderThickness - maximised / non-resize matrix
 

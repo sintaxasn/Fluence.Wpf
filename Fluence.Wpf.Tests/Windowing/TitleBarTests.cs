@@ -310,7 +310,16 @@ namespace Fluence.Wpf.Tests.Windowing
         [Fact]
         public Task WindowChrome_AppliedInConstructorAsync()
         {
-            return RunWithWindowAsync(static w => _ = Assert.IsType<WindowChrome>(WindowChrome.GetWindowChrome(w), exactMatch: false));
+            return RunWithWindowAsync(static w =>
+            {
+                WindowChrome chrome = Assert.IsType<WindowChrome>(WindowChrome.GetWindowChrome(w), exactMatch: false);
+                Assert.Equal(0d, chrome.CaptionHeight);
+                Assert.Equal(new CornerRadius(0), chrome.CornerRadius);
+                Assert.Equal(new Thickness(-1), chrome.GlassFrameThickness);
+                Assert.Equal(new Thickness(4), chrome.ResizeBorderThickness);
+                Assert.False(chrome.UseAeroCaptionButtons);
+                Assert.Equal(NonClientFrameEdges.None, chrome.NonClientFrameEdges);
+            });
         }
 
         [Fact]

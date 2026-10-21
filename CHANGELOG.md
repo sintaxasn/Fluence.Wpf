@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Changed
+
+- Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
+
 ## [0.9.2-pre] - 2026-10-08
 
 ### Changed

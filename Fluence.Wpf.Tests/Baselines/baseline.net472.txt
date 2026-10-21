@@ -177,12 +177,6 @@
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetCornerPreference_Default_MapsToDwmwcpRound
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetCornerPreference_DoNotRound_MapsToDwmwcpDoNotRound
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetCornerPreference_RoundSmall_MapsToDwmwcpRoundSmall
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_CaptionHeight_IsZero
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_GlassFrameThickness_IsMinusOneForShadow
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_ResizeBorderThickness_Is4
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_DisablesAeroCaptionButtons
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_NonClientFrameEdges_IsNone
-  Fluence.Wpf.Tests.Windowing.WindowPolicyTests.CreateWindowChrome_CornerRadius_IsZero
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetResizeBorderThickness_Normal_CanResize_Returns4
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetResizeBorderThickness_Normal_CanResizeWithGrip_Returns4
   Fluence.Wpf.Tests.Windowing.WindowPolicyTests.GetResizeBorderThickness_Maximized_ReturnsZero

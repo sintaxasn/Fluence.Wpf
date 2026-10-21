@@ -558,7 +558,16 @@ namespace Fluence.Wpf.Controls
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, OnMinimizeWindow, OnCanMinimizeWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, OnRestoreWindow, OnCanResizeWindow));
 
-            _windowChrome = WindowPolicy.CreateWindowChrome();
+            // Configure the fixed chrome before attaching it; state-dependent values are refreshed below.
+            _windowChrome = new WindowChrome
+            {
+                CaptionHeight = 0,
+                CornerRadius = new CornerRadius(0),
+                GlassFrameThickness = new Thickness(-1),
+                ResizeBorderThickness = new Thickness(4),
+                UseAeroCaptionButtons = false,
+                NonClientFrameEdges = NonClientFrameEdges.None,
+            };
             SetValue(WindowChrome.WindowChromeProperty, _windowChrome);
             UpdateWindowChrome();
             UpdateShellMetrics();
