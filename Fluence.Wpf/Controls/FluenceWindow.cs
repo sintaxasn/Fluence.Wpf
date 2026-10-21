@@ -597,7 +597,6 @@ namespace Fluence.Wpf.Controls
             // disable only caption-button behavior rather than failing the whole window.
             _themeTransitionOverlay?.Clear();
             _themeTransitionOverlay = null;
-            _themeTransitionCaptured = false;
             base.OnApplyTemplate();
             _minimizeButton = GetTemplateChild(PART_MinimizeButton) as System.Windows.Controls.Button;
             _maximizeButton = GetTemplateChild(PART_MaximizeButton) as System.Windows.Controls.Button;
@@ -701,7 +700,6 @@ namespace Fluence.Wpf.Controls
             FluenceThemeEngine.Published -= OnThemePublished;
             _themeTransitionOverlay?.Clear();
             _themeTransitionOverlay = null;
-            _themeTransitionCaptured = false;
             SizeChanged -= OnSizeChangedForSizeToContent;
 
             // A FromHwnd source is WPF-owned; release the hook and the reference without disposing.
@@ -774,31 +772,11 @@ namespace Fluence.Wpf.Controls
 
         private void OnPreparingThemePublish(object? sender, ThemePublishEventArgs e)
         {
-            _themeTransitionCaptured = false;
-            if (!Dispatcher.CheckAccess())
-            {
-                return;
-            }
-
-            if (!IsVisible || WindowState is WindowState.Minimized ||
-                !MotionHelper.IsMotionEnabled || e.PreviousTheme is ApplicationTheme.HighContrast ||
-                e.NextTheme is ApplicationTheme.HighContrast)
-            {
-                _themeTransitionOverlay?.Clear();
-                return;
-            }
-
-            _themeTransitionCaptured = _themeTransitionOverlay?.Capture() ?? false;
+            _themeTransitionOverlay?.Prepare(e.PreviousTheme, e.NextTheme);
         }
 
         private void OnThemePublished(object? sender, EventArgs e)
         {
-            if (!_themeTransitionCaptured)
-            {
-                return;
-            }
-
-            _themeTransitionCaptured = false;
             _themeTransitionOverlay?.Play();
         }
 
@@ -2019,8 +1997,6 @@ namespace Fluence.Wpf.Controls
         private System.Windows.Controls.Button? _closeButton;
 
         private ThemeTransitionOverlay? _themeTransitionOverlay;
-
-        private bool _themeTransitionCaptured;
 
         /// <summary>
         /// The WPF-owned <see cref="HwndSource"/> for the realised window, used for the message hook,

@@ -33,6 +33,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Controls
 {
@@ -50,6 +51,7 @@ namespace Fluence.Wpf.Controls
         private readonly Grid _host;
         private readonly FluenceWindow _window;
         private SnapshotVisual? _snapshot;
+        private bool _pending;
         private int _generation;
 
         internal ThemeTransitionOverlay(FluenceWindow window, Grid root, Grid host)
@@ -60,12 +62,36 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Prepares a capture of the previous WPF surface before resource publication.
+        /// </summary>
+        /// <param name="previousTheme">The theme currently visible in the window.</param>
+        /// <param name="nextTheme">The theme about to be published.</param>
+        internal void Prepare(ApplicationTheme previousTheme, ApplicationTheme nextTheme)
+        {
+            _pending = false;
+            if (!_window.Dispatcher.CheckAccess())
+            {
+                return;
+            }
+
+            if (!_window.IsVisible || _window.WindowState is WindowState.Minimized ||
+                !MotionHelper.IsMotionEnabled || previousTheme is ApplicationTheme.HighContrast ||
+                nextTheme is ApplicationTheme.HighContrast)
+            {
+                Clear();
+                return;
+            }
+
+            _pending = Capture();
+        }
+
+        /// <summary>
         /// Captures the currently visible surface before resource publication. Rendering the root
         /// while an earlier overlay is still attached includes its in-progress blend, so repeated
         /// theme changes do not jump back to an obsolete endpoint.
         /// </summary>
         /// <returns>Whether a usable picture was attached.</returns>
-        internal bool Capture()
+        private bool Capture()
         {
             if (_root.ActualWidth <= 0 || _root.ActualHeight <= 0)
             {
@@ -145,6 +171,12 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         internal void Play()
         {
+            if (!_pending)
+            {
+                return;
+            }
+
+            _pending = false;
             int generation = _generation;
             _ = _root.Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -174,6 +206,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         internal void Clear()
         {
+            _pending = false;
             _generation++;
             if (_snapshot is not null)
             {
