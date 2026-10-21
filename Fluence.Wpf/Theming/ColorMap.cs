@@ -269,6 +269,10 @@ namespace Fluence.Wpf.Theming
                 m["RadioButtonOuterEllipseCheckedFillPointerOver"] = control;
                 m["RadioButtonOuterEllipseCheckedFillPressed"] = control;
                 m["RadioButtonOuterEllipseCheckedFillDisabled"] = window;
+                m["RadioButtonOuterEllipseCheckedStroke"] = highlight;
+                m["RadioButtonOuterEllipseCheckedStrokePointerOver"] = controlText;
+                m["RadioButtonOuterEllipseCheckedStrokePressed"] = control;
+                m["RadioButtonOuterEllipseCheckedStrokeDisabled"] = grayText;
                 m["RadioButtonCheckGlyphFill"] = highlight;
                 m["RadioButtonCheckGlyphFillPointerOver"] = controlText;
                 m["RadioButtonCheckGlyphFillPressed"] = controlText;
@@ -347,6 +351,10 @@ namespace Fluence.Wpf.Theming
             m["RadioButtonOuterEllipseCheckedFillPointerOver"] = m[AccentFillSecondaryKey];
             m["RadioButtonOuterEllipseCheckedFillPressed"] = m[AccentFillTertiaryKey];
             m["RadioButtonOuterEllipseCheckedFillDisabled"] = m[AccentFillDisabledKey];
+            m["RadioButtonOuterEllipseCheckedStroke"] = m[AccentFillDefaultKey];
+            m["RadioButtonOuterEllipseCheckedStrokePointerOver"] = m[AccentFillSecondaryKey];
+            m["RadioButtonOuterEllipseCheckedStrokePressed"] = m[AccentFillTertiaryKey];
+            m["RadioButtonOuterEllipseCheckedStrokeDisabled"] = m[AccentFillDisabledKey];
             m["RadioButtonCheckGlyphFill"] = m[TextOnAccentPrimaryKey];
             m["RadioButtonCheckGlyphFillPointerOver"] = m[TextOnAccentPrimaryKey];
             m["RadioButtonCheckGlyphFillPressed"] = m[TextOnAccentSecondaryKey];

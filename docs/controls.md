@@ -23,6 +23,8 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 
 `ControlAppearance` selects the visual emphasis for supported controls. The gallery's Buttons and Selection pages show the variants. For a primary command, `Appearance="Accent"` is the common choice.
 
+The `RadioButton` keeps native WPF grouping, keyboard navigation, and UI Automation behavior. Its Fluent indicator has a 20-DIP outer ring with a 1-DIP stroke and a 12-DIP checked dot. The dot changes to 14 DIP on hover or when disabled, and to 10 DIP while pressed. The checked dot has no inner stroke in any state. Checking and unchecking change dot opacity immediately. Hover and press size transitions take 250 ms, while disabled sizing takes 167 ms. A separate pressed glyph grows from 4 to 10 DIP in 167 ms. The 32-DIP glyph row uses a 20-DIP icon column, 8-DIP left and 6-DIP top content padding, and a 120-DIP minimum width.
+
 ## Text, forms, and pickers
 
 | Types | Use them for | Key detail |

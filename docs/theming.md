@@ -27,7 +27,7 @@ When a visible, realized `FluenceWindow` changes between Light and Dark, changes
 | Alternate and subtle fills | `ControlAltFillColorSecondaryBrush`, `ControlAltFillColorTertiaryBrush`, `SubtleFillColorSecondaryBrush` | Tracks, passive fills, and low emphasis states |
 | Shared accent fills | `AccentFillColorDefaultBrush`, `AccentFillColorSecondaryBrush`, `AccentFillColorTertiaryBrush`, `AccentFillColorDisabledBrush` | Accent surfaces in Light and Dark; neutral window surfaces in High Contrast |
 | Button accent states | `AccentButtonBackgroundBrush`, `AccentButtonBackgroundPressedBrush`, `ToggleButtonBackgroundCheckedBrush`, `SplitButtonBackgroundCheckedBrush` | Button, drop down, split, and toggle split templates |
-| Other control accent states | `CheckBoxCheckBackgroundFillCheckedBrush`, `RadioButtonOuterEllipseCheckedFillBrush`, `ToggleSwitchFillOnBrush`, `SliderTrackValueFillBrush`, `HyperlinkButtonForegroundBrush` | Checked, selected, and linked control states with their own High Contrast roles |
+| Other control accent states | `CheckBoxCheckBackgroundFillCheckedBrush`, `RadioButtonOuterEllipseCheckedFillBrush`, `RadioButtonOuterEllipseCheckedStrokeBrush`, `ToggleSwitchFillOnBrush`, `SliderTrackValueFillBrush`, `HyperlinkButtonForegroundBrush` | Checked, selected, and linked control states with their own High Contrast roles |
 | Strokes and focus | `ControlStrokeColorDefaultBrush`, `ControlStrongStrokeColorDefaultBrush`, `CardStrokeColorDefaultBrush`, `SurfaceStrokeColorDefaultBrush`, `DividerStrokeColorDefaultBrush`, `FocusStrokeColorOuterBrush`, `FocusStrokeColorInnerBrush` | Edges, dividers, and focus visuals |
 | Background and layers | `ApplicationBackgroundBrush`, `SolidBackgroundFillColorBaseBrush`, `LayerFillColorDefaultBrush`, `CardBackgroundFillColorDefaultBrush` | Page, layer, and card surfaces |
 | Status | `SystemFillColorSuccessBrush`, `SystemFillColorCautionBrush`, `SystemFillColorCriticalBrush`, `SystemFillColorAttentionBrush`, `SystemFillColorNeutralBrush` | Feedback and severity surfaces |
@@ -36,6 +36,8 @@ When a visible, realized `FluenceWindow` changes between Light and Dark, changes
 | Chrome | `TitleBarActiveColor`, `TitleBarInactiveColor`, `WindowBorderColor`, and brush variants | WPF window frame |
 
 The named families contain more keys than the examples shown. The public inventory also includes the `ControlOnImageFillColor*`, `LayerOnMicaBaseAltFillColor*`, acrylic, card, background, and InfoBadge foreground families. `AcrylicBackgroundFillColorDefaultBrush` and `AcrylicBackgroundFillColorBaseBrush` provide painted fallbacks for transient surfaces. `AccentAcrylicBackgroundFillColor*` supplies accent tinted variants. WPF does not offer WinUI's per-element backdrop blur, so these resource values describe a flat surface.
+
+`RadioButtonOuterEllipseCheckedStroke`, `RadioButtonOuterEllipseCheckedStrokePointerOver`, `RadioButtonOuterEllipseCheckedStrokePressed`, and `RadioButtonOuterEllipseCheckedStrokeDisabled` each have a brush twin. In Light and Dark, they follow the checked ring's default, secondary, tertiary, and disabled accent fill roles, respectively. In High Contrast, they map to Highlight, ControlText, Control, and GrayText, respectively, independent of the checked ring fill. Use the state-specific stroke key when customizing the checked outer ring.
 
 ### High contrast roles
 

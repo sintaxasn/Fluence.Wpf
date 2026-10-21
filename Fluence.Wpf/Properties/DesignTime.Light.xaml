@@ -103,6 +103,10 @@
     <Color x:Key="RadioButtonOuterEllipseCheckedFillDisabled">#37000000</Color>
     <Color x:Key="RadioButtonOuterEllipseCheckedFillPointerOver">#E60062AD</Color>
     <Color x:Key="RadioButtonOuterEllipseCheckedFillPressed">#CC0062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStroke">#FF0062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled">#37000000</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver">#E60062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokePressed">#CC0062AD</Color>
     <Color x:Key="SliderThumbBackground">#FF0062AD</Color>
     <Color x:Key="SliderThumbBackgroundDisabled">#37000000</Color>
     <Color x:Key="SliderThumbBackgroundPointerOver">#E60062AD</Color>
@@ -297,6 +301,10 @@
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabledBrush" Color="#37000000" />
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOverBrush" Color="#E60062AD" />
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPressedBrush" Color="#CC0062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokeBrush" Color="#FF0062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokeDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOverBrush" Color="#E60062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePressedBrush" Color="#CC0062AD" />
     <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#FFF9F9F9" />
     <SolidColorBrush x:Key="SliderThumbBackgroundBrush" Color="#FF0062AD" />
     <SolidColorBrush x:Key="SliderThumbBackgroundDisabledBrush" Color="#37000000" />
