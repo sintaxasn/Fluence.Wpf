@@ -58,6 +58,12 @@ namespace Fluence.Wpf.Theming
         {
             AddSharedTokens(dict);
 
+            // WinUI text inputs keep a 1-DIP outline with a 2-DIP bottom band on focus.
+            // High Contrast needs a full 2-DIP system-highlight outline instead.
+            dict["TextControlBorderThemeThicknessFocused"] = theme is ApplicationTheme.HighContrast
+                ? new Thickness(2)
+                : new Thickness(1, 1, 1, 2);
+
             // Divergent accent brushes whose Color twin differs from the brush value.
             // Ported verbatim from Theme.Light/Dark.xaml accent-brush overrides (and the legacy
             // UpdateResources isDark branch). High contrast replaces the shared accent state

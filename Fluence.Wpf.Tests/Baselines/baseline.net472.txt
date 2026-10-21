@@ -963,7 +963,7 @@
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_Unloaded_StopsCapsLockPollingTimerAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_StrengthMeter_ScoresAndOptsInAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_DefaultChrome_UsesWinUiReferenceValuesAsync
-  Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_FocusState_ShowsAccentLineUnderneathAsync
+  Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_FocusState_UsesRoundedFocusedBorderWithoutMovingSecureEditorAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_SecureStore_StaysAuthoritativeAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_SelectAll_DoesNotThrowWithoutTemplateAsync
   Fluence.Wpf.Tests.Control.PersonPictureTests.PersonPicture_DefaultStyle_AppliesAsync
@@ -1212,11 +1212,15 @@
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_PlaceholderText_RoundtripsAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_ClearButtonEnabled_DefaultTrueAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_DefaultChrome_UsesWinUiReferenceValuesAsync
-  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusState_ShowsAccentLineUnderneathAsync
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusState_UsesRoundedFocusedBorderWithoutMovingEditorAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_TextViewAlignsWithPlaceholder_WhenIconIsShownAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.Stage3_TextBox_ValidationState_DefaultNoneAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.Stage3_TextBox_HelperText_RoundtripsAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.Stage3_TextBox_CharacterCounter_ShowsWithMaxLengthAsync
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedBorder_FollowsLiveThemeChangesAsync
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Error, brushKey: "SystemFillColorCriticalBrush")
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Success, brushKey: "SystemFillColorSuccessBrush")
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Warning, brushKey: "SystemFillColorCautionBrush")
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_DefaultStyle_AppliesTemplatePartsAsync
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholderAsync
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_FieldClick_OpensPopupAndPopulatesColumnsAsync

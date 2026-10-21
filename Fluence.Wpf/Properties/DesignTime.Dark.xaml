@@ -435,5 +435,6 @@
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
     <CornerRadius x:Key="PopupCornerRadius">8</CornerRadius>
+    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1,1,1,2</Thickness>
 
 </ResourceDictionary>

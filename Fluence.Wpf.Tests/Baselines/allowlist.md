@@ -527,3 +527,20 @@ The existing slider orientation theory described above likewise has one
 net472 discovery row and two runtime cases. These runtime expansions account
 for the difference between the net472 filtered discovery count of 1417 and
 its CI floor of 1451. The net10 filtered discovery count is 1452.
+
+## TextBox and PasswordBox focus borders
+
+The two `FocusState_ShowsAccentLineUnderneathAsync` checks are renamed to
+`TextBox_FocusState_UsesRoundedFocusedBorderWithoutMovingEditorAsync` and
+`PasswordBox_FocusState_UsesRoundedFocusedBorderWithoutMovingSecureEditorAsync`.
+They now check the rounded border, stable editor bounds, and edge input hit
+testing. Three validation-state cases and one same-window focused theme-cycle
+case are added. No cases are removed.
+
+Fresh Release discovery contains 1424 net472 rows and 1460 net10 rows. Both case
+and method inventories match discovery as multisets. The affected control run
+executes 38 cases per framework, up from 34, so the ordinary CI floors increase
+by four to 1455 net472 and 1456 net10. The existing screenshot exclusions and
+net472 theory-row expansions are unchanged. Validation here runs only the two
+edited control classes, affected resource and embedded-editor checks, and the
+.NET 8 template smoke case; it is not a whole-suite run.

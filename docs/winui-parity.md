@@ -24,6 +24,7 @@ The [control catalog](controls.md) and [theme reference](theming.md) define the 
 | Date picker | The Fluence picker has its own selected-date API and is not a subclass of WPF `DatePicker`. |
 | Text and images | Fluence `TextBlock` and `Image` are templated controls rather than subclasses of the native WPF elements. |
 | Password entry | Native WPF `PasswordBox` is styled implicitly and extended with attached properties because it is sealed. |
+| Text input focus | `TextBox` and the styled native `PasswordBox` paint the focus accent inside their rounded border. Light and Dark use a 2-DIP bottom stroke; High Contrast uses a 2-DIP outline on all sides. Focus changes do not move the editor or its buttons. TextBox validation keeps its status color and takes precedence over the accent. |
 | Selected text | `TextBox`, `PasswordBox`, and `NumberBox`'s native text editor use WPF's default translucent selection overlay and WPF selected-text foreground behavior. The `net472` baseline cannot use the `SelectionTextBrush` property added in .NET Framework 4.8. Published selection color roles alone do not guarantee identical WinUI selected-text rendering; see [known issues](https://github.com/sintaxasn/Fluence.Wpf/blob/main/KNOWN_ISSUES.md#selected-text-rendering-in-native-wpf-editors). |
 
 ## Visual and platform boundaries

@@ -87,14 +87,14 @@ jobs:
       # out of balance. It does not catch the same typo repeated identically in both filters:
       # that would leave lane A empty and lane B carrying the whole assembly, and the sum is
       # unchanged, though a single-process net472 run still aborts loudly (see KNOWN_ISSUES.md).
-      # The integration floors combine the parent branches' measured ordinary TRX case deltas
+      # The floors combine the integrated branches and subsequent measured ordinary TRX case deltas
       # after the Screenshots-category filter. TRX total includes skips; net472 discovery can
       # collapse theory rows that expand at runtime. Recheck both target frameworks when test
       # discovery changes, and update these floors alongside Fluence.Wpf.Tests/Baselines.
       - name: Check lane case-count sums
         shell: pwsh
         run: |
-          $floor = @{ 'net472' = 1451; 'net10' = 1452 }
+          $floor = @{ 'net472' = 1455; 'net10' = 1456 }
           foreach ($tfm in $floor.Keys) {
             $total = 0
             foreach ($lane in 'laneA', 'laneB') {
