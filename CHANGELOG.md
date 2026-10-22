@@ -19,6 +19,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- The Icons gallery details pane now shows a larger centered preview, bold section headings above normal-weight values, and independent scrolling so code snippets and tags remain reachable in shorter windows. The selected tile and preview use matching thinner outlines, and icon glyphs and outlines follow readable High Contrast text colors.
 - Added focused ColorPicker integration coverage for its embedded text editors, stable field layout, live theme and accent changes, and color synchronization during editing. Production control behavior is unchanged; test inventories and CI counts include the new cases.
 - Documented AutoSuggestBox's inherited rounded focus border through its embedded TextBox and added focused coverage for stable field layout, live theme changes, suggestion navigation, and query-button focus. Suggestions and keyboard behavior are preserved; test inventories and CI floors include the new integration case.
 - Local PowerShell packaging builds current library source by default. `-UseExistingBuild` explicitly reuses verified binaries, including artifacts from the same CI run.

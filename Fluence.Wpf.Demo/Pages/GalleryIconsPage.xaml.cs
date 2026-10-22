@@ -303,7 +303,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Text = tag,
                 VerticalAlignment = VerticalAlignment.Center,
             };
-            text.SetResourceReference(StyleProperty, "CaptionTextBlockStyle");
+            text.SetResourceReference(StyleProperty, "IconDetailTagBodyStyle");
             text.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
 
             Border pill = new()
