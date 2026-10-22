@@ -544,3 +544,17 @@ by four to 1455 net472 and 1456 net10. The existing screenshot exclusions and
 net472 theory-row expansions are unchanged. Validation here runs only the two
 edited control classes, affected resource and embedded-editor checks, and the
 .NET 8 template smoke case; it is not a whole-suite run.
+
+## NumberBox focus border
+
+Added `NumberBox_FocusPaint_DoesNotMoveEditorOrSpinButtonsAsync` and
+`NumberBox_FocusedBorder_FollowsLiveThemeChangesAsync`. They cover immediate
+rounded focus painting, stable editor and spin-button bounds, border-edge
+input hits, spin-button focus routing and invocation, and a live theme cycle.
+No existing cases are removed or renamed.
+
+Discovery contains 1426 net472 rows and 1462 net10 rows, two more per target.
+The NumberBox class grows from 20 to 22 runtime cases, so the ordinary CI
+floors rise by two to 1457 net472 and 1458 net10. Screenshot exclusions and
+existing theory-row expansions are unchanged. Validation runs the NumberBox
+class and its spin-button accessible-name check; it is not a whole-suite run.

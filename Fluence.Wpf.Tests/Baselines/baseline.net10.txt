@@ -985,6 +985,8 @@
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_DefaultStyle_LoadsPartsAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_Value_RoundtripsAsync
   Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_InlineSpinButtons_AreBorderlessAtRestAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_FocusedBorder_FollowsLiveThemeChangesAsync
+  Fluence.Wpf.Tests.Control.NumberBoxTests.NumberBox_FocusPaint_DoesNotMoveEditorOrSpinButtonsAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_ImplicitFluentStyle_AppliesToNativeControlAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_AutomationPeer_ReportsPasswordEditAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_AccessibleName_IsCarriedByTheControlItselfAsync
