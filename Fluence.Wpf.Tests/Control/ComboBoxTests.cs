@@ -35,6 +35,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -438,6 +439,249 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         #endregion WI-3 C18  ComboBox FocusedStates VSM
+
+        [Fact]
+        public Task ComboBox_EditableText_UsesNativeEditorAndTracksSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 320, Height = 120 };
+                Controls.ComboBox combo = new() { Width = 240, IsEditable = true };
+                _ = combo.Items.Add("Alpha");
+                _ = combo.Items.Add("Beta");
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+                    combo.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("Beta", editor.Text, StringComparer.Ordinal);
+
+                    editor.Text = "Custom value";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("Custom value", combo.Text, StringComparer.Ordinal);
+
+                    combo.SelectedIndex = 0;
+                    _ = editor.Focus();
+                    PresentationSource source = PresentationSource.FromVisual(window)
+                        ?? throw new InvalidOperationException("Window must have a presentation source for keyboard input.");
+                    KeyEventArgs down = new(Keyboard.PrimaryDevice, source, 0, Key.Down)
+                    {
+                        RoutedEvent = Keyboard.PreviewKeyDownEvent,
+                        Source = editor,
+                    };
+                    editor.RaiseEvent(down);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(1, combo.SelectedIndex);
+                    Assert.Equal("Beta", editor.Text, StringComparer.Ordinal);
+
+                    combo.IsReadOnly = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(editor.IsReadOnly);
+
+                    ToggleButton toggle = Assert.IsType<ToggleButton>(combo.Template.FindName("ToggleButton", combo));
+                    ToggleButtonAutomationPeer peer = new(toggle);
+                    IToggleProvider provider = Assert.IsType<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle), exactMatch: false);
+                    provider.Toggle();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(combo.IsDropDownOpen);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_EditableEditor_IsTheSingleTabStopAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Button before = new() { Content = "Before" };
+                Controls.ComboBox combo = new() { Width = 240, IsEditable = true };
+                _ = combo.Items.Add("Alpha");
+                Button after = new() { Content = "After" };
+                Window window = new() { Content = new StackPanel { Children = { before, combo, after } }, Width = 320, Height = 180 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+
+                    Assert.False(combo.IsTabStop);
+                    Assert.True(editor.IsTabStop);
+                    _ = before.Focus();
+                    Assert.True(before.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(editor, Keyboard.FocusedElement);
+
+                    Assert.True(editor.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(after, Keyboard.FocusedElement);
+
+                    Assert.True(after.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous)));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(editor, Keyboard.FocusedElement);
+                    Assert.True(editor.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous)));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(before, Keyboard.FocusedElement);
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_EditableFocus_PaintsSharedBorderWithoutMovingEditorAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Button before = new() { Content = "Before" };
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    MinHeight = 45,
+                    IsEditable = true,
+                    BorderThickness = new Thickness(3),
+                    CornerRadius = new CornerRadius(12),
+                };
+                _ = combo.Items.Add("Alpha");
+                Window window = new() { Content = new StackPanel { Children = { before, combo } }, Width = 320, Height = 180 };
+
+                try
+                {
+                    window.Show();
+                    _ = before.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border mainBorder = Assert.IsType<Border>(combo.Template.FindName("MainBorder", combo));
+                    Border layoutBorder = Assert.IsType<Border>(combo.Template.FindName("LayoutBorder", combo));
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+                    Point beforeFocus = editor.TransformToAncestor(window).Transform(new Point(0, 0));
+                    Size editorSize = new(editor.ActualWidth, editor.ActualHeight);
+                    double height = combo.ActualHeight;
+                    Assert.Equal(new Thickness(3), layoutBorder.BorderThickness);
+
+                    _ = editor.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.True(combo.IsKeyboardFocusWithin);
+                    Assert.Equal(new CornerRadius(12), mainBorder.CornerRadius);
+                    Assert.Equal(new Thickness(1, 1, 1, 2), mainBorder.BorderThickness);
+                    Assert.Same(Application.Current.TryFindResource("TextControlElevationBorderFocusedBrush"), mainBorder.BorderBrush);
+                    Assert.Equal(new Thickness(3), layoutBorder.BorderThickness);
+                    Assert.Equal(height, combo.ActualHeight, 0.01);
+                    Point afterFocus = editor.TransformToAncestor(window).Transform(new Point(0, 0));
+                    Assert.Equal(beforeFocus.X, afterFocus.X, 0.01);
+                    Assert.Equal(beforeFocus.Y, afterFocus.Y, 0.01);
+                    Assert.Equal(editorSize.Width, editor.ActualWidth, 0.01);
+                    Assert.Equal(editorSize.Height, editor.ActualHeight, 0.01);
+
+                    combo.IsEnabled = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(new Thickness(1), mainBorder.BorderThickness);
+                    Assert.Equal(new Thickness(1), layoutBorder.BorderThickness);
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_EditableFocus_FollowsLiveThemeChangesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox combo = new() { Width = 240, IsEditable = true };
+                _ = combo.Items.Add("Alpha");
+                Window window = new() { Content = combo, Width = 320, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+                    Border mainBorder = Assert.IsType<Border>(combo.Template.FindName("MainBorder", combo));
+                    _ = editor.Focus();
+
+                    foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                    {
+                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
+
+                        Thickness expected = theme is ApplicationTheme.HighContrast
+                            ? new Thickness(2)
+                            : new Thickness(1, 1, 1, 2);
+                        Assert.True(combo.IsKeyboardFocusWithin);
+                        Assert.Equal(expected, mainBorder.BorderThickness);
+                        Assert.Same(Application.Current.TryFindResource("TextControlElevationBorderFocusedBrush"), mainBorder.BorderBrush);
+                    }
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(6)]
+        public Task ComboBox_EditableEditor_RemainsHitTestableBesideArrowAsync(double rightPadding)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    IsEditable = true,
+                    Padding = new Thickness(10, 5, rightPadding, 6),
+                };
+                _ = combo.Items.Add("Alpha");
+                Window window = new() { Content = combo, Width = 320, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+                    ToggleButton toggle = Assert.IsType<ToggleButton>(combo.Template.FindName("ToggleButton", combo));
+                    Point editorEdge = editor.TransformToAncestor(window).Transform(new Point(editor.ActualWidth - 2, editor.ActualHeight / 2));
+                    Point toggleLeft = toggle.TransformToAncestor(window).Transform(new Point(0, 0));
+                    Assert.True(editorEdge.X < toggleLeft.X, "The arrow target must start after the editable text field.");
+
+                    DependencyObject? hit = window.InputHitTest(editorEdge) as DependencyObject;
+                    while (hit is not null && !ReferenceEquals(hit, editor))
+                    {
+                        hit = VisualTreeHelper.GetParent(hit);
+                    }
+
+                    Assert.Same(editor, hit);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
 
         [Fact]
         public Task Stage3_ComboBox_PlaceholderText_RoundtripsAsync()

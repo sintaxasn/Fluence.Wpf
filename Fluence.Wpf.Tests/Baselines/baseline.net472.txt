@@ -627,6 +627,12 @@
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_UnfocusedState_FocusAccentLineIsHiddenAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_InitialTemplate_DoesNotShowFocusAccentLineAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ThemeCycle_FocusedStateKeepsAccentLineHiddenAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableText_UsesNativeEditorAndTracksSelectionAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableEditor_IsTheSingleTabStopAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableFocus_PaintsSharedBorderWithoutMovingEditorAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableFocus_FollowsLiveThemeChangesAsync
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableEditor_RemainsHitTestableBesideArrowAsync(rightPadding: 0)
+  Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_EditableEditor_RemainsHitTestableBesideArrowAsync(rightPadding: 6)
   Fluence.Wpf.Tests.Control.ComboBoxTests.Stage3_ComboBox_PlaceholderText_RoundtripsAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_SelectionChange_UpdatesDisplayedContentAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.ComboBox_ItemTemplate_HasHoverOverlayAsync

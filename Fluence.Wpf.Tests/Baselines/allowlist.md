@@ -573,3 +573,19 @@ one row per full target: 1427 net472 and 1463 net10. The AutoSuggestBox class
 grows from 12 to 13 runtime cases, so ordinary CI floors increase by one to
 1458 net472 and 1459 net10. Screenshot exclusions and theory-row expansions
 are unchanged. Validation runs only the AutoSuggestBox class on both targets.
+
+## Editable ComboBox focus border
+
+Added four facts and a two-row theory for the native editable text part, text
+and selection synchronization, read-only mode, routed arrow-key selection,
+dropdown arrow activation, forward and reverse tab traversal, stable custom
+border geometry, live focused theme changes, and editor hit testing beside
+the arrow. No existing cases are removed or renamed.
+
+Fresh Release discovery contains 1433 net472 rows and 1469 net10 rows, six more
+per target. Both case and method inventories match discovery as multisets.
+The ComboBox class grows from 28 to 34 runtime cases, so ordinary CI floors
+increase by six to 1464 net472 and 1465 net10. Screenshot exclusions and
+existing theory-row expansions are unchanged. Validation runs the ComboBox
+class and its dropdown ClearType check on both targets; it is not a whole-suite
+run.
