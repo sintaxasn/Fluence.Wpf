@@ -16,6 +16,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- Documented AutoSuggestBox's inherited rounded focus border through its embedded TextBox and added focused coverage for stable field layout, live theme changes, suggestion navigation, and query-button focus. Suggestions and keyboard behavior are preserved; test inventories and CI floors include the new integration case.
 - Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
 - Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.
 - Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.

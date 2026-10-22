@@ -558,3 +558,18 @@ The NumberBox class grows from 20 to 22 runtime cases, so the ordinary CI
 floors rise by two to 1457 net472 and 1458 net10. Screenshot exclusions and
 existing theory-row expansions are unchanged. Validation runs the NumberBox
 class and its spin-button accessible-name check; it is not a whole-suite run.
+
+## AutoSuggestBox focus integration
+
+Added `AutoSuggestBox_FocusedField_KeepsEditorAndPopupAnchorStableThroughThemeChangesAsync`
+to verify the shared focus border inherited through the embedded Fluence TextBox,
+stable editor layout and popup placement target, border-edge hits, query slot,
+and focused Light/Dark/High Contrast publication. Existing suggestion navigation,
+submission, and query-button cases now assert retained editor focus; arrow
+navigation checks the focused border while the popup is open.
+
+No production template or suggestion/keyboard logic changed. Discovery gains
+one row per full target: 1427 net472 and 1463 net10. The AutoSuggestBox class
+grows from 12 to 13 runtime cases, so ordinary CI floors increase by one to
+1458 net472 and 1459 net10. Screenshot exclusions and theory-row expansions
+are unchanged. Validation runs only the AutoSuggestBox class on both targets.
