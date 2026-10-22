@@ -16,6 +16,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- Added focused ColorPicker integration coverage for its embedded text editors, stable field layout, live theme and accent changes, and color synchronization during editing. Production control behavior is unchanged; test inventories and CI counts include the new cases.
 - Documented AutoSuggestBox's inherited rounded focus border through its embedded TextBox and added focused coverage for stable field layout, live theme changes, suggestion navigation, and query-button focus. Suggestions and keyboard behavior are preserved; test inventories and CI floors include the new integration case.
 - Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
 - Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.

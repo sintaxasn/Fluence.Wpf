@@ -645,6 +645,8 @@
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SpectrumArea_IsFocusableTabStopAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SpectrumKeyboard_RightKeyIncreasesSaturationAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SpectrumKeyboard_UpKeyIncreasesValueAsync
+  Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_EmbeddedEditors_KeepRoundedFocusBorderAndEditorGeometryAsync
+  Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_FocusedHexEditor_TracksLiveThemeAndColorChangesAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.IsDropDownOpenedUpward_DefaultIsFalseAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.DropdownCornerRadius_DefaultIs8Async
   Fluence.Wpf.Tests.Control.ComboBoxTests.IsDropDownOpenedUpward_FalseWhenDropDownNotOpenAsync

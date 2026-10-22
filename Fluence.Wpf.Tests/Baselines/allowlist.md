@@ -589,3 +589,19 @@ increase by six to 1464 net472 and 1465 net10. Screenshot exclusions and
 existing theory-row expansions are unchanged. Validation runs the ComboBox
 class and its dropdown ClearType check on both targets; it is not a whole-suite
 run.
+
+## ColorPicker embedded editor focus
+
+Added two focused integration cases for the eight embedded Hex, RGB, HSV, and
+alpha editors. They cover the shared rounded focus border, stable field and
+editor insets, live theme and accent changes, and Hex-to-color synchronization.
+Existing channel editing cases now exercise retained editor focus. The normal
+clear button can consume editor width when it appears on focus.
+
+No production code or template changed, and no cases are removed or renamed.
+Fresh Release discovery contains 1435 net472 rows and 1471 net10 rows, two more
+per target. Both case and method inventories match discovery as multisets.
+The ColorPicker class grows from 27 to 29 runtime cases, so ordinary CI floors
+increase by two to 1466 net472 and 1467 net10. Screenshot exclusions and
+existing theory-row expansions are unchanged. Validation runs only the
+ColorPicker class on both full test targets.
