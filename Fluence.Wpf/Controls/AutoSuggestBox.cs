@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -380,7 +381,24 @@ namespace Fluence.Wpf.Controls
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((AutoSuggestBox)d).UpdateSuggestionListState();
+            AutoSuggestBox box = (AutoSuggestBox)d;
+            if (e.OldValue is INotifyCollectionChanged oldSource)
+            {
+                CollectionChangedEventManager.RemoveHandler(oldSource, box.OnSuggestionsCollectionChanged);
+            }
+            if (e.NewValue is INotifyCollectionChanged newSource)
+            {
+                CollectionChangedEventManager.AddHandler(newSource, box.OnSuggestionsCollectionChanged);
+            }
+            box.UpdateSuggestionListState();
+        }
+
+        private void OnSuggestionsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (ReferenceEquals(sender, ItemsSource))
+            {
+                UpdateSuggestionListState();
+            }
         }
 
         /// <summary>

@@ -142,13 +142,20 @@ Describe 'Show-FluenceWindow render' -Tag UI {
     Width="480"
     Height="260"
     SystemBackdropType="None">
+    <fluence:FluenceWindow.Resources>
+        <ResourceDictionary><ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Palette.xaml" />
+        </ResourceDictionary.MergedDictionaries></ResourceDictionary>
+    </fluence:FluenceWindow.Resources>
     <StackPanel Margin="24" VerticalAlignment="Center">
-        <fluence:Button x:Name="Ok" Content="OK" />
+        <fluence:Button x:Name="Ok" Content="OK" Background="{StaticResource FileBrush}" />
     </StackPanel>
 </fluence:FluenceWindow>
 '@
 
-        $tempXaml = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.xaml')
+        $tempXaml = Join-Path $TestDrive 'Window resource Ω.xaml'
+        $palette = Join-Path $TestDrive 'Palette.xaml'
+        [System.IO.File]::WriteAllText($palette, '<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><SolidColorBrush x:Key="FileBrush" Color="#FF237A45" /></ResourceDictionary>')
         [System.IO.File]::WriteAllText($tempXaml, $xaml, [System.Text.UTF8Encoding]::new($true))
 
         try
@@ -157,6 +164,7 @@ Describe 'Show-FluenceWindow render' -Tag UI {
                 param($Window, $Data)
 
                 $Data.Found = ($null -ne $Window.FindName('Ok'))
+                $Data.Color = $Window.FindName('Ok').Background.Color.ToString()
 
                 $timer = [System.Windows.Threading.DispatcherTimer]::new()
                 $timer.Interval = [timespan]::FromMilliseconds(600)
@@ -173,12 +181,17 @@ Describe 'Show-FluenceWindow render' -Tag UI {
             $null = Show-FluenceWindow -XamlPath $tempXaml -Initialize $initialize -Theme Light -Data $data
 
             $data.Found | Should -BeTrue
+            $data.Color | Should -BeExactly '#FF237A45'
         }
         finally
         {
             if (Test-Path -LiteralPath $tempXaml)
             {
                 Remove-Item -LiteralPath $tempXaml -Force
+            }
+            if (Test-Path -LiteralPath $palette)
+            {
+                Remove-Item -LiteralPath $palette -Force
             }
         }
     }

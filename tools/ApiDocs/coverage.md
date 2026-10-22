@@ -7,11 +7,11 @@ Generated from the .NET 10 Fluence.Wpf assembly and its compiler XML documentati
 | types | 154 |
 | constructors | 119 |
 | properties | 359 |
-| methods | 355 |
+| methods | 359 |
 | events | 40 |
 | fields | 410 |
-| documented | 1379 |
-| Implicit constructors | 58 |
+| documented | 1385 |
+| Implicit constructors | 56 |
 | Members without XML comments | 0 |
 
 ## Implicit constructors
@@ -32,7 +32,6 @@ These parameterless constructors are emitted by the C# compiler and have no sour
 - `M:Fluence.Wpf.Controls.BreadcrumbBarItem.#ctor`
 - `M:Fluence.Wpf.Controls.Button.#ctor`
 - `M:Fluence.Wpf.Controls.Card.#ctor`
-- `M:Fluence.Wpf.Controls.CheckBox.#ctor`
 - `M:Fluence.Wpf.Controls.ColorPicker.#ctor`
 - `M:Fluence.Wpf.Controls.ComboBox.#ctor`
 - `M:Fluence.Wpf.Controls.CommandBarFlyout.#ctor`
@@ -56,7 +55,6 @@ These parameterless constructors are emitted by the C# compiler and have no sour
 - `M:Fluence.Wpf.Controls.NumberBox.#ctor`
 - `M:Fluence.Wpf.Controls.PersonPicture.#ctor`
 - `M:Fluence.Wpf.Controls.PipsPager.#ctor`
-- `M:Fluence.Wpf.Controls.RadioButton.#ctor`
 - `M:Fluence.Wpf.Controls.RatingControl.#ctor`
 - `M:Fluence.Wpf.Controls.RepeatButton.#ctor`
 - `M:Fluence.Wpf.Controls.SelectorBar.#ctor`

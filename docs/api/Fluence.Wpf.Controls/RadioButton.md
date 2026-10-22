@@ -27,7 +27,7 @@ A Fluent Design styled radio button with optional description text.
 public RadioButton()
 ```
 
-Creates a new `RadioButton` instance.
+Initializes a radio button and its template-part motion lifetime.
 
 ## Properties
 
@@ -50,6 +50,28 @@ public string? Description { get; set; }
 ```
 
 Gets or sets the description text displayed below the radio button content.
+
+## Methods
+
+<a id="api-30b723d166b7"></a>
+
+### OnApplyTemplate
+
+```csharp
+public override void OnApplyTemplate()
+```
+
+Documentation inherited from the [`RadioButton` API](https://learn.microsoft.com/dotnet/api/system.windows.controls.radiobutton).
+
+<a id="api-8f180480f04f"></a>
+
+### OnPropertyChanged
+
+```csharp
+protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+```
+
+Documentation inherited from the [`RadioButton` API](https://learn.microsoft.com/dotnet/api/system.windows.controls.radiobutton).
 
 ## Dependency property identifiers
 

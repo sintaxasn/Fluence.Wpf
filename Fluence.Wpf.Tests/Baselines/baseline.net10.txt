@@ -1460,3 +1460,104 @@
   Fluence.Wpf.Tests.Windowing.ThemeTransitionOverlayTests.WindowRetemplateAndClose_RemoveAttachedTransitionVisualsAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.HitTestTitleBar_RestoreButton_UsesCurrentSnapLayoutPolicyAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.HitTestTitleBar_RestoreButtonHidden_DoesNotReturnHtMaxButtonAsync
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_AfterMergedDictionariesClear_ReseedsOwnedSlotsAsync
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_AfterResourcesReplacement_ReseedsOwnedSlotsAsync
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_AfterForeignInsertion_PreservesForeignAndRemovesStaleComputedAsync
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_UnchangedFingerprint_RepairsStaticSlotsAsync(slot: 1, replace: False)
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_UnchangedFingerprint_RepairsStaticSlotsAsync(slot: 1, replace: True)
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_UnchangedFingerprint_RepairsStaticSlotsAsync(slot: 2, replace: False)
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_UnchangedFingerprint_RepairsStaticSlotsAsync(slot: 2, replace: True)
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_DuplicateOwnedStatics_RemovesOnlyCanonicalDuplicatesAsync(absolute: False)
+  Fluence.Wpf.Tests.Theming.DictionaryStabilityTests.Apply_DuplicateOwnedStatics_RemovesOnlyCanonicalDuplicatesAsync(absolute: True)
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.RequestRefresh_BurstBeforeDrain_QueuesOneRefreshAsync
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.RequestRefresh_AfterDrain_QueuesAnotherRefreshAsync
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.RequestRefresh_AfterAbortedOperation_CanQueueAgainAsync
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(message: 794, setting: null, expectedCount: 1)
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(message: 21, setting: null, expectedCount: 1)
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(message: 800, setting: null, expectedCount: 1)
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(message: 26, setting: "iMmErSiVeCoLoRsEt", expectedCount: 1)
+  Fluence.Wpf.Tests.Theming.SystemThemeWatcherTests.WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(message: 26, setting: "UnrelatedSetting", expectedCount: 0)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "aero", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "basic", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "aerolite", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "themea", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "themeb", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "themec", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "themed", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "dark", appLight: True, expected: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "customdark", appLight: True, expected: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: null, appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: null, appLight: True, expected: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "", appLight: True, expected: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "custom", appLight: False, expected: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_UsesAppModeRegardlessOfOrdinaryThemeFilename(filename: "custom", appLight: True, expected: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: null, appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: null, appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: "aero", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: "aero", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: "dark", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: True, filename: "dark", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hc1", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hc1", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hc2", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hc2", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hcblack", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hcblack", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hcwhite", appLight: False)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.ResolveAuto_HighContrastAlwaysWins(highContrast: False, filename: "hcwhite", appLight: True)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.Resolve_ExplicitRequestIsPreserved(theme: Light)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.Resolve_ExplicitRequestIsPreserved(theme: Dark)
+  Fluence.Wpf.Tests.Theming.ThemeResolverTests.Resolve_ExplicitRequestIsPreserved(theme: HighContrast)
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EnterSettingsAndPreferencesSelectsFooterAsync(query: "settings")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EnterSettingsAndPreferencesSelectsFooterAsync(query: "preferences")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EnterSettingsAndPreferencesSelectsFooterAsync(query: "  SeTtInGs  ")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EmptyAndUnmatchedEnter_PreservesCurrentPageAsync(query: "")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EmptyAndUnmatchedEnter_PreservesCurrentPageAsync(query: "  ")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_EmptyAndUnmatchedEnter_PreservesCurrentPageAsync(query: "no such gallery route")
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_Search_ChosenSettingsSuggestionSelectsFooterAsync
+  Fluence.Wpf.Tests.Gallery.MvvmTaskManagerTests.AddCommand_BlankInputDisabled_ValidInputTrimmedAndReset
+  Fluence.Wpf.Tests.Gallery.MvvmTaskManagerTests.FiltersAndCompletion_NotifyAfterDisplayedTasksRebuild
+  Fluence.Wpf.Tests.Gallery.MvvmTaskManagerTests.DeleteAndClearCompleted_DetachRemovedItems
+  Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_ObservableSourceClear_ClosesPropertyAndPopupAsync(reset: False)
+  Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_ObservableSourceClear_ClosesPropertyAndPopupAsync(reset: True)
+  Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_ObservableSourceFirstAdd_OpensWhenFocusedAsync
+  Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_ReplacedObservableSource_NoLongerAffectsStateAsync
+  Fluence.Wpf.Tests.Control.AutoSuggestBoxTests.AutoSuggestBox_CollectionRefresh_PreservesOpenBindingAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_FooterMenuItemsClear_ReleasesSelectionAsync
+  Fluence.Wpf.Tests.Control.NavigationViewTests.NavigationView_FooterMutations_ReconcileSurvivingItemsAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_ProgrammaticSelection_RevealsOffscreenHeaderAsync(flow: LeftToRight)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_ProgrammaticSelection_RevealsOffscreenHeaderAsync(flow: RightToLeft)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_KeyboardSelection_RevealsOffscreenHeaderAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_CollectionChanges_KeepSelectedHeaderVisibleAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_ResizeAndRetemplate_KeepSelectionVisibleAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_OversizedHeader_AlignsLeadingEdgeWithoutOscillationAsync(flow: LeftToRight)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_OversizedHeader_AlignsLeadingEdgeWithoutOscillationAsync(flow: RightToLeft)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_AddButton_ArrowFocusAndEnterInvokesRequestOnceAsync(flow: LeftToRight, forward: Right, back: Left)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_AddButton_ArrowFocusAndEnterInvokesRequestOnceAsync(flow: RightToLeft, forward: Left, back: Right)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_AddButton_HiddenOrDisabledIsSkippedAsync(hide: False)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_AddButton_HiddenOrDisabledIsSkippedAsync(hide: True)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_CtrlF4_RequestsSelectedClosableTabOnceAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_CtrlF4_GuardsUnclosableAndNoSelectionAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_DefaultScrollMode_RemainsPhysicalAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_OptIn_BoundsRealizedRootContainersAsync(mode: Single)
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_OptIn_BoundsRealizedRootContainersAsync(mode: None)
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_SingleRecycling_PreservesBoundSelectionAndExpansionAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleOptIn_UsesPhysicalFallbackAndPreservesSelectionAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_ModeSwitch_ReconcilesFallbackWithoutSelectionLossAsync
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_OverflowScrollButtons_VisibilityAndClickFollowOffsetAsync(flow: LeftToRight)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_OverflowScrollButtons_VisibilityAndClickFollowOffsetAsync(flow: RightToLeft)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "empty")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: RightToLeft, state: "empty")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "removed")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: RightToLeft, state: "removed")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "disabled")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: RightToLeft, state: "disabled")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "hidden")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: RightToLeft, state: "hidden")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "not-focusable")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: RightToLeft, state: "not-focusable")
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_HiddenOrDisabledAddIsSkippedAsync(flow: LeftToRight, hide: False)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_HiddenOrDisabledAddIsSkippedAsync(flow: RightToLeft, hide: False)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_HiddenOrDisabledAddIsSkippedAsync(flow: LeftToRight, hide: True)
+  Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_HiddenOrDisabledAddIsSkippedAsync(flow: RightToLeft, hide: True)

@@ -28,12 +28,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -47,6 +49,106 @@ namespace Fluence.Wpf.Tests.Control
     /// </summary>
     public sealed class AutoSuggestBoxTests : IAsyncLifetime
     {
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public Task AutoSuggestBox_ObservableSourceClear_ClosesPropertyAndPopupAsync(bool reset)
+        {
+            return WithObservableSuggestionsAsync(async (window, box, source, popup) =>
+            {
+                if (reset)
+                {
+                    source.Clear();
+                }
+                else
+                {
+                    source.RemoveAt(0);
+                }
+                Assert.False(box.IsSuggestionListOpen);
+                Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !popup.IsOpen).ConfigureAwait(true));
+            });
+        }
+
+        [Fact]
+        public Task AutoSuggestBox_ObservableSourceFirstAdd_OpensWhenFocusedAsync()
+        {
+            return WithObservableSuggestionsAsync(static async (window, box, source, popup) =>
+            {
+                Assert.False(box.IsSuggestionListOpen);
+                source.Add("First");
+                Assert.True(box.IsSuggestionListOpen);
+                Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true));
+            }, initiallyEmpty: true);
+        }
+
+        [Fact]
+        public Task AutoSuggestBox_ReplacedObservableSource_NoLongerAffectsStateAsync()
+        {
+            return WithObservableSuggestionsAsync(static (window, box, oldSource, popup) =>
+            {
+                ObservableCollection<string> current = ["Current"];
+                box.ItemsSource = current;
+                oldSource.Clear();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.Same(current, box.ItemsSource);
+                Assert.True(box.IsSuggestionListOpen);
+                Assert.True(popup.IsOpen);
+
+                box.ItemsSource = (List<string>)["Plain"];
+                box.ItemsSource = Array.Empty<string>();
+                Assert.False(box.IsSuggestionListOpen);
+                return Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public Task AutoSuggestBox_CollectionRefresh_PreservesOpenBindingAsync()
+        {
+            return WithObservableSuggestionsAsync(static (window, box, source, popup) =>
+            {
+                ToggleButton model = new() { IsChecked = true };
+                _ = BindingOperations.SetBinding(box, Controls.AutoSuggestBox.IsSuggestionListOpenProperty,
+                    new Binding(nameof(ToggleButton.IsChecked)) { Source = model, Mode = BindingMode.TwoWay });
+                source.Clear();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                Assert.False(box.IsSuggestionListOpen);
+                Assert.False(popup.IsOpen);
+                Assert.True(BindingOperations.IsDataBound(box, Controls.AutoSuggestBox.IsSuggestionListOpenProperty));
+                return Task.CompletedTask;
+            });
+        }
+
+        private static Task WithObservableSuggestionsAsync(
+            Func<Window, Controls.AutoSuggestBox, ObservableCollection<string>, Popup, Task> scenario,
+            bool initiallyEmpty = false)
+        {
+            return WpfTestSta.RunOnStaAsync(async () =>
+            {
+                ObservableCollection<string> source = initiallyEmpty ? [] : ["First"];
+                Controls.AutoSuggestBox box = new() { ItemsSource = source };
+                Window window = new() { Content = box, Width = 400, Height = 180 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    TextBox editor = Assert.IsType<TextBox>(box.Template.FindName("PART_TextBox", box), exactMatch: false);
+                    _ = editor.Focus();
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => box.IsKeyboardFocusWithin).ConfigureAwait(true));
+                    Popup popup = Assert.IsType<Popup>(box.Template.FindName("PART_SuggestionsPopup", box));
+                    if (!initiallyEmpty)
+                    {
+                        box.IsSuggestionListOpen = true;
+                        Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true));
+                    }
+                    await scenario(window, box, source, popup).ConfigureAwait(true);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         public ValueTask InitializeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));

@@ -699,6 +699,8 @@ HelpMessage: ''
 A XAML string parsed with XamlReader.Parse.
 A FluenceWindow (or any Window) root is shown
 directly; any other root is hosted inside a new FluenceWindow.
+String input has no implicit
+file location for relative resources.
 
 ```yaml
 Type: System.String
@@ -721,6 +723,7 @@ HelpMessage: ''
 
 A path to a .xaml file loaded with XamlReader.Load.
 The path is resolved on the calling thread.
+Relative resource dictionaries and images resolve beside the supplied XAML file.
 
 ```yaml
 Type: System.String

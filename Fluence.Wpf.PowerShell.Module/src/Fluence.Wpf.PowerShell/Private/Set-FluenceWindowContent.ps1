@@ -89,7 +89,11 @@ function Set-FluenceWindowContent
         $stream = [System.IO.File]::OpenRead($Spec.XamlPath)
         try
         {
-            $reader = [System.Xml.XmlReader]::Create($stream)
+            $fileUri = [System.Uri]::new($Spec.XamlPath, [System.UriKind]::Absolute)
+            $reader = [System.Xml.XmlReader]::Create(
+                $stream,
+                [System.Xml.XmlReaderSettings]::new(),
+                $fileUri.AbsoluteUri)
             try
             {
                 $parsed = [System.Windows.Markup.XamlReader]::Load($reader)

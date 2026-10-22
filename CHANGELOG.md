@@ -10,12 +10,17 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Added
 
+- Added nonmutating generated API and PowerShell reference checks to CI, with fixture coverage for missing, changed, obsolete, and legacy command pages.
+- Added MVVM task-manager characterization tests for command eligibility, trimming, notification order, and removed-item subscription cleanup.
+- Refreshed both full-target test inventories without removing existing cases. Discovery now lists 1,508 net472 and 1,563 net10 cases; ordinary execution totals are 1,555 and 1,559 respectively, including one existing maintainer-only skip per target. CI floors use the measured ordinary totals.
 - Added four RadioButton checked outer-ring stroke color states (base, pointer-over, pressed, and disabled), each with a brush twin.
 - Added the CheckBox indeterminate pointer-over stroke color and brush resources so its High Contrast outline can follow `Highlight` independently of the `HighlightText` fill.
 - Added the theme-aware `TextControlBorderThemeThicknessFocused` resource for TextBox and PasswordBox focus outlines.
 
 ### Changed
 
+- Local PowerShell packaging builds current library source by default. `-UseExistingBuild` explicitly reuses verified binaries, including artifacts from the same CI run.
+- PowerShell ZIP and NUPKG files are staged and validated together before promotion. Handled failures restore the previous artifact presence and bytes where possible; failed rollback retains recoverable backups and reports their paths.
 - Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
 - Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.
 - Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.
@@ -23,6 +28,12 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Theme publication repairs missing, replaced, or reordered owned resource slots while preserving consumer dictionaries. Auto mode follows the app light/dark preference after High Contrast resolution, and settings broadcasts coalesce only while a refresh is pending.
+- NavigationView reconciles footer selection and handlers after reset, removal, and move. AutoSuggestBox reacts to in-place observable suggestion changes while preserving open-state bindings. Gallery raw Enter search checks exact titles and routes across main and footer destinations before keyword matches.
+- TabView keyboard navigation reaches its add button, including when empty or every header is unavailable, and Ctrl+F4 requests closure without removing items. Programmatic selection, collection changes, resize, and retemplating reveal the selected header, including physical leading-edge alignment for oversized right-to-left headers, without scrolling ancestors.
+- TabView wires the native WPF overflow button parts correctly. Their glyph directions follow right-to-left layout, visibility follows the strip offset, repeated template application does not duplicate clicks, and automatic reveal preserves deliberate manual scrolling through internal button layout changes.
+- TreeView supports opt-in root virtualization in Single and None modes while retaining physical scrolling in Multiple mode. Completed container generation restores model-owned checked bindings and reconciles the existing selection list without invalidating its enumerator when selection is unchanged.
+- Show-FluenceWindow file input preserves its absolute base URI, allowing relative resource dictionaries and images to resolve beside the supplied XAML file. String-mode loading and XML reader disposal remain unchanged.
 - Corrected NumberBox focus accents to use the shared rounded focus border immediately during editor and spin-button interaction. Removed the separate underline and fade while preserving field layout, numeric parsing, and spin-button behavior. Two focused cases extend the test inventories and CI floors.
 - Corrected TextBox and PasswordBox focus accents to follow their rounded borders, with a 2-DIP bottom stroke in Light and Dark and a full 2-DIP outline in High Contrast. Focus preserves editor and button layout, native input and password reveal behavior, and TextBox validation priority and colors. Focused validation and live-theme coverage add four test cases per full target framework; the two existing focus tests now check rounded borders, stable editor geometry, and edge hit testing.
 - Updated the CheckBox checkmark to follow WinUI path-trim geometry and state-route timing while retaining native WPF selection and input behavior. The 20-DIP box keeps a 1-DIP outline, the indeterminate dash stays static, disabled motion snaps to the resolved glyph, and unload cancels active routes. Discovery adds five test cases per target framework across CheckBox interaction, route-queue, and reduced-motion coverage.

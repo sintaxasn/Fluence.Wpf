@@ -64,7 +64,7 @@ namespace Fluence.Wpf.Tests.Windowing
             {
                 ThemeTransitionOverlay overlay = new(window, root, host);
                 overlay.Prepare(ApplicationTheme.Light, ApplicationTheme.Dark);
-                UIElement snapshot = Assert.IsAssignableFrom<UIElement>(Assert.Single(host.Children));
+                UIElement snapshot = Assert.IsType<UIElement>(Assert.Single(host.Children), exactMatch: false);
                 Assert.False(snapshot.IsHitTestVisible);
 
                 overlay.Play();
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Tests.Windowing
             {
                 ThemeTransitionOverlay overlay = new(window, root, host);
                 overlay.Prepare(ApplicationTheme.Light, ApplicationTheme.Dark);
-                UIElement olderSnapshot = Assert.IsAssignableFrom<UIElement>(Assert.Single(host.Children));
+                UIElement olderSnapshot = Assert.IsType<UIElement>(Assert.Single(host.Children), exactMatch: false);
 
                 // A worker-thread prepare must consume this still-pending capture.
                 await Task.Run(() => overlay.Prepare(ApplicationTheme.Dark, ApplicationTheme.Light),
@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Tests.Windowing
 
                 // It must also leave an earlier in-progress fade attached and running.
                 overlay.Prepare(ApplicationTheme.Light, ApplicationTheme.Dark);
-                UIElement fadingSnapshot = Assert.IsAssignableFrom<UIElement>(Assert.Single(host.Children));
+                UIElement fadingSnapshot = Assert.IsType<UIElement>(Assert.Single(host.Children), exactMatch: false);
                 overlay.Play();
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.True(IsAnimated(fadingSnapshot));
@@ -210,13 +210,13 @@ namespace Fluence.Wpf.Tests.Windowing
             {
                 ThemeTransitionOverlay overlay = new(window, root, host);
                 overlay.Prepare(ApplicationTheme.Light, ApplicationTheme.Dark);
-                UIElement first = Assert.IsAssignableFrom<UIElement>(Assert.Single(host.Children));
+                UIElement first = Assert.IsType<UIElement>(Assert.Single(host.Children), exactMatch: false);
                 overlay.Play();
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                 // The next capture sees the current root while the prior blend is attached.
                 overlay.Prepare(ApplicationTheme.Dark, ApplicationTheme.Light);
-                UIElement second = Assert.IsAssignableFrom<UIElement>(Assert.Single(host.Children));
+                UIElement second = Assert.IsType<UIElement>(Assert.Single(host.Children), exactMatch: false);
                 Assert.NotSame(first, second);
                 Assert.False(host.Children.Contains(first));
                 overlay.Play();
