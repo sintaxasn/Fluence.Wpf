@@ -38,6 +38,7 @@ using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.BrushAssert;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Gallery.Pages
@@ -168,7 +169,10 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         Assert.False(DependencyPropertyHelper.GetValueSource(secondRing, UIElement.OpacityProperty).IsAnimated);
                     }
 
-                    await Task.Delay(180, TestContext.Current.CancellationToken).ConfigureAwait(true);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                        () => !DependencyPropertyHelper.GetValueSource(firstRing, UIElement.OpacityProperty).IsAnimated
+                            && !DependencyPropertyHelper.GetValueSource(secondRing, UIElement.OpacityProperty).IsAnimated).ConfigureAwait(true),
+                        "Both selection ring animations should complete.");
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Equal(0.0, firstRing.Opacity, 3);
                     Assert.Equal(1.0, secondRing.Opacity, 3);
