@@ -58,6 +58,100 @@ namespace Fluence.Wpf.Tests.Gallery
     /// </summary>
     public sealed class DemoShellTests : IAsyncLifetime
     {
+        [Theory]
+        [InlineData("settings")]
+        [InlineData("preferences")]
+        [InlineData("  SeTtInGs  ")]
+        public Task MainWindow_Search_EnterSettingsAndPreferencesSelectsFooterAsync(string query)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
+                try
+                {
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
+                    search.Text = query;
+                    RaiseSearchKey(search, window, Key.Enter);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    AssertSettingsFooterSelected(window);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("  ")]
+        [InlineData("no such gallery route")]
+        public Task MainWindow_Search_EmptyAndUnmatchedEnter_PreservesCurrentPageAsync(string query)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
+                try
+                {
+                    window.NavigateTo("buttons");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    object before = GetSelectedPageContent(window);
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
+                    search.Text = query;
+                    RaiseSearchKey(search, window, Key.Enter);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(before, GetSelectedPageContent(window));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task MainWindow_Search_ChosenSettingsSuggestionSelectsFooterAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MainWindow window = DemoTestHost.CreateShownMainWindow();
+                try
+                {
+                    Controls.AutoSuggestBox search = Assert.IsType<Controls.AutoSuggestBox>(DemoTestHost.FindByName<Controls.AutoSuggestBox>(window, "NavSearchBox"), exactMatch: false);
+                    TextBox editor = Assert.IsType<TextBox>(search.Template.FindName("PART_TextBox", search), exactMatch: false);
+                    _ = editor.Focus();
+                    editor.Text = "preferences";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    RaiseSearchKey(editor, window, Key.Down);
+                    RaiseSearchKey(editor, window, Key.Enter);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    AssertSettingsFooterSelected(window);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        private static void AssertSettingsFooterSelected(MainWindow window)
+        {
+            Controls.NavigationView nav = Assert.IsType<Controls.NavigationView>(DemoTestHost.FindByName<Controls.NavigationView>(window, "DemoNav"), exactMatch: false);
+            Controls.NavigationViewItem settings = Assert.IsType<Controls.NavigationViewItem>(DemoTestHost.FindByName<Controls.NavigationViewItem>(window, "SettingsNavigationItem"), exactMatch: false);
+            Frame frame = Assert.IsType<Frame>(nav.Content, exactMatch: false);
+            _ = Assert.IsType<GallerySettingsPage>(frame.Content);
+            Assert.Same(settings, nav.SelectedFooterItem);
+            Assert.Null(nav.SelectedItem);
+        }
+
+        private static void RaiseSearchKey(UIElement target, Window window, Key key)
+        {
+            target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(window), 0, key)
+            {
+                RoutedEvent = UIElement.PreviewKeyDownEvent,
+            });
+        }
+
         // The four TreeView samples the Trees page hosts, all deliberately borderless.
         private static readonly string[] BorderlessTreeSampleNames =
             ["HierarchyTreeView", "SelectionTreeView", "MultiSelectTreeView", "ExpansionTreeView"];

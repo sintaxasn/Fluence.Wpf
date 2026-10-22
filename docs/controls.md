@@ -42,6 +42,8 @@ ColorPicker's Hex field omits the character counter while retaining its RGB/ARGB
 
 The Fluence [DatePicker](controls/date-picker.md) is a `Control` with a three-column picker, not a subclass of the native WPF calendar picker. Use its own `SelectedDate` API. See [inputs and data](how-to/inputs-and-data.md) and the gallery's Inputs and Forms pages.
 
+`AutoSuggestBox` observes collection changes when its current `ItemsSource` implements `INotifyCollectionChanged`. Adding the first suggestion or removing the last one updates the popup without replacing the collection or the consumer's open-state binding.
+
 ## Navigation and tabs
 
 | Types | Use them for | Main behavior |
@@ -55,6 +57,10 @@ The Fluence [DatePicker](controls/date-picker.md) is a `Control` with a three-co
 
 [NavigationView](controls/navigation-view.md) derives from `Selector`. Put its page host in `NavigationView.Content`, because an unnamed child enters the item collection. The application controls its navigation history. [TabView](controls/tab-view.md) extends WPF `TabControl`; a close request does not remove the item for you. See [navigation and tabs](how-to/navigation-and-tabs.md).
 
+Reordering `NavigationView.FooterMenuItems` preserves a selected item that remains present. Removing or clearing that selected footer item clears its footer selection; it does not select an unrelated main item.
+
+In `TabView`, the trailing arrow from the last visible, enabled, focusable header reaches the visible enabled add button; the reverse arrow returns to the header. When no header can receive keyboard focus, Tab reaches the add button directly. Tab then leaves the strip. Arrow navigation and overflow-button glyphs follow right-to-left layout. Ctrl+F4 requests closure of the selected closable tab from its header or content, unless the content handles the key first. Selection and layout changes keep the selected header visible within the strip. A header wider than the viewport aligns its physical leading edge with the viewport's leading edge.
+
 ## Data, collections, and people
 
 | Types | Use them for | Key detail |
@@ -65,6 +71,8 @@ The Fluence [DatePicker](controls/date-picker.md) is a `Control` with a three-co
 | [PersonPicture](controls/person-picture.md) | Initials or avatar imagery | Person representation |
 
 The theme also styles some native framework elements used inside these controls. A `ListViewItem` is the WPF container, not a separate public Fluence class.
+
+`TreeView` retains physical scrolling by default. With `SelectionMode="Single"` or `"None"`, opt in using `VirtualizingPanel.IsVirtualizing="True"`; `VirtualizingPanel.VirtualizationMode="Recycling"` can reuse containers. Keep selection and expansion state in model-backed item bindings when it must survive recycling. `Multiple` mode uses physical scrolling in the shipped template even when logical scrolling and a virtualizing panel are requested, because checked selection and parent tri-state currently depend on realized containers. A fully custom control template is responsible for its own behavior. See the [tree-selection limitations](../KNOWN_ISSUES.md#tree-selection-and-unrealized-data-bound-branches).
 
 ## Menus, flyouts, and dialogs
 

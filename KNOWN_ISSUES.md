@@ -20,6 +20,16 @@ remain unrealized; only a genuinely empty child collection clears that parent st
 This limitation needs a separate API and realization-policy decision before 
 any claim of complete data-bound cascading support.
 
+The shipped template supports opt-in virtualization only in Single and None
+modes. Multiple mode deliberately retains physical scrolling, including when
+the parent requests logical scrolling or a virtualizing ItemsPanel.
+Full template replacement can also write a checked container's teardown default
+through an automatic TwoWay binding. Applications requiring checked-state
+retention across that replacement should own the state in their model and
+control source updates explicitly. The completed-generation refresh restores
+those bound root values and reconciles the existing live SelectedItems list;
+it does not introduce an independent hierarchy-wide selection model.
+
 ## Selected text rendering in native WPF editors
 
 `TextBox`, `PasswordBox`, and the native text editor inside `NumberBox` use WPF's

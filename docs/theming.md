@@ -16,6 +16,8 @@ Call `ApplicationThemeManager.Apply` before showing the first window. It creates
 
 Each published color normally has a frozen `SolidColorBrush` sibling with `Brush` appended. Use the brush key for brush properties. Some special brush keys have no color sibling, and a few accent brushes intentionally differ from the same-named color's direct conversion. Consult the frozen inventory for exact spelling.
 
+`ApplicationTheme.Auto` gives High Contrast priority, then follows the Windows app light/dark preference (`AppsUseLightTheme`). Ordinary Windows theme filenames do not override that app preference. Relevant Windows settings broadcasts share one pending dispatcher refresh; a later change can schedule another refresh after the previous one finishes.
+
 When a visible, realized `FluenceWindow` changes between Light and Dark, changes accent, or changes its backdrop request, its previous WPF surface fades away over the new appearance for 167 ms. Theme and accent resources, manager state, and public change events update immediately; the fade is a temporary visual overlay, not interpolated brushes. Windows draws native DWM backdrops outside WPF, so those pixels do not interpolate. High Contrast entry or exit is immediate for accessibility. The fade is skipped when motion is disabled or a usable snapshot cannot be captured. Ordinary WPF `Window` instances update immediately.
 
 ## Supported key families
@@ -80,8 +82,10 @@ After initialization, `Application.Current.Resources.MergedDictionaries` has thr
 | Slot | Content | Update behavior |
 | --- | --- | --- |
 | `[0]` | Computed colors, brushes, and special brush roles | Replaced when published output changes |
-| `[1]` | `Themes/Typography/Typography.xaml` | Loaded once |
-| `[2]` | `Themes/Generic.xaml` | Loaded once |
+| `[1]` | `Themes/Typography/Typography.xaml` | Reused while the owned resource stack remains installed |
+| `[2]` | `Themes/Generic.xaml` | Reused while the owned resource stack remains installed |
+
+The engine owns slots `[0]` through `[2]`. If application resources are replaced or those slots are cleared, reordered, or replaced, the next apply repairs the owned stack even when the requested theme has not changed. Other application dictionaries are retained after those slots in their existing relative order. Do not treat an exact total dictionary count as part of the contract.
 
 The per-theme `Themes/Colors/Theme.*.xaml` files are color tables read by the engine, not dictionaries to merge into an application. Never merge `Generic.xaml` manually after calling the theme manager. The [pipeline explanation](explanation/theme-pipeline.md) traces resolution and publication.
 

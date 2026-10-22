@@ -715,7 +715,7 @@ namespace Fluence.Wpf.Tests.Control
                 }
                 finally
                 {
-                    VisualTree.CloseWindowAndDrain(window);
+                    CloseWindowAndDrain(window);
                 }
             });
         }

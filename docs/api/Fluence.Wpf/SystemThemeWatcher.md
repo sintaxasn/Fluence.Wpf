@@ -9,7 +9,7 @@
 public static class SystemThemeWatcher
 ```
 
-Subscribes a `Window` to high-priority settings change notifications (theme, accent) with debouncing.
+Subscribes a `Window` to settings change notifications, coalescing pending theme and accent refreshes.
 
 **Remarks:** Used with [ApplicationThemeManager](ApplicationThemeManager.md) to refresh resources when the user changes Windows light/dark or contrast while the app runs.
 

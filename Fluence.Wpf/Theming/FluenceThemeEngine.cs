@@ -55,7 +55,6 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         internal const string ComputedDictionaryMarker = "FluenceComputedDictionary";
         private static AccentIntent _intent = AccentIntent.System;
-        private static bool _initialized;
 
         // Test-only: when set, Apply uses ColorMap's machine-independent (deterministic) chrome
         // branch so the golden-parity test does not depend on the host machine's "show accent color
@@ -67,6 +66,8 @@ namespace Fluence.Wpf.Theming
         // together, and only after Publish reported success. See Apply.
         private static PublishFingerprint? _publishedFingerprint;
         private static ResourceDictionary? _publishedDictionary;
+        private static ResourceDictionary? _typographyDictionary;
+        private static ResourceDictionary? _genericDictionary;
 
         /// <summary>
         /// Gets the most recently resolved <see cref="AccentPalette"/>.
@@ -139,13 +140,13 @@ namespace Fluence.Wpf.Theming
             CurrentTitleBarColors = (colors["TitleBarActiveColor"], colors["TitleBarInactiveColor"], colors["WindowBorderColor"]);
 
             PublishFingerprint fingerprint = PublishFingerprint.Capture(theme, colors);
-            if (_publishedFingerprint is not null && IsPublishedDictionaryInstalled() && _publishedFingerprint.Matches(fingerprint))
+            if (_publishedFingerprint is not null && AreOwnedDictionariesInstalled() && _publishedFingerprint.Matches(fingerprint))
             {
                 return false;
             }
 
             ResourceDictionary dict = BuildComputedDictionary(colors, theme);
-            if (_publishedFingerprint is not null && IsPublishedDictionaryInstalled())
+            if (_publishedFingerprint is not null && AreOwnedDictionariesInstalled())
             {
                 PreparingPublish?.Invoke(sender: null, new ThemePublishEventArgs(previousTheme, theme));
             }
@@ -163,13 +164,13 @@ namespace Fluence.Wpf.Theming
         }
 
         /// <summary>
-        /// Returns <see langword="true"/> when the dictionary from the last successful publish is
-        /// still the live slot [0]. Anything that clears or replaces application resources behind
+        /// Returns <see langword="true"/> when the last published computed dictionary and its two
+        /// static dictionaries still occupy slots 0-2 without stale owned duplicates. Anything that clears or replaces application resources behind
         /// the engine's back (a test fixture, or a consumer rebuilding
         /// <see cref="Application.Current"/>.Resources) must force a republish even when the
         /// fingerprint is unchanged, because the computed dictionary is no longer installed.
         /// </summary>
-        private static bool IsPublishedDictionaryInstalled()
+        private static bool AreOwnedDictionariesInstalled()
         {
             if (_publishedDictionary is null || Application.Current is null)
             {
@@ -177,7 +178,23 @@ namespace Fluence.Wpf.Theming
             }
 
             Collection<ResourceDictionary> dicts = Application.Current.Resources.MergedDictionaries;
-            return dicts.Count > 0 && ReferenceEquals(dicts[0], _publishedDictionary);
+            if (dicts.Count < 3
+                || !ReferenceEquals(dicts[0], _publishedDictionary)
+                || !ReferenceEquals(dicts[1], _typographyDictionary)
+                || !ReferenceEquals(dicts[2], _genericDictionary))
+            {
+                return false;
+            }
+
+            for (int i = 3; i < dicts.Count; i++)
+            {
+                if (dicts[i].Contains(ComputedDictionaryMarker) || IsOwnedStaticDictionary(dicts[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -242,18 +259,18 @@ namespace Fluence.Wpf.Theming
         {
             if (Application.Current is null) { return false; }
             Collection<ResourceDictionary> dicts = Application.Current.Resources.MergedDictionaries;
-            if (!_initialized)
+            if (!AreOwnedDictionariesInstalled())
             {
-                // Slot model: [0] computed, [1] Typography, [2] Generic. Insert (not Add) the
-                // static slots so that any foreign dictionaries an application merged into
-                // Application.Resources (e.g. via App.xaml) are pushed to index 3+ and the
-                // [0]/[1]/[2] contract that DynamicResource resolution and DictionaryStabilityTests
-                // depend on holds regardless of pre-existing entries.
+                // Load before touching live resources. Keep foreign dictionaries, including
+                // unrelated Fluence dictionaries, in their original relative order.
+                ResourceDictionary typography = _typographyDictionary ?? Load("Themes/Typography/Typography.xaml");
+                ResourceDictionary generic = _genericDictionary ?? Load("Themes/Generic.xaml");
                 RemoveFluenceDictionaries(dicts);
                 dicts.Insert(0, computed);
-                dicts.Insert(1, Load("Themes/Typography/Typography.xaml"));
-                dicts.Insert(2, Load("Themes/Generic.xaml"));
-                _initialized = true;
+                dicts.Insert(1, typography);
+                dicts.Insert(2, generic);
+                _typographyDictionary = typography;
+                _genericDictionary = generic;
             }
             else
             {
@@ -283,12 +300,28 @@ namespace Fluence.Wpf.Theming
                     continue;
                 }
 
-                string s = dicts[i].Source?.OriginalString.ToLowerInvariant() ?? string.Empty;
-                if (s.Contains("fluence.wpf;component", StringComparison.Ordinal) && s.Contains("themes/", StringComparison.Ordinal))
+                if (IsOwnedStaticDictionary(dicts[i]))
                 {
                     dicts.RemoveAt(i);
                 }
             }
+        }
+
+        private static bool IsOwnedStaticDictionary(ResourceDictionary dictionary)
+        {
+            const string packPrefix = "pack://application:,,,/";
+            string source = dictionary.Source?.OriginalString ?? string.Empty;
+            if (source.StartsWith(packPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                source = source[packPrefix.Length..];
+            }
+            else if (source.Length > 0 && source[0] == '/')
+            {
+                source = source[1..];
+            }
+
+            return string.Equals(source, "Fluence.Wpf;component/Themes/Typography/Typography.xaml", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, "Fluence.Wpf;component/Themes/Generic.xaml", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -309,10 +342,11 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         internal static void ResetForTesting()
         {
-            _initialized = false;
             _deterministicChromeForTesting = false;
             _publishedFingerprint = null;
             _publishedDictionary = null;
+            _typographyDictionary = null;
+            _genericDictionary = null;
             _intent = AccentIntent.System;
             ResolvedTheme = ApplicationTheme.Light;
             // Seed a valid default-blue ramp rather than the zero Color value. SystemAccentColor

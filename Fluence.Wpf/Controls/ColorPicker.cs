@@ -533,7 +533,7 @@ namespace Fluence.Wpf.Controls
             _hueSlider = GetTemplateChild(PART_HueSlider) as RangeBase;
             _alphaSlider = GetTemplateChild(PART_AlphaSlider) as RangeBase;
             _hexTextBox = GetTemplateChild(PART_HexTextBox) as System.Windows.Controls.TextBox;
-            if (_hexTextBox is Fluence.Wpf.Controls.TextBox hexTextBox)
+            if (_hexTextBox is TextBox hexTextBox)
             {
                 hexTextBox.ShowCharacterCounter = false;
             }

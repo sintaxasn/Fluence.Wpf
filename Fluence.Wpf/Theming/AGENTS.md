@@ -17,7 +17,7 @@ The gate suppresses duplicate Windows broadcasts. If an input changes published 
 
 ## Resource slots and invariants
 
-After Apply, the application has exactly three merged dictionaries in this order:
+After Apply, three Fluence-owned dictionaries occupy slots 0-2 in this order. Foreign dictionaries may follow at slot 3 and beyond; repair preserves their relative order and identity:
 
 | Slot | Content | Lifetime |
 | --- | --- | --- |

@@ -112,3 +112,150 @@ Describe 'Package-Module prerequisites' {
         Should -Invoke Get-PackageProvider -Times 1 -Exactly -ParameterFilter { -not $ForceBootstrap }
     }
 }
+
+Describe 'Package-Module artifact production' {
+    BeforeEach {
+        $script:fixtureRoot = Join-Path $TestDrive ([System.Guid]::NewGuid().ToString('N'))
+        $script:fixtureBuild = Join-Path $script:fixtureRoot 'Fluence.Wpf.PowerShell.Module/build'
+        $script:fixtureModule = Join-Path $script:fixtureRoot 'Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell'
+        $script:fixtureOutput = Join-Path $script:fixtureRoot 'artifacts'
+        $fixtureTemp = Join-Path $script:fixtureRoot 'temp'
+        $null = New-Item -ItemType Directory -Path $script:fixtureBuild, (Join-Path $script:fixtureModule 'lib'), $script:fixtureOutput, $fixtureTemp -Force
+        $script:priorTemp = $env:TEMP
+        $script:priorTmp = $env:TMP
+        $env:TEMP = $fixtureTemp
+        $env:TMP = $fixtureTemp
+        $script:fixtureScript = Join-Path $script:fixtureBuild 'Package-Module.ps1'
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot '../build/Package-Module.ps1') -Destination $script:fixtureScript
+        [System.IO.File]::WriteAllText((Join-Path $script:fixtureModule 'Fluence.Wpf.PowerShell.psd1'), "@{ ModuleVersion = '0.9.0'; PrivateData = @{ PSData = @{ Prerelease = 'pre' } } }", $script:encoding)
+        [System.IO.File]::WriteAllText((Join-Path $script:fixtureModule 'Fluence.Wpf.PowerShell.psm1'), '# fixture', $script:encoding)
+        [System.IO.File]::WriteAllText((Join-Path $script:fixtureModule 'lib/payload.dll'), 'old binary', $script:encoding)
+        [System.IO.File]::WriteAllText((Join-Path $script:fixtureBuild 'Build-Module.ps1'), @'
+param([string]$Configuration, [switch]$Build)
+$root = Split-Path $PSScriptRoot -Parent
+[System.IO.File]::WriteAllText((Join-Path $root 'build-flag.txt'), $Build.ToString())
+if ($Build)
+{
+    [System.IO.File]::WriteAllText((Join-Path $root 'src/Fluence.Wpf.PowerShell/lib/payload.dll'), 'fresh binary')
+}
+'@, $script:encoding)
+        $script:zipPath = Join-Path $script:fixtureOutput 'Fluence.Wpf.PowerShell-0.9.0-pre.zip'
+        $script:nupkgPath = Join-Path $script:fixtureOutput 'Fluence.Wpf.PowerShell.0.9.0-pre.nupkg'
+        $script:repositoryPath = $null
+        Mock Get-PackageProvider { [pscustomobject]@{ Version = [System.Version]'3.0.0.1' } }
+        Mock Register-PSRepository {
+            param($SourceLocation)
+            $script:repositoryPath = if ($SourceLocation -is [System.Uri]) { $SourceLocation.LocalPath } else { [string]$SourceLocation }
+        }
+        Mock Publish-Module {
+            [System.IO.File]::WriteAllText((Join-Path $script:repositoryPath 'Fluence.Wpf.PowerShell.0.9.0-pre.nupkg'), 'new package')
+        }
+        Mock Unregister-PSRepository { }
+    }
+
+    AfterEach {
+        $env:TEMP = $script:priorTemp
+        $env:TMP = $script:priorTmp
+    }
+
+    It 'preserves prior <Prior> artifacts after <Failure> fails' -ForEach @(
+        @{ Prior = 'both'; Zip = $true; Nupkg = $true; Failure = 'publication' }
+        @{ Prior = 'none'; Zip = $false; Nupkg = $false; Failure = 'publication' }
+        @{ Prior = 'zip only'; Zip = $true; Nupkg = $false; Failure = 'publication' }
+        @{ Prior = 'nupkg only'; Zip = $false; Nupkg = $true; Failure = 'publication' }
+        @{ Prior = 'both'; Zip = $true; Nupkg = $true; Failure = 'registration' }
+        @{ Prior = 'none'; Zip = $false; Nupkg = $false; Failure = 'registration' }
+    ) {
+        if ($Zip) { [System.IO.File]::WriteAllText($script:zipPath, 'old zip') }
+        if ($Nupkg) { [System.IO.File]::WriteAllText($script:nupkgPath, 'old nupkg') }
+        if ($Failure -eq 'publication') { Mock Publish-Module { throw 'injected publication failure' } }
+        else { Mock Register-PSRepository { throw 'injected registration failure' } }
+
+        { & $script:fixtureScript -OutputPath $script:fixtureOutput | Out-Null } | Should -Throw ('*injected ' + $Failure + ' failure*')
+
+        Test-Path -LiteralPath $script:zipPath | Should -Be $Zip
+        Test-Path -LiteralPath $script:nupkgPath | Should -Be $Nupkg
+        if ($Zip) { [System.IO.File]::ReadAllText($script:zipPath) | Should -BeExactly 'old zip' }
+        if ($Nupkg) { [System.IO.File]::ReadAllText($script:nupkgPath) | Should -BeExactly 'old nupkg' }
+        @(Get-ChildItem -LiteralPath $script:fixtureOutput -Directory -Force).Count | Should -Be 0
+        @(Get-ChildItem -LiteralPath $env:TEMP -Force -Filter 'FluenceTempRepo_*').Count | Should -Be 0
+        $expectedUnregister = if ($Failure -eq 'publication') { 1 } else { 0 }
+        Should -Invoke Unregister-PSRepository -Times $expectedUnregister -Exactly
+    }
+
+    It 'restores both old files when the second promotion fails' {
+        [System.IO.File]::WriteAllText($script:zipPath, 'old zip')
+        [System.IO.File]::WriteAllText($script:nupkgPath, 'old nupkg')
+        Mock Move-Item { throw 'injected second promotion failure' } -ParameterFilter { $Destination -eq $script:nupkgPath }
+
+        { & $script:fixtureScript -OutputPath $script:fixtureOutput | Out-Null } | Should -Throw '*injected second promotion failure*'
+
+        [System.IO.File]::ReadAllText($script:zipPath) | Should -BeExactly 'old zip'
+        [System.IO.File]::ReadAllText($script:nupkgPath) | Should -BeExactly 'old nupkg'
+        @(Get-ChildItem -LiteralPath $script:fixtureOutput -Directory -Force).Count | Should -Be 0
+    }
+
+    It 'removes newly promoted files when the second promotion fails with no prior pair' {
+        Mock Move-Item { throw 'injected second promotion failure' } -ParameterFilter { $Destination -eq $script:nupkgPath }
+        { & $script:fixtureScript -OutputPath $script:fixtureOutput | Out-Null } | Should -Throw '*injected second promotion failure*'
+        Test-Path -LiteralPath $script:zipPath | Should -BeFalse
+        Test-Path -LiteralPath $script:nupkgPath | Should -BeFalse
+        @(Get-ChildItem -LiteralPath $script:fixtureOutput -Directory -Force).Count | Should -Be 0
+    }
+
+    It 'retains recoverable backups and reports their location when rollback fails' {
+        [System.IO.File]::WriteAllText($script:zipPath, 'old zip')
+        [System.IO.File]::WriteAllText($script:nupkgPath, 'old nupkg')
+        Mock Move-Item { throw 'injected second promotion failure' } -ParameterFilter { $Destination -eq $script:nupkgPath }
+        Mock Copy-Item { throw 'injected rollback failure' } -ParameterFilter { $Destination -eq $script:zipPath -and (Split-Path $LiteralPath -Leaf) -like 'previous-*' }
+
+        $failure = { & $script:fixtureScript -OutputPath $script:fixtureOutput | Out-Null } | Should -Throw -PassThru
+        $failure.Exception.Message | Should -Match 'rollback'
+        $stage = @(Get-ChildItem -LiteralPath $script:fixtureOutput -Directory -Force)
+        $stage.Count | Should -Be 1
+        $failure.Exception.Message | Should -Match ([regex]::Escape($stage[0].FullName))
+        [System.IO.File]::ReadAllText((Join-Path $stage[0].FullName 'previous-zip')) | Should -BeExactly 'old zip'
+        [System.IO.File]::ReadAllText((Join-Path $stage[0].FullName 'previous-nupkg')) | Should -BeExactly 'old nupkg'
+    }
+
+    It 'rejects <Problem> staged packages before replacing final files' -ForEach @(
+        @{ Problem = 'missing' }
+        @{ Problem = 'empty' }
+        @{ Problem = 'unexpected-name' }
+    ) {
+        [System.IO.File]::WriteAllText($script:zipPath, 'old zip')
+        [System.IO.File]::WriteAllText($script:nupkgPath, 'old nupkg')
+        $script:packageProblem = $Problem
+        Mock Publish-Module {
+            if ($script:packageProblem -eq 'empty') { [System.IO.File]::WriteAllBytes((Join-Path $script:repositoryPath 'Fluence.Wpf.PowerShell.0.9.0-pre.nupkg'), [byte[]]@()) }
+            elseif ($script:packageProblem -eq 'unexpected-name') { [System.IO.File]::WriteAllText((Join-Path $script:repositoryPath 'Unexpected.nupkg'), 'unexpected') }
+        }
+        { & $script:fixtureScript -OutputPath $script:fixtureOutput | Out-Null } | Should -Throw
+        [System.IO.File]::ReadAllText($script:zipPath) | Should -BeExactly 'old zip'
+        [System.IO.File]::ReadAllText($script:nupkgPath) | Should -BeExactly 'old nupkg'
+        @(Get-ChildItem -LiteralPath $script:fixtureOutput -Directory -Force).Count | Should -Be 0
+    }
+
+    It 'packages <Expected> payload bytes with explicit reuse <Reuse>' -ForEach @(
+        @{ Reuse = $false; Expected = 'fresh binary'; BuildFlag = 'True' }
+        @{ Reuse = $true; Expected = 'old binary'; BuildFlag = 'False' }
+    ) {
+        $arguments = @{ OutputPath = $script:fixtureOutput }
+        if ($Reuse) { $arguments.UseExistingBuild = $true }
+        & $script:fixtureScript @arguments | Out-Null
+        Get-Content -LiteralPath (Join-Path (Split-Path $script:fixtureBuild -Parent) 'build-flag.txt') | Should -BeExactly $BuildFlag
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $archive = [System.IO.Compression.ZipFile]::OpenRead($script:zipPath)
+        try
+        {
+            $entry = @($archive.Entries | Where-Object { ($_.FullName -replace '\\', '/') -eq 'Fluence.Wpf.PowerShell/lib/payload.dll' })
+            $entry.Count | Should -Be 1
+            $reader = [System.IO.StreamReader]::new($entry[0].Open())
+            try { $reader.ReadToEnd() | Should -BeExactly $Expected } finally { $reader.Dispose() }
+        }
+        finally { $archive.Dispose() }
+        (Get-Item -LiteralPath $script:nupkgPath).Length | Should -BeGreaterThan 0
+        Should -Invoke Register-PSRepository -Times 1 -Exactly
+        Should -Invoke Unregister-PSRepository -Times 1 -Exactly
+    }
+}
