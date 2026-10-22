@@ -25,6 +25,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Removed ColorPicker's overlapping Hex character counter while preserving its RGB/ARGB input limits, editing, color synchronization, clear button, and rounded focus border. Ordinary TextBox and ColorPicker channel counters retain their existing behavior; focused regressions cover the Hex override and counter lifecycle.
 - Restored the native editor for ComboBox with IsEditable enabled and applied the shared rounded focus border. WPF owns text, selection, read-only, and keyboard behavior; the editable arrow has its own hit target, while noneditable ComboBox keeps its existing visuals and dropdown behavior. Focused tests and updated inventories cover the editable path.
 - Corrected NumberBox focus accents to use the shared rounded focus border immediately during editor and spin-button interaction. Removed the separate underline and fade while preserving field layout, numeric parsing, and spin-button behavior. Two focused cases extend the test inventories and CI floors.
 - Corrected TextBox and PasswordBox focus accents to follow their rounded borders, with a 2-DIP bottom stroke in Light and Dark and a full 2-DIP outline in High Contrast. Focus preserves editor and button layout, native input and password reveal behavior, and TextBox validation priority and colors. Focused validation and live-theme coverage add four test cases per full target framework; the two existing focus tests now check rounded borders, stable editor geometry, and edge hit testing.

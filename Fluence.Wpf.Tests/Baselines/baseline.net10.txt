@@ -647,6 +647,7 @@
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_SpectrumKeyboard_UpKeyIncreasesValueAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_EmbeddedEditors_KeepRoundedFocusBorderAndEditorGeometryAsync
   Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_FocusedHexEditor_TracksLiveThemeAndColorChangesAsync
+  Fluence.Wpf.Tests.Control.ColorPickerTests.ColorPicker_HexCounter_IsHiddenWithoutChangingLengthOrColorCommitAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.IsDropDownOpenedUpward_DefaultIsFalseAsync
   Fluence.Wpf.Tests.Control.ComboBoxTests.DropdownCornerRadius_DefaultIs8Async
   Fluence.Wpf.Tests.Control.ComboBoxTests.IsDropDownOpenedUpward_FalseWhenDropDownNotOpenAsync
@@ -1267,6 +1268,7 @@
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Error, brushKey: "SystemFillColorCriticalBrush")
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Success, brushKey: "SystemFillColorSuccessBrush")
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_FocusedValidation_UsesStatusBorderWithoutAccentAsync(state: Warning, brushKey: "SystemFillColorCautionBrush")
+  Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_CharacterCounterDisplaySwitch_IsPerInstanceAndSurvivesRetemplateAsync
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_DefaultStyle_AppliesTemplatePartsAsync
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholderAsync
   Fluence.Wpf.Tests.Control.TimePickerTests.TimePicker_FieldClick_OpensPopupAndPopulatesColumnsAsync

@@ -38,6 +38,8 @@ The `RadioButton` keeps native WPF grouping, keyboard navigation, and UI Automat
 | [DatePicker](controls/date-picker.md), [TimePicker](controls/time-picker.md) | Choose a date or time | Dedicated selected-value properties and changed events |
 | [ColorPicker](controls/color-picker.md) | Choose a color | `Color`, `ColorChanged` |
 
+ColorPicker's Hex field omits the character counter while retaining its RGB/ARGB input-length limit. Its RGB, HSV, and alpha fields keep their existing counters.
+
 The Fluence [DatePicker](controls/date-picker.md) is a `Control` with a three-column picker, not a subclass of the native WPF calendar picker. Use its own `SelectedDate` API. See [inputs and data](how-to/inputs-and-data.md) and the gallery's Inputs and Forms pages.
 
 ## Navigation and tabs

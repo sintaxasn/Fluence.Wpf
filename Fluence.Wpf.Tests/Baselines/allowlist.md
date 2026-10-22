@@ -605,3 +605,18 @@ The ColorPicker class grows from 27 to 29 runtime cases, so ordinary CI floors
 increase by two to 1466 net472 and 1467 net10. Screenshot exclusions and
 existing theory-row expansions are unchanged. Validation runs only the
 ColorPicker class on both full test targets.
+
+## ColorPicker Hex character counter
+
+Added one ColorPicker regression for hiding the Hex counter while preserving
+RGB/ARGB input limits and color commits, and one TextBox regression for the
+internal per-instance counter setting across text changes, MaxLength changes,
+and template reapplication. Ordinary TextBox and ColorPicker channel counters
+retain their existing behavior. No cases are removed or renamed.
+
+Fresh Release discovery contains 1437 net472 rows and 1473 net10 rows, two more
+per target. All four case and method inventories match discovery as multisets.
+ColorPicker grows from 29 to 30 runtime cases and TextBox from 22 to 23, so
+ordinary CI floors increase by two to 1468 net472 and 1469 net10. Screenshot
+exclusions and existing theory-row expansions are unchanged. Validation runs
+only the ColorPicker and TextBox classes on both full test targets.

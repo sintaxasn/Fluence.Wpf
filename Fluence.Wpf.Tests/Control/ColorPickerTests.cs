@@ -965,6 +965,45 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task ColorPicker_HexCounter_IsHiddenWithoutChangingLengthOrColorCommitAsync()
+        {
+            return RunColorPickerOptionTestAsync(
+                static () => new Controls.ColorPicker(),
+                static (picker, template, window) =>
+                {
+                    TextBox hex = GetTemplateElement<TextBox>(template, picker, "PART_HexTextBox");
+                    TextBox red = GetTemplateElement<TextBox>(template, picker, "PART_RedTextBox");
+                    TextBlock hexCounter = GetTemplateElement<TextBlock>(hex.Template, hex, "PART_CharacterCounter");
+                    TextBlock redCounter = GetTemplateElement<TextBlock>(red.Template, red, "PART_CharacterCounter");
+
+                    _ = Keyboard.Focus(hex);
+                    Assert.True(hex.IsKeyboardFocused);
+
+                    foreach ((bool alphaEnabled, string text, Color expectedColor) in new[]
+                    {
+                        (false, "#123456", Color.FromRgb(0x12, 0x34, 0x56)),
+                        (true, "#80123456", Color.FromArgb(0x80, 0x12, 0x34, 0x56)),
+                    })
+                    {
+                        picker.IsAlphaEnabled = alphaEnabled;
+                        hex.Text = text;
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
+
+                        Assert.Equal(text.Length, hex.MaxLength);
+                        Assert.Equal(Visibility.Collapsed, hexCounter.Visibility);
+                        Assert.Equal(Visibility.Visible, redCounter.Visibility);
+                        Assert.Equal(3, red.MaxLength);
+
+                        RaiseEnterKey(hex);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        Assert.Equal(expectedColor, picker.Color);
+                        Assert.Equal(text, hex.Text, StringComparer.Ordinal);
+                    }
+                });
+        }
+
+        [Fact]
         public Task ColorPicker_SpectrumArea_IsFocusableTabStopAsync()
         {
             return RunColorPickerOptionTestAsync(

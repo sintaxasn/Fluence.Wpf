@@ -671,5 +671,53 @@ namespace Fluence.Wpf.Tests.Control
                 }
             });
         }
+
+        [Fact]
+        public Task TextBox_CharacterCounterDisplaySwitch_IsPerInstanceAndSurvivesRetemplateAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox first = new() { Width = 260, MaxLength = 7, Text = "Hi" };
+                Controls.TextBox second = new() { Width = 260, MaxLength = 3, Text = "A" };
+                Window window = new() { Content = new StackPanel { Children = { first, second } } };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    TextBlock firstCounter = Assert.IsType<TextBlock>(first.Template.FindName("PART_CharacterCounter", first));
+                    TextBlock secondCounter = Assert.IsType<TextBlock>(second.Template.FindName("PART_CharacterCounter", second));
+                    Assert.True(first.ShowCharacterCounter);
+                    Assert.True(second.ShowCharacterCounter);
+                    Assert.Equal(Visibility.Visible, firstCounter.Visibility);
+                    Assert.Equal(Visibility.Visible, secondCounter.Visibility);
+
+                    first.ShowCharacterCounter = false;
+                    Assert.Equal(Visibility.Collapsed, firstCounter.Visibility);
+                    Assert.Equal(Visibility.Visible, secondCounter.Visibility);
+
+                    first.Text = "Hello";
+                    first.MaxLength = 9;
+                    Assert.Equal(Visibility.Collapsed, firstCounter.Visibility);
+
+                    ControlTemplate template = first.Template;
+                    first.Template = null;
+                    first.Template = template;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    firstCounter = Assert.IsType<TextBlock>(first.Template.FindName("PART_CharacterCounter", first));
+                    Assert.Equal(Visibility.Collapsed, firstCounter.Visibility);
+
+                    first.ShowCharacterCounter = true;
+                    Assert.Equal(Visibility.Visible, firstCounter.Visibility);
+                    Assert.Equal("5/9", firstCounter.Text, StringComparer.Ordinal);
+                    Assert.Equal("1/3", secondCounter.Text, StringComparer.Ordinal);
+                }
+                finally
+                {
+                    VisualTree.CloseWindowAndDrain(window);
+                }
+            });
+        }
     }
 }
