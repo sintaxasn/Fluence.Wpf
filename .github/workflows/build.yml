@@ -409,7 +409,7 @@ jobs:
           } else {
             $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
             $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
-            $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md')
+            $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md', '--verify-tag')
             # Any SemVer prerelease identifier (-rc.1, -preview, -beta) marks a prerelease.
             if ('${{ github.ref_name }}'.Contains('-')) { $ghArgs += '--prerelease' }
             gh @ghArgs
