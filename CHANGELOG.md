@@ -36,6 +36,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Corrected the window probe console output and deferred its after-action snapshots until layout is ready, so help and invalid-option diagnostics are visible and content-size measurements include the resized native bounds.
 - Fixed the TimePicker AM/PM flyout so the selected period row aligns with the accent band and selected and unselected text colors match the numeric columns (by @sintaxasn).
 - Restored the canonical translucent `NavigationViewContentBackgroundBrush` (`#4C3A3A3A`) for Dark Mica on 10-bit displays with advanced color off, while retaining the source header tint. Light Mica keeps its existing fallback, High Contrast is unchanged, and Tabbed retains its existing behavior.
 - Removed ColorPicker's overlapping Hex character counter while preserving its RGB/ARGB input limits, editing, color synchronization, clear button, and rounded focus border. Ordinary TextBox and ColorPicker channel counters retain their existing behavior; focused regressions cover the Hex override and counter lifecycle.

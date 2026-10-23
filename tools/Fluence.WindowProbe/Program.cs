@@ -62,7 +62,7 @@ namespace Fluence.WindowProbe
             }
 
             RenderOptions.ProcessRenderMode = string.Equals(options.RenderMode, "software-only", StringComparison.Ordinal) ? RenderMode.SoftwareOnly : RenderMode.Default;
-            // Records are synchronous at lifecycle callbacks so timestamps and file order match.
+            // Records are written synchronously when their lifecycle or action callback runs.
 #pragma warning disable MA0045
             using StreamWriter writer = new(new FileStream(options.Output, FileMode.Create, FileAccess.Write, FileShare.Read), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)) { AutoFlush = true };
             Application app = new() { ShutdownMode = ShutdownMode.OnMainWindowClose };
@@ -87,7 +87,13 @@ namespace Fluence.WindowProbe
             {
                 Record("before-action:" + name);
                 action();
-                Record("after-action:" + name);
+                _ = window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                {
+                    if (hwnd != IntPtr.Zero)
+                    {
+                        Record("after-action:" + name);
+                    }
+                }));
             };
             window.SourceInitialized += (_, _) =>
             {
