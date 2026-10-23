@@ -471,11 +471,11 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// The effective backdrops for which <see cref="ShouldApplyContentLayerPreBlend"/> applies
-        /// the opaque pre-blend. Only <see cref="WindowBackdropType.Mica"/> was measured quantising client
-        /// alpha under <c language="csharp">DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO</c> flags <c language="text">0x4</c> (10 bpc,
-        /// advanced color off); see the KNOWN_ISSUES.md entry "Translucent layers over a DWM
-        /// backdrop lose alpha precision on a 10 bpc display". <see cref="WindowBackdropType.Tabbed"/> is
+        /// The backdrop types eligible for the opaque pre-blend before theme-specific exclusions.
+        /// Light <see cref="WindowBackdropType.Mica"/> was measured quantising client alpha under
+        /// <c language="csharp">DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO</c> flags <c language="text">0x4</c>
+        /// (10 bpc, advanced color off); see the KNOWN_ISSUES.md entry "Translucent layers over a
+        /// DWM backdrop lose alpha precision on a 10 bpc display". <see cref="WindowBackdropType.Tabbed"/> is
         /// included by inference, not measurement: it is the same DWM material family
         /// (<c language="csharp">DWMSBT_MAINWINDOW</c> and <c language="csharp">DWMSBT_TABBEDWINDOW</c>) as Mica, but it was
         /// measured only under flags <c language="text">0x7</c> (advanced color on), where it read full precision
@@ -492,16 +492,13 @@ namespace Fluence.Wpf.Controls
         /// content-layer color for the given effective backdrop, theme, and display color depth.
         /// </summary>
         /// <remarks>
-        /// Measured fact (KNOWN_ISSUES.md, "Translucent layers over a DWM backdrop lose alpha
-        /// precision on a 10 bpc display"): on a display path reporting
-        /// <c language="csharp">bitsPerColorChannel = 10</c> with advanced color <em>disabled</em>, DWM composites a
-        /// window's client alpha over a system backdrop with 2-bit alpha, so a translucent
-        /// content-layer token reads darker than it specifies. The same 10 bpc path with advanced
-        /// color <em>enabled</em> (measured by toggling the GPU driver's 10-bit pixel format
-        /// setting) was measured to composite at full precision, so the pre-blend must not apply
-        /// there. This method is pure: it takes the already-resolved backdrop, theme, and display
-        /// state and returns a value, so it can be unit tested without a window handle, a live
-        /// display, or DWM.
+        /// A historical Light Mica measurement on a 10 bpc path with advanced color disabled
+        /// showed 2-bit client alpha, so Light retains the opaque fallback. A later native capture
+        /// on this display path showed Dark Mica's translucent layer and card header tracking the
+        /// wallpaper-informed backdrop; the opaque plate hid that tint. Dark Mica therefore keeps
+        /// the canonical translucent brush. Tabbed retains its existing fallback pending its own
+        /// Dark measurement, and Acrylic remains excluded. This method is pure and can be tested
+        /// without a window handle, a live display, or DWM.
         /// </remarks>
         /// <param name="effectiveBackdrop">The backdrop that will actually be applied after capability downgrade (see <see cref="ResolveEffectiveBackdrop"/>).</param>
         /// <param name="resolvedTheme">The resolved application theme.</param>
@@ -509,8 +506,9 @@ namespace Fluence.Wpf.Controls
         /// <returns>
         ///   <see langword="false"/> when <paramref name="colorDepth"/> reports 8 bpc or fewer
         ///   (including unknown), advanced color is enabled, the theme is
-        ///   <see cref="ApplicationTheme.HighContrast"/>, or <paramref name="effectiveBackdrop"/> is
-        ///   not one of <see cref="PreBlendEligibleBackdrops"/>; otherwise <see langword="true"/>.
+        ///   <see cref="ApplicationTheme.HighContrast"/>, the theme is Dark with Mica, or
+        ///   <paramref name="effectiveBackdrop"/> is not one of <see cref="PreBlendEligibleBackdrops"/>;
+        ///   otherwise <see langword="true"/>.
         /// </returns>
         internal static bool ShouldApplyContentLayerPreBlend(
             WindowBackdropType effectiveBackdrop,
@@ -520,6 +518,7 @@ namespace Fluence.Wpf.Controls
             return colorDepth.BitsPerColorChannel > 8
                 && !colorDepth.AdvancedColorEnabled
                 && resolvedTheme is not ApplicationTheme.HighContrast
+                && !(resolvedTheme is ApplicationTheme.Dark && effectiveBackdrop is WindowBackdropType.Mica)
                 && Array.IndexOf(PreBlendEligibleBackdrops, effectiveBackdrop) >= 0;
         }
 
@@ -529,18 +528,20 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Per AGENTS.md 4.2, WinUI 3 CommonStyles is the authority for visual tokens, and WinUI
-        /// already ships the pre-blended value this substitution needs:
+        /// Per AGENTS.md 4.2, WinUI 3 CommonStyles is the authority for visual tokens. The
+        /// substitution uses the opaque Mica Alt color role
         /// <c language="text">LayerOnMicaBaseAltFillColorTertiary</c> (<c language="text">#FFF9F9F9</c> Light,
         /// <c language="text">#FF2C2C2C</c> Dark). When <paramref name="canonicalPreBlend"/> is supplied (the caller
-        /// resolved that key), it is returned as-is. The straight-alpha composite of
+        /// resolved that key), it is returned as-is. This fixed color cannot carry Mica's
+        /// wallpaper-informed tint. The straight-alpha composite of
         /// <paramref name="layerFill"/> over <paramref name="solidBase"/> is only a fallback for a
         /// consumer whose theme dictionary does not define that key, computed per channel with the
         /// alpha forced to <c language="csharp">0xFF</c>
         /// (<c language="csharp">round(layerFill.A/255 * layerFill.channel + (1 - layerFill.A/255) * solidBase.channel)</c>,
         /// <see cref="MidpointRounding.AwayFromZero"/>); for the canonical Light tokens
-        /// (<c language="text">#80FFFFFF</c> over <c language="text">#FFF3F3F3</c>) it reproduces the same
-        /// <c language="text">#FFF9F9F9</c> the canonical key already carries.
+        /// (<c language="text">#80FFFFFF</c> over <c language="text">#FFF3F3F3</c>) it reproduces
+        /// <c language="text">#FFF9F9F9</c>. The Dark fixed role is not an exact composite over
+        /// <c language="text">SolidBackgroundFillColorBase</c>.
         /// </para>
         /// <para>
         /// The caller applies the result as the bottom-most layer of the affected control (see

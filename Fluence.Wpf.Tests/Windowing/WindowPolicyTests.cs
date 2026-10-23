@@ -1154,7 +1154,7 @@ namespace Fluence.Wpf.Tests.Windowing
         }
 
         [Fact]
-        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Tabbed_Light_CanonicalPresent_ReturnsCanonical()
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Tabbed_LightAndDark_CanonicalPresent_ReturnsCanonical()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
                 WindowBackdropType.Tabbed,
@@ -1165,10 +1165,20 @@ namespace Fluence.Wpf.Tests.Windowing
                 LightSolidBase);
 
             Assert.Equal(LightCanonical, result);
+
+            Color? darkResult = WindowPolicy.ResolveContentLayerPreBlend(
+                WindowBackdropType.Tabbed,
+                ApplicationTheme.Dark,
+                new DisplayColorDepth(10, advancedColorEnabled: false),
+                DarkCanonical,
+                DarkLayerFill,
+                DarkSolidBase);
+
+            Assert.Equal(DarkCanonical, darkResult);
         }
 
         [Fact]
-        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalPresent_ReturnsCanonical()
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalPresent_ReturnsNull()
         {
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
                 WindowBackdropType.Mica,
@@ -1178,17 +1188,12 @@ namespace Fluence.Wpf.Tests.Windowing
                 DarkLayerFill,
                 DarkSolidBase);
 
-            Assert.Equal(DarkCanonical, result);
+            Assert.Null(result);
         }
 
         [Fact]
-        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalNull_ReturnsComputedFallback()
+        public void ResolveContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_Dark_CanonicalNull_ReturnsNull()
         {
-            // round(0.298039 * 0x3A + 0.701961 * 0x20) = round(39.749) = 40 = 0x28, per channel
-            // (R=G=B for both Dark tokens), MidpointRounding.AwayFromZero. This deliberately does
-            // not equal DarkCanonical (#FF2C2C2C): the fallback is a reasonable approximation, not a
-            // reproduction, of the canonical WinUI value, which is why the canonical key is
-            // authoritative whenever it resolves.
             Color? result = WindowPolicy.ResolveContentLayerPreBlend(
                 WindowBackdropType.Mica,
                 ApplicationTheme.Dark,
@@ -1197,15 +1202,19 @@ namespace Fluence.Wpf.Tests.Windowing
                 DarkLayerFill,
                 DarkSolidBase);
 
-            Assert.Equal(Color.FromArgb(0xFF, 0x28, 0x28, 0x28), result);
+            Assert.Null(result);
         }
 
         [Fact]
-        public void ShouldApplyContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_ReturnsTrue()
+        public void ShouldApplyContentLayerPreBlend_Bpc10AdvancedColorOff_Mica_LightTrueDarkFalse()
         {
             Assert.True(WindowPolicy.ShouldApplyContentLayerPreBlend(
                 WindowBackdropType.Mica,
                 ApplicationTheme.Light,
+                new DisplayColorDepth(10, advancedColorEnabled: false)));
+            Assert.False(WindowPolicy.ShouldApplyContentLayerPreBlend(
+                WindowBackdropType.Mica,
+                ApplicationTheme.Dark,
                 new DisplayColorDepth(10, advancedColorEnabled: false)));
         }
 

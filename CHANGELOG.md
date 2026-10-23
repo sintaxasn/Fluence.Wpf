@@ -31,6 +31,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Restored the canonical translucent `NavigationViewContentBackgroundBrush` (`#4C3A3A3A`) for Dark Mica on 10-bit displays with advanced color off, while retaining the source header tint. Light Mica keeps its existing fallback, High Contrast is unchanged, and Tabbed retains its existing behavior.
 - Removed ColorPicker's overlapping Hex character counter while preserving its RGB/ARGB input limits, editing, color synchronization, clear button, and rounded focus border. Ordinary TextBox and ColorPicker channel counters retain their existing behavior; focused regressions cover the Hex override and counter lifecycle.
 - Restored the native editor for ComboBox with IsEditable enabled and applied the shared rounded focus border. WPF owns text, selection, read-only, and keyboard behavior; the editable arrow has its own hit target, while noneditable ComboBox keeps its existing visuals and dropdown behavior. Focused tests and updated inventories cover the editable path.
 - Theme publication repairs missing, replaced, or reordered owned resource slots while preserving consumer dictionaries. Auto mode follows the app light/dark preference after High Contrast resolution, and settings broadcasts coalesce only while a refresh is pending.

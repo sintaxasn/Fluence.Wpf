@@ -977,11 +977,10 @@ namespace Fluence.Wpf.Controls
         /// (authoritative per AGENTS.md 4.2), and the two tokens the fallback composite needs when
         /// that key is not defined, then delegates the decision to the pure
         /// <see cref="WindowPolicy.ResolveContentLayerPreBlend"/>. The result is applied as the
-        /// bottom-most layer of the affected control: a pre-blended opaque plate restores the
-        /// brightness the translucent token specifies, and everything WPF composites on top of it is
-        /// then blended by WPF itself at full precision, so it is unaffected by the DWM alpha
-        /// quantisation this substitutes for. See the KNOWN_ISSUES.md entry "Translucent layers over
-        /// a DWM backdrop lose alpha precision on a 10 bpc display".
+        /// bottom-most layer of the affected control when the policy selects an opaque fallback.
+        /// Dark Mica keeps the published translucent brush so the content layer retains the
+        /// wallpaper-informed backdrop tint. See the KNOWN_ISSUES.md entry "Translucent layers over
+        /// a DWM backdrop lose alpha precision on a 10 bpc display" for the retained Light fallback.
         /// </para>
         /// <para>
         /// Called on every <see cref="ApplyBackdrop"/> (theme and backdrop changes already re-run
