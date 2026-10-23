@@ -395,6 +395,12 @@ namespace Fluence.Wpf.Controls
 
         private void OnSuggestionsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (!Dispatcher.CheckAccess())
+            {
+                _ = Dispatcher.BeginInvoke(new Action(() => OnSuggestionsCollectionChanged(sender, e)));
+                return;
+            }
+
             if (ReferenceEquals(sender, ItemsSource))
             {
                 UpdateSuggestionListState();

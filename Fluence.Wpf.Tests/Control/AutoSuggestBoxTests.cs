@@ -82,6 +82,37 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task AutoSuggestBox_SynchronizedBackgroundCollectionChanges_UpdateSuggestionStateAsync()
+        {
+            return WithObservableSuggestionsAsync(static async (window, box, source, popup) =>
+            {
+                object synchronizationLock = new();
+                BindingOperations.EnableCollectionSynchronization(source, synchronizationLock);
+                Selector suggestions = Assert.IsType<Selector>(box.Template.FindName("PART_SuggestionsList", box), exactMatch: false);
+
+                await Task.Run(() =>
+                {
+                    lock (synchronizationLock)
+                    {
+                        source.Add("Background");
+                    }
+                }, TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+                Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => box.IsSuggestionListOpen && popup.IsOpen && suggestions.Items.Count is 1).ConfigureAwait(true));
+
+                await Task.Run(() =>
+                {
+                    lock (synchronizationLock)
+                    {
+                        source.Clear();
+                    }
+                }, TestContext.Current.CancellationToken).ConfigureAwait(true);
+
+                Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => !box.IsSuggestionListOpen && !popup.IsOpen && suggestions.Items.Count is 0).ConfigureAwait(true));
+            }, initiallyEmpty: true);
+        }
+
+        [Fact]
         public Task AutoSuggestBox_ReplacedObservableSource_NoLongerAffectsStateAsync()
         {
             return WithObservableSuggestionsAsync(static (window, box, oldSource, popup) =>
