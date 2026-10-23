@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
             catch (ThreadStateException)
             {
-                System.Diagnostics.Debug.WriteLine("Clipboard access requires an STA thread.");
+                Debug.WriteLine("Clipboard access requires an STA thread.");
             }
         }
 

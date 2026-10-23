@@ -27,7 +27,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -61,42 +60,53 @@ namespace Fluence.Wpf.Tests.Theming
         [Fact]
         public Task RequestRefresh_BurstBeforeDrain_QueuesOneRefreshAsync()
         {
-            return ObserveRefreshesAsync(static operations =>
+            return ObserveRefreshesAsync(static () =>
             {
+                _ = Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(static () => { }));
                 SystemThemeWatcher.RequestRefresh();
+                DispatcherOperation first = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
                 SystemThemeWatcher.RequestRefresh();
-                _ = Assert.Single(operations);
+                Assert.Same(first, GetPendingRefresh());
                 WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
-                Assert.Equal(DispatcherOperationStatus.Completed, operations[0].Status);
+                Assert.Equal(DispatcherOperationStatus.Completed, first.Status);
+                Assert.Null(GetPendingRefresh());
             });
         }
 
         [Fact]
         public Task RequestRefresh_AfterDrain_QueuesAnotherRefreshAsync()
         {
-            return ObserveRefreshesAsync(static operations =>
+            return ObserveRefreshesAsync(static () =>
             {
                 SystemThemeWatcher.RequestRefresh();
+                DispatcherOperation first = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
                 WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
+                Assert.Equal(DispatcherOperationStatus.Completed, first.Status);
+                Assert.Null(GetPendingRefresh());
                 SystemThemeWatcher.RequestRefresh();
+                DispatcherOperation second = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
+                Assert.NotSame(first, second);
                 WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
-                Assert.Equal(2, operations.Count);
-                Assert.All(operations, static operation => Assert.Equal(DispatcherOperationStatus.Completed, operation.Status));
+                Assert.Equal(DispatcherOperationStatus.Completed, second.Status);
+                Assert.Null(GetPendingRefresh());
             });
         }
 
         [Fact]
         public Task RequestRefresh_AfterAbortedOperation_CanQueueAgainAsync()
         {
-            return ObserveRefreshesAsync(static operations =>
+            return ObserveRefreshesAsync(static () =>
             {
                 SystemThemeWatcher.RequestRefresh();
-                Assert.True(Assert.Single(operations).Abort());
+                DispatcherOperation first = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
+                Assert.True(first.Abort());
+                Assert.Equal(DispatcherOperationStatus.Aborted, first.Status);
                 SystemThemeWatcher.RequestRefresh();
+                DispatcherOperation second = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
+                Assert.NotSame(first, second);
                 WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
-                Assert.Equal(2, operations.Count);
-                Assert.Equal(DispatcherOperationStatus.Aborted, operations[0].Status);
-                Assert.Equal(DispatcherOperationStatus.Completed, operations[1].Status);
+                Assert.Equal(DispatcherOperationStatus.Completed, second.Status);
+                Assert.Null(GetPendingRefresh());
             });
         }
 
@@ -108,7 +118,7 @@ namespace Fluence.Wpf.Tests.Theming
         [InlineData(0x001A, "UnrelatedSetting", 0)]
         public Task WndProc_RelevantMessagesReachRefreshQueue_UnrelatedSettingDoesNotAsync(int message, string? setting, int expectedCount)
         {
-            return ObserveRefreshesAsync(operations =>
+            return ObserveRefreshesAsync(() =>
             {
                 IntPtr pointer = setting is null ? IntPtr.Zero : Marshal.StringToHGlobalUni(setting);
                 try
@@ -117,13 +127,20 @@ namespace Fluence.Wpf.Tests.Theming
                         typeof(SystemThemeWatcher).GetMethod("WndProc", BindingFlags.NonPublic | BindingFlags.Static),
                         exactMatch: false);
                     _ = method.Invoke(null, [IntPtr.Zero, message, IntPtr.Zero, pointer, false]);
-                    Assert.Equal(expectedCount, operations.Count);
+                    object? pending = GetPendingRefresh();
+                    Assert.Equal(expectedCount > 0, pending is not null);
+                    DispatcherOperation? first = pending is null ? null : Assert.IsType<DispatcherOperation>(pending);
                     WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
+                    Assert.Null(GetPendingRefresh());
                     if (expectedCount > 0)
                     {
+                        Assert.Equal(DispatcherOperationStatus.Completed, first!.Status);
                         _ = method.Invoke(null, [IntPtr.Zero, message, IntPtr.Zero, pointer, false]);
+                        DispatcherOperation second = Assert.IsType<DispatcherOperation>(GetPendingRefresh());
+                        Assert.NotSame(first, second);
                         WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
-                        Assert.Equal(2, operations.Count);
+                        Assert.Equal(DispatcherOperationStatus.Completed, second.Status);
+                        Assert.Null(GetPendingRefresh());
                     }
                 }
                 finally
@@ -133,28 +150,25 @@ namespace Fluence.Wpf.Tests.Theming
             });
         }
 
-        private static Task ObserveRefreshesAsync(Action<List<DispatcherOperation>> scenario)
+        private static object? GetPendingRefresh()
+        {
+            FieldInfo field = Assert.IsType<FieldInfo>(
+                typeof(SystemThemeWatcher).GetField("_pendingRefresh", BindingFlags.NonPublic | BindingFlags.Static),
+                exactMatch: false);
+            return field.GetValue(null);
+        }
+
+        private static Task ObserveRefreshesAsync(Action scenario)
         {
             return WpfTestSta.RunOnStaAsync(() =>
             {
                 Dispatcher dispatcher = Application.Current.Dispatcher;
-                List<DispatcherOperation> operations = [];
-                void OnPosted(object? sender, DispatcherHookEventArgs args)
-                {
-                    if (args.Operation.Priority is DispatcherPriority.Normal)
-                    {
-                        operations.Add(args.Operation);
-                    }
-                }
-
-                dispatcher.Hooks.OperationPosted += OnPosted;
                 try
                 {
-                    scenario(operations);
+                    scenario();
                 }
                 finally
                 {
-                    dispatcher.Hooks.OperationPosted -= OnPosted;
                     SystemThemeWatcher.ResetForTesting();
                     WpfTestSta.DrainDispatcher(dispatcher);
                 }

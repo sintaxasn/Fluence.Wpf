@@ -8,11 +8,14 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-10-23
+
 ### Added
 
 - Added nonmutating generated API and PowerShell reference checks to CI, with fixture coverage for missing, changed, obsolete, and legacy command pages.
 - Added MVVM task-manager characterization tests for command eligibility, trimming, notification order, and removed-item subscription cleanup.
-- Refreshed both full-target test inventories without removing existing cases. Combined discovery lists 1,519 net472 and 1,574 net10 cases; measured ordinary execution totals are 1,566 and 1,570 respectively, including one existing maintainer-only skip per target.
+- Added `ItemsSource` and editable `ComboBox` examples to the Selection gallery, including observable option updates and visible `Text` and `SelectedItem` output.
+- Refreshed both full-target test inventories without removing existing cases. Combined discovery lists 1,525 net472 and 1,580 net10 cases; measured ordinary execution totals are 1,572 and 1,576 respectively, including one existing maintainer-only skip per target.
 - Added four RadioButton checked outer-ring stroke color states (base, pointer-over, pressed, and disabled), each with a brush twin.
 - Added the CheckBox indeterminate pointer-over stroke color and brush resources so its High Contrast outline can follow `Highlight` independently of the `HighlightText` fill.
 - Added the theme-aware `TextControlBorderThemeThicknessFocused` resource for TextBox and PasswordBox focus outlines.
@@ -33,9 +36,11 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Fixed the TimePicker AM/PM flyout so the selected period row aligns with the accent band and selected and unselected text colors match the numeric columns.
 - Restored the canonical translucent `NavigationViewContentBackgroundBrush` (`#4C3A3A3A`) for Dark Mica on 10-bit displays with advanced color off, while retaining the source header tint. Light Mica keeps its existing fallback, High Contrast is unchanged, and Tabbed retains its existing behavior.
 - Removed ColorPicker's overlapping Hex character counter while preserving its RGB/ARGB input limits, editing, color synchronization, clear button, and rounded focus border. Ordinary TextBox and ColorPicker channel counters retain their existing behavior; focused regressions cover the Hex override and counter lifecycle.
 - Restored the native editor for ComboBox with IsEditable enabled and applied the shared rounded focus border. WPF owns text, selection, read-only, and keyboard behavior; the editable arrow has its own hit target, while noneditable ComboBox keeps its existing visuals and dropdown behavior. Focused tests and updated inventories cover the editable path.
+- Added transient pressed paint to the closed ComboBox while its nested toggle is pressed. Focused presses retain the focused text and chevron roles and the editable focus stroke; disabled state takes precedence, and WPF retains click-on-release and editor input behavior.
 - Theme publication repairs missing, replaced, or reordered owned resource slots while preserving consumer dictionaries. Auto mode follows the app light/dark preference after High Contrast resolution, and settings broadcasts coalesce only while a refresh is pending.
 - NavigationView reconciles footer selection and handlers after reset, removal, and move. AutoSuggestBox reacts to in-place observable suggestion changes while preserving open-state bindings. Gallery raw Enter search checks exact titles and routes across main and footer destinations before keyword matches.
 - TabView keyboard navigation reaches its add button, including when empty or every header is unavailable, and Ctrl+F4 requests closure without removing items. Programmatic selection, collection changes, resize, and retemplating reveal the selected header, including physical leading-edge alignment for oversized right-to-left headers, without scrolling ancestors.
@@ -752,7 +757,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...main
+[0.9.3]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...v0.9.3
 [0.9.2-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2-pre
 [0.9.1]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...v0.9.1
 [0.9.0-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v0.9.0-pre

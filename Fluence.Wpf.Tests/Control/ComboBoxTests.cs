@@ -36,7 +36,9 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml.Linq;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
@@ -67,6 +69,172 @@ namespace Fluence.Wpf.Tests.Control
             {
                 Controls.ComboBox comboBox = new();
                 testBody(comboBox);
+            });
+        }
+
+        private static Style CreatePressableComboBoxStyle()
+        {
+            XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+            XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+            XDocument document = XDocument.Load(DemoTestHost.GetRepositoryFilePath("Fluence.Wpf", "Themes", "Controls", "ComboBox.xaml"));
+            XElement root = Assert.IsType<XElement>(document.Root);
+            root.SetAttributeValue(XNamespace.Xmlns + "probe", "clr-namespace:Fluence.Wpf.Tests.Control;assembly=Fluence.Wpf.Tests");
+            root.SetAttributeValue(XNamespace.Xmlns + "controls", "clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf");
+            XNamespace unqualifiedControls = "clr-namespace:Fluence.Wpf.Controls";
+            XNamespace qualifiedControls = "clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf";
+            foreach (XElement element in root.DescendantsAndSelf().Where(element => element.Name.Namespace == unqualifiedControls))
+            {
+                element.Name = qualifiedControls + element.Name.LocalName;
+            }
+            XElement toggle = Assert.Single(root.Descendants(presentation + "ToggleButton"),
+                element => string.Equals((string?)element.Attribute(xaml + "Name"), "ToggleButton", StringComparison.Ordinal));
+            toggle.Name = XNamespace.Get("clr-namespace:Fluence.Wpf.Tests.Control;assembly=Fluence.Wpf.Tests") + nameof(PressableComboBoxToggleButtonProbe);
+
+            // Loose XAML loading cannot infer a custom named element's inherited Opacity property.
+            // Qualifying the same dependency property keeps the production disabled setter intact.
+            XElement chevronOpacity = Assert.Single(root.Descendants(presentation + "Setter"),
+                static element => string.Equals((string?)element.Attribute("TargetName"), "ChevronGlyph", StringComparison.Ordinal)
+                    && string.Equals((string?)element.Attribute("Property"), "Opacity", StringComparison.Ordinal));
+            chevronOpacity.SetAttributeValue("Property", "UIElement.Opacity");
+
+            ResourceDictionary dictionary = Assert.IsType<ResourceDictionary>(XamlReader.Parse(document.ToString()));
+            return Assert.IsType<Style>(dictionary[typeof(Controls.ComboBox)]);
+        }
+
+        [Fact]
+        public Task ComboBox_ClosedPointerPress_UsesPressedPaintAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox combo = new() { Width = 240, Style = CreatePressableComboBoxStyle(), PlaceholderText = "Choose" };
+                Window window = new() { Content = combo, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("MainBorder", combo));
+                    TextBlock placeholder = Assert.IsType<TextBlock>(combo.Template.FindName("PlaceholderTextBlock", combo));
+                    Controls.FontIcon chevron = Assert.IsType<Controls.FontIcon>(combo.Template.FindName("ChevronGlyph", combo));
+                    PressableComboBoxToggleButtonProbe toggle = Assert.IsType<PressableComboBoxToggleButtonProbe>(combo.Template.FindName("ToggleButton", combo));
+                    Assert.Equal(ClickMode.Release, toggle.ClickMode);
+
+                    toggle.SetPressed(value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(toggle.IsPressed);
+                    Assert.Same(Application.Current.TryFindResource("ControlFillColorTertiaryBrush"), border.Background);
+                    Assert.Same(Application.Current.TryFindResource("ControlStrokeColorDefaultBrush"), border.BorderBrush);
+                    Assert.Same(Application.Current.TryFindResource("TextFillColorSecondaryBrush"), combo.Foreground);
+                    Assert.Same(Application.Current.TryFindResource("TextFillColorTertiaryBrush"), placeholder.Foreground);
+
+                    toggle.SetPressed(value: false);
+                    combo.IsEnabled = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Brush disabledPlaceholder = placeholder.Foreground;
+                    Brush disabledChevron = chevron.Foreground;
+                    double disabledChevronOpacity = chevron.Opacity;
+                    combo.IsEnabled = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    toggle.SetPressed(value: true);
+                    combo.IsEnabled = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(Application.Current.TryFindResource("ControlFillColorDisabledBrush"), border.Background);
+                    Assert.Same(Application.Current.TryFindResource("TextFillColorDisabledBrush"), combo.Foreground);
+                    Assert.Same(disabledPlaceholder, placeholder.Foreground);
+                    Assert.Same(disabledChevron, chevron.Foreground);
+                    Assert.Equal(disabledChevronOpacity, chevron.Opacity);
+                    combo.IsEnabled = true;
+
+                    toggle.SetPressed(value: false);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(toggle.IsPressed);
+                    Assert.Same(Application.Current.TryFindResource("ControlFillColorDefaultBrush"), border.Background);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_FocusedPointerPress_KeepsFocusedTextRoleAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Button before = new() { Content = "Before" };
+                Controls.ComboBox combo = new() { Width = 240, Style = CreatePressableComboBoxStyle() };
+                _ = combo.Items.Add("Alpha");
+                Window window = new() { Content = new StackPanel { Children = { before, combo } }, Width = 320, Height = 180 };
+                try
+                {
+                    window.Show();
+                    _ = before.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = combo.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    PressableComboBoxToggleButtonProbe toggle = Assert.IsType<PressableComboBoxToggleButtonProbe>(combo.Template.FindName("ToggleButton", combo));
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("MainBorder", combo));
+                    Controls.FontIcon chevron = Assert.IsType<Controls.FontIcon>(combo.Template.FindName("ChevronGlyph", combo));
+                    toggle.SetPressed(value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(toggle.IsPressed);
+                    Assert.Same(Application.Current.TryFindResource("ControlFillColorTertiaryBrush"), border.Background);
+                    Assert.Same(Application.Current.TryFindResource("TextFillColorPrimaryBrush"), combo.Foreground);
+                    Assert.Same(Application.Current.TryFindResource("TextFillColorSecondaryBrush"), chevron.Foreground);
+                    Assert.Equal(new Thickness(1), border.BorderThickness);
+                    foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                    {
+                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
+                        WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        Assert.Same(Application.Current.TryFindResource("ControlFillColorTertiaryBrush"), border.Background);
+                        Assert.Same(Application.Current.TryFindResource("TextFillColorPrimaryBrush"), combo.Foreground);
+                    }
+                    toggle.SetPressed(value: false);
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ComboBox_EditableArrowPress_PreservesEditorInsetsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.ComboBox combo = new() { Width = 240, IsEditable = true, Style = CreatePressableComboBoxStyle() };
+                _ = combo.Items.Add("Alpha");
+                Window window = new() { Content = combo, Width = 320, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    TextBox editor = Assert.IsType<TextBox>(combo.Template.FindName("PART_EditableTextBox", combo));
+                    Border border = Assert.IsType<Border>(combo.Template.FindName("MainBorder", combo));
+                    PressableComboBoxToggleButtonProbe toggle = Assert.IsType<PressableComboBoxToggleButtonProbe>(combo.Template.FindName("ToggleButton", combo));
+                    editor.Text = "Al";
+                    _ = editor.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Point origin = editor.TransformToAncestor(window).Transform(new Point());
+                    Size size = editor.RenderSize;
+                    toggle.SetPressed(value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.True(toggle.IsPressed);
+                    Assert.Equal("Al", editor.Text);
+                    Assert.Equal(new Thickness(1, 1, 1, 2), border.BorderThickness);
+                    Assert.Equal(origin, editor.TransformToAncestor(window).Transform(new Point()));
+                    Assert.Equal(size, editor.RenderSize);
+                    toggle.SetPressed(value: false);
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    CloseWindowAndDrain(window);
+                }
             });
         }
 

@@ -34,7 +34,7 @@ The `RadioButton` keeps native WPF grouping, keyboard navigation, and UI Automat
 | [TextBox](controls/text-box.md), [AutoSuggestBox](controls/auto-suggest-box.md) | Text entry and suggestions | `PlaceholderText`; query and suggestion events on [AutoSuggestBox](controls/auto-suggest-box.md) |
 | Native WPF `PasswordBox` with [PasswordBoxExtensions](controls/password-box-extensions.md) | Password entry | The native sealed control gets an implicit Fluence style and attached properties |
 | [NumberBox](controls/number-box.md) | Numeric entry with spin behavior | `Value`, `ValueChanged`, spin placement options |
-| [ComboBox](controls/combo-box.md) | Choose from a drop-down list | WPF items, selection, and editable-text APIs, plus placeholder support |
+| [ComboBox](controls/combo-box.md) | Choose from a drop-down list | `ItemsSource` collections, selection, editable text, and placeholder support |
 | [DatePicker](controls/date-picker.md), [TimePicker](controls/time-picker.md) | Choose a date or time | Dedicated selected-value properties and changed events |
 | [ColorPicker](controls/color-picker.md) | Choose a color | `Color`, `ColorChanged` |
 

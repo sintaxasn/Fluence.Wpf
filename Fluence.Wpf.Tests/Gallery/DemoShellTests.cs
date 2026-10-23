@@ -651,12 +651,21 @@ namespace Fluence.Wpf.Tests.Gallery
                     DependencyObject selectedContent = Assert.IsType<DependencyObject>(nav.Content, exactMatch: false);
 
                     List<Controls.ComboBox> comboBoxes = [.. FindVisualChildren<Controls.ComboBox>(selectedContent)];
-                    Assert.True(comboBoxes.Count >= 2, "ComboBox page should display multiple ComboBox examples.");
+                    Controls.ComboBox bound = Assert.IsType<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(selectedContent, "ItemsSourceDemoCombo"), exactMatch: false);
+                    Controls.ComboBox editable = Assert.IsType<Controls.ComboBox>(FindVisualChildByName<Controls.ComboBox>(selectedContent, "EditableDemoCombo"), exactMatch: false);
+                    Assert.Contains(bound, comboBoxes);
+                    Assert.Contains(editable, comboBoxes);
+                    Assert.Equal(3, comboBoxes.Count(comboBox => !ReferenceEquals(comboBox, bound) && !ReferenceEquals(comboBox, editable)));
 
-                    foreach (Controls.ComboBox comboBox in comboBoxes)
+                    foreach (Controls.ComboBox comboBox in comboBoxes.Where(comboBox => !ReferenceEquals(comboBox, bound) && !ReferenceEquals(comboBox, editable)))
                     {
                         Assert.Equal(-1, comboBox.SelectedIndex);
                     }
+
+                    Assert.Equal(0, bound.SelectedIndex);
+                    Assert.Equal("Alpha", bound.SelectedItem);
+                    Assert.Equal(0, editable.SelectedIndex);
+                    Assert.Equal("Alpha", editable.SelectedItem);
                 }
                 finally
                 {

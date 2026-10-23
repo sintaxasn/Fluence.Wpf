@@ -48,6 +48,18 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
     /// </summary>
     public sealed class GalleryIconsPageTests : IAsyncLifetime
     {
+        private static readonly string[] SidebarHeadingNames =
+        [
+            "IconNameLabel", "IconTextGlyphLabel", "IconCodeGlyphLabel",
+            "IconXamlLabel", "IconCSharpLabel", "IconTagsLabel",
+        ];
+
+        private static readonly string[] SidebarValueNames =
+        [
+            "IconNameValueText", "IconTextGlyphValueText", "IconCodeGlyphValueText",
+            "IconXamlValueText", "IconCSharpValueText", "IconNoTagsText",
+        ];
+
         public ValueTask InitializeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureDemoTheme()));
@@ -399,14 +411,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     TextBlock nameLabel = Assert.IsType<TextBlock>(DemoTestHost.FindByName<TextBlock>(page, "IconNameLabel"), exactMatch: false);
                     TextBlock nameValue = Assert.IsType<TextBlock>(DemoTestHost.FindByName<TextBlock>(page, "IconNameValueText"), exactMatch: false);
                     Grid nameValueRow = Assert.IsType<Grid>(VisualTreeHelper.GetParent(nameValue), exactMatch: false);
-                    foreach (string headingName in new[] { "IconNameLabel", "IconTextGlyphLabel", "IconCodeGlyphLabel", "IconXamlLabel", "IconCSharpLabel", "IconTagsLabel" })
+                    foreach (string headingName in SidebarHeadingNames)
                     {
                         TextBlock heading = Assert.IsType<TextBlock>(DemoTestHost.FindByName<TextBlock>(page, headingName), exactMatch: false);
                         Assert.Equal(16.0, heading.FontSize, 0.1);
                         Assert.Equal(FontWeights.Bold, heading.FontWeight);
                     }
 
-                    foreach (string valueName in new[] { "IconNameValueText", "IconTextGlyphValueText", "IconCodeGlyphValueText", "IconXamlValueText", "IconCSharpValueText", "IconNoTagsText" })
+                    foreach (string valueName in SidebarValueNames)
                     {
                         TextBlock value = Assert.IsType<TextBlock>(DemoTestHost.FindByName<TextBlock>(page, valueName), exactMatch: false);
                         Assert.Equal(14.0, value.FontSize, 0.1);
