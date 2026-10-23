@@ -19,6 +19,8 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- Added a Mica Background group to the Colors gallery after Solid Background, with Base and Base Alt fallback previews, Microsoft backdrop references, and copy actions for the valid window settings `SystemBackdropType="Mica"` and `SystemBackdropType="Tabbed"`. WPF applies these backdrops at the window level, so the group does not provide per-element Mica.
+- The Colors gallery's Layer on Mica Base Alt row and sample card now reveal the window's existing Mica backdrop beneath the canonical overlay brushes. This WPF preview does not create WinUI's per-element Mica Alt material or change shared brushes; the opaque Tertiary swatch remains neutral.
 - The Icons gallery details pane now shows a larger centered preview, bold section headings above normal-weight values, and independent scrolling so code snippets and tags remain reachable in shorter windows. The selected tile and preview use matching thinner outlines, and icon glyphs and outlines follow readable High Contrast text colors.
 - Added focused ColorPicker integration coverage for its embedded text editors, stable field layout, live theme and accent changes, and color synchronization during editing. Production control behavior is unchanged; test inventories and CI counts include the new cases.
 - Documented AutoSuggestBox's inherited rounded focus border through its embedded TextBox and added focused coverage for stable field layout, live theme changes, suggestion navigation, and query-button focus. Suggestions and keyboard behavior are preserved; test inventories and CI floors include the new integration case.
