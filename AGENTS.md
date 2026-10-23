@@ -31,3 +31,10 @@ This file sets repository-wide rules and routes work to the smallest relevant gu
 ## Documentation ownership
 
 This repository owns generated C# API pages in docs/api/ and PowerShell reference pages in docs/powershell/reference/, plus authored docs/controls.md, docs/theming.md, and docs/winui-parity.md. The standalone Fluence.Wpf.Website repository owns Docusaurus authoring, site navigation and styling, browser review, publishing, and runnable walkthroughs. Keep operational release material out of this repository's public documentation.
+
+## Private planning artifacts
+
+- Save agent-created designs, implementation plans, audits, research, reviews, and handoffs under docs/_internal/. Use docs/_internal/plans/ for designs and plans, with companion evidence and scripts beside the owning plan.
+- Apply this repository preference to every skill, including Superpowers brainstorming, writing-plans, and executing-plans, in place of their default output locations. Keep authored product documentation in its existing tracked locations.
+- docs/_internal/ is Git-ignored. Keep these artifacts out of staging and commits, and copy required artifacts separately when using another worktree or moving a checkout.
+- After creating or materially revising a planning package, keep a timestamped copy outside the checkout under the user's Documents/RepositoryBackups/ directory, or another user-selected backup location. Verify the copied files with SHA-256 and record the backup location in the handoff. Preserve earlier backup snapshots.
