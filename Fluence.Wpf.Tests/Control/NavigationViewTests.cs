@@ -57,6 +57,67 @@ namespace Fluence.Wpf.Tests.Control
     /// </summary>
     public sealed class NavigationViewTests : IAsyncLifetime
     {
+        [Fact]
+        public Task NavigationView_FooterMenuItemsClear_ReleasesSelectionAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                NavigationView nav = new();
+                NavigationViewItem footer = new() { Content = "Footer" };
+                nav.FooterMenuItems.Add(footer);
+                nav.SelectFooterMenuItem(footer);
+
+                nav.FooterMenuItems.Clear();
+
+                Assert.Empty(nav.FooterMenuItems);
+                Assert.Null(nav.SelectedFooterItem);
+                Assert.False(footer.IsSelected);
+                Assert.Null(nav.SelectedItem);
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_FooterMutations_ReconcileSurvivingItemsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                NavigationView nav = new();
+                NavigationViewItem selected = new() { Content = "Selected" };
+                NavigationViewItem other = new() { Content = "Other" };
+                nav.FooterMenuItems.Add(selected);
+                nav.FooterMenuItems.Add(other);
+                nav.SelectFooterMenuItem(selected);
+
+                nav.FooterMenuItems.Move(0, 1);
+                Assert.Same(selected, nav.SelectedFooterItem);
+                Assert.True(selected.IsSelected);
+
+                // No visual host: duplicate UIElement references must not be rendered twice.
+                nav.FooterMenuItems.Add(selected);
+                Assert.True(nav.FooterMenuItems.Remove(selected));
+                Assert.Same(selected, nav.SelectedFooterItem);
+                Assert.True(selected.IsSelected);
+
+                nav.FooterMenuItems[1] = new NavigationViewItem { Content = "Replacement" };
+                Assert.Null(nav.SelectedFooterItem);
+                Assert.False(selected.IsSelected);
+
+                nav.FooterMenuItems.Clear();
+                nav.FooterMenuItems.Add(selected);
+                nav.SelectFooterMenuItem(selected);
+                Assert.True(nav.FooterMenuItems.Remove(selected));
+                Assert.Null(nav.SelectedFooterItem);
+                Assert.False(selected.IsSelected);
+
+                NavigationViewItem main = new() { Content = "Main" };
+                _ = nav.Items.Add(main);
+                nav.SelectedItem = main;
+                nav.FooterMenuItems.Add(other);
+                nav.FooterMenuItems.Clear();
+                Assert.Same(main, nav.SelectedItem);
+            });
+        }
+
         public ValueTask InitializeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));

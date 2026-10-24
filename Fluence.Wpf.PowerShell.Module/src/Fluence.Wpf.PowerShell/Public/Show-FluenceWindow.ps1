@@ -48,9 +48,11 @@ function Show-FluenceWindow
         and the -Data hashtable as the second, and typically sets $Window.Content and wires handlers.
     .PARAMETER Xaml
         A XAML string parsed with XamlReader.Parse. A FluenceWindow (or any Window) root is shown
-        directly; any other root is hosted inside a new FluenceWindow.
+        directly; any other root is hosted inside a new FluenceWindow. String input has no implicit
+        file location for relative resources.
     .PARAMETER XamlPath
         A path to a .xaml file loaded with XamlReader.Load. The path is resolved on the calling thread.
+        Relative resource dictionaries and images resolve beside the supplied XAML file.
     .PARAMETER Initialize
         A scriptblock run against the window after XAML is loaded (XamlString and XamlFile only). It
         receives the window as the first argument and the -Data hashtable as the second.

@@ -59,6 +59,14 @@ namespace Fluence.Wpf.Tests.Control.Rules
     /// </summary>
     public sealed class ReducedMotionTests : IAsyncLifetime
     {
+        private sealed class PressableRadioButtonProbe : Controls.RadioButton
+        {
+            public void SetPressed(bool value)
+            {
+                IsPressed = value;
+            }
+        }
+
         public ValueTask InitializeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
@@ -71,6 +79,88 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 MotionHelper.OverrideIsMotionEnabled = null;
                 _ = TestApp.EnsureLibraryTheme();
             }));
+        }
+
+        [Fact]
+        public Task ReducedMotion_CheckBox_SnapsCheckAndDashWithoutClocksAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MotionHelper.OverrideIsMotionEnabled = false;
+                Controls.CheckBox checkBox = new() { Content = "Option", IsThreeState = true, IsChecked = false, IsHitTestVisible = false };
+                Window window = new() { Content = checkBox, Width = 240, Height = 120 };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Path check = Assert.IsType<Path>(checkBox.Template.FindName("PART_CheckGlyph", checkBox));
+                    Path dash = Assert.IsType<Path>(checkBox.Template.FindName("PART_IndeterminateGlyph", checkBox));
+
+                    checkBox.IsChecked = true;
+                    Assert.Equal(1.0, check.Opacity);
+                    Assert.Equal(0.0, check.StrokeDashOffset);
+                    Assert.False(check.HasAnimatedProperties);
+
+                    checkBox.IsChecked = null;
+                    Assert.Equal(0.0, check.Opacity);
+                    Assert.Equal(1.0, dash.Opacity);
+                    Assert.False(dash.HasAnimatedProperties);
+
+                    checkBox.IsChecked = false;
+                    Assert.Equal(0.0, dash.Opacity);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ReducedMotion_RadioButton_SnapsGlyphSizesWithoutClocksAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                MotionHelper.OverrideIsMotionEnabled = false;
+                PressableRadioButtonProbe radio = new() { Content = "Option", IsChecked = true, IsHitTestVisible = false };
+                Window window = new() { Content = radio, Width = 240, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(radio.IsMouseOver);
+                    Ellipse glyph = Assert.IsType<Ellipse>(radio.Template.FindName("PART_CheckGlyph", radio));
+                    Border pressedGlyph = Assert.IsType<Border>(radio.Template.FindName("PART_PressedCheckGlyph", radio));
+
+                    Assert.Equal(12, glyph.Width);
+                    radio.SetPressed(value: true);
+                    Assert.Equal(10, glyph.Width);
+                    Assert.Equal(10, glyph.Height);
+                    Assert.Equal(10, pressedGlyph.Width);
+                    Assert.Equal(1, pressedGlyph.Opacity);
+                    Assert.False(glyph.HasAnimatedProperties);
+                    Assert.False(pressedGlyph.HasAnimatedProperties);
+
+                    radio.IsEnabled = false;
+                    Assert.Equal(14, glyph.Width);
+                    Assert.Equal(14, glyph.Height);
+                    Assert.Equal(0, pressedGlyph.Opacity);
+                    Assert.False(glyph.HasAnimatedProperties);
+                    Assert.False(pressedGlyph.HasAnimatedProperties);
+
+                    radio.IsChecked = false;
+                    Assert.Equal(0, glyph.Opacity);
+                    radio.SetPressed(value: false);
+                    radio.IsEnabled = true;
+                    Assert.Equal(12, glyph.Width);
+                    Assert.Equal(12, glyph.Height);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
         }
 
         /// <summary>

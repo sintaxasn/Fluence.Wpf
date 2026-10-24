@@ -71,6 +71,8 @@ CheckBoxCheckBackgroundFillIndeterminatePointerOver|#E60062AD|#00000000
 CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush|#00000000|#E60062AD
 CheckBoxCheckBackgroundFillIndeterminatePressed|#CC0062AD|#00000000
 CheckBoxCheckBackgroundFillIndeterminatePressedBrush|#00000000|#CC0062AD
+CheckBoxCheckBackgroundStrokeIndeterminatePointerOver|#E60062AD|#00000000
+CheckBoxCheckBackgroundStrokeIndeterminatePointerOverBrush|#00000000|#E60062AD
 CheckBoxCheckGlyphForegroundChecked|#FFFFFFFF|#00000000
 CheckBoxCheckGlyphForegroundCheckedBrush|#00000000|#FFFFFFFF
 CheckBoxCheckGlyphForegroundCheckedDisabled|#FFFFFFFF|#00000000
@@ -199,6 +201,14 @@ RadioButtonOuterEllipseCheckedFillPointerOver|#E60062AD|#00000000
 RadioButtonOuterEllipseCheckedFillPointerOverBrush|#00000000|#E60062AD
 RadioButtonOuterEllipseCheckedFillPressed|#CC0062AD|#00000000
 RadioButtonOuterEllipseCheckedFillPressedBrush|#00000000|#CC0062AD
+RadioButtonOuterEllipseCheckedStroke|#FF0062AD|#00000000
+RadioButtonOuterEllipseCheckedStrokeBrush|#00000000|#FF0062AD
+RadioButtonOuterEllipseCheckedStrokeDisabled|#37000000|#00000000
+RadioButtonOuterEllipseCheckedStrokeDisabledBrush|#00000000|#37000000
+RadioButtonOuterEllipseCheckedStrokePointerOver|#E60062AD|#00000000
+RadioButtonOuterEllipseCheckedStrokePointerOverBrush|#00000000|#E60062AD
+RadioButtonOuterEllipseCheckedStrokePressed|#CC0062AD|#00000000
+RadioButtonOuterEllipseCheckedStrokePressedBrush|#00000000|#CC0062AD
 ScrollBarTrackFillBrush|#00000000|#FFF9F9F9
 SliderThumbBackground|#FF0062AD|#00000000
 SliderThumbBackgroundBrush|#00000000|#FF0062AD

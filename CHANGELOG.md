@@ -8,6 +8,52 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-10-23
+
+### Added
+
+- Added nonmutating generated API and PowerShell reference checks to CI, with fixture coverage for missing, changed, obsolete, and legacy command pages.
+- Added MVVM task-manager characterization tests for command eligibility, trimming, notification order, and removed-item subscription cleanup.
+- Added `ItemsSource` and editable `ComboBox` examples to the Selection gallery, including observable option updates and visible `Text` and `SelectedItem` output.
+- Refreshed both full-target test inventories without removing existing cases. Combined discovery lists 1,526 net472 and 1,581 net10 cases; measured ordinary execution totals are 1,573 and 1,577 respectively, including one existing maintainer-only skip per target.
+- Added four RadioButton checked outer-ring stroke color states (base, pointer-over, pressed, and disabled), each with a brush twin.
+- Added the CheckBox indeterminate pointer-over stroke color and brush resources so its High Contrast outline can follow `Highlight` independently of the `HighlightText` fill.
+- Added the theme-aware `TextControlBorderThemeThicknessFocused` resource for TextBox and PasswordBox focus outlines.
+
+### Changed
+
+- Added a Mica Background group to the Colors gallery after Solid Background, with Base and Base Alt fallback previews, Microsoft backdrop references, and copy actions for the valid window settings `SystemBackdropType="Mica"` and `SystemBackdropType="Tabbed"`. WPF applies these backdrops at the window level, so the group does not provide per-element Mica.
+- The Colors gallery's Layer on Mica Base Alt row and sample card now reveal the window's existing Mica backdrop beneath the canonical overlay brushes. This WPF preview does not create WinUI's per-element Mica Alt material or change shared brushes; the opaque Tertiary swatch remains neutral.
+- The Icons gallery details pane now shows a larger centered preview, bold section headings above normal-weight values, and independent scrolling so code snippets and tags remain reachable in shorter windows. The selected tile and preview use matching thinner outlines, and icon glyphs and outlines follow readable High Contrast text colors.
+- Added focused ColorPicker integration coverage for its embedded text editors, stable field layout, live theme and accent changes, and color synchronization during editing. Production control behavior is unchanged; test inventories and CI counts include the new cases.
+- Documented AutoSuggestBox's inherited rounded focus border through its embedded TextBox and added focused coverage for stable field layout, live theme changes, suggestion navigation, and query-button focus. Suggestions and keyboard behavior are preserved; test inventories and CI floors include the new integration case.
+- Local PowerShell packaging builds current library source by default. `-UseExistingBuild` explicitly reuses verified binaries, including artifacts from the same CI run.
+- PowerShell ZIP and NUPKG files are staged and validated together before promotion. Handled failures restore the previous artifact presence and bytes where possible; failed rollback retains recoverable backups and reports their paths.
+- Moved fixed WindowChrome initialization into FluenceWindow and consolidated its six factory checks into the constructor test; public window behavior is unchanged.
+- Consolidated maximize/restore hit testing and deferred the Snap Layout preference lookup until a visible, enabled maximize or restore button is hit, preserving custom title-bar behavior, with two focused restore-button tests.
+- Consolidated caption-button visibility, enabled-state, and routed-command policy in CaptionButtonChrome, with focused coverage for style and binding overrides and hidden button behavior.
+- Moved theme-transition readiness and eligibility into ThemeTransitionOverlay, preserving custom title-bar and transition behavior, with seven new lifecycle tests and refreshed test inventories.
+
+### Fixed
+
+- Corrected the window probe console output and deferred its after-action snapshots until layout is ready, so help and invalid-option diagnostics are visible and content-size measurements include the resized native bounds.
+- Fixed the TimePicker AM/PM flyout so the selected period row aligns with the accent band and selected and unselected text colors match the numeric columns (by @sintaxasn).
+- Restored the canonical translucent `NavigationViewContentBackgroundBrush` (`#4C3A3A3A`) for Dark Mica on 10-bit displays with advanced color off, while retaining the source header tint. Light Mica keeps its existing fallback, High Contrast is unchanged, and Tabbed retains its existing behavior.
+- Removed ColorPicker's overlapping Hex character counter while preserving its RGB/ARGB input limits, editing, color synchronization, clear button, and rounded focus border. Ordinary TextBox and ColorPicker channel counters retain their existing behavior; focused regressions cover the Hex override and counter lifecycle.
+- Restored the native editor for ComboBox with IsEditable enabled and applied the shared rounded focus border. WPF owns text, selection, read-only, and keyboard behavior; the editable arrow has its own hit target, while noneditable ComboBox keeps its existing visuals and dropdown behavior. Focused tests and updated inventories cover the editable path.
+- Added transient pressed paint to the closed ComboBox while its nested toggle is pressed. Focused presses retain the focused text and chevron roles and the editable focus stroke; disabled state takes precedence, and WPF retains click-on-release and editor input behavior.
+- Theme publication repairs missing, replaced, or reordered owned resource slots while preserving consumer dictionaries. Auto mode follows the app light/dark preference after High Contrast resolution, and settings broadcasts coalesce only while a refresh is pending.
+- NavigationView reconciles footer selection and handlers after reset, removal, and move. AutoSuggestBox reacts to in-place observable suggestion changes and dispatches synchronized background notifications to the UI thread before reading control state, while preserving open-state bindings. Gallery raw Enter search checks exact titles and routes across main and footer destinations before keyword matches.
+- TabView keyboard navigation reaches its add button, including when empty or every header is unavailable, and Ctrl+F4 requests closure without removing items. Programmatic selection, collection changes, resize, and retemplating reveal the selected header, including physical leading-edge alignment for oversized right-to-left headers, without scrolling ancestors.
+- TabView wires the native WPF overflow button parts correctly. Their glyph directions follow right-to-left layout, visibility follows the strip offset, repeated template application does not duplicate clicks, and automatic reveal preserves deliberate manual scrolling through internal button layout changes.
+- TreeView supports opt-in root virtualization in Single and None modes while retaining physical scrolling in Multiple mode. Completed container generation restores model-owned checked bindings and reconciles the existing selection list without invalidating its enumerator when selection is unchanged.
+- Show-FluenceWindow file input preserves its absolute base URI, allowing relative resource dictionaries and images to resolve beside the supplied XAML file. String-mode loading and XML reader disposal remain unchanged.
+- Corrected NumberBox focus accents to use the shared rounded focus border immediately during editor and spin-button interaction. Removed the separate underline and fade while preserving field layout, numeric parsing, and spin-button behavior. Two focused cases extend the test inventories and CI floors.
+- Corrected TextBox and PasswordBox focus accents to follow their rounded borders, with a 2-DIP bottom stroke in Light and Dark and a full 2-DIP outline in High Contrast. Focus preserves editor and button layout, native input and password reveal behavior, and TextBox validation priority and colors. Focused validation and live-theme coverage add four test cases per full target framework; the two existing focus tests now check rounded borders, stable editor geometry, and edge hit testing.
+- Updated the CheckBox checkmark to follow WinUI path-trim geometry and state-route timing while retaining native WPF selection and input behavior. The 20-DIP box keeps a 1-DIP outline, the indeterminate dash stays static, disabled motion snaps to the resolved glyph, and unload cancels active routes. Discovery adds five test cases per target framework across CheckBox interaction, route-queue, and reduced-motion coverage.
+- Corrected the RadioButton visual states to match WinUI geometry and timing while preserving native WPF grouping, keyboard, and UI Automation behavior. Selection opacity changes immediately; hover and press size transitions take 250 ms, disabled sizing takes 167 ms, and the pressed glyph overlay scales from 4 to 10 DIP in 167 ms.
+- Corrected the default ProgressBar indicator alignment so its 3 DIP indicator and 1 DIP track share a vertical centerline. Two focused layout theories add ten test cases per full target framework: eight height/border combinations each check 0%, 50%, and 100% progress, and two cover Auto-height sizing when `TrackHeight` exceeds `MinHeight`.
+
 ## [0.9.2-pre] - 2026-10-08
 
 ### Changed
@@ -712,7 +758,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...main
+[0.9.3]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...v0.9.3
 [0.9.2-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2-pre
 [0.9.1]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...v0.9.1
 [0.9.0-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.8.19-pre...v0.9.0-pre

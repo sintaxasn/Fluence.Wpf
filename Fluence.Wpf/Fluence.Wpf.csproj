@@ -34,6 +34,11 @@
   <ItemGroup Label="NuGet package content">
     <None Include="..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\assets\Fluence_Icon_128.png" Pack="true" PackagePath="\" />
+    <None Update="Properties\WinUI.AnimatedAccept.LICENSE.txt" Pack="true" PackagePath="licenses/" />
+  </ItemGroup>
+
+  <ItemGroup Label="Embedded third-party notices">
+    <EmbeddedResource Include="Properties\WinUI.AnimatedAccept.LICENSE.txt" />
   </ItemGroup>
 
   <ItemGroup Label="Embedded window icon">

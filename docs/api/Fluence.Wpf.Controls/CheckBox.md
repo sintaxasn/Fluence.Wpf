@@ -25,7 +25,7 @@ Fluent-styled check box with optional description and rounded indicator.
 public CheckBox()
 ```
 
-Creates a new `CheckBox` instance.
+Initializes the template-part motion lifetime.
 
 ## Properties
 
@@ -48,6 +48,28 @@ public string? Description { get; set; }
 ```
 
 Gets or sets the description text displayed below the check box content.
+
+## Methods
+
+<a id="api-2639a55fc853"></a>
+
+### OnApplyTemplate
+
+```csharp
+public override void OnApplyTemplate()
+```
+
+Documentation inherited from the [`CheckBox` API](https://learn.microsoft.com/dotnet/api/system.windows.controls.checkbox).
+
+<a id="api-3b0d76cbf02e"></a>
+
+### OnPropertyChanged
+
+```csharp
+protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+```
+
+Documentation inherited from the [`CheckBox` API](https://learn.microsoft.com/dotnet/api/system.windows.controls.checkbox).
 
 ## Dependency property identifiers
 

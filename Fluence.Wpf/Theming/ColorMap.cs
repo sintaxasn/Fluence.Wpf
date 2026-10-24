@@ -258,6 +258,7 @@ namespace Fluence.Wpf.Theming
                 m["CheckBoxCheckGlyphForegroundCheckedDisabled"] = window;
                 m["CheckBoxCheckBackgroundFillIndeterminate"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminatePointerOver"] = highlightText;
+                m["CheckBoxCheckBackgroundStrokeIndeterminatePointerOver"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminatePressed"] = highlight;
                 m["CheckBoxCheckBackgroundFillIndeterminateDisabled"] = grayText;
                 m["CheckBoxCheckGlyphForegroundIndeterminate"] = highlightText;
@@ -269,6 +270,10 @@ namespace Fluence.Wpf.Theming
                 m["RadioButtonOuterEllipseCheckedFillPointerOver"] = control;
                 m["RadioButtonOuterEllipseCheckedFillPressed"] = control;
                 m["RadioButtonOuterEllipseCheckedFillDisabled"] = window;
+                m["RadioButtonOuterEllipseCheckedStroke"] = highlight;
+                m["RadioButtonOuterEllipseCheckedStrokePointerOver"] = controlText;
+                m["RadioButtonOuterEllipseCheckedStrokePressed"] = control;
+                m["RadioButtonOuterEllipseCheckedStrokeDisabled"] = grayText;
                 m["RadioButtonCheckGlyphFill"] = highlight;
                 m["RadioButtonCheckGlyphFillPointerOver"] = controlText;
                 m["RadioButtonCheckGlyphFillPressed"] = controlText;
@@ -336,6 +341,7 @@ namespace Fluence.Wpf.Theming
             m["CheckBoxCheckGlyphForegroundCheckedDisabled"] = m[TextOnAccentDisabledKey];
             m["CheckBoxCheckBackgroundFillIndeterminate"] = m[AccentFillDefaultKey];
             m["CheckBoxCheckBackgroundFillIndeterminatePointerOver"] = m[AccentFillSecondaryKey];
+            m["CheckBoxCheckBackgroundStrokeIndeterminatePointerOver"] = m[AccentFillSecondaryKey];
             m["CheckBoxCheckBackgroundFillIndeterminatePressed"] = m[AccentFillTertiaryKey];
             m["CheckBoxCheckBackgroundFillIndeterminateDisabled"] = m[AccentFillDisabledKey];
             m["CheckBoxCheckGlyphForegroundIndeterminate"] = m[TextOnAccentPrimaryKey];
@@ -347,6 +353,10 @@ namespace Fluence.Wpf.Theming
             m["RadioButtonOuterEllipseCheckedFillPointerOver"] = m[AccentFillSecondaryKey];
             m["RadioButtonOuterEllipseCheckedFillPressed"] = m[AccentFillTertiaryKey];
             m["RadioButtonOuterEllipseCheckedFillDisabled"] = m[AccentFillDisabledKey];
+            m["RadioButtonOuterEllipseCheckedStroke"] = m[AccentFillDefaultKey];
+            m["RadioButtonOuterEllipseCheckedStrokePointerOver"] = m[AccentFillSecondaryKey];
+            m["RadioButtonOuterEllipseCheckedStrokePressed"] = m[AccentFillTertiaryKey];
+            m["RadioButtonOuterEllipseCheckedStrokeDisabled"] = m[AccentFillDisabledKey];
             m["RadioButtonCheckGlyphFill"] = m[TextOnAccentPrimaryKey];
             m["RadioButtonCheckGlyphFillPointerOver"] = m[TextOnAccentPrimaryKey];
             m["RadioButtonCheckGlyphFillPressed"] = m[TextOnAccentSecondaryKey];

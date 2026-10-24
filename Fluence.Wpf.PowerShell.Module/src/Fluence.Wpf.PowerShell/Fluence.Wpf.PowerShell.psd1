@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @{
     RootModule           = 'Fluence.Wpf.PowerShell.psm1'
-    ModuleVersion        = '0.9.2'
+    ModuleVersion        = '0.9.3'
     GUID                 = 'ad4e53a0-2f63-4f2a-b613-0816b85d3164'
     Author               = 'Dan Cunningham'
     CompanyName          = 'Dan Cunningham'
@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     FormatsToProcess     = @('Formats/Fluence.Format.ps1xml')
     PrivateData          = @{
         PSData = @{
-            Prerelease   = 'pre'
+            Prerelease   = ''
             Tags         = @('GUI', 'WPF', 'Fluent', 'Windows11', 'Dialog', 'Windows', 'PSEdition_Desktop', 'PSEdition_Core')
             ProjectUri   = 'https://github.com/sintaxasn/Fluence.Wpf'
             LicenseUri   = 'https://github.com/sintaxasn/Fluence.Wpf/blob/main/LICENSE'

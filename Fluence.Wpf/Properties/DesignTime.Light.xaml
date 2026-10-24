@@ -43,6 +43,7 @@
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled">#37000000</Color>
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver">#E60062AD</Color>
     <Color x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed">#CC0062AD</Color>
+    <Color x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOver">#E60062AD</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundChecked">#FFFFFFFF</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#FFFFFFFF</Color>
     <Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">#FFFFFFFF</Color>
@@ -103,6 +104,10 @@
     <Color x:Key="RadioButtonOuterEllipseCheckedFillDisabled">#37000000</Color>
     <Color x:Key="RadioButtonOuterEllipseCheckedFillPointerOver">#E60062AD</Color>
     <Color x:Key="RadioButtonOuterEllipseCheckedFillPressed">#CC0062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStroke">#FF0062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled">#37000000</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver">#E60062AD</Color>
+    <Color x:Key="RadioButtonOuterEllipseCheckedStrokePressed">#CC0062AD</Color>
     <Color x:Key="SliderThumbBackground">#FF0062AD</Color>
     <Color x:Key="SliderThumbBackgroundDisabled">#37000000</Color>
     <Color x:Key="SliderThumbBackgroundPointerOver">#E60062AD</Color>
@@ -229,6 +234,7 @@
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabledBrush" Color="#37000000" />
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOverBrush" Color="#E60062AD" />
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminatePressedBrush" Color="#CC0062AD" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOverBrush" Color="#E60062AD" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabledBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOverBrush" Color="#FFFFFFFF" />
@@ -297,6 +303,10 @@
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabledBrush" Color="#37000000" />
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOverBrush" Color="#E60062AD" />
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPressedBrush" Color="#CC0062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokeBrush" Color="#FF0062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokeDisabledBrush" Color="#37000000" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOverBrush" Color="#E60062AD" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePressedBrush" Color="#CC0062AD" />
     <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="#FFF9F9F9" />
     <SolidColorBrush x:Key="SliderThumbBackgroundBrush" Color="#FF0062AD" />
     <SolidColorBrush x:Key="SliderThumbBackgroundDisabledBrush" Color="#37000000" />
@@ -428,5 +438,6 @@
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
     <CornerRadius x:Key="PopupCornerRadius">8</CornerRadius>
+    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1,1,1,2</Thickness>
 
 </ResourceDictionary>

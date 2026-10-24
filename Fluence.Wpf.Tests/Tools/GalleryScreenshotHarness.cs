@@ -1364,7 +1364,7 @@ namespace Fluence.Wpf.Tests.Tools
                     }
                 }
 
-                Assert.Equal(150, cardCount);
+                Assert.Equal(152, cardCount);
                 await WriteGalleryManifestAsync(output, entries).ConfigureAwait(true);
             });
         }

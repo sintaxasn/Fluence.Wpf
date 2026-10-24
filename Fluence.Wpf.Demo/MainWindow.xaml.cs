@@ -449,13 +449,8 @@ namespace Fluence.Wpf.Demo
             }
 
             string trimmed = query.Trim();
-            foreach (object obj in DemoNav.Items)
+            foreach (NavigationViewItem item in EnumerateSearchNavigationItems())
             {
-                if (obj is not NavigationViewItem item)
-                {
-                    continue;
-                }
-
                 string title = (item.Content as string) ?? string.Empty;
                 _ = _navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata);
                 if (string.Equals(title, trimmed, StringComparison.OrdinalIgnoreCase) ||
@@ -464,6 +459,11 @@ namespace Fluence.Wpf.Demo
                     return item;
                 }
 
+            }
+
+            foreach (NavigationViewItem item in EnumerateSearchNavigationItems())
+            {
+                _ = _navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata);
                 if (ItemMatches(item, metadata, trimmed))
                 {
                     return item;
@@ -471,6 +471,24 @@ namespace Fluence.Wpf.Demo
             }
 
             return null;
+        }
+
+        private IEnumerable<NavigationViewItem> EnumerateSearchNavigationItems()
+        {
+            foreach (object entry in DemoNav.Items)
+            {
+                if (entry is NavigationViewItem item)
+                {
+                    yield return item;
+                }
+            }
+            foreach (object entry in DemoNav.FooterMenuItems)
+            {
+                if (entry is NavigationViewItem item)
+                {
+                    yield return item;
+                }
+            }
         }
 
         private static bool ItemMatches(NavigationViewItem item, DemoNavigationItem? metadata, string needle)

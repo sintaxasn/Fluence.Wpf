@@ -95,13 +95,17 @@ After staging, regenerate all 16 command pages from the help in `src/Fluence.Wpf
 pwsh -NoProfile -File .\Fluence.Wpf.PowerShell.Module\build\Export-ModuleReference.ps1
 ```
 
-Package the staged module as a ZIP and a PowerShell Gallery format package:
+Build current library source, stage the module, and package a ZIP and a PowerShell Gallery format package:
 
 ```powershell
 pwsh -NoProfile -File .\Fluence.Wpf.PowerShell.Module\build\Package-Module.ps1
 ```
 
 Packages are written to `Fluence.Wpf.PowerShell.Module/artifacts/`. `Package-Module.ps1` needs an already available NuGet provider version 2.8.5.208 or later. It creates the `.nupkg` through a temporary local repository; it does not publish to PowerShell Gallery.
+
+Local packaging requires the .NET SDK and rebuilds by default. `-UseExistingBuild` skips compilation for callers that have verified the existing binaries came from the intended revision. CI uses this switch after downloading binaries from the same run; matching assembly versions alone do not establish freshness.
+
+Both package files are staged and checked before either final file is replaced. A handled promotion failure attempts to restore the exact previous pair, including a previously absent file. If restoration fails, the error identifies retained backups for recovery. This protects against ordinary handled failures; the two-file update is not atomic across a machine crash.
 
 ## Run the module gate
 
