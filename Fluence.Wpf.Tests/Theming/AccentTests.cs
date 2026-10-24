@@ -127,7 +127,8 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
 
                 Color customColor = Color.FromRgb(0xFF, 0x88, 0x00);
-                ApplicationAccentColorManager.ApplyCustomAccent(customColor);
+                Action<Color> applyLegacy = ApplicationAccentColorManager.ApplyCustomAccent;
+                applyLegacy(customColor);
 
                 Assert.Equal(customColor, ApplicationAccentColorManager.SystemAccentColor);
 
@@ -213,7 +214,8 @@ namespace Fluence.Wpf.Tests.Theming
                 Color darkSeed = Color.FromRgb(0x47, 0x9E, 0xF5);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccent(lightSeed, darkSeed);
+                Action<Color, Color> applyLegacy = ApplicationAccentColorManager.ApplyCustomAccent;
+                applyLegacy(lightSeed, darkSeed);
                 Assert.Equal(lightSeed, ApplicationAccentColorManager.SystemAccentColor);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
@@ -360,14 +362,14 @@ namespace Fluence.Wpf.Tests.Theming
         }
 
         [Fact]
-        public Task ApplyCustomAccentExact_OneColor_PreservesLightAndDerivesDarkAsync()
+        public Task ApplyCustomAccent_ExactOneColor_PreservesLightAndDerivesDarkAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Color exactLight = Color.FromRgb(0x87, 0xAB, 0xC8);
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccentExact(exactLight);
+                ApplicationAccentColorManager.ApplyCustomAccent(exactLight, exact: true);
 
                 Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColor);
                 Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColorPrimary);
@@ -405,11 +407,15 @@ namespace Fluence.Wpf.Tests.Theming
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
                 Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColorPrimary);
+
+                Action<Color> applyLegacyExact = ApplicationAccentColorManager.ApplyCustomAccentExact;
+                applyLegacyExact(exactLight);
+                Assert.Equal(exactLight, Assert.IsType<Color>(app.TryFindResource("AccentFillColorDefault")));
             });
         }
 
         [Fact]
-        public Task ApplyCustomAccentExact_TwoColors_FollowThemeWithoutRewritingRampAsync()
+        public Task ApplyCustomAccent_ExactPair_FollowsThemeWithoutRewritingRampAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -417,7 +423,8 @@ namespace Fluence.Wpf.Tests.Theming
                 Color exactDark = Color.FromRgb(0x24, 0x36, 0x4B);
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccentExact(exactLight, exactDark);
+                ApplicationAccentColorManager.ApplyCustomAccent(
+                    lightThemeAccent: exactLight, darkThemeAccent: exactDark, exact: true);
 
                 Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColor);
                 Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColorPrimary);
@@ -435,20 +442,46 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.Equal(exactDark, ApplicationAccentColorManager.SystemAccentColor);
                 Assert.Equal(ApplicationAccentColorManager.SystemAccentColorDark1,
                     ApplicationAccentColorManager.SystemAccentColorPrimary);
+                Assert.Equal(SystemColors.WindowColor,
+                    Assert.IsType<Color>(app.TryFindResource("AccentFillColorDefault")));
+                Assert.Equal(SystemColors.HighlightColor,
+                    Assert.IsType<Color>(app.TryFindResource("AccentButtonBackground")));
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
+                Assert.Equal(exactLight, ApplicationAccentColorManager.SystemAccentColorPrimary);
             });
         }
 
         [Fact]
-        public Task ApplyCustomAccentExact_EqualPair_RemainsExactInDarkAndSystemResetRestoresAdaptiveAsync()
+        public Task ApplyCustomAccent_EqualExactPair_RemainsExactInDarkAndSystemResetRestoresAdaptiveAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Color exact = Color.FromRgb(0x87, 0xAB, 0xC8);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
-                ApplicationAccentColorManager.ApplyCustomAccentExact(exact, exact);
+                ApplicationAccentColorManager.ApplyCustomAccent(exact, exact, exact: true);
 
                 Assert.Equal(exact, ApplicationAccentColorManager.SystemAccentColorPrimary);
                 Assert.Equal(exact, Assert.IsType<Color>(Application.Current.TryFindResource("AccentFillColorDefault")));
+
+                int eventCount = 0;
+                void OnAccentColorChanged(object? sender, EventArgs e)
+                {
+                    eventCount++;
+                }
+                ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
+                try
+                {
+                    Action<Color, Color> applyLegacyExact = ApplicationAccentColorManager.ApplyCustomAccentExact;
+                    applyLegacyExact(exact, exact);
+                }
+                finally
+                {
+                    ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
+                }
+
+                Assert.Equal(0, eventCount);
+                Assert.Equal(exact, ApplicationAccentColorManager.SystemAccentColorPrimary);
 
                 ApplicationAccentColorManager.ApplyCustomAccent(exact);
                 Assert.Equal(ApplicationAccentColorManager.SystemAccentColorLight2,

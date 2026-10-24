@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Media;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Theming;
@@ -39,7 +40,7 @@ namespace Fluence.Wpf
     /// <remarks>
     /// <see cref="ApplicationThemeManager.Apply"/> uses the Windows accent palette by default.
     /// Call <see cref="ApplyCustomAccent(Color)"/> to pin a custom ramp seed,
-    /// <see cref="ApplyCustomAccentExact(Color)"/> for an exact visible light-theme primary, or
+    /// <see cref="ApplyCustomAccent(Color, bool)"/> with <c language="csharp">exact: true</c> for an exact visible light-theme primary, or
     /// <see cref="ApplySystemAccent"/> to return to the Windows palette.
     /// </remarks>
     /// <example>
@@ -168,9 +169,24 @@ namespace Fluence.Wpf
         /// the active Windows accent, its seven-rung palette is captured; otherwise a ramp is generated.
         /// </summary>
         /// <param name="color">The accent color to use as the ramp base.</param>
+        [SuppressMessage("Minor Code Smell", "S3254:Default parameter value should not be passed as an argument", Justification = "The released CLR signature must forward to the new optional-flag overload.")]
         public static void ApplyCustomAccent(Color color)
         {
-            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustom(color));
+            ApplyCustomAccent(color, exact: false);
+        }
+
+        /// <summary>
+        /// Applies a custom accent and republishes theme resources. By default the color is a
+        /// ramp seed. With <paramref name="exact"/> enabled, it is the visible light-theme
+        /// primary; the dark-theme primary still comes from the resolved ramp's Light2 shade.
+        /// </summary>
+        /// <param name="color">The accent seed, or the exact light-theme primary.</param>
+        /// <param name="exact">Whether to use <paramref name="color"/> as the visible light-theme primary.</param>
+        [SuppressMessage("ApiDesign", "RS0027:API with optional parameter should have the most parameters", Justification = "The requested optional flag coexists with the released one- and two-color CLR signatures for binary compatibility.")]
+        [SuppressMessage("Major Code Smell", "S3427:Optional parameter value should not overlap overloads", Justification = "The released one-color CLR signature is retained for binary compatibility.")]
+        public static void ApplyCustomAccent(Color color, bool exact = false)
+        {
+            FluenceThemeEngine.SetAccentIntent(exact ? AccentIntent.FromCustomExact(color) : AccentIntent.FromCustom(color));
             _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
         }
 
@@ -181,9 +197,27 @@ namespace Fluence.Wpf
         /// </summary>
         /// <param name="lightThemeAccent">The ramp seed used on the light theme.</param>
         /// <param name="darkThemeAccent">The ramp seed used on dark and high-contrast themes.</param>
+        [SuppressMessage("Minor Code Smell", "S3254:Default parameter value should not be passed as an argument", Justification = "The released CLR signature must forward to the new optional-flag overload.")]
         public static void ApplyCustomAccent(Color lightThemeAccent, Color darkThemeAccent)
         {
-            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustom(lightThemeAccent, darkThemeAccent));
+            ApplyCustomAccent(lightThemeAccent, darkThemeAccent, exact: false);
+        }
+
+        /// <summary>
+        /// Applies per-theme custom accents and republishes theme resources. By default both
+        /// colors are ramp seeds. With <paramref name="exact"/> enabled, they are the visible
+        /// primary colors in light and dark themes respectively.
+        /// </summary>
+        /// <param name="lightThemeAccent">The light-theme seed or exact primary.</param>
+        /// <param name="darkThemeAccent">The dark-theme seed or exact primary, and the high-contrast ramp seed.</param>
+        /// <param name="exact">Whether to use the supplied colors as visible light- and dark-theme primaries.</param>
+        [SuppressMessage("ApiDesign", "RS0026:Do not add multiple overloads with optional parameters", Justification = "Both requested optional-flag forms coexist with the released CLR signatures for binary compatibility.")]
+        [SuppressMessage("Major Code Smell", "S3427:Optional parameter value should not overlap overloads", Justification = "The released two-color CLR signature is retained for binary compatibility.")]
+        public static void ApplyCustomAccent(Color lightThemeAccent, Color darkThemeAccent, bool exact = false)
+        {
+            FluenceThemeEngine.SetAccentIntent(exact
+                ? AccentIntent.FromCustomExact(lightThemeAccent, darkThemeAccent)
+                : AccentIntent.FromCustom(lightThemeAccent, darkThemeAccent));
             _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
         }
 
@@ -195,8 +229,7 @@ namespace Fluence.Wpf
         /// <param name="lightThemeAccent">The exact primary accent color on the light theme.</param>
         public static void ApplyCustomAccentExact(Color lightThemeAccent)
         {
-            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustomExact(lightThemeAccent));
-            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
+            ApplyCustomAccent(lightThemeAccent, exact: true);
         }
 
         /// <summary>
@@ -208,8 +241,7 @@ namespace Fluence.Wpf
         /// <param name="darkThemeAccent">The exact primary accent color on the dark theme.</param>
         public static void ApplyCustomAccentExact(Color lightThemeAccent, Color darkThemeAccent)
         {
-            FluenceThemeEngine.SetAccentIntent(AccentIntent.FromCustomExact(lightThemeAccent, darkThemeAccent));
-            _ = FluenceThemeEngine.Apply(ApplicationThemeManager.CurrentTheme);
+            ApplyCustomAccent(lightThemeAccent, darkThemeAccent, exact: true);
         }
 
         internal static void ResetForTesting()

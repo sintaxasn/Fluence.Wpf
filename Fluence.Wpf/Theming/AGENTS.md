@@ -31,8 +31,8 @@ Never mutate, promote, or copy computed tokens into other dictionaries. A stale 
 
 - System accent is the default. Apply(theme) resolves the current OS palette without requiring a separate ApplySystemAccent call.
 - ApplyCustomAccent(Color) and ApplyCustomAccent(Color light, Color dark) use the calculated WinUI-style palette by default. A matching Windows base seed snapshots the Windows shades; an arbitrary seed uses the in-tree approximation.
-- ApplyCustomAccentExact(Color light) pins the visible default fill to the supplied Light value and derives Dark from the resolved Dark palette's Light2 shade.
-- ApplyCustomAccentExact(Color light, Color dark) pins the visible default fill to each supplied value for its theme.
+- ApplyCustomAccent(Color color, bool exact = false) with exact: true pins the visible default fill to the supplied Light value and derives Dark from the resolved Dark palette's Light2 shade.
+- ApplyCustomAccent(Color light, Color dark, bool exact = false) with exact: true pins the visible default fill to each supplied value for its theme, even when those values are equal. The ApplyCustomAccentExact overloads remain compatibility aliases.
 - Other accent roles continue to come from the resolved palette. High Contrast control roles use live SystemColors. ApplySystemAccent resets the sticky intent to System.
 
 Do not change these intent distinctions when refactoring palette resolution. Add tests that assert the published resources, not only the raw seed or helper result.

@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Changed
+
+- Added `exact: true` to the `ApplyCustomAccent` single-color and light/dark overloads for exact visible primary fills while calculated palettes remain the default. Existing overloads and `ApplyCustomAccentExact` calls remain compatible. Focused accent tests now exercise the unified calls, legacy delegates, High Contrast resources, repeat-apply events, and Light/Dark/Light transitions without changing the test case count.
+
 ## [0.9.3] - 2026-10-23
 
 ### Added

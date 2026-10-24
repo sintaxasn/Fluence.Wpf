@@ -11,7 +11,7 @@ public static class ApplicationAccentColorManager
 
 Manages system and custom accent colors and publishes them as `DynamicResource` brush keys aligned with Windows 11.
 
-**Remarks:** [Apply](ApplicationThemeManager.md#api-317c377bb209) uses the Windows accent palette by default. Call [ApplyCustomAccent](ApplicationAccentColorManager.md#api-e3ee20c8a77b) to pin a custom ramp seed, [ApplyCustomAccentExact](ApplicationAccentColorManager.md#api-ca99c2ce264f) for an exact visible light-theme primary, or [ApplySystemAccent](ApplicationAccentColorManager.md#api-194f672c8db4) to return to the Windows palette.
+**Remarks:** [Apply](ApplicationThemeManager.md#api-317c377bb209) uses the Windows accent palette by default. Call [ApplyCustomAccent](ApplicationAccentColorManager.md#api-e3ee20c8a77b) to pin a custom ramp seed, [ApplyCustomAccent](ApplicationAccentColorManager.md#api-7846e9ba41b8) with `exact: true` for an exact visible light-theme primary, or [ApplySystemAccent](ApplicationAccentColorManager.md#api-194f672c8db4) to return to the Windows palette.
 
 **Example**
 
@@ -165,6 +165,36 @@ public static Color WindowBorderColor { get; }
 Gets the window border color (titlebar active on Win11, blended on Win10).
 
 ## Methods
+
+<a id="api-7846e9ba41b8"></a>
+
+### ApplyCustomAccent
+
+```csharp
+public static void ApplyCustomAccent(Color color, bool exact = false)
+```
+
+Applies a custom accent and republishes theme resources. By default the color is a ramp seed. With `exact` enabled, it is the visible light-theme primary; the dark-theme primary still comes from the resolved ramp's Light2 shade.
+
+**Parameter `color`:** The accent seed, or the exact light-theme primary.
+
+**Parameter `exact`:** Whether to use `color` as the visible light-theme primary.
+
+<a id="api-a3c097e5f5c0"></a>
+
+### ApplyCustomAccent
+
+```csharp
+public static void ApplyCustomAccent(Color lightThemeAccent, Color darkThemeAccent, bool exact = false)
+```
+
+Applies per-theme custom accents and republishes theme resources. By default both colors are ramp seeds. With `exact` enabled, they are the visible primary colors in light and dark themes respectively.
+
+**Parameter `lightThemeAccent`:** The light-theme seed or exact primary.
+
+**Parameter `darkThemeAccent`:** The dark-theme seed or exact primary, and the high-contrast ramp seed.
+
+**Parameter `exact`:** Whether to use the supplied colors as visible light- and dark-theme primaries.
 
 <a id="api-ca1111232abe"></a>
 
