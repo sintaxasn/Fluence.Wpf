@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .PARAMETER Scene
     Internal single-scene mode used by child processes. Omit to capture every scene.
 .PARAMETER OutputDirectory
-    Directory for PNG files. Defaults to docs/powershell/images.
+    Directory for PNG files. Defaults to artifacts/docs/powershell/images.
 .PARAMETER ShadowMargin
     Screen pixels to include outside the window rectangle. Defaults to 28.
 .PARAMETER CaptureMode
@@ -310,7 +310,7 @@ if ($Scene -ne 'All')
 
 if (-not $OutputDirectory)
 {
-    $OutputDirectory = Join-Path $repo 'docs\powershell\images'
+    $OutputDirectory = Join-Path $repo 'artifacts\docs\powershell\images'
 }
 $OutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
 [System.IO.Directory]::CreateDirectory($OutputDirectory) | Out-Null

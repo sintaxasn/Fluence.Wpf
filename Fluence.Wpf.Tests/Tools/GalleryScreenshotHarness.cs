@@ -44,14 +44,14 @@ namespace Fluence.Wpf.Tests.Tools
 {
     /// <summary>
     /// Maintainer-driven, opt-in harness that renders the representative demo surfaces used in the
-    /// documentation and writes PNGs under <c language="text">docs/screenshots/</c>: the gallery shell in its three
+    /// documentation and writes candidate PNGs under <c language="text">artifacts/docs/screenshots/</c>: the gallery shell in its three
     /// navigation modes (Home / Left, Buttons / LeftCompact, Status / Top), the MVVM task-manager
     /// app, and the PowerShell controls-tour window, each in Light and Dark.
     /// </summary>
     /// <remarks>
     /// Capture is gated behind the <c language="text">FLUENCE_CAPTURE_SCREENSHOTS</c> environment variable, so a
-    /// normal test run reports these tests as inconclusive and never overwrites the committed
-    /// images; set the variable to <c language="text">1</c> to regenerate them. Set
+    /// normal test run reports these tests as inconclusive and never writes capture candidates;
+    /// set the variable to <c language="text">1</c> to render them. Set
     /// <c language="text">FLUENCE_CAPTURE_OUTPUT_DIRECTORY</c> to render into a separate directory.
     /// Only the WPF visual tree is
     /// captured. DWM Mica / Acrylic backdrops and transparent window shadows are composited
@@ -64,6 +64,7 @@ namespace Fluence.Wpf.Tests.Tools
         private const string OptInEnvironmentVariable = "FLUENCE_CAPTURE_SCREENSHOTS";
         private const string ControlsOnlyEnvironmentVariable = "FLUENCE_CAPTURE_CONTROLS_ONLY";
         private const string OutputDirectoryEnvironmentVariable = "FLUENCE_CAPTURE_OUTPUT_DIRECTORY";
+        private const string IncludeEnvironmentVariable = "FLUENCE_CAPTURE_INCLUDE";
         private const int GalleryCaptureWidth = 1280;
         private const int GalleryCaptureHeight = 900;
         private const double CardCaptureScale = 0.8;
@@ -178,6 +179,117 @@ namespace Fluence.Wpf.Tests.Tools
         private static bool ControlsOnlyCaptureEnabled =>
             string.Equals(Environment.GetEnvironmentVariable(ControlsOnlyEnvironmentVariable), "1", StringComparison.Ordinal);
 
+        private static readonly Lazy<HashSet<string>?> IncludedCaptureIds = new(ParseIncludedCaptureIds);
+
+        private static HashSet<string>? ParseIncludedCaptureIds()
+        {
+            string? include = Environment.GetEnvironmentVariable(IncludeEnvironmentVariable);
+            if (string.IsNullOrWhiteSpace(include))
+            {
+                return null;
+            }
+
+            string mapPath = Path.Join(FindRepoRoot(), "tools", "Docs", "VisualCaptureMap.psd1");
+            HashSet<string> known = new(StringComparer.Ordinal);
+            foreach (string line in File.ReadLines(mapPath))
+            {
+                if (line.StartsWith("        @{ Id = '", StringComparison.Ordinal))
+                {
+                    _ = known.Add(line.Split('\'')[1]);
+                }
+            }
+
+            HashSet<string> selected = new(StringComparer.Ordinal);
+            foreach (string item in include.Split(','))
+            {
+                string id = item.Trim();
+                if (id.Length is 0 || !known.Contains(id))
+                {
+                    throw new InvalidOperationException("Unknown screenshot capture ID: " + id);
+                }
+
+                _ = selected.Add(id);
+            }
+
+            return selected;
+        }
+
+        private static bool ShouldCapture(string id)
+        {
+            return IncludedCaptureIds.Value?.Contains(id) ?? true;
+        }
+
+        private static bool ContainsOrdinal(string value, string substring)
+        {
+#if NETFRAMEWORK
+            return value.IndexOf(substring, StringComparison.Ordinal) >= 0;
+#else
+            return value.Contains(substring, StringComparison.Ordinal);
+#endif
+        }
+
+        private static bool HasSelectedPrefix(string prefix)
+        {
+            HashSet<string>? selected = IncludedCaptureIds.Value;
+            if (selected is null)
+            {
+                return true;
+            }
+
+            foreach (string id in selected)
+            {
+                if (id.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasSelectedRouteTheme(string prefix, string theme)
+        {
+            HashSet<string>? selected = IncludedCaptureIds.Value;
+            if (selected is null)
+            {
+                return true;
+            }
+
+            foreach (string id in selected)
+            {
+                if (id.StartsWith(prefix, StringComparison.Ordinal) &&
+                    ContainsOrdinal(id, "-" + theme))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool ShouldVisitControlRoute(string route)
+        {
+            if (IncludedCaptureIds.Value is null)
+            {
+                return true;
+            }
+
+            foreach (ControlCaptureSpec spec in ControlCaptureSpecs)
+            {
+                if (string.Equals(spec.Route, route, StringComparison.Ordinal) &&
+                    HasSelectedPrefix("controls/" + spec.Slug + "-"))
+                {
+                    return true;
+                }
+            }
+
+            return string.Equals(route, "menus", StringComparison.Ordinal) &&
+                (HasSelectedPrefix("controls/context-menu-") || HasSelectedPrefix("controls/tool-tip-") ||
+                 HasSelectedPrefix("controls/flyout-") || HasSelectedPrefix("controls/teaching-tip-") ||
+                 HasSelectedPrefix("controls/command-bar-flyout-") || HasSelectedPrefix("controls/app-bar-button-") ||
+                 HasSelectedPrefix("controls/content-dialog-"));
+        }
+
         private static string FindRepoRoot()
         {
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -199,7 +311,7 @@ namespace Fluence.Wpf.Tests.Tools
         {
             string? outputOverride = Environment.GetEnvironmentVariable(OutputDirectoryEnvironmentVariable);
             string path = string.IsNullOrWhiteSpace(outputOverride)
-                ? Path.Join(FindRepoRoot(), "docs", "screenshots")
+                ? Path.Join(FindRepoRoot(), "artifacts", "docs", "screenshots")
                 : Path.GetFullPath(outputOverride);
             _ = Directory.CreateDirectory(path);
             return path;
@@ -250,10 +362,11 @@ namespace Fluence.Wpf.Tests.Tools
             return result.Append('"').ToString();
         }
 
-        private static async Task WriteGalleryManifestAsync(string directory, IList<CaptureEntry> entries)
+        private static async Task WriteGalleryManifestAsync(string directory, IList<CaptureEntry> entries, bool partial)
         {
             StringBuilder json = new();
             _ = json.Append("{\n  \"captureMethod\": \"WPF RenderTargetBitmap\",\n");
+            _ = json.Append("  \"partial\": ").Append(partial ? "true" : "false").Append(",\n");
             _ = json.Append("  \"limitation\": \"Offscreen WPF captures omit DWM window shadow and Mica or Acrylic backdrop; no shadow has been simulated.\",\n");
             _ = json.Append("  \"entries\": [\n");
             for (int index = 0; index < entries.Count; index++)
@@ -412,11 +525,16 @@ namespace Fluence.Wpf.Tests.Tools
             string? state = null,
             bool allowEmpty = false)
         {
+            string suffix = state is null ? string.Empty : "-" + state;
+            string file = Invariant("{0}-{1}{2}.png", spec.Slug, theme, suffix);
+            if (!ShouldCapture("controls/" + file))
+            {
+                return;
+            }
+
             card.BringIntoView();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement element = ResolveControlVisual(card, spec, allowEmpty);
-            string suffix = state is null ? string.Empty : "-" + state;
-            string file = Invariant("{0}-{1}{2}.png", spec.Slug, theme, suffix);
             await SavePaddedControlPngAsync(element, Path.Join(directory, file), allowEmpty).ConfigureAwait(true);
         }
 
@@ -606,11 +724,16 @@ namespace Fluence.Wpf.Tests.Tools
             string directory,
             IList<CaptureEntry> entries)
         {
+            string stateSuffix = string.Equals(state, "default", StringComparison.Ordinal) ? string.Empty : "-" + state;
+            string file = Invariant("{0}-sample-{1:00}-{2}{3}.png", route, ordinal, theme, stateSuffix);
+            if (!ShouldCapture("gallery/" + file))
+            {
+                return;
+            }
+
             card.BringIntoView();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             Assert.True(card.ActualWidth > 0 && card.ActualHeight > 0, Invariant("Card {0} on {1} has no rendered area.", ordinal, route));
-            string stateSuffix = string.Equals(state, "default", StringComparison.Ordinal) ? string.Empty : "-" + state;
-            string file = Invariant("{0}-sample-{1:00}-{2}{3}.png", route, ordinal, theme, stateSuffix);
             await SaveElementPngAsync(card, CardCaptureScale, Path.Join(directory, file)).ConfigureAwait(true);
             entries.Add(new CaptureEntry("card", route, card.SampleDescription, theme, state, file));
         }
@@ -623,6 +746,23 @@ namespace Fluence.Wpf.Tests.Tools
             string directory,
             IList<CaptureEntry> entries)
         {
+            (int selectedOrdinal, string selectedState) = route switch
+            {
+                "buttons" => (1, "disabled"),
+                "selection" => (3, "toggled"),
+                "layout" => (3, "expanded"),
+                "inputs" => (1, "entered"),
+                "navigation" => (6, "page-selected"),
+                "status" => (5, "dismissed"),
+                "tabs" => (1, "selected"),
+                _ => (0, string.Empty),
+            };
+            if (selectedOrdinal is 0 || !ShouldCapture("gallery/" +
+                Invariant("{0}-sample-{1:00}-{2}-{3}.png", route, selectedOrdinal, theme, selectedState)))
+            {
+                return;
+            }
+
             int ordinal;
             string state;
             if (string.Equals(route, "buttons", StringComparison.Ordinal))
@@ -730,8 +870,11 @@ namespace Fluence.Wpf.Tests.Tools
             contextMenu.IsOpen = true;
             await SettleGalleryAsync(window).ConfigureAwait(true);
             string contextFile = Invariant("menus-context-menu-open-{0}.png", theme);
-            await SaveElementPngAsync(contextMenu, ReferenceScale, Path.Join(directory, contextFile)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("popup", "menus", "Context menu open", theme, "open", contextFile));
+            if (ShouldCapture("gallery/" + contextFile))
+            {
+                await SaveElementPngAsync(contextMenu, ReferenceScale, Path.Join(directory, contextFile)).ConfigureAwait(true);
+                entries.Add(new CaptureEntry("popup", "menus", "Context menu open", theme, "open", contextFile));
+            }
             contextMenu.IsOpen = false;
 
             Demo.Pages.DemoSampleControl flyoutCard = cards[3];
@@ -748,8 +891,11 @@ namespace Fluence.Wpf.Tests.Tools
             FrameworkElement flyoutPresenter = flyout.Presenter
                 ?? throw new InvalidOperationException("Flyout did not create a presenter.");
             string flyoutFile = Invariant("menus-flyout-open-{0}.png", theme);
-            await SaveElementPngAsync(flyoutPresenter, ReferenceScale, Path.Join(directory, flyoutFile)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("popup", "menus", "Flyout open", theme, "open", flyoutFile));
+            if (ShouldCapture("gallery/" + flyoutFile))
+            {
+                await SaveElementPngAsync(flyoutPresenter, ReferenceScale, Path.Join(directory, flyoutFile)).ConfigureAwait(true);
+                entries.Add(new CaptureEntry("popup", "menus", "Flyout open", theme, "open", flyoutFile));
+            }
             flyout.Hide();
 
             Demo.Pages.DemoSampleControl commandBarCard = cards[6];
@@ -765,8 +911,11 @@ namespace Fluence.Wpf.Tests.Tools
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement commandBarPresenter = commandBarFlyout.Presenter!;
             string commandBarFile = Invariant("menus-command-bar-flyout-open-{0}.png", theme);
-            await SaveElementPngAsync(commandBarPresenter, ReferenceScale, Path.Join(directory, commandBarFile)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("popup", "menus", "Command bar flyout open", theme, "open", commandBarFile));
+            if (ShouldCapture("gallery/" + commandBarFile))
+            {
+                await SaveElementPngAsync(commandBarPresenter, ReferenceScale, Path.Join(directory, commandBarFile)).ConfigureAwait(true);
+                entries.Add(new CaptureEntry("popup", "menus", "Command bar flyout open", theme, "open", commandBarFile));
+            }
             commandBarFlyout.Hide();
 
             Controls.ContentDialog dialog = new()
@@ -782,8 +931,11 @@ namespace Fluence.Wpf.Tests.Tools
             Task dialogCompletion = dialog.ShowAsync();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             string dialogFile = Invariant("menus-content-dialog-open-{0}.png", theme);
-            await SaveElementPngAsync(window, ReferenceScale, Path.Join(directory, dialogFile)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("overlay", "menus", "Content dialog open", theme, "open", dialogFile));
+            if (ShouldCapture("gallery/" + dialogFile))
+            {
+                await SaveElementPngAsync(window, ReferenceScale, Path.Join(directory, dialogFile)).ConfigureAwait(true);
+                entries.Add(new CaptureEntry("overlay", "menus", "Content dialog open", theme, "open", dialogFile));
+            }
             dialog.Hide();
             // Hide animates the smoke layer out. Wait for teardown before capturing the next route.
             await dialogCompletion.ConfigureAwait(true);
@@ -797,6 +949,11 @@ namespace Fluence.Wpf.Tests.Tools
             IList<CaptureEntry> entries)
         {
             const int ordinal = 5;
+            if (!ShouldCapture("gallery/" + Invariant("layout-sample-05-{0}-scrolled.png", theme)))
+            {
+                return;
+            }
+
             Demo.Pages.DemoSampleControl card = cards[ordinal - 1];
             if (FindDescendant<Controls.SmoothScrollViewer>(card) is not Controls.SmoothScrollViewer viewer)
             {
@@ -913,6 +1070,11 @@ namespace Fluence.Wpf.Tests.Tools
                 foreach (Demo.DemoNavigationItem item in Demo.DemoNavigationCatalog.Items)
                 {
                     string route = item.Route.Replace(' ', '-');
+                    if (!ShouldVisitControlRoute(route))
+                    {
+                        continue;
+                    }
+
                     window.NavigateTo(string.Equals(route, "data-binding", StringComparison.Ordinal) ? "data binding" : route);
                     await SettleGalleryAsync(window).ConfigureAwait(true);
                     if (window.PageFrame.Content is not DependencyObject page)
@@ -924,7 +1086,8 @@ namespace Fluence.Wpf.Tests.Tools
                     CollectSampleCards(page, cards);
                     foreach (ControlCaptureSpec spec in ControlCaptureSpecs)
                     {
-                        if (string.Equals(spec.Route, route, StringComparison.Ordinal))
+                        if (string.Equals(spec.Route, route, StringComparison.Ordinal) &&
+                            ShouldCapture("controls/" + spec.Slug + "-" + themeSlug + ".png"))
                         {
                             if (string.Equals(spec.Slug, "scroll-bar-extensions", StringComparison.Ordinal))
                             {
@@ -935,18 +1098,22 @@ namespace Fluence.Wpf.Tests.Tools
                         }
                     }
 
-                    if (cards.Count > 0)
+                    if (cards.Count > 0 && HasSelectedPrefix("controls/"))
                     {
                         await CaptureControlStatesAsync(window, cards, route, themeSlug, directory).ConfigureAwait(true);
                     }
 
-                    if (string.Equals(route, "menus", StringComparison.Ordinal))
+                    if (string.Equals(route, "menus", StringComparison.Ordinal) && HasSelectedPrefix("controls/"))
                     {
                         await CaptureControlPopupsAsync(window, cards, themeSlug, directory).ConfigureAwait(true);
                     }
                 }
 
-                await CaptureControlWindowExamplesAsync(window, themeSlug, directory).ConfigureAwait(true);
+                if (HasSelectedPrefix("controls/fluence-window-") || HasSelectedPrefix("controls/title-bar-") ||
+                    HasSelectedPrefix("controls/font-icon-"))
+                {
+                    await CaptureControlWindowExamplesAsync(window, themeSlug, directory).ConfigureAwait(true);
+                }
             }
             finally
             {
@@ -958,6 +1125,10 @@ namespace Fluence.Wpf.Tests.Tools
         private static async Task SaveNamedControlAsync(FrameworkElement element, string slug, string theme, string directory, string? state = null)
         {
             string suffix = state is null ? string.Empty : "-" + state;
+            if (!ShouldCapture("controls/" + Invariant("{0}-{1}{2}.png", slug, theme, suffix)))
+            {
+                return;
+            }
             await SavePaddedControlPngAsync(element,
                 Path.Join(directory, Invariant("{0}-{1}{2}.png", slug, theme, suffix))).ConfigureAwait(true);
         }
@@ -1133,11 +1304,19 @@ namespace Fluence.Wpf.Tests.Tools
                 routes.Add(("settings", "Settings"));
                 foreach ((string route, string title) in routes)
                 {
+                    if (!HasSelectedRouteTheme("gallery/" + route + "-", themeSlug))
+                    {
+                        continue;
+                    }
+
                     window.NavigateTo(string.Equals(route, "data-binding", StringComparison.Ordinal) ? "data binding" : route);
                     await SettleGalleryAsync(window).ConfigureAwait(true);
                     string routeFile = Invariant("{0}-{1}.png", route, themeSlug);
-                    await SaveElementPngAsync(window, ReferenceScale, Path.Join(outputDirectory, routeFile)).ConfigureAwait(true);
-                    entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile));
+                    if (ShouldCapture("gallery/" + routeFile))
+                    {
+                        await SaveElementPngAsync(window, ReferenceScale, Path.Join(outputDirectory, routeFile)).ConfigureAwait(true);
+                        entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile));
+                    }
 
                     if (window.PageFrame.Content is not DependencyObject page)
                     {
@@ -1161,9 +1340,14 @@ namespace Fluence.Wpf.Tests.Tools
                             (Color.FromRgb(189, 64, 0), "orange"),
                         })
                         {
+                            string accentFile = Invariant("buttons-light-accent-{0}.png", accent);
+                            if (!ShouldCapture("gallery/" + accentFile))
+                            {
+                                continue;
+                            }
+
                             ApplicationAccentColorManager.ApplyCustomAccent(color);
                             await SettleGalleryAsync(window).ConfigureAwait(true);
-                            string accentFile = Invariant("buttons-light-accent-{0}.png", accent);
                             await SaveElementPngAsync(window, ReferenceScale, Path.Join(outputDirectory, accentFile)).ConfigureAwait(true);
                             entries.Add(new CaptureEntry("accent", route, "Buttons", themeSlug, accent, accentFile));
                         }
@@ -1181,7 +1365,11 @@ namespace Fluence.Wpf.Tests.Tools
                         await CaptureGalleryScrolledStateAsync(window, cards, themeSlug, outputDirectory, entries).ConfigureAwait(true);
                     }
 
-                    if (string.Equals(route, "menus", StringComparison.Ordinal))
+                    if (string.Equals(route, "menus", StringComparison.Ordinal) &&
+                        (HasSelectedPrefix("gallery/menus-context-menu-open-") ||
+                         HasSelectedPrefix("gallery/menus-flyout-open-") ||
+                         HasSelectedPrefix("gallery/menus-command-bar-flyout-open-") ||
+                         HasSelectedPrefix("gallery/menus-content-dialog-open-")))
                     {
                         await CaptureGalleryPopupStatesAsync(window, cards, themeSlug, outputDirectory, entries).ConfigureAwait(true);
                     }
@@ -1316,42 +1504,62 @@ namespace Fluence.Wpf.Tests.Tools
         }
 #endif
 
-        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to render candidate PNGs under artifacts/docs/screenshots.")]
         public Task CaptureGalleryShellNavigationModesAsync()
         {
-            return WpfTestSta.RunOnStaAsync(async static () =>
+            return !HasSelectedPrefix("gallery-home-") && !HasSelectedPrefix("gallery-buttons-") &&
+                !HasSelectedPrefix("gallery-status-") ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                 {
-                    await CaptureGalleryShellAtAsync(theme, themeSlug, "home", NavigationViewPaneDisplayMode.Left, "gallery-home", output).ConfigureAwait(true);
-                    await CaptureGalleryShellAtAsync(theme, themeSlug, "buttons", NavigationViewPaneDisplayMode.LeftCompact, "gallery-buttons", output).ConfigureAwait(true);
-                    await CaptureGalleryShellAtAsync(theme, themeSlug, "status", NavigationViewPaneDisplayMode.Top, "gallery-status", output).ConfigureAwait(true);
+                    if (ShouldCapture("gallery-home-" + themeSlug + ".png"))
+                    {
+                        await CaptureGalleryShellAtAsync(theme, themeSlug, "home", NavigationViewPaneDisplayMode.Left, "gallery-home", output).ConfigureAwait(true);
+                    }
+                    if (ShouldCapture("gallery-buttons-" + themeSlug + ".png"))
+                    {
+                        await CaptureGalleryShellAtAsync(theme, themeSlug, "buttons", NavigationViewPaneDisplayMode.LeftCompact, "gallery-buttons", output).ConfigureAwait(true);
+                    }
+                    if (ShouldCapture("gallery-status-" + themeSlug + ".png"))
+                    {
+                        await CaptureGalleryShellAtAsync(theme, themeSlug, "status", NavigationViewPaneDisplayMode.Top, "gallery-status", output).ConfigureAwait(true);
+                    }
                 }
             });
         }
 
-        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to render candidate PNGs under artifacts/docs/screenshots.")]
         public Task CaptureGalleryCatalogAndCardsAsync()
         {
-            return WpfTestSta.RunOnStaAsync(async static () =>
+            return IncludedCaptureIds.Value is not null && !HasSelectedPrefix("gallery/") && !HasSelectedPrefix("controls/")
+                ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
-                if (ControlsOnlyCaptureEnabled)
+                if (ControlsOnlyCaptureEnabled || (IncludedCaptureIds.Value is not null && HasSelectedPrefix("controls/")))
                 {
                     string controlsDirectory = EnsureControlOutputDirectory();
                     foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                     {
-                        await CaptureControlCatalogAtAsync(theme, themeSlug, controlsDirectory).ConfigureAwait(true);
+                        if (HasSelectedRouteTheme("controls/", themeSlug))
+                        {
+                            await CaptureControlCatalogAtAsync(theme, themeSlug, controlsDirectory).ConfigureAwait(true);
+                        }
                     }
 
-                    return;
+                    if (ControlsOnlyCaptureEnabled || !HasSelectedPrefix("gallery/"))
+                    {
+                        return;
+                    }
                 }
 
                 string output = EnsureGalleryOutputDirectory();
                 List<CaptureEntry> entries = [];
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                 {
-                    await CaptureGalleryCatalogAtAsync(theme, themeSlug, output, entries).ConfigureAwait(true);
+                    if (HasSelectedRouteTheme("gallery/", themeSlug))
+                    {
+                        await CaptureGalleryCatalogAtAsync(theme, themeSlug, output, entries).ConfigureAwait(true);
+                    }
                 }
 
                 int cardCount = 0;
@@ -1364,34 +1572,58 @@ namespace Fluence.Wpf.Tests.Tools
                     }
                 }
 
-                Assert.Equal(152, cardCount);
-                await WriteGalleryManifestAsync(output, entries).ConfigureAwait(true);
+                if (IncludedCaptureIds.Value is null)
+                {
+                    Assert.Equal(152, cardCount);
+                }
+                else
+                {
+                    int expected = 0;
+                    foreach (string id in IncludedCaptureIds.Value)
+                    {
+                        if (id.StartsWith("gallery/", StringComparison.Ordinal) && ContainsOrdinal(id, "-sample-") &&
+                            (id.EndsWith("-light.png", StringComparison.Ordinal) ||
+                             id.EndsWith("-dark.png", StringComparison.Ordinal)))
+                        {
+                            expected++;
+                        }
+                    }
+
+                    Assert.Equal(expected, cardCount);
+                }
+                await WriteGalleryManifestAsync(output, entries, IncludedCaptureIds.Value is not null).ConfigureAwait(true);
             });
         }
 
-        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to render candidate PNGs under artifacts/docs/screenshots.")]
         public Task CapturePowerShellControlsTourAsync()
         {
-            return WpfTestSta.RunOnStaAsync(async static () =>
+            return !HasSelectedPrefix("powershell-") ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                 {
-                    await CapturePowerShellControlsAtAsync(theme, themeSlug, output).ConfigureAwait(true);
+                    if (ShouldCapture("powershell-" + themeSlug + ".png"))
+                    {
+                        await CapturePowerShellControlsAtAsync(theme, themeSlug, output).ConfigureAwait(true);
+                    }
                 }
             });
         }
 
 #if NET10_0_OR_GREATER
-        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots.")]
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 to render candidate PNGs under artifacts/docs/screenshots.")]
         public Task CaptureMvvmTaskManagerAsync()
         {
-            return WpfTestSta.RunOnStaAsync(async static () =>
+            return !HasSelectedPrefix("mvvm-") ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
                 string output = EnsureOutputDirectory();
                 foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                 {
-                    await CaptureMvvmDemoAtAsync(theme, themeSlug, output).ConfigureAwait(true);
+                    if (ShouldCapture("mvvm-" + themeSlug + ".png"))
+                    {
+                        await CaptureMvvmDemoAtAsync(theme, themeSlug, output).ConfigureAwait(true);
+                    }
                 }
             });
         }

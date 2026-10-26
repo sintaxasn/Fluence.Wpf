@@ -31,6 +31,6 @@ $classes = @(
 & $exe --filter-not-class $classes --filter-not-trait 'Category=Screenshots' --no-ansi --progress off
 ```
 
-`Infrastructure/` provides the STA dispatcher, application setup, visual tree helpers, and theme fixtures. `Control/`, `Theming/`, `Windowing/`, and `Gallery/` group tests by behavior. `Tools/GalleryScreenshotHarness.cs` regenerates documentation screenshots when explicitly enabled.
+`Infrastructure/` provides the STA dispatcher, application setup, visual tree helpers, and theme fixtures. `Control/`, `Theming/`, `Windowing/`, and `Gallery/` group tests by behavior. `Tools/GalleryScreenshotHarness.cs` creates opt-in screenshot candidates under ignored `artifacts/docs/screenshots/` when `FLUENCE_CAPTURE_SCREENSHOTS=1`. The website's published PNGs remain authoritative until a separate visual review approves a material change. Ordinary tests and CI do not capture or replace them.
 
 Read [CONTRIBUTING.md](../CONTRIBUTING.md) for project gates and the [developer handbook](../AGENTS.md) for test conventions. The [documentation website](https://fluencewpf.com) is the entry point for user-facing guides.

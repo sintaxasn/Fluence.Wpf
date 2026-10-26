@@ -36,12 +36,37 @@ powershell.exe -NoProfile -STA -File Fluence.Wpf.PowerShell.Module/build/Test-Mo
 
 The [module README](Fluence.Wpf.PowerShell.Module/README.md) documents prerequisites, PowerShell 7 MTA, and render lanes. Run the lanes applicable to a module change.
 
+## Verify generated documentation
+
+Build the .NET 10 library and stage the PowerShell module, then write and check references in the same ignored output directories. `-Check` compares every expected byte and rejects extra generated pages. It needs an existing output from the preceding write.
+
+```powershell
+dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release -f net10.0-windows10.0.26100.0
+pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md
+pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md -Check
+pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release -Build
+Install-Module Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Scope CurrentUser
+pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference
+pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference -Check
+```
+
+Run the documentation tooling tests with the repository's pinned Pester 5.8.0:
+
+```powershell
+Import-Module Pester -RequiredVersion 5.8.0
+$testPaths = @('tools/ApiDocs/Generate-ApiDocs.Tests.ps1', 'Fluence.Wpf.PowerShell.Module/tests/Generate-PowerShellReference.Tests.ps1', 'tools/Docs/SourceDocsManifest.Tests.ps1', 'tools/Docs/Sync-WebsiteDocs.Tests.ps1', 'tools/Docs/Select-VisualCaptures.Tests.ps1', 'tools/Docs/Review-VisualCaptures.Tests.ps1')
+$result = Invoke-Pester -Path $testPaths -PassThru
+if ($result.Result -ne 'Passed') { throw "Documentation tooling tests ended with $($result.Result); $($result.FailedCount) assertion(s) failed." }
+```
+
+Generated pages, coverage, and capture candidates under `artifacts/docs/` are local artifacts. The [documentation tooling guide](tools/Docs/README.md) explains website sync and separate visual review. Check `git status --short` after generation; source output should not create tracked changes.
+
 ## Source and documentation rules
 
 - Keep the repository's BSD 3-Clause header on every C# source file. Document public APIs with XML comments.
 - Follow the nullable and analyzer settings in `Directory.Build.props` and `.editorconfig`. Warnings are build errors.
 - Use the existing theme architecture and canonical resource keys. The [theming guide](https://fluencewpf.com/docs/theming) and [developer handbook](AGENTS.md) describe the contract.
-- Public website authoring and publishing are maintained in the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Use this repository for library source, the public changelog, and authored product guides.
+- Public website authoring and publishing are maintained in the separate [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Use this repository for library source, generators, the public changelog, and authored product guides. The website owns tracked published generated pages and images.
 - Preserve public change facts in [CHANGELOG.md](CHANGELOG.md) and document breaking changes there. The workflow in [.github/workflows/build.yml](.github/workflows/build.yml) is the source of truth for CI packaging and publication behavior.
 
 Check the text policy before opening a pull request:

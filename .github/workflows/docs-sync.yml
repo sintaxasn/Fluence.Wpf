@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: source-docs-sync
@@ -32,9 +32,13 @@ jobs:
         shell: pwsh
         run: dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release -f net10.0-windows10.0.26100.0
 
-      - name: Generate C# API pages
+      - name: Generate C# API pages in ignored staging
         shell: pwsh
-        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release
+        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md
+
+      - name: Check C# API pages in ignored staging
+        shell: pwsh
+        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md -Check
 
       - name: Build and stage the PowerShell module
         shell: pwsh
@@ -44,9 +48,25 @@ jobs:
         shell: pwsh
         run: Install-Module -Name Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Scope CurrentUser -Force -ErrorAction Stop
 
-      - name: Generate PowerShell function pages
+      - name: Generate PowerShell function pages in ignored staging
         shell: pwsh
-        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1
+        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference
+
+      - name: Check PowerShell function pages in ignored staging
+        shell: pwsh
+        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference -Check
+
+      - name: Confirm source checkout is unchanged
+        shell: pwsh
+        run: |
+          $status = @(git status --porcelain=v1 --untracked-files=all)
+          if ($LASTEXITCODE -ne 0) { throw 'Could not inspect source Git status.' }
+          if ($status.Count -ne 0) { throw "Generation changed source Git status: $($status -join ', ')" }
+
+      - name: Report website sync disabled
+        if: vars.WEBSITE_DOCS_READY != 'true'
+        shell: pwsh
+        run: Write-Host 'WEBSITE_DOCS_READY is not true. References were generated and checked in ignored source artifacts; no website sync or Git commit will run.'
 
       - name: Verify website token
         if: vars.WEBSITE_DOCS_READY == 'true'
@@ -67,6 +87,15 @@ jobs:
           token: ${{ secrets.WEBSITE_DOCS_TOKEN }}
           path: .website
           persist-credentials: false
+
+      - name: Initialize website ownership manifest when absent
+        if: vars.WEBSITE_DOCS_READY == 'true'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path -LiteralPath '.website/source-docs-manifest.json' -PathType Leaf)) {
+            pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath (Join-Path $PWD '.website/docs') -InitializeManifest
+            if ($LASTEXITCODE -ne 0) { throw 'Could not initialize the website ownership manifest.' }
+          }
 
       - name: Sync selected pages to website checkout
         if: vars.WEBSITE_DOCS_READY == 'true'
@@ -111,38 +140,6 @@ jobs:
         shell: pwsh
         run: pnpm build
 
-      # Both pushes follow generation and, when enabled, website validation. Git
-      # rejects a non-fast-forward update if another run advances either branch.
-      - name: Commit and publish generated source pages
-        shell: pwsh
-        env:
-          SOURCE_DOCS_TOKEN: ${{ github.token }}
-        run: |
-          $encoded = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("x-access-token:$env:SOURCE_DOCS_TOKEN"))
-          $env:GIT_CONFIG_COUNT = '1'
-          $env:GIT_CONFIG_KEY_0 = 'http.https://github.com/.extraheader'
-          $env:GIT_CONFIG_VALUE_0 = "AUTHORIZATION: basic $encoded"
-          $sourceHead = git rev-parse HEAD
-          if ($LASTEXITCODE -ne 0) { throw 'Could not read the checked out source commit.' }
-          $remoteSource = git ls-remote --exit-code origin refs/heads/main
-          if ($LASTEXITCODE -ne 0) { throw 'Could not read the current source main commit.' }
-          if (($remoteSource -split '\s+')[0] -ne $sourceHead) {
-            throw 'Source main advanced during documentation generation. Retry the workflow from the latest main.'
-          }
-          git add -- docs/api docs/powershell/reference tools/ApiDocs/coverage.md
-          if ($LASTEXITCODE -ne 0) { throw 'Could not stage generated source documentation.' }
-          git diff --cached --quiet
-          $diffExit = $LASTEXITCODE
-          if ($diffExit -eq 0) {
-            Write-Host 'Generated source documentation is current.'
-          } else {
-            if ($diffExit -ne 1) { throw 'Could not inspect generated source documentation.' }
-            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'docs: refresh generated API and PowerShell reference'
-            if ($LASTEXITCODE -ne 0) { throw 'Could not commit generated source documentation.' }
-            git push origin HEAD:main
-            if ($LASTEXITCODE -ne 0) { throw 'Could not publish generated source documentation. Retry the workflow from the latest main.' }
-          }
-
       - name: Commit website documentation
         if: vars.WEBSITE_DOCS_READY == 'true'
         shell: pwsh
@@ -161,7 +158,16 @@ jobs:
           if (($remoteSource -split '\s+')[0] -ne $sourceHead) {
             throw 'Source main advanced before website publication. Retry the workflow from the latest main.'
           }
-          git -C .website add -- docs/api docs/powershell/reference docs/controls.md docs/theming.md docs/winui-parity.md
+          $websiteEncoded = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("x-access-token:$env:WEBSITE_DOCS_TOKEN"))
+          $env:GIT_CONFIG_VALUE_0 = "AUTHORIZATION: basic $websiteEncoded"
+          $websiteHead = git -C .website rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read the checked out website commit.' }
+          $remoteWebsite = git -C .website ls-remote --exit-code origin refs/heads/main
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read the current website main commit.' }
+          if (($remoteWebsite -split '\s+')[0] -ne $websiteHead) {
+            throw 'Website main advanced during documentation generation. Retry the workflow from the latest main.'
+          }
+          git -C .website add -- docs/api docs/powershell/reference docs/controls.md docs/theming.md docs/winui-parity.md source-docs-manifest.json
           if ($LASTEXITCODE -ne 0) { throw 'Could not stage website documentation.' }
           git -C .website diff --cached --quiet
           $diffExit = $LASTEXITCODE
@@ -171,8 +177,6 @@ jobs:
             if ($diffExit -ne 1) { throw 'Could not inspect website documentation.' }
             git -C .website -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'docs: sync source API and reference pages'
             if ($LASTEXITCODE -ne 0) { throw 'Could not commit website documentation.' }
-            $websiteEncoded = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("x-access-token:$env:WEBSITE_DOCS_TOKEN"))
-            $env:GIT_CONFIG_VALUE_0 = "AUTHORIZATION: basic $websiteEncoded"
             git -C .website push origin HEAD:main
             if ($LASTEXITCODE -ne 0) { throw 'Could not publish website documentation. Retry the workflow from the latest main.' }
           }

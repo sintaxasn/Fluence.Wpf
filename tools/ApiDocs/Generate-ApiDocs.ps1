@@ -32,7 +32,9 @@ param(
     [ValidateSet('Write', 'Check')]
     [string]$Mode = 'Write',
     [switch]$Check,
-    [string]$Configuration = 'Debug'
+    [string]$Configuration = 'Debug',
+    [string]$OutputRoot,
+    [string]$CoveragePath
 )
 
 Set-StrictMode -Version Latest
@@ -40,10 +42,13 @@ $ErrorActionPreference = 'Stop'
 if ($Check) { $Mode = 'Check' }
 
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+if ([string]::IsNullOrWhiteSpace($OutputRoot)) { $OutputRoot = Join-Path $repository 'artifacts/docs/api' }
+if ([string]::IsNullOrWhiteSpace($CoveragePath)) { $CoveragePath = Join-Path $repository 'artifacts/docs/coverage.md' }
+$outputRoot = [System.IO.Path]::GetFullPath($OutputRoot, $repository)
+$coveragePath = [System.IO.Path]::GetFullPath($CoveragePath, $repository)
 $framework = 'net10.0-windows10.0.26100.0'
 $assemblyPath = Join-Path $repository "Fluence.Wpf/bin/$Configuration/$framework/Fluence.Wpf.dll"
 $xmlPath = Join-Path $repository "Fluence.Wpf/bin/$Configuration/$framework/Fluence.Wpf.xml"
-$outputRoot = Join-Path $repository 'docs/api'
 if (-not (Test-Path $assemblyPath) -or -not (Test-Path $xmlPath)) {
     throw "Build Fluence.Wpf for $framework in $Configuration before generating API docs."
 }
@@ -518,15 +523,100 @@ if ($coverage.missingComments.Count -gt 0) {
     $manifest.Add('## Members without XML comments'); $manifest.Add('')
     foreach ($id in $coverage.missingComments) { $manifest.Add('- `' + $id + '`') }
 }
-$coveragePath = Join-Path $PSScriptRoot 'coverage.md'
 $coverageContent = (($manifest -join "`n").TrimEnd() + "`n")
 
+# Validate the complete render before touching either destination.
+if ($coverage.types -eq 0 -or $pages.Count -ne ($coverage.types + $namespaces.Count + 1) -or
+    -not $pages.ContainsKey('index.md')) {
+    throw 'API documentation generation produced an incomplete page set.'
+}
+foreach ($relative in $pages.Keys) {
+    if ($relative -notmatch '^(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.md$' -or
+        $relative -split '/' -contains '..' -or
+        [string]::IsNullOrWhiteSpace($pages[$relative])) {
+        throw "Invalid generated API page: $relative"
+    }
+}
+
 $encoding = [System.Text.UTF8Encoding]::new($true)
+$pageBytes = @{}
+foreach ($relative in $pages.Keys) {
+    $pageBytes[$relative] = [byte[]]($encoding.GetPreamble() + $encoding.GetBytes($pages[$relative]))
+}
+
+function Assert-NoReparsePath([string]$path) {
+    $current = $path
+    while ($current) {
+        $item = Get-Item -LiteralPath $current -Force -ErrorAction SilentlyContinue
+        if ($null -ne $item -and ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+            throw "Refusing a generated documentation path through a reparse point: $current"
+        }
+        $parent = [System.IO.Path]::GetDirectoryName($current)
+        if (-not $parent -or $parent -eq $current) { break }
+        $current = $parent
+    }
+}
+
+Assert-NoReparsePath $outputRoot
+Assert-NoReparsePath $coveragePath
+if ([System.IO.File]::Exists($outputRoot)) { throw "API output root is a file: $outputRoot" }
+if ([System.IO.Directory]::Exists($outputRoot)) {
+    $pending = [System.Collections.Generic.Stack[string]]::new()
+    $pending.Push($outputRoot)
+    while ($pending.Count -gt 0) {
+        foreach ($entry in [System.IO.Directory]::EnumerateFileSystemEntries($pending.Pop())) {
+            $attributes = [System.IO.File]::GetAttributes($entry)
+            if ($attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                throw "Refusing API output containing a reparse point: $entry"
+            }
+            if ($attributes -band [System.IO.FileAttributes]::Directory) { $pending.Push($entry) }
+        }
+    }
+}
+
+# A marker establishes a dedicated output root. An existing unmarked root may
+# be adopted only when every file is an exact page from this complete render.
+$ownershipPath = Join-Path $outputRoot '.fluence-api-docs-output'
+$ownershipPrefix = "Fluence.Wpf API generator output root v1`n"
+$ownershipBytes = [System.Text.UTF8Encoding]::new($false).GetBytes("$ownershipPrefix$outputRoot`n")
+if ([System.IO.Directory]::Exists($ownershipPath)) { throw "Invalid API output ownership marker: $ownershipPath" }
+if ($Mode -eq 'Write' -and [System.IO.Directory]::Exists($outputRoot)) {
+    if ([System.IO.File]::Exists($ownershipPath)) {
+        $markerText = [System.Text.UTF8Encoding]::new($false, $true).GetString([System.IO.File]::ReadAllBytes($ownershipPath))
+        if (-not $markerText.StartsWith($ownershipPrefix, [System.StringComparison]::Ordinal) -or
+            -not $markerText.EndsWith("`n", [System.StringComparison]::Ordinal)) {
+            throw "Invalid API output ownership marker: $ownershipPath"
+        }
+        $storedRoot = $markerText.Substring($ownershipPrefix.Length, $markerText.Length - $ownershipPrefix.Length - 1)
+        $pathComparison = if ($IsWindows) { [System.StringComparison]::OrdinalIgnoreCase } else { [System.StringComparison]::Ordinal }
+        if (-not $storedRoot -or $storedRoot.Contains("`n") -or $storedRoot.Contains("`r") -or
+            -not [string]::Equals($storedRoot, $outputRoot, $pathComparison)) {
+            throw "Invalid API output ownership marker: $ownershipPath"
+        }
+    } else {
+        $existingFiles = @(Get-ChildItem -LiteralPath $outputRoot -Recurse -File -Force)
+        if ($existingFiles.Count -gt 0) {
+            $verified = $existingFiles.Count -eq $pageBytes.Count
+            foreach ($file in $existingFiles) {
+                $relative = [System.IO.Path]::GetRelativePath($outputRoot, $file.FullName).Replace('\','/')
+                if (-not $pageBytes.ContainsKey($relative) -or
+                    -not [System.Linq.Enumerable]::SequenceEqual([byte[]][System.IO.File]::ReadAllBytes($file.FullName), [byte[]]$pageBytes[$relative])) {
+                    $verified = $false
+                    break
+                }
+            }
+            if (-not $verified) {
+                throw "Refusing to write into a directory that is not a verified API generator output: $outputRoot"
+            }
+        }
+    }
+}
+
 $changed = [System.Collections.Generic.List[string]]::new()
 foreach ($relative in @($pages.Keys | Sort-Object)) {
     $destination = Join-Path $outputRoot $relative
-    $bytes = $encoding.GetPreamble() + $encoding.GetBytes($pages[$relative])
-    $same = (Test-Path $destination) -and [System.Linq.Enumerable]::SequenceEqual([byte[]][System.IO.File]::ReadAllBytes($destination), [byte[]]$bytes)
+    $bytes = $pageBytes[$relative]
+    $same = [System.IO.File]::Exists($destination) -and [System.Linq.Enumerable]::SequenceEqual([byte[]][System.IO.File]::ReadAllBytes($destination), [byte[]]$bytes)
     if (-not $same) {
         $changed.Add($relative)
         if ($Mode -eq 'Write') {
@@ -537,17 +627,25 @@ foreach ($relative in @($pages.Keys | Sort-Object)) {
     }
 }
 $coverageBytes = $encoding.GetPreamble() + $encoding.GetBytes($coverageContent)
-$coverageSame = (Test-Path $coveragePath) -and [System.Linq.Enumerable]::SequenceEqual([byte[]][System.IO.File]::ReadAllBytes($coveragePath), [byte[]]$coverageBytes)
+$coverageSame = [System.IO.File]::Exists($coveragePath) -and [System.Linq.Enumerable]::SequenceEqual([byte[]][System.IO.File]::ReadAllBytes($coveragePath), [byte[]]$coverageBytes)
 if (-not $coverageSame) {
-    $changed.Add('tools/ApiDocs/coverage.md')
-    if ($Mode -eq 'Write') { [System.IO.File]::WriteAllBytes($coveragePath, $coverageBytes) }
+    $changed.Add($coveragePath)
+    if ($Mode -eq 'Write') {
+        [System.IO.Directory]::CreateDirectory([System.IO.Path]::GetDirectoryName($coveragePath)) | Out-Null
+        [System.IO.File]::WriteAllBytes($coveragePath, $coverageBytes)
+    }
 }
-$existing = @(Get-ChildItem $outputRoot -Recurse -File -Filter '*.md' -ErrorAction SilentlyContinue | ForEach-Object { [System.IO.Path]::GetRelativePath($outputRoot, $_.FullName).Replace('\','/') })
+$existing = if ([System.IO.Directory]::Exists($outputRoot)) {
+    @(Get-ChildItem -LiteralPath $outputRoot -Recurse -File -Filter '*.md' | ForEach-Object { [System.IO.Path]::GetRelativePath($outputRoot, $_.FullName).Replace('\','/') })
+} else { @() }
 foreach ($relative in $existing) {
     if (-not $pages.ContainsKey($relative)) {
         $changed.Add($relative)
         if ($Mode -eq 'Write') { Remove-Item -LiteralPath (Join-Path $outputRoot $relative) }
     }
+}
+if ($Mode -eq 'Write' -and -not [System.IO.File]::Exists($ownershipPath)) {
+    [System.IO.File]::WriteAllBytes($ownershipPath, $ownershipBytes)
 }
 Write-Output "API pages: $($pages.Count); types: $($coverage.types); members: $($coverage.constructors + $coverage.properties + $coverage.methods + $coverage.events + $coverage.fields); implicit constructors: $($coverage.implicitConstructors.Count); without XML comments: $($coverage.missingComments.Count); changed: $($changed.Count)"
 if ($Mode -eq 'Check' -and $changed.Count -gt 0) { throw 'API documentation drift: ' + ($changed -join ', ') }

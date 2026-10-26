@@ -30,14 +30,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [CmdletBinding()]
 param(
     [string]$RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
+    [string]$OutputRoot,
     [switch]$Check
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$RepositoryRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
+if ([string]::IsNullOrWhiteSpace($OutputRoot)) { $OutputRoot = Join-Path $RepositoryRoot 'artifacts/docs/powershell/reference' }
 $manifestPath = Join-Path $RepositoryRoot 'Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1'
-$referencePath = Join-Path $RepositoryRoot 'docs/powershell/reference'
+if ([System.IO.Path]::DirectorySeparatorChar -eq '\')
+{
+    $outputPathRoot = [System.IO.Path]::GetPathRoot($OutputRoot)
+    if ($outputPathRoot -eq '\' -or $outputPathRoot -eq '/' -or $outputPathRoot -match '^[A-Za-z]:$')
+    {
+        throw "OutputRoot '$OutputRoot' is an ambiguous Windows path. Use a fully qualified absolute path or a repository-relative path."
+    }
+}
+if (-not [System.IO.Path]::IsPathRooted($OutputRoot)) { $OutputRoot = Join-Path $RepositoryRoot $OutputRoot }
+$referencePath = [System.IO.Path]::GetFullPath($OutputRoot)
 $manifest = Import-PowerShellDataFile -Path $manifestPath
 $functionNames = @($manifest.FunctionsToExport)
 if ($functionNames.Count -eq 0 -or @($functionNames | Where-Object { $_ -notmatch '^[A-Za-z]+-Fluence[A-Za-z0-9-]+$' }).Count -gt 0) {
@@ -81,6 +93,7 @@ try {
     }
     if ($Check) {
         $drift = [System.Collections.Generic.List[string]]::new()
+        if (-not [System.IO.Directory]::Exists($referencePath)) { $drift.Add($referencePath) }
         foreach ($name in @($pages.Keys | Sort-Object)) {
             $path = Join-Path $referencePath $name
             if (-not [System.IO.File]::Exists($path) -or
@@ -107,12 +120,17 @@ try {
     # Old function Markdown and obsolete function MDX pages are replaced only after
     # every exported function has a fresh generated page. The three authored pages stay.
     foreach ($page in @(Get-ChildItem -LiteralPath $referencePath -File)) {
-        if ($page.Name -match '^[A-Za-z]+-Fluence[A-Za-z0-9-]+\.(md|mdx)$') {
+        if ($page.Name -match '^[A-Za-z]+-Fluence[A-Za-z0-9-]+\.(md|mdx)$' -and -not $pages.ContainsKey($page.Name)) {
             Remove-Item -LiteralPath $page.FullName
         }
     }
     foreach ($name in @($pages.Keys | Sort-Object)) {
-        [System.IO.File]::WriteAllBytes((Join-Path $referencePath $name), $pages[$name])
+        $destination = Join-Path $referencePath $name
+        if (-not [System.IO.File]::Exists($destination) -or
+            -not [System.Collections.StructuralComparisons]::StructuralEqualityComparer.Equals(
+                $pages[$name], [System.IO.File]::ReadAllBytes($destination))) {
+            [System.IO.File]::WriteAllBytes($destination, $pages[$name])
+        }
     }
     Write-Host "Generated $($generated.Count) PowerShell function pages in $referencePath."
 }

@@ -30,7 +30,7 @@ This file sets repository-wide rules and routes work to the smallest relevant gu
 
 ## Documentation ownership
 
-This repository owns generated C# API pages in docs/api/ and PowerShell reference pages in docs/powershell/reference/, plus authored docs/controls.md, docs/theming.md, and docs/winui-parity.md. The standalone Fluence.Wpf.Website repository owns Docusaurus authoring, site navigation and styling, browser review, publishing, and runnable walkthroughs. Keep operational release material out of this repository's public documentation.
+This repository owns the C# API and PowerShell reference generators, their ignored output under artifacts/docs/, and authored docs/controls.md, docs/theming.md, docs/winui-parity.md, and the PowerShell reference introduction/type pages. The standalone Fluence.Wpf.Website repository owns tracked published generated pages and images, Docusaurus authoring, site navigation and styling, browser review, publishing, and runnable walkthroughs. Generated source output is staged locally for validation and website sync; it is not committed here. Keep operational release material out of this repository's public documentation.
 
 ## Private planning artifacts
 

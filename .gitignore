@@ -69,6 +69,13 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# Legacy generated documentation locations (authored reference Markdown stays tracked)
+/docs/api/
+/docs/powershell/reference/*-Fluence*.mdx
+/docs/screenshots/
+/docs/powershell/images/*.png
+/tools/ApiDocs/coverage.md
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -441,3 +448,4 @@ data/theme-golden/
 
 # Website source lives in its own repository. This checkout may retain a local preview.
 /website/
+/.website/

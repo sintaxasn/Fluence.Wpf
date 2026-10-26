@@ -38,8 +38,11 @@ jobs:
       - name: Build solution (Release)
         run: dotnet build Fluence.Wpf.sln -c Release --no-restore -v minimal
 
+      - name: Generate API references in ignored staging
+        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md
+
       - name: Check generated API references
-        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -Check
+        run: pwsh -NoProfile -File tools/ApiDocs/Generate-ApiDocs.ps1 -Configuration Release -OutputRoot artifacts/docs/api -CoveragePath artifacts/docs/coverage.md -Check
 
       # dotnet format is the tidiness gate: whitespace, code style (IDE####), and any analyzer
       # diagnostic at info severity or above that ships a working Fix All provider.
@@ -47,8 +50,8 @@ jobs:
         run: dotnet format Fluence.Wpf.sln --verify-no-changes --severity info --no-restore
 
       # Screenshots-category tests are PNG regenerators (no pass/fail assertion beyond
-      # "rendered without throwing"); they run in full local test runs to refresh
-      # docs/screenshots but are skipped here to keep CI fast.
+      # "rendered without throwing"); they are opt-in capture candidates and are
+      # skipped here. Published website images require a separate visual review.
       #
       # The suite runs on Microsoft Testing Platform, so these steps invoke the built test
       # executable rather than dotnet test: the VSTest target the previous steps used is
@@ -229,8 +232,26 @@ jobs:
       - name: Stage PowerShell module libraries
         run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release
 
+      - name: Generate PowerShell references in ignored staging
+        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference
+
       - name: Check generated PowerShell references
-        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -Check
+        run: pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference -Check
+
+      - name: Test documentation tooling (PowerShell 7)
+        shell: pwsh
+        run: |
+          Import-Module Pester -RequiredVersion 5.8.0 -ErrorAction Stop
+          $testPaths = @(
+            'tools/ApiDocs/Generate-ApiDocs.Tests.ps1',
+            'Fluence.Wpf.PowerShell.Module/tests/Generate-PowerShellReference.Tests.ps1',
+            'tools/Docs/SourceDocsManifest.Tests.ps1',
+            'tools/Docs/Sync-WebsiteDocs.Tests.ps1',
+            'tools/Docs/Select-VisualCaptures.Tests.ps1',
+            'tools/Docs/Review-VisualCaptures.Tests.ps1'
+          )
+          $result = Invoke-Pester -Path $testPaths -PassThru
+          if ($result.Result -ne 'Passed') { throw "Documentation tooling tests ended with $($result.Result); $($result.FailedCount) assertion(s) failed." }
 
       - name: Test PowerShell module (PowerShell 7)
         run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Test-Module.ps1 -TestResultPath TestResults/psmodule/pwsh.xml
