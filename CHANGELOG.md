@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Fixed
+
+- Retry transient PowerShell Gallery download failures when installing pinned CI build tools, while still failing after three unsuccessful attempts.
+
 ## [0.9.4] - 2026-10-26
 
 ### Changed
