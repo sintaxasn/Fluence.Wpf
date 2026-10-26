@@ -103,7 +103,7 @@ The color keys `SystemAccentColorPrimary`, `Secondary`, and `Tertiary` express t
 
 The system accent is the default intent. `ApplyCustomAccent` pins one seed or separate light and dark seeds. When a seed exactly matches the current Windows accent base and the OS palette is available, Fluence snapshots all seven Windows shades for that custom intent; the pinned snapshot stays fixed if Windows later changes. Other custom seeds use a generated ramp. The visible primary accent fill uses a theme-selected shade of the selected palette, so an arbitrary seed is not guaranteed to appear unchanged on a button. Because Windows may adjust a requested seed before constructing its palette, generated `Light1` through `Light3` and `Dark1` through `Dark3` are not guaranteed to fall above or below the raw `SystemAccentColor`; that published color remains the requested seed. The generated ramp is an approximation of Windows behavior for arbitrary custom colors, not a proven exact Windows color transform. `ApplySystemAccent` returns to the live Windows palette.
 
-Use `ApplyCustomAccentExact` when the visible primary fill must equal a supplied color. The one-color overload makes `AccentFillColorDefault` and `SystemAccentColorPrimary` equal the light color in Light mode and uses the resolved palette's `Light2` tint in Dark mode. That palette is a Windows snapshot if the seed matches the current Windows base, or a generated fallback otherwise. The two-color overload makes those roles equal the supplied light and dark colors respectively. Both forms keep the selected palette for other accent roles, and the selection remains sticky across theme changes. For example:
+Use `ApplyCustomAccent(..., exact: true)` when the visible primary fill must equal a supplied color. With one color, `AccentFillColorDefault` and `SystemAccentColorPrimary` equal that color in Light mode and use the resolved palette's `Light2` tint in Dark mode. That palette is a Windows snapshot if the seed matches the current Windows base, or a generated fallback otherwise. With two colors, those roles equal the supplied light and dark colors respectively, even when both arguments have the same value. Both forms keep the selected palette for other accent roles, and the selection remains sticky across theme changes. The earlier `ApplyCustomAccentExact` overloads remain available for existing callers. For example:
 
 ```csharp
 using System.Windows.Media;
@@ -114,8 +114,8 @@ Color dark = Color.FromRgb(0xAC, 0xCB, 0xDF);
 
 ApplicationAccentColorManager.ApplyCustomAccent(light);            // OS snapshot if the seed matches; otherwise generated.
 ApplicationAccentColorManager.ApplyCustomAccent(light, dark);      // Select the matching snapshot or generated ramp per theme.
-ApplicationAccentColorManager.ApplyCustomAccentExact(light);       // Exact Light fill, resolved Dark Light2 tint.
-ApplicationAccentColorManager.ApplyCustomAccentExact(light, dark); // Exact Light and Dark fills.
+ApplicationAccentColorManager.ApplyCustomAccent(light, exact: true);       // Exact Light fill, resolved Dark Light2 tint.
+ApplicationAccentColorManager.ApplyCustomAccent(light, dark, exact: true); // Exact Light and Dark fills.
 ApplicationAccentColorManager.ApplySystemAccent();                 // Follow Windows again.
 ```
 

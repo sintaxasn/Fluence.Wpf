@@ -1,4 +1,6 @@
 ﻿#nullable enable
+static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color color, bool exact = false) -> void
+static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color lightThemeAccent, System.Windows.Media.Color darkThemeAccent, bool exact = false) -> void
 override Fluence.Wpf.Controls.RadioButton.OnApplyTemplate() -> void
 override Fluence.Wpf.Controls.RadioButton.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void
 override Fluence.Wpf.Controls.CheckBox.OnApplyTemplate() -> void
