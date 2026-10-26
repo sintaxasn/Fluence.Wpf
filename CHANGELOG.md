@@ -8,6 +8,8 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-10-26
+
 ### Changed
 
 - Added `exact: true` to the `ApplyCustomAccent` single-color and light/dark overloads for exact visible primary fills while calculated palettes remain the default. Existing overloads and `ApplyCustomAccentExact` calls remain compatible. Focused accent tests now exercise the unified calls, legacy delegates, High Contrast resources, repeat-apply events, and Light/Dark/Light transitions without changing the test case count.
@@ -762,7 +764,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.4...main
+[0.9.4]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...v0.9.3
 [0.9.2-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2-pre
 [0.9.1]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.0-pre...v0.9.1
