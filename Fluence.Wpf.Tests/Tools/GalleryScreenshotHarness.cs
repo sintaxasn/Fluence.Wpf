@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests.Tools
 #endif
         private const double BaseDpi = 96.0;
         private const double ReferenceScale = 1.0;
-        private const double ControlCaptureScale = 160.0 / BaseDpi;
+        private const double ControlCaptureScale = 1.0;
         private const int ControlHorizontalPadding = 32;
         private const int ControlVerticalPadding = 32;
 
@@ -464,7 +464,7 @@ namespace Fluence.Wpf.Tests.Tools
             DrawingVisual visual = new();
             using (DrawingContext context = visual.RenderOpen())
             {
-                // Pixel dimensions round up at 160 DPI. Extend the background beyond the logical
+                // Pixel dimensions round up. Extend the background beyond the logical
                 // bounds so the final fractional device-pixel row and column stay opaque.
                 context.DrawRectangle(background, pen: null, new Rect(0, 0, canvasWidth + 1, canvasHeight + 1));
                 if (!allowEmpty)
@@ -1549,6 +1549,9 @@ namespace Fluence.Wpf.Tests.Tools
                 flyoutControl.FocusVisualStyle = null;
             }
 
+            System.Windows.Input.Keyboard.ClearFocus();
+            await SettleGalleryAsync(window).ConfigureAwait(true);
+
             foreach (string slug in new[] { "flyout", "flyout-base", "flyout-presenter" })
             {
                 await SaveNamedPopupAsync(flyoutButton, flyoutPresenter, slug, theme, directory).ConfigureAwait(true);
@@ -1587,6 +1590,9 @@ namespace Fluence.Wpf.Tests.Tools
             {
                 commandControl.FocusVisualStyle = null;
             }
+
+            System.Windows.Input.Keyboard.ClearFocus();
+            await SettleGalleryAsync(window).ConfigureAwait(true);
 
             await SaveNamedPopupAsync(commandButton, commandPresenter, "command-bar-flyout", theme, directory, "open").ConfigureAwait(true);
             await SaveNamedControlAsync(commandPresenter, "command-bar-flyout-presenter", theme, directory, "open").ConfigureAwait(true);
