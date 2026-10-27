@@ -200,6 +200,12 @@ jobs:
           name: fluence-wpf-release-dotnet8
           path: Fluence.Wpf/bin/Release/net8.0-windows10.0.26100.0
 
+      - name: Download library binaries (.NET 10)
+        uses: actions/download-artifact@v8
+        with:
+          name: fluence-wpf-release-dotnet10
+          path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0
+
       # Network setup is explicit and isolated from local package creation. Windows PowerShell
       # needs the external NuGet provider; PowerShell 7 uses its bundled provider.
       - name: Install pinned build tools (Windows PowerShell)
