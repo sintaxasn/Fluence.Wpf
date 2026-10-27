@@ -7,7 +7,7 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 | Type | Use it for | Start here |
 | --- | --- | --- |
 | [FluenceWindow](controls/fluence-window.md) | WPF window with a Fluent title bar, caption controls, backdrop policy, and corner preference | [Window guide](how-to/window-and-title-bar.md) |
-| [TitleBar](controls/title-bar.md) | Title, back request, pane toggle request, and custom title-area content | [Gallery shell](../Fluence.Wpf.Demo/MainWindow.xaml) |
+| [TitleBar](controls/fluence-window.md#title-bar) | Title, back request, pane toggle request, and custom title-area content | [Gallery shell](../Fluence.Wpf.Demo/MainWindow.xaml) |
 
 ## Actions and selection
 

@@ -76,8 +76,9 @@ namespace Fluence.Wpf.Tests.Tools
 #endif
         private const double BaseDpi = 96.0;
         private const double ReferenceScale = 1.0;
+        private const double ControlCaptureScale = 160.0 / BaseDpi;
         private const int ControlHorizontalPadding = 32;
-        private const int ControlVerticalPadding = 64;
+        private const int ControlVerticalPadding = 32;
 
         // Fluent transitions run ~100-167 ms; 150 ms is ample headroom for the storyboard to
         // settle before RenderTargetBitmap capture without padding the per-route cost.
@@ -444,17 +445,28 @@ namespace Fluence.Wpf.Tests.Tools
             }
 
             // A dismissed or collapsed control intentionally leaves a blank themed field.
+            // Visible controls keep their actual height so vertical padding remains symmetric.
             contentWidth = Math.Max(160.0, contentWidth);
-            contentHeight = Math.Max(24.0, contentHeight);
-            int pixelWidth = (int)Math.Ceiling(contentWidth + (2 * ControlHorizontalPadding));
-            int pixelHeight = (int)Math.Ceiling(contentHeight + (2 * ControlVerticalPadding));
+            if (allowEmpty)
+            {
+                contentHeight = Math.Max(24.0, contentHeight);
+            }
+
+            double contentLeft = ControlHorizontalPadding + ((contentWidth - element.ActualWidth) / 2.0);
+            double canvasWidth = contentWidth + (2 * ControlHorizontalPadding);
+            double canvasHeight = contentHeight + (2 * ControlVerticalPadding);
+            int pixelWidth = (int)Math.Ceiling(canvasWidth * ControlCaptureScale);
+            int pixelHeight = (int)Math.Ceiling(canvasHeight * ControlCaptureScale);
+            const double captureDpi = BaseDpi * ControlCaptureScale;
             Brush background = element.TryFindResource("SolidBackgroundFillColorBaseBrush") as Brush
                 ?? element.TryFindResource("ApplicationBackgroundBrush") as Brush
                 ?? Brushes.White;
             DrawingVisual visual = new();
             using (DrawingContext context = visual.RenderOpen())
             {
-                context.DrawRectangle(background, pen: null, new Rect(0, 0, pixelWidth, pixelHeight));
+                // Pixel dimensions round up at 160 DPI. Extend the background beyond the logical
+                // bounds so the final fractional device-pixel row and column stay opaque.
+                context.DrawRectangle(background, pen: null, new Rect(0, 0, canvasWidth + 1, canvasHeight + 1));
                 if (!allowEmpty)
                 {
                     PresentationSource presentation = PresentationSource.FromVisual(element)
@@ -467,28 +479,110 @@ namespace Fluence.Wpf.Tests.Tools
                     double rootHeight = root is FrameworkElement rootFrameworkElement
                         ? Math.Max(rootFrameworkElement.ActualHeight, rootBounds.Bottom)
                         : rootBounds.Bottom;
-                    int rootPixelWidth = Math.Max(1, (int)Math.Ceiling(rootWidth));
-                    int rootPixelHeight = Math.Max(1, (int)Math.Ceiling(rootHeight));
-                    RenderTargetBitmap rootBitmap = new(rootPixelWidth, rootPixelHeight, BaseDpi, BaseDpi, PixelFormats.Pbgra32);
+                    int rootPixelWidth = Math.Max(1, (int)Math.Ceiling(rootWidth * ControlCaptureScale));
+                    int rootPixelHeight = Math.Max(1, (int)Math.Ceiling(rootHeight * ControlCaptureScale));
+                    RenderTargetBitmap rootBitmap = new(rootPixelWidth, rootPixelHeight, captureDpi, captureDpi, PixelFormats.Pbgra32);
                     rootBitmap.Render(root);
 
                     Rect elementBounds = ReferenceEquals(element, root)
                         ? new Rect(0, 0, element.ActualWidth, element.ActualHeight)
                         : element.TransformToAncestor(root).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-                    int left = Math.Max(0, (int)Math.Floor(elementBounds.Left));
-                    int top = Math.Max(0, (int)Math.Floor(elementBounds.Top));
-                    int right = Math.Min(rootPixelWidth, (int)Math.Ceiling(elementBounds.Right));
-                    int bottom = Math.Min(rootPixelHeight, (int)Math.Ceiling(elementBounds.Bottom));
+                    // ContentDialog's WPF shadow extends outside its rounded surface. Include
+                    // the surrounding pixels so that shadow is not clipped to a hard rectangle.
+                    double outset = element is Controls.ContentDialog ? 16 : 0;
+                    int left = Math.Max(0, (int)Math.Floor((elementBounds.Left - outset) * ControlCaptureScale));
+                    int top = Math.Max(0, (int)Math.Floor((elementBounds.Top - outset) * ControlCaptureScale));
+                    int right = Math.Min(rootPixelWidth, (int)Math.Ceiling((elementBounds.Right + outset) * ControlCaptureScale));
+                    int bottom = Math.Min(rootPixelHeight, (int)Math.Ceiling((elementBounds.Bottom + outset) * ControlCaptureScale));
                     Assert.True(right > left && bottom > top,
                         Invariant("Control {0} lies outside its render root.", element.GetType().Name));
                     CroppedBitmap crop = new(rootBitmap, new Int32Rect(left, top, right - left, bottom - top));
-                    context.DrawImage(crop, new Rect(ControlHorizontalPadding, ControlVerticalPadding,
-                        crop.PixelWidth, crop.PixelHeight));
+                    context.DrawImage(crop, new Rect(contentLeft - outset, ControlVerticalPadding - outset,
+                        crop.PixelWidth / ControlCaptureScale, crop.PixelHeight / ControlCaptureScale));
+                    if (element is Controls.FluenceWindow)
+                    {
+                        Brush stroke = element.TryFindResource("ControlStrokeColorDefaultBrush") as Brush ?? Brushes.Gray;
+                        context.DrawRoundedRectangle(brush: null, new Pen(stroke, 1),
+                            new Rect(contentLeft, ControlVerticalPadding,
+                                contentWidth, contentHeight), 4, 4);
+                    }
                 }
             }
 
-            await SavePngAsync(visual, pixelWidth, pixelHeight, BaseDpi, fullPath).ConfigureAwait(true);
+            await SavePngAsync(visual, pixelWidth, pixelHeight, captureDpi, fullPath).ConfigureAwait(true);
             Assert.True(File.Exists(fullPath), Invariant("Expected to write {0}", fullPath));
+        }
+
+        private static async Task SavePopupAndAnchorAsync(FrameworkElement anchor, FrameworkElement popup, string fullPath)
+        {
+            Assert.True(anchor.IsVisible && anchor.ActualWidth > 0 && anchor.ActualHeight > 0,
+                "The popup anchor must be visible and laid out.");
+            Assert.True(popup.IsVisible && popup.ActualWidth > 0 && popup.ActualHeight > 0,
+                "The popup content must be visible and laid out.");
+            CroppedBitmap anchorBitmap = RenderControlCrop(anchor);
+            RenderTargetBitmap popupBitmap = RenderPopupRoot(popup);
+            const double popupGutter = 16.0;
+            const double popupX = ControlHorizontalPadding - popupGutter;
+            double popupY = ControlVerticalPadding + anchor.ActualHeight - popupGutter;
+            double popupWidth = popupBitmap.PixelWidth / ControlCaptureScale;
+            double popupHeight = popupBitmap.PixelHeight / ControlCaptureScale;
+            double canvasWidth = Math.Max(anchor.ActualWidth + (2 * ControlHorizontalPadding),
+                popupX + popupWidth + ControlHorizontalPadding - popupGutter);
+            double canvasHeight = popupY + popupHeight + ControlVerticalPadding - popupGutter;
+            Brush background = anchor.TryFindResource("SolidBackgroundFillColorBaseBrush") as Brush
+                ?? anchor.TryFindResource("ApplicationBackgroundBrush") as Brush ?? Brushes.White;
+            DrawingVisual visual = new();
+            using (DrawingContext context = visual.RenderOpen())
+            {
+                context.DrawRectangle(background, pen: null, new Rect(0, 0, canvasWidth + 1, canvasHeight + 1));
+                context.DrawImage(anchorBitmap, new Rect(ControlHorizontalPadding, ControlVerticalPadding,
+                    anchorBitmap.PixelWidth / ControlCaptureScale, anchorBitmap.PixelHeight / ControlCaptureScale));
+                context.DrawImage(popupBitmap, new Rect(popupX, popupY, popupWidth, popupHeight));
+            }
+
+            await SavePngAsync(visual,
+                (int)Math.Ceiling(canvasWidth * ControlCaptureScale),
+                (int)Math.Ceiling(canvasHeight * ControlCaptureScale),
+                BaseDpi * ControlCaptureScale, fullPath).ConfigureAwait(true);
+        }
+
+        private static RenderTargetBitmap RenderPopupRoot(FrameworkElement popup)
+        {
+            PresentationSource presentation = PresentationSource.FromVisual(popup)
+                ?? throw new InvalidOperationException("Popup is not attached to a presentation source.");
+            Visual root = presentation.RootVisual;
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(root);
+            double width = root is FrameworkElement element ? Math.Max(element.ActualWidth, bounds.Right) : bounds.Right;
+            double height = root is FrameworkElement rootElement ? Math.Max(rootElement.ActualHeight, bounds.Bottom) : bounds.Bottom;
+            RenderTargetBitmap bitmap = new(
+                Math.Max(1, (int)Math.Ceiling(width * ControlCaptureScale)),
+                Math.Max(1, (int)Math.Ceiling(height * ControlCaptureScale)),
+                BaseDpi * ControlCaptureScale, BaseDpi * ControlCaptureScale, PixelFormats.Pbgra32);
+            bitmap.Render(root);
+            return bitmap;
+        }
+
+        private static CroppedBitmap RenderControlCrop(FrameworkElement element)
+        {
+            PresentationSource presentation = PresentationSource.FromVisual(element)
+                ?? throw new InvalidOperationException("Control is not attached to a presentation source.");
+            Visual root = presentation.RootVisual;
+            Rect rootBounds = VisualTreeHelper.GetDescendantBounds(root);
+            double rootWidth = root is FrameworkElement rootElement ? Math.Max(rootElement.ActualWidth, rootBounds.Right) : rootBounds.Right;
+            double rootHeight = root is FrameworkElement rootFrameworkElement ? Math.Max(rootFrameworkElement.ActualHeight, rootBounds.Bottom) : rootBounds.Bottom;
+            int width = Math.Max(1, (int)Math.Ceiling(rootWidth * ControlCaptureScale));
+            int height = Math.Max(1, (int)Math.Ceiling(rootHeight * ControlCaptureScale));
+            RenderTargetBitmap rootBitmap = new(width, height, BaseDpi * ControlCaptureScale, BaseDpi * ControlCaptureScale, PixelFormats.Pbgra32);
+            rootBitmap.Render(root);
+            Rect bounds = ReferenceEquals(element, root)
+                ? new Rect(0, 0, element.ActualWidth, element.ActualHeight)
+                : element.TransformToAncestor(root).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+            int left = Math.Max(0, (int)Math.Floor(bounds.Left * ControlCaptureScale));
+            int top = Math.Max(0, (int)Math.Floor(bounds.Top * ControlCaptureScale));
+            int right = Math.Min(width, (int)Math.Ceiling(bounds.Right * ControlCaptureScale));
+            int bottom = Math.Min(height, (int)Math.Ceiling(bounds.Bottom * ControlCaptureScale));
+            Assert.True(right > left && bottom > top, "The popup visual must be within its render root.");
+            return new CroppedBitmap(rootBitmap, new Int32Rect(left, top, right - left, bottom - top));
         }
 
         private static FrameworkElement ResolveControlVisual(Demo.Pages.DemoSampleControl card, ControlCaptureSpec spec, bool allowEmpty)
@@ -994,6 +1088,9 @@ namespace Fluence.Wpf.Tests.Tools
                 }
 
                 ApplicationAccentColorManager.ApplySystemAccent();
+                await CaptureButtonPopupAsync<Controls.DropDownButton>(window, cards[5], "drop-down-button", theme, directory).ConfigureAwait(true);
+                await CaptureButtonPopupAsync<Controls.SplitButton>(window, cards[6], "split-button", theme, directory).ConfigureAwait(true);
+                await CaptureButtonPopupAsync<Controls.ToggleSplitButton>(window, cards[9], "toggle-split-button", theme, directory).ConfigureAwait(true);
             }
             else if (string.Equals(route, "selection", StringComparison.Ordinal))
             {
@@ -1004,6 +1101,39 @@ namespace Fluence.Wpf.Tests.Tools
 
                 toggle.IsChecked = !toggle.IsChecked;
                 await CaptureControlAsync(window, cards[2], new("toggle-switch", route, 3, "ToggleSwitch"), theme, directory, "toggled").ConfigureAwait(true);
+
+                string comboFile = Invariant("combo-box-{0}-open.png", theme);
+                if (ShouldCapture("controls/" + comboFile))
+                {
+                    cards[4].BringIntoView();
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    if (FindDescendant<Controls.ComboBox>(cards[4]) is not Controls.ComboBox combo)
+                    {
+                        throw new InvalidOperationException("Selection sample has no ComboBox for its open state.");
+                    }
+
+                    combo.IsDropDownOpen = true;
+                    try
+                    {
+                        await SettleGalleryAsync(window).ConfigureAwait(true);
+                        if (combo.Template.FindName("PART_Popup", combo) is not System.Windows.Controls.Primitives.Popup popup
+                            || popup.Child is not FrameworkElement popupContent || !popup.IsOpen)
+                        {
+                            throw new InvalidOperationException("ComboBox dropdown did not open.");
+                        }
+
+                        await SavePopupAndAnchorAsync(combo, popupContent, Path.Join(directory, comboFile)).ConfigureAwait(true);
+                    }
+                    finally
+                    {
+                        combo.IsDropDownOpen = false;
+                    }
+                }
+            }
+            else if (string.Equals(route, "forms", StringComparison.Ordinal))
+            {
+                await CapturePickerPopupAsync<Controls.TimePicker>(window, cards[0], "time-picker", theme, directory).ConfigureAwait(true);
+                await CapturePickerPopupAsync<Controls.DatePicker>(window, cards[1], "date-picker", theme, directory).ConfigureAwait(true);
             }
             else if (string.Equals(route, "layout", StringComparison.Ordinal))
             {
@@ -1031,6 +1161,35 @@ namespace Fluence.Wpf.Tests.Tools
 
                 input.Text = "Fluent controls";
                 await CaptureControlAsync(window, cards[0], new("text-box", route, 1, "TextBox"), theme, directory, "entered").ConfigureAwait(true);
+
+                string suggestionsFile = Invariant("auto-suggest-box-{0}-open.png", theme);
+                if (ShouldCapture("controls/" + suggestionsFile))
+                {
+                    cards[2].BringIntoView();
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    if (FindDescendant<Controls.AutoSuggestBox>(cards[2]) is not Controls.AutoSuggestBox search)
+                    {
+                        throw new InvalidOperationException("Inputs sample has no AutoSuggestBox for its open state.");
+                    }
+
+                    search.ItemsSource = new[] { "Apple", "Apricot", "Avocado" };
+                    search.IsSuggestionListOpen = true;
+                    try
+                    {
+                        await SettleGalleryAsync(window).ConfigureAwait(true);
+                        if (search.Template.FindName("PART_SuggestionsPopup", search) is not System.Windows.Controls.Primitives.Popup popup
+                            || popup.Child is not FrameworkElement popupContent || !popup.IsOpen)
+                        {
+                            throw new InvalidOperationException("AutoSuggestBox suggestions did not open.");
+                        }
+
+                        await SavePopupAndAnchorAsync(search, popupContent, Path.Join(directory, suggestionsFile)).ConfigureAwait(true);
+                    }
+                    finally
+                    {
+                        search.IsSuggestionListOpen = false;
+                    }
+                }
             }
             else if (string.Equals(route, "navigation", StringComparison.Ordinal))
             {
@@ -1041,6 +1200,34 @@ namespace Fluence.Wpf.Tests.Tools
 
                 pager.SelectedPageIndex = 3;
                 await CaptureControlAsync(window, cards[5], new("pips-pager", route, 6, "PipsPager"), theme, directory, "page-selected").ConfigureAwait(true);
+                if (ShouldCapture("controls/" + Invariant("navigation-view-{0}-compact.png", theme)))
+                {
+                    cards[0].BringIntoView();
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    if (FindDescendant<Controls.NavigationView>(cards[0]) is not Controls.NavigationView navigation)
+                    {
+                        throw new InvalidOperationException("Navigation sample has no NavigationView.");
+                    }
+
+                    navigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    navigation.IsPaneOpen = false;
+                    await CaptureControlAsync(window, cards[0], new("navigation-view", route, 1, "NavigationView"), theme, directory, "compact").ConfigureAwait(true);
+                }
+            }
+            else if (string.Equals(route, "trees", StringComparison.Ordinal)
+                && ShouldCapture("controls/" + Invariant("tree-view-{0}-expanded.png", theme)))
+            {
+                cards[0].BringIntoView();
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                if (FindDescendant<Controls.TreeView>(cards[0]) is not Controls.TreeView tree
+                    || tree.Items[0] is not Controls.TreeViewItem root
+                    || root.Items[1] is not Controls.TreeViewItem samples)
+                {
+                    throw new InvalidOperationException("Tree sample has no expandable Samples node.");
+                }
+
+                samples.IsExpanded = true;
+                await CaptureControlAsync(window, cards[0], new("tree-view", route, 1, "TreeView"), theme, directory, "expanded").ConfigureAwait(true);
             }
             else if (string.Equals(route, "status", StringComparison.Ordinal))
             {
@@ -1051,6 +1238,113 @@ namespace Fluence.Wpf.Tests.Tools
 
                 infoBar.IsOpen = false;
                 await CaptureControlAsync(window, cards[4], new("info-bar", route, 5, "InfoBar"), theme, directory, "dismissed", allowEmpty: true).ConfigureAwait(true);
+            }
+        }
+
+        private static async Task CapturePickerPopupAsync<T>(Demo.MainWindow window, Demo.Pages.DemoSampleControl card,
+            string slug, string theme, string directory) where T : System.Windows.Controls.Control
+        {
+            string file = Invariant("{0}-{1}-open.png", slug, theme);
+            if (!ShouldCapture("controls/" + file))
+            {
+                return;
+            }
+
+            card.BringIntoView();
+            await SettleGalleryAsync(window).ConfigureAwait(true);
+            T picker = FindDescendant<T>(card)
+                ?? throw new InvalidOperationException("Missing picker: " + slug);
+            if (picker is Controls.TimePicker timePicker)
+            {
+                timePicker.SelectedTime = new TimeSpan(14, 30, 0);
+            }
+            else if (picker is Controls.DatePicker datePicker)
+            {
+                datePicker.SelectedDate = new DateTime(2026, 4, 15);
+            }
+
+            if (picker.Template.FindName("PART_FlyoutButton", picker) is not System.Windows.Controls.Primitives.ButtonBase trigger
+                || picker.Template.FindName("PART_Popup", picker) is not System.Windows.Controls.Primitives.Popup popup)
+            {
+                throw new InvalidOperationException("Missing picker flyout: " + slug);
+            }
+
+            popup.StaysOpen = true;
+            trigger.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+            try
+            {
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                if (popup.Child is not FrameworkElement popupContent || !popup.IsOpen)
+                {
+                    throw new InvalidOperationException("Picker popup did not open: " + slug);
+                }
+
+                // Opening a picker moves keyboard focus into a list. Clear it so screenshot
+                // focus indicators do not depend on which earlier sample last had focus.
+                System.Windows.Input.Keyboard.ClearFocus();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                await SavePopupAndAnchorAsync(picker, popupContent, Path.Join(directory, file)).ConfigureAwait(true);
+            }
+            finally
+            {
+                popup.IsOpen = false;
+            }
+        }
+
+        private static async Task CaptureButtonPopupAsync<T>(Demo.MainWindow window, Demo.Pages.DemoSampleControl card,
+            string slug, string theme, string directory) where T : System.Windows.Controls.Control
+        {
+            string file = Invariant("{0}-{1}-open.png", slug, theme);
+            if (!ShouldCapture("controls/" + file))
+            {
+                return;
+            }
+
+            card.BringIntoView();
+            await SettleGalleryAsync(window).ConfigureAwait(true);
+            T button = FindDescendant<T>(card)
+                ?? throw new InvalidOperationException("Missing popup button: " + slug);
+            if (button.Template.FindName("PART_Popup", button) is not System.Windows.Controls.Primitives.Popup popup)
+            {
+                throw new InvalidOperationException("Missing button popup: " + slug);
+            }
+
+            // The offscreen capture window is never activated. Keep the popup open long enough to
+            // render it without the desktop's focus changing its light-dismiss state.
+            popup.StaysOpen = true;
+            if (button is Controls.DropDownButton dropDown)
+            {
+                dropDown.IsChecked = true;
+            }
+            else if (button.Template.FindName("PART_SecondaryButton", button) is System.Windows.Controls.Primitives.ToggleButton secondary)
+            {
+                secondary.IsChecked = true;
+            }
+            else
+            {
+                throw new InvalidOperationException("Missing secondary popup trigger: " + slug);
+            }
+
+            try
+            {
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                if (popup.Child is not FrameworkElement popupContent || !popup.IsOpen)
+                {
+                    throw new InvalidOperationException("Button popup did not open: " + slug);
+                }
+
+                await SavePopupAndAnchorAsync(button, popupContent, Path.Join(directory, file)).ConfigureAwait(true);
+            }
+            finally
+            {
+                if (button is Controls.DropDownButton openDropDown)
+                {
+                    openDropDown.IsChecked = false;
+                }
+                else if (button.Template.FindName("PART_SecondaryButton", button) is System.Windows.Controls.Primitives.ToggleButton secondary)
+                {
+                    secondary.IsChecked = false;
+                }
             }
         }
 
@@ -1130,12 +1424,56 @@ namespace Fluence.Wpf.Tests.Tools
                 Path.Join(directory, Invariant("{0}-{1}{2}.png", slug, theme, suffix))).ConfigureAwait(true);
         }
 
+        private static async Task SaveNamedPopupAsync(FrameworkElement anchor, FrameworkElement popup, string slug,
+            string theme, string directory, string? state = null)
+        {
+            string suffix = state is null ? string.Empty : "-" + state;
+            string file = Invariant("{0}-{1}{2}.png", slug, theme, suffix);
+            if (ShouldCapture("controls/" + file))
+            {
+                await SavePopupAndAnchorAsync(anchor, popup, Path.Join(directory, file)).ConfigureAwait(true);
+            }
+        }
+
         private static async Task CaptureControlPopupsAsync(
             Demo.MainWindow window,
             IList<Demo.Pages.DemoSampleControl> cards,
             string theme,
             string directory)
         {
+            string menuFile = Invariant("menu-{0}-open.png", theme);
+            if (ShouldCapture("controls/" + menuFile))
+            {
+                Demo.Pages.DemoSampleControl menuCard = cards[0];
+                menuCard.BringIntoView();
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                if (FindDescendant<Controls.Menu>(menuCard) is not Controls.Menu menu
+                    || menu.ItemContainerGenerator.ContainerFromIndex(0) is not System.Windows.Controls.MenuItem menuItem)
+                {
+                    throw new InvalidOperationException("Menus sample has no menu item to open.");
+                }
+
+                System.Windows.Input.Keyboard.ClearFocus();
+                menu.HorizontalAlignment = HorizontalAlignment.Left;
+                menu.UpdateLayout();
+                menuItem.IsSubmenuOpen = true;
+                try
+                {
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    if (menuItem.Template.FindName("PART_Popup", menuItem) is not System.Windows.Controls.Primitives.Popup popup
+                        || popup.Child is not FrameworkElement popupContent || !popup.IsOpen)
+                    {
+                        throw new InvalidOperationException("Menu submenu did not open.");
+                    }
+
+                    await SavePopupAndAnchorAsync(menu, popupContent, Path.Join(directory, menuFile)).ConfigureAwait(true);
+                }
+                finally
+                {
+                    menuItem.IsSubmenuOpen = false;
+                }
+            }
+
             Demo.Pages.DemoSampleControl contextCard = cards[1];
             contextCard.BringIntoView();
             await SettleGalleryAsync(window).ConfigureAwait(true);
@@ -1148,7 +1486,7 @@ namespace Fluence.Wpf.Tests.Tools
             contextMenu.PlacementTarget = contextTarget;
             contextMenu.IsOpen = true;
             await SettleGalleryAsync(window).ConfigureAwait(true);
-            await SaveNamedControlAsync(contextMenu, "context-menu", theme, directory).ConfigureAwait(true);
+            await SaveNamedPopupAsync(contextTarget, contextMenu, "context-menu", theme, directory).ConfigureAwait(true);
             contextMenu.IsOpen = false;
 
             Demo.Pages.DemoSampleControl toolTipCard = cards[2];
@@ -1163,7 +1501,7 @@ namespace Fluence.Wpf.Tests.Tools
             toolTip.PlacementTarget = toolTipButton;
             toolTip.IsOpen = true;
             await SettleGalleryAsync(window).ConfigureAwait(true);
-            await SaveNamedControlAsync(toolTip, "tool-tip", theme, directory).ConfigureAwait(true);
+            await SaveNamedPopupAsync(toolTipButton, toolTip, "tool-tip", theme, directory).ConfigureAwait(true);
             toolTip.IsOpen = false;
 
             Demo.Pages.DemoSampleControl flyoutCard = cards[3];
@@ -1179,9 +1517,16 @@ namespace Fluence.Wpf.Tests.Tools
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement flyoutPresenter = flyout.Presenter
                 ?? throw new InvalidOperationException("Flyout did not create a presenter.");
+            if (flyoutPresenter is System.Windows.Controls.Control flyoutControl)
+            {
+                // Capture the popup content without a keyboard-focus adorner inherited from a
+                // previously captured sample. The screenshot does not depict keyboard focus.
+                flyoutControl.FocusVisualStyle = null;
+            }
+
             foreach (string slug in new[] { "flyout", "flyout-base", "flyout-presenter" })
             {
-                await SaveNamedControlAsync(flyoutPresenter, slug, theme, directory).ConfigureAwait(true);
+                await SaveNamedPopupAsync(flyoutButton, flyoutPresenter, slug, theme, directory).ConfigureAwait(true);
             }
 
             flyout.Hide();
@@ -1213,7 +1558,12 @@ namespace Fluence.Wpf.Tests.Tools
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement commandPresenter = commandFlyout.Presenter
                 ?? throw new InvalidOperationException("CommandBarFlyout did not create a presenter.");
-            await SaveNamedControlAsync(commandPresenter, "command-bar-flyout", theme, directory, "open").ConfigureAwait(true);
+            if (commandPresenter is System.Windows.Controls.Control commandControl)
+            {
+                commandControl.FocusVisualStyle = null;
+            }
+
+            await SaveNamedPopupAsync(commandButton, commandPresenter, "command-bar-flyout", theme, directory, "open").ConfigureAwait(true);
             await SaveNamedControlAsync(commandPresenter, "command-bar-flyout-presenter", theme, directory, "open").ConfigureAwait(true);
 
             if (FindDescendant<Controls.AppBarButton>(commandPresenter) is not Controls.AppBarButton appBarButton)
@@ -1236,19 +1586,51 @@ namespace Fluence.Wpf.Tests.Tools
             application.MainWindow = window;
             _ = dialog.ShowAsync();
             await SettleGalleryAsync(window).ConfigureAwait(true);
-            await SaveNamedControlAsync(dialog, "content-dialog", theme, directory).ConfigureAwait(true);
-            dialog.Hide();
+            // A standalone control image has no dimmed owner surface. Replace only this
+            // temporary capture instance's smoke with the same theme canvas used for padding,
+            // so transparent rounded corners do not retain a dark rectangular backdrop.
+            if (VisualTreeHelper.GetParent(dialog) is not Panel overlay || overlay.Children[0] is not System.Windows.Controls.Border smoke)
+            {
+                throw new InvalidOperationException("ContentDialog has no capture overlay.");
+            }
+
+            Brush canvas = dialog.TryFindResource("SolidBackgroundFillColorBaseBrush") as Brush ?? Brushes.White;
+            smoke.SetCurrentValue(System.Windows.Controls.Border.BackgroundProperty, canvas);
+            try
+            {
+                window.UpdateLayout();
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+                await SaveNamedControlAsync(dialog, "content-dialog", theme, directory).ConfigureAwait(true);
+            }
+            finally
+            {
+                smoke.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SmokeFillColorDefaultBrush");
+                dialog.Hide();
+            }
         }
 
         private static async Task CaptureControlWindowExamplesAsync(Demo.MainWindow gallery, string theme, string directory)
         {
-            Controls.TitleBar titleBar = new() { Title = "Fluence.Wpf" };
+            Controls.TitleBar titleBar = new()
+            {
+                Title = "Fluence.Wpf",
+                IsBackButtonVisible = true,
+                IsPaneToggleButtonVisible = true,
+                Margin = new Thickness(12, 0, 0, 0),
+                Icon = new Image { Source = Controls.FluenceWindow.DefaultIcon, Width = 20, Height = 20 },
+            };
+            TextBlock description = new() { Text = "A Fluent window for your application", Margin = new Thickness(0, 0, 0, 16) };
+            description.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorPrimaryBrush");
+            StackPanel content = new() { Margin = new Thickness(24, 64, 24, 24) };
+            _ = content.Children.Add(description);
+            _ = content.Children.Add(new Controls.Button { Content = "Continue", HorizontalAlignment = HorizontalAlignment.Left });
             Controls.FluenceWindow window = new()
             {
                 Title = "Fluence.Wpf",
+                Icon = Controls.FluenceWindow.DefaultIcon,
                 TitleBar = titleBar,
                 ExtendsContentIntoTitleBar = true,
-                Content = new TextBlock { Text = "", Margin = new Thickness(24) },
+                Content = content,
             };
             try
             {
@@ -1257,7 +1639,7 @@ namespace Fluence.Wpf.Tests.Tools
                 window.Show();
                 await SettleGalleryAsync(gallery).ConfigureAwait(true);
                 await SaveNamedControlAsync(window, "fluence-window", theme, directory).ConfigureAwait(true);
-                await SaveNamedControlAsync(titleBar, "title-bar", theme, directory).ConfigureAwait(true);
+                await SaveNamedControlAsync(window, "title-bar", theme, directory).ConfigureAwait(true);
             }
             finally
             {
