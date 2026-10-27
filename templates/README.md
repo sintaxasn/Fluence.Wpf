@@ -71,7 +71,7 @@ dotnet new install "Fluence.Wpf.Templates@$validatedTemplateVersion"
 dotnet new list fluence
 ```
 
-The checked-out `0.9.4` source baseline predates required fixes. Published `0.9.4` package bytes have not been audited, so this guide does not qualify any `0.9.4` package for use. Do not use that version as a starter dependency or infer public package availability from this local candidate.
+The `0.9.4` source baseline predates required fixes. Published `0.9.4` package bytes have not been audited, so this guide does not qualify any `0.9.4` package for use. Do not use that version as a starter dependency or infer public package availability from this local candidate.
 
 ## Install the agent skill
 

@@ -8,6 +8,8 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-10-27
+
 ### Added
 
 - Added three `dotnet new` consumer starters: `fluence-window`, `fluence-nav-mvvm`, and `fluence-settings`. The simple and MVVM starters put a generic title-bar icon first at a 12 DIP client-edge inset; the simple starter has no Back or pane toggle. The MVVM and Settings shells keep Back visible but disabled without history, preserve working Back navigation, and collapse or expand their panes from the title bar. Settings has no title-bar icon; all three title bars keep the app name without a category subtitle. The MVVM shell also has compact navigation, an app-local compact-pane preference, and an accent action. Settings includes four categories, bundled color category PNGs with provenance notices, monochrome page glyphs, and measured row and navigation spacing. Both navigation shells have working minimize caption actions. Generated projects ignore the local NuGet cache, build output, and temporary feed configuration. The Settings app uses ordinary WPF assets without Windows App SDK components.
@@ -782,7 +784,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.4...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.5...main
+[0.9.5]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...v0.9.3
 [0.9.2-pre]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.1...v0.9.2-pre

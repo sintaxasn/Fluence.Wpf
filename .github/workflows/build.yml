@@ -359,13 +359,15 @@ jobs:
           path: TestResults/psmodule/
           retention-days: 14
 
-  # Version tags (v*) run the .NET and PowerShell build/test/package gates above,
-  # publish a GitHub release with both product packages attached, and publish
-  # the packages to nuget.org and PowerShell Gallery. Tags carrying a
+  # Version tags (v*) run the .NET and PowerShell build/test/package gates above.
+  # v0.9.5 is build-only: publishing it later requires a separately authorized
+  # release workflow, because rerunning this tag's workflow retains this guard.
+  # Other version tags publish a GitHub release and packages to nuget.org and
+  # PowerShell Gallery. Tags carrying a
   # SemVer prerelease identifier are marked as prereleases. Write permission is
   # scoped to this job only; the build job stays read-only.
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') && github.ref != 'refs/tags/v0.9.5'
     needs: [build, powershell]
     runs-on: windows-latest
     timeout-minutes: 15
