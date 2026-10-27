@@ -172,7 +172,9 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.True(tx.X < 20.0,
                         "Programmatic toggle should start an animation instead of snapping directly to the checked side.");
 
-                    await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 1000,
+                        () => Math.Abs(tx.X - 20.0) <= 0.5).ConfigureAwait(true),
+                        "The programmatic toggle must reach the checked knob position.");
                     Assert.Equal(20.0, tx.X, 0.5);
                 }
                 finally
