@@ -259,10 +259,15 @@ jobs:
               if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue | Where-Object { $_.Version -eq [version]'2.8.5.208' })) {
                 Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force -ErrorAction Stop
               }
-              if (-not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })) {
+              $needAnalyzer = -not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })
+              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })
+              if (($needAnalyzer -or $needPester) -and -not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
+                Register-PSRepository -Default -ErrorAction Stop
+              }
+              if ($needAnalyzer) {
                 Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
               }
-              if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })) {
+              if ($needPester) {
                 Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
               }
               break
@@ -278,13 +283,19 @@ jobs:
         run: |
           for ($attempt = 1; $attempt -le 3; $attempt++) {
             try {
-              if (-not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })) {
+              $needAnalyzer = -not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })
+              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })
+              $needDocs = -not (Get-Module -ListAvailable Alt3.Docusaurus.Powershell | Where-Object { $_.Version -eq [version]'2.0.1' })
+              if (($needAnalyzer -or $needPester -or $needDocs) -and -not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
+                Register-PSRepository -Default -ErrorAction Stop
+              }
+              if ($needAnalyzer) {
                 Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
               }
-              if (-not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })) {
+              if ($needPester) {
                 Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
               }
-              if (-not (Get-Module -ListAvailable Alt3.Docusaurus.Powershell | Where-Object { $_.Version -eq [version]'2.0.1' })) {
+              if ($needDocs) {
                 Install-Module Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
               }
               break

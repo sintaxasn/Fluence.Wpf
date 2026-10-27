@@ -33,6 +33,15 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
     @{ HostName = 'PowerShell 7'; ModuleCount = 3 }
 ) {
     BeforeAll {
+        # PowerShellGet's dynamic parameters can bind before Pester's mock intercepts -Default.
+        # A static test shim keeps these tests independent of the machine's repository state.
+        function Register-CiTestRepository
+        {
+            [CmdletBinding()]
+            param([switch]$Default)
+            $null = $Default
+        }
+        Set-Alias -Name Register-PSRepository -Value Register-CiTestRepository
         $workflowPath = Join-Path $PSScriptRoot '../../.github/workflows/build.yml'
         $workflow = Get-Content -LiteralPath $workflowPath -Raw
         $stepName = [regex]::Escape("Install pinned build tools ($HostName)")
@@ -47,6 +56,8 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
         Mock Install-PackageProvider {}
         Mock Get-Module {}
         Mock Install-Module {}
+        Mock Get-PSRepository { [pscustomobject]@{ Name = 'PSGallery' } }
+        Mock Register-PSRepository {}
         Mock Start-Sleep {}
         Mock Write-Warning {}
     }
@@ -70,6 +81,64 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
             }
         }
         Should -Invoke Start-Sleep -Times 0 -Exactly
+    }
+
+    It 'registers the default gallery when a module is missing and PSGallery is absent' {
+        $script:galleryRegistered = $false
+        Mock Get-PSRepository { if ($script:galleryRegistered) { [pscustomobject]@{ Name = 'PSGallery' } } }
+        Mock Register-PSRepository { $script:galleryRegistered = $true }
+
+        & $script:installTools
+
+        Should -Invoke Register-PSRepository -Times 1 -Exactly -ParameterFilter { $Default -and $ErrorAction -eq 'Stop' }
+        Should -Invoke Install-Module -Times $ModuleCount -Exactly
+        Should -Invoke Start-Sleep -Times 0 -Exactly
+    }
+
+    It 'retries a failed default gallery registration and then installs the pinned modules' {
+        $script:registrationAttempts = 0
+        $script:galleryRegistered = $false
+        Mock Get-PSRepository { if ($script:galleryRegistered) { [pscustomobject]@{ Name = 'PSGallery' } } }
+        Mock Register-PSRepository {
+            $script:registrationAttempts++
+            if ($script:registrationAttempts -eq 1) { throw 'Gallery registration failed' }
+            $script:galleryRegistered = $true
+        }
+
+        & $script:installTools
+
+        Should -Invoke Register-PSRepository -Times 2 -Exactly
+        Should -Invoke Start-Sleep -Times 1 -Exactly -ParameterFilter { $Seconds -eq 15 }
+        Should -Invoke Install-Module -Times $ModuleCount -Exactly
+    }
+
+    It 'fails without installing modules when default gallery registration repeatedly fails' {
+        Mock Get-PSRepository {}
+        Mock Register-PSRepository { throw 'Gallery registration failed' }
+
+        { & $script:installTools } | Should -Throw '*Gallery registration failed*'
+
+        Should -Invoke Register-PSRepository -Times 3 -Exactly
+        Should -Invoke Install-Module -Times 0 -Exactly
+        Should -Invoke Start-Sleep -Times 2 -Exactly -ParameterFilter { $Seconds -eq 15 }
+    }
+
+    It 'does not reinstall cached modules when the gallery needs registration' {
+        Mock Get-PSRepository {}
+        Mock Get-Module { [pscustomobject]@{ Version = [version]'1.25.0' } } -ParameterFilter { $Name -eq 'PSScriptAnalyzer' }
+
+        & $script:installTools
+
+        Should -Invoke Register-PSRepository -Times 1 -Exactly
+        Should -Invoke Install-Module -Times 0 -Exactly -ParameterFilter { $Name -eq 'PSScriptAnalyzer' }
+        Should -Invoke Install-Module -Times 1 -Exactly -ParameterFilter { $Name -eq 'Pester' }
+    }
+
+    It 'preserves an already registered gallery' {
+        & $script:installTools
+
+        Should -Invoke Get-PSRepository -Times 1 -Exactly -ParameterFilter { $Name -eq 'PSGallery' }
+        Should -Invoke Register-PSRepository -Times 0 -Exactly
     }
 
     It 'recovers from two transient Pester download failures' {
@@ -107,6 +176,8 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
 
         Should -Invoke Install-Module -Times 0 -Exactly
         Should -Invoke Install-PackageProvider -Times 0 -Exactly
+        Should -Invoke Get-PSRepository -Times 0 -Exactly
+        Should -Invoke Register-PSRepository -Times 0 -Exactly
         Should -Invoke Start-Sleep -Times 0 -Exactly
     }
 }
