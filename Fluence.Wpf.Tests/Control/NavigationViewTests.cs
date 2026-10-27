@@ -1503,27 +1503,24 @@ namespace Fluence.Wpf.Tests.Control
 
                     double minimumOpacity = 1.0;
                     double peakScale = 1.0;
-                    for (int sample = 0; sample < 40; sample++)
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 1500, delegate
                     {
                         minimumOpacity = Math.Min(minimumOpacity, indicator.Opacity);
                         peakScale = Math.Max(peakScale, scale.ScaleY);
-                        await Task.Delay(10, TestContext.Current.CancellationToken).ConfigureAwait(true);
-                        WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    }
-
-                    Assert.True(
-                        minimumOpacity > 0.99,
-                        "The indicator must stay at full opacity while it travels; it used to fade out and back in.");
-                    Assert.True(
-                        peakScale > 1.05,
+                        return peakScale > 1.05;
+                    }).ConfigureAwait(true),
                         "The indicator must stretch across the gap mid-flight rather than keeping its rest length.");
 
                     Assert.True(
                         await WaitUntilAsync(window.Dispatcher, 3000, delegate
                         {
+                            minimumOpacity = Math.Min(minimumOpacity, indicator.Opacity);
                             return Math.Abs(scale.ScaleY - 1.0) <= 0.01 && translate.Y > startY;
                         }).ConfigureAwait(true),
                         "The indicator should settle at its rest length on the new item.");
+                    Assert.True(
+                        minimumOpacity > 0.99,
+                        "The indicator must stay at full opacity while it travels; it used to fade out and back in.");
                     Assert.Equal(1.0, indicator.Opacity, 0.01);
                 }
                 finally

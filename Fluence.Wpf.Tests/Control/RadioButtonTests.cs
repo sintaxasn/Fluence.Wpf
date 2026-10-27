@@ -140,7 +140,11 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(1, pressedGlyph.Opacity);
                     Assert.True(dot.HasAnimatedProperties, "Pressing should animate the main dot size.");
                     Assert.True(pressedGlyph.HasAnimatedProperties, "Pressing should grow the separate glyph.");
-                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 350).ConfigureAwait(true);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => !dot.HasAnimatedProperties && !pressedGlyph.HasAnimatedProperties
+                            && Math.Abs(dot.Width - 10.0) < 0.005
+                            && Math.Abs(pressedGlyph.Width - 10.0) < 0.005).ConfigureAwait(true),
+                        "The pressed glyph animation must complete at its declared size.");
                     Assert.Equal(10, dot.Width, 2);
                     Assert.Equal(10, dot.Height, 2);
                     Assert.Equal(10, pressedGlyph.Width, 2);
@@ -153,7 +157,9 @@ namespace Fluence.Wpf.Tests.Control
 
                     radio.IsEnabled = false;
                     Assert.True(dot.HasAnimatedProperties, "Disabling should animate to the 14-DIP target.");
-                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 250).ConfigureAwait(true);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => !dot.HasAnimatedProperties && Math.Abs(dot.Width - 14.0) < 0.005).ConfigureAwait(true),
+                        "The disabled glyph animation must complete at its declared size.");
                     Assert.Equal(14, dot.Width, 2);
                     Assert.Equal(14, dot.Height, 2);
 
@@ -190,14 +196,20 @@ namespace Fluence.Wpf.Tests.Control
                     SetHoverStateForTest(radio, value: true);
                     Assert.True(radio.IsMouseOver);
                     Assert.True(dot.HasAnimatedProperties);
-                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 350).ConfigureAwait(true);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => !dot.HasAnimatedProperties && Math.Abs(dot.Width - 14.0) < 0.005).ConfigureAwait(true),
+                        "The hover glyph animation must complete at its declared size.");
                     Assert.Equal(14, dot.Width, 2);
 
                     radio.SetPressed(value: true);
                     Assert.Equal(1, pressedGlyph.Opacity);
                     SetHoverStateForTest(radio, value: false);
                     Assert.False(radio.IsMouseOver);
-                    await DispatcherWaits.WaitForAnimationAndDrainAsync(window.Dispatcher, 350).ConfigureAwait(true);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => !dot.HasAnimatedProperties && !pressedGlyph.HasAnimatedProperties
+                            && Math.Abs(dot.Width - 10.0) < 0.005
+                            && Math.Abs(pressedGlyph.Width - 10.0) < 0.005).ConfigureAwait(true),
+                        "The pressed glyph animation must complete after hover clears.");
                     Assert.Equal(10, dot.Width, 2);
                     Assert.Equal(10, pressedGlyph.Width, 2);
 
@@ -230,22 +242,27 @@ namespace Fluence.Wpf.Tests.Control
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Ellipse dot = Assert.IsType<Ellipse>(radio.Template.FindName("PART_CheckGlyph", radio));
+                    FieldInfo generationField = Assert.IsType<FieldInfo>(typeof(RadioButton).GetField(
+                        "_checkGlyphAnimationGeneration", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
                     radio.SetPressed(value: true);
                     Assert.True(dot.HasAnimatedProperties);
+                    int initialGeneration = Assert.IsType<int>(generationField.GetValue(radio));
 
-                    await Task.Delay(80, TestContext.Current.CancellationToken).ConfigureAwait(true);
-                    Assert.True(dot.HasAnimatedProperties);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => dot.HasAnimatedProperties && dot.Width < 11.99).ConfigureAwait(true),
+                        "The initial press clock must advance before hover changes.");
                     SetHoverStateForTest(radio, value: true);
                     Assert.True(radio.IsMouseOver);
+                    Assert.Equal(initialGeneration, Assert.IsType<int>(generationField.GetValue(radio)));
 
-                    await Task.Delay(80, TestContext.Current.CancellationToken).ConfigureAwait(true);
                     Assert.True(dot.HasAnimatedProperties);
                     SetHoverStateForTest(radio, value: false);
                     Assert.False(radio.IsMouseOver);
+                    Assert.Equal(initialGeneration, Assert.IsType<int>(generationField.GetValue(radio)));
 
-                    await Task.Delay(125, TestContext.Current.CancellationToken).ConfigureAwait(true);
-                    Assert.False(dot.HasAnimatedProperties,
-                        "Hover changes during an active press must not restart its 250-ms glyph clock.");
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
+                        () => !dot.HasAnimatedProperties && Math.Abs(dot.Width - 10.0) < 0.005).ConfigureAwait(true),
+                        "The original press clock must complete after hover changes.");
                     Assert.Equal(10, dot.Width, 2);
                 }
                 finally

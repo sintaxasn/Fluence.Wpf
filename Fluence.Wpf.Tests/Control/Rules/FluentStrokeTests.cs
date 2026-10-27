@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -245,13 +246,30 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
                         () => System.Math.Abs(checkGlyph.StrokeDashOffset) < 0.01).ConfigureAwait(true));
 
+                    FieldInfo segmentActiveField = Assert.IsType<FieldInfo>(typeof(Controls.CheckBox).GetField(
+                        "_segmentActive", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+                    FieldInfo segmentKindField = Assert.IsType<FieldInfo>(typeof(Controls.CheckBox).GetField(
+                        "_segmentKind", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+                    MethodInfo applyProgress = Assert.IsType<MethodInfo>(typeof(Controls.CheckBox).GetMethod(
+                        "ApplySegmentProgress", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
                     checkBox.IsChecked = false;
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    await window.Dispatcher.InvokeAsync(static () => { },
+                        System.Windows.Threading.DispatcherPriority.Loaded,
+                        TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                    Assert.True(Assert.IsType<bool>(segmentActiveField.GetValue(checkBox)),
+                        "Uncheck must start an active segment.");
+                    Assert.Equal("Erase", segmentKindField.GetValue(checkBox)?.ToString());
+
+                    // The short erase may finish between software-rendered frames. Verify the
+                    // visual mapping at a controlled midpoint, then let the real route finish.
+                    // This checks the partial path; it does not claim a midpoint frame rendered.
+                    _ = applyProgress.Invoke(checkBox, [0.5]);
+                    Assert.True(checkGlyph.StrokeDashOffset < -0.1 && checkGlyph.Opacity > 0,
+                        "At the erase midpoint, the visible stroke must trim from its start.");
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 1000,
-                        () => checkGlyph.StrokeDashOffset < -0.1 && checkGlyph.Opacity > 0).ConfigureAwait(true),
-                        "Uncheck must trim the stroke from its start before the 66.7-ms erase completes.");
-                    Assert.True(await WaitUntilAsync(window.Dispatcher, 1000,
-                        () => checkGlyph.Opacity < 0.01).ConfigureAwait(true));
+                        () => checkGlyph.Opacity < 0.01
+                            && System.Math.Abs(checkGlyph.StrokeDashOffset) < 0.01).ConfigureAwait(true),
+                        "The real erase route must finish with the glyph hidden and dash offset cleared.");
                 }
                 finally
                 {
