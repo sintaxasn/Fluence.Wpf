@@ -620,3 +620,21 @@ ColorPicker grows from 29 to 30 runtime cases and TextBox from 22 to 23, so
 ordinary CI floors increase by two to 1468 net472 and 1469 net10. Screenshot
 exclusions and existing theory-row expansions are unchanged. Validation runs
 only the ColorPicker and TextBox classes on both full test targets.
+
+## GitHub issues #82-#84
+
+Release discovery adds six TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync theory
+cases and one TitleBarGlyphButtonStyle_IsIncludedInPublicKeyInventoryAsync fact.
+The one ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync
+fact is replaced by two ReducedMotion_ProgressRing_Indeterminate_KeepsAnimatingAsync
+theory cases. No other cases or method names are removed.
+
+The case and method inventories each rise by eight rows: net472 1526 to 1534 and
+net10 1581 to 1589. All four files match fresh Release discovery as multisets;
+unchanged rows retain their committed order for a focused review diff.
+
+The gallery layout follow-up renames MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync
+to MainWindow_TitleBarSearchBox_CentresInWindowAndFitsBarHeightAsync. The title
+bar now reserves caption space, so the gallery search is centered in the full window
+while its vertical fit remains checked against the bar. This is a one-for-one rename
+with no case-count change.

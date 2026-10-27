@@ -44,17 +44,17 @@ using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 namespace Fluence.Wpf.Tests.Control.Rules
 {
     /// <summary>
-    /// Reduced-motion tests: when <see cref="MotionHelper.IsMotionEnabled"/> is false (the
-    /// Windows "Show animations in Windows" accessibility setting is off), code-driven
-    /// animations must not start and controls must jump straight to their final visual state.
+    /// Reduced-motion tests: when <see cref="MotionHelper.IsMotionEnabled"/> is false
+    /// (Windows animation effects are off or rendering is software-only), decorative
+    /// code-driven animations must not start and controls jump to their final visual state.
     /// Every test forces the gate through <see cref="MotionHelper.OverrideIsMotionEnabled"/>;
     /// <see cref="DisposeAsync"/> resets it to null so an escaping exception cannot poison a
     /// later animation test.
     /// <para>
-    /// The one deliberate exception is the indeterminate <see cref="Controls.ProgressBar"/>: its
-    /// motion is the only thing that communicates "work is still happening", so it is treated as
-    /// essential status feedback rather than decoration and keeps animating with the gate off.
-    /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync"/>.
+    /// Indeterminate <see cref="Controls.ProgressBar"/> and <see cref="Controls.ProgressRing"/>
+    /// keep animating: their motion communicates ongoing work and is essential status feedback.
+    /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync"/> and
+    /// <see cref="ReducedMotion_ProgressRing_Indeterminate_KeepsAnimatingAsync"/>.
     /// </para>
     /// </summary>
     public sealed class ReducedMotionTests : IAsyncLifetime
@@ -217,10 +217,12 @@ namespace Fluence.Wpf.Tests.Control.Rules
             });
         }
 
-        [Fact]
-        public Task ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync()
+        [Theory]
+        [InlineData(16)]
+        [InlineData(32)]
+        public Task ReducedMotion_ProgressRing_Indeterminate_KeepsAnimatingAsync(double size)
         {
-            return WpfTestSta.RunOnStaAsync(static () =>
+            return WpfTestSta.RunOnStaAsync(async () =>
             {
                 MotionHelper.OverrideIsMotionEnabled = false;
 
@@ -228,8 +230,8 @@ namespace Fluence.Wpf.Tests.Control.Rules
                 {
                     IsActive = true,
                     IsIndeterminate = true,
-                    Width = 64,
-                    Height = 64,
+                    Width = size,
+                    Height = size,
                 };
                 Window w = new() { Content = ring, Width = 200, Height = 200 };
                 try
@@ -239,16 +241,31 @@ namespace Fluence.Wpf.Tests.Control.Rules
 
                     Path indeterminateArc = Assert.IsType<Path>(FindVisualChildByName<Path>(ring, "PART_IndeterminateArc"), exactMatch: false);
                     Assert.Equal(Visibility.Visible, indeterminateArc.Visibility);
-                    Assert.NotNull(indeterminateArc.Data);
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => indeterminateArc.Data is not null).ConfigureAwait(true),
+                        "The active ring must draw a visible indeterminate arc with reduced motion.");
 
                     RotateTransform rotate = Assert.IsType<RotateTransform>(GetIndeterminateRotateTransform(ring), exactMatch: false);
+                    Assert.True(rotate.HasAnimatedProperties,
+                        "An active indeterminate ring must continue conveying ongoing work with reduced motion.");
+                    double initialAngle = rotate.Angle;
+                    Assert.True(await WaitUntilAsync(w.Dispatcher, 2000, () => Math.Abs(rotate.Angle - initialAngle) > 1.0).ConfigureAwait(true),
+                        "The indeterminate arc must visibly rotate, not merely hold an animation clock.");
+
+                    ring.ShowPaused = true;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
                     Assert.False(rotate.HasAnimatedProperties,
-                        "With motion disabled the indeterminate rotation must not run.");
+                        "A paused ring must remain still even when indeterminate activity is essential motion.");
                     Assert.Equal(90.0, rotate.Angle, 0.01);
+                    Assert.NotNull(indeterminateArc.Data);
+
+                    ring.ShowPaused = false;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.True(rotate.HasAnimatedProperties,
+                        "Clearing the paused state must resume the active indicator.");
                 }
                 finally
                 {
-                    w.Close();
+                    CloseWindowAndDrain(w);
                 }
             });
         }

@@ -602,6 +602,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// Source is under Themes/Controls/ or Themes/Icons/ contributes nothing: its keys are
         /// template internal, unsupported, and free to change in any release. The slot [0] marker
         /// <see cref="FluenceThemeEngine.ComputedDictionaryMarker"/> is skipped for the same reason.
+        /// TitleBarGlyphButtonStyle is the sole published exception from a control dictionary.
         /// </summary>
         /// <param name="dictionary">The dictionary to walk.</param>
         /// <param name="keys">The set to fill.</param>
@@ -626,10 +627,30 @@ namespace Fluence.Wpf.Tests.Theming
                 }
             }
 
+            if (source.EndsWith("Themes/Controls/TitleBar.xaml", StringComparison.OrdinalIgnoreCase)
+                && dictionary.Contains("TitleBarGlyphButtonStyle"))
+            {
+                _ = keys.Add("TitleBarGlyphButtonStyle");
+            }
+
             foreach (ResourceDictionary merged in dictionary.MergedDictionaries)
             {
                 CollectPublicKeys(merged, keys);
             }
+        }
+
+        [Fact]
+        public Task TitleBarGlyphButtonStyle_IsIncludedInPublicKeyInventoryAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = TestApp.EnsureLibraryTheme();
+                SortedSet<string> keys = new(StringComparer.Ordinal);
+                CollectPublicKeys(app.Resources, keys);
+
+                _ = Assert.IsType<Style>(app.TryFindResource("TitleBarGlyphButtonStyle"));
+                Assert.Contains("TitleBarGlyphButtonStyle", keys);
+            });
         }
 
         /// <summary>

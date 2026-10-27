@@ -1475,6 +1475,104 @@ namespace Fluence.Wpf.Tests.Windowing
                 });
         }
 
+        [Theory]
+        [InlineData(false, false, false, 138d)]
+        [InlineData(true, false, false, 138d)]
+        [InlineData(true, true, false, 46d)]
+        [InlineData(false, false, true, 138d)]
+        [InlineData(true, false, true, 138d)]
+        [InlineData(true, true, true, 46d)]
+        public Task TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(
+            bool extendsContentIntoTitleBar,
+            bool hideMinimizeAndMaximize,
+            bool rightToLeft,
+            double expectedCaptionWidth)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application app = TestApp.EnsureLibraryTheme();
+                FluenceWindow? window = null;
+
+                try
+                {
+                    System.Windows.Controls.Button rightHeaderButton = new()
+                    {
+                        Content = "\uE713",
+                        Style = Assert.IsType<Style>(app.TryFindResource("TitleBarGlyphButtonStyle")),
+                    };
+                    TitleBar titleBar = new()
+                    {
+                        Title = "Repro",
+                        RightHeader = rightHeaderButton,
+                    };
+
+                    window = new FluenceWindow
+                    {
+                        Width = 1100,
+                        Height = 720,
+                        Left = -20000,
+                        Top = -20000,
+                        ExtendsContentIntoTitleBar = extendsContentIntoTitleBar,
+                        FlowDirection = rightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
+                        IsMinimizeButtonVisible = hideMinimizeAndMaximize ? Visibility.Collapsed : Visibility.Visible,
+                        IsMaximizeButtonVisible = hideMinimizeAndMaximize ? Visibility.Collapsed : Visibility.Visible,
+                        TitleBar = titleBar,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                    };
+
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.Grid captionPanel = Assert.IsType<System.Windows.Controls.Grid>(
+                        window.Template.FindName("CaptionButtonPanel", window));
+                    AssertRightHeaderAdjacentToCaptionPanel(window, rightHeaderButton, captionPanel, expectedCaptionWidth);
+
+                    Visibility nextVisibility = hideMinimizeAndMaximize ? Visibility.Visible : Visibility.Collapsed;
+                    window.IsMinimizeButtonVisible = nextVisibility;
+                    window.IsMaximizeButtonVisible = nextVisibility;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    AssertRightHeaderAdjacentToCaptionPanel(window, rightHeaderButton, captionPanel,
+                        hideMinimizeAndMaximize ? 138d : 46d);
+                }
+                finally
+                {
+                    window?.Close();
+                }
+            });
+        }
+
+        private static void AssertRightHeaderAdjacentToCaptionPanel(
+            FluenceWindow window,
+            System.Windows.Controls.Button rightHeaderButton,
+            System.Windows.Controls.Grid captionPanel,
+            double expectedCaptionWidth)
+        {
+            Assert.Equal(expectedCaptionWidth, captionPanel.ActualWidth, 0.5);
+            Rect headerBounds = rightHeaderButton.TransformToAncestor(window).TransformBounds(
+                new Rect(new Size(rightHeaderButton.ActualWidth, rightHeaderButton.ActualHeight)));
+            Rect captionBounds = captionPanel.TransformToAncestor(window).TransformBounds(
+                new Rect(new Size(captionPanel.ActualWidth, captionPanel.ActualHeight)));
+
+            Point buttonCenter = new(headerBounds.Left + (headerBounds.Width / 2.0),
+                headerBounds.Top + (headerBounds.Height / 2.0));
+            DependencyObject? hitNode = window.InputHitTest(buttonCenter) as DependencyObject;
+            Assert.NotNull(hitNode);
+            Assert.True(IsDescendantOfButton(hitNode, rightHeaderButton),
+                "The RightHeader button center must receive input instead of a caption button.");
+
+            if (window.FlowDirection is FlowDirection.RightToLeft)
+            {
+                Assert.Equal(captionBounds.Right, headerBounds.Left, 1.0);
+            }
+            else
+            {
+                Assert.Equal(captionBounds.Left, headerBounds.Right, 1.0);
+            }
+        }
+
         [Fact]
         public async Task TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequestedAsync()
         {

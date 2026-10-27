@@ -11,6 +11,8 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 
 [FluenceWindow](controls/fluence-window.md) extends `Window`. `SystemBackdropType` requests Mica, Acrylic, Tabbed, Auto, or None. Its [TitleBar](controls/title-bar.md) property accepts a UI element; the [TitleBar](controls/title-bar.md) control raises `BackRequested` and `PaneToggleRequested`.
 
+The `TitleBar` provides `LeftHeader` and `RightHeader` slots for custom content. When hosted by `FluenceWindow`, the right header sits before the actual caption-button area; a standalone `TitleBar` reserves no caption-button space. `TitleBarGlyphButtonStyle` is a keyed public resource for buttons in either header whose `Content` is a Segoe Fluent Icons glyph string.
+
 ## Actions and selection
 
 | Types | Use them for | Main behavior |
@@ -96,6 +98,8 @@ The theme also styles some native framework elements used inside these controls.
 | [SmoothScrollViewer](controls/smooth-scroll-viewer.md), [ScrollBarExtensions](controls/scroll-bar-extensions.md) | Scrolling and native scroll bar behavior | Smooth scrolling and attached extensions |
 
 The ProgressBar uses a 1 DIP track and a 3 DIP indicator by default. Their vertical centerlines align in the determinate presentation. Custom `TrackHeight` or `MinHeight` values can have half-pixel offsets from device-pixel rounding.
+
+An active indeterminate `ProgressRing` keeps its essential progress animation when Windows animations are disabled or software rendering is in use. It stops while paused, inactive, hidden, unloaded, or determinate. Error state takes precedence over paused state.
 
 ## Text, icons, and images
 
