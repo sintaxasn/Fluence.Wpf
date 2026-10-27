@@ -418,6 +418,91 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task AutoSuggestBox_EditorClickOpensSuggestionsAfterMouseCaptureAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                Window window = new() { Width = 480, Height = 300 };
+                Controls.AutoSuggestBox box = new()
+                {
+                    Width = 360,
+                    Text = "ap",
+                    ItemsSource = (List<string>)["Apple", "Banana"],
+                };
+                Button other = new() { Content = "Other" };
+                StackPanel panel = new();
+                _ = panel.Children.Add(other);
+                _ = panel.Children.Add(box);
+
+                try
+                {
+                    window.Content = panel;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    _ = other.Focus();
+                    Assert.True(other.IsKeyboardFocused);
+
+                    TextBox editor = Assert.IsType<TextBox>(box.Template.FindName("PART_TextBox", box), exactMatch: false);
+                    Popup popup = Assert.IsType<Popup>(box.Template.FindName("PART_SuggestionsPopup", box));
+                    editor.Select(0, 1);
+
+                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                    });
+                    _ = editor.Focus();
+                    Assert.True(editor.IsKeyboardFocused);
+                    Assert.True(popup.IsOpen, "Focus opens the popup during the mouse-down path.");
+
+                    Assert.True(Mouse.Capture(editor), "The editor takes mouse capture for its click/selection gesture.");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(popup.IsOpen, "Transferring capture from the light-dismiss popup closes it.");
+                    Assert.False(box.IsSuggestionListOpen);
+
+                    _ = Mouse.Capture(element: null);
+                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.MouseLeftButtonUpEvent,
+                        Handled = true,
+                    });
+
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
+                        "The completed editor click must show the available suggestions.");
+                    Assert.True(box.IsSuggestionListOpen);
+                    Assert.True(editor.IsKeyboardFocused);
+                    Assert.Equal("ap", editor.Text, StringComparer.Ordinal);
+                    Assert.Equal(0, editor.SelectionStart);
+                    Assert.Equal(1, editor.SelectionLength);
+
+                    // A further click restores a list dismissed while the editor retained focus.
+                    box.IsSuggestionListOpen = false;
+                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.MouseLeftButtonUpEvent,
+                        Handled = true,
+                    });
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true));
+
+                    // A mouse release after focus has moved away cannot reopen the list.
+                    _ = other.Focus();
+                    Assert.False(box.IsKeyboardFocusWithin);
+                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.MouseLeftButtonUpEvent,
+                        Handled = true,
+                    });
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(box.IsSuggestionListOpen);
+                }
+                finally
+                {
+                    _ = Mouse.Capture(element: null);
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task AutoSuggestBox_ChooseSuggestionViaKeyboard_RaisesSuggestionChosenAndQuerySubmittedAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
@@ -633,6 +718,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     QueryIcon = new Controls.FontIcon { Glyph = "\uE721" },
                     Text = "search term",
+                    ItemsSource = (List<string>)["search term"],
                 };
 
                 try
@@ -649,16 +735,23 @@ namespace Fluence.Wpf.Tests.Control
 
                     _ = box.Focus();
                     Assert.True(textBox.IsKeyboardFocused);
+                    box.IsSuggestionListOpen = true;
                     AutoSuggestBoxQuerySubmittedEventArgs? submitted = null;
                     box.QuerySubmitted += (_, args) => submitted = args;
 
                     queryButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    queryButton.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.MouseLeftButtonUpEvent,
+                        Handled = true,
+                    });
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Assert.NotNull(submitted);
                     Assert.Equal("search term", submitted.QueryText, StringComparer.Ordinal);
                     Assert.Null(submitted.ChosenSuggestion);
                     Assert.True(textBox.IsKeyboardFocused, "The query button must retain editor focus.");
+                    Assert.False(box.IsSuggestionListOpen, "The query-button release must not reopen submitted suggestions.");
 
                     // Clearing QueryIcon removes the button from the icon slot entirely.
                     box.QueryIcon = null;

@@ -296,6 +296,7 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
 
             _textBox?.TextChanged -= OnTextBoxTextChanged;
+            _textBox?.RemoveHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp));
             _suggestionsList?.PreviewMouseLeftButtonUp -= OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed -= OnPopupClosed;
             _queryButton?.Click -= OnQueryButtonClick;
@@ -306,6 +307,7 @@ namespace Fluence.Wpf.Controls
             _queryButton = GetTemplateChild(PART_QueryButton) as ButtonBase;
 
             _textBox?.TextChanged += OnTextBoxTextChanged;
+            _textBox?.AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp), handledEventsToo: true);
             _suggestionsList?.PreviewMouseLeftButtonUp += OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed += OnPopupClosed;
             _queryButton?.Click += OnQueryButtonClick;
@@ -456,6 +458,24 @@ namespace Fluence.Wpf.Controls
                 _pendingChangeReason = null;
             }
 
+            UpdateSuggestionListState();
+        }
+
+        private void OnTextBoxMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!ReferenceEquals(sender, _textBox) || !IsLoaded || !IsKeyboardFocusWithin)
+            {
+                return;
+            }
+
+            if (e.OriginalSource is DependencyObject source && _queryButton is not null &&
+                (ReferenceEquals(source, _queryButton) || _queryButton.IsAncestorOf(source)))
+            {
+                return;
+            }
+
+            // The editor may take mouse capture after focus opened the light-dismiss
+            // popup during mouse-down. Once its click is complete, restore the list.
             UpdateSuggestionListState();
         }
 
