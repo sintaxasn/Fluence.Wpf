@@ -12,5 +12,5 @@ Read this file when changing repository documentation.
 ## Editing
 
 - Update the generator, XML comments, or PowerShell help when those own generated content. Generate into ignored artifacts/docs/, then check the same output before syncing the website copy.
-- Public API or behavior changes update CHANGELOG.md and the relevant authored guide. Sync managed pages to the website repository when a change affects its published documentation. Published screenshots require separate visual review.
+- Public API or behavior changes update CHANGELOG.md, the relevant XML documentation, and the corresponding website control page. Keep the control catalog focused on choosing controls. Sync managed pages to the website repository when a change affects its published documentation. Published screenshots require separate visual review.
 - Use .editorconfig and the repository text-policy check for encoding, line endings, and whitespace. Do not use em dashes or en dashes in Markdown.

@@ -138,13 +138,46 @@ foreach ($candidate in $candidateData.candidates)
     if (-not $seen.Add([string]$candidate.id)) { throw "Duplicate candidate: $($candidate.id)" }
     $publishedPath = Get-DocsContainedPath -Root $WebsiteRoot -RelativePath $candidate.path
     $capturedPath = Get-DocsContainedPath -Root $CaptureOutputRoot -RelativePath $candidate.sourceRelativePath
-    if (-not [System.IO.File]::Exists($publishedPath) -or -not [System.IO.File]::Exists($capturedPath))
+    $old = $null
+    if ($baseline.ContainsKey([string]$candidate.path)) { $old = $baseline[[string]$candidate.path] }
+    if (-not [System.IO.File]::Exists($capturedPath))
     {
         $pending.Add([pscustomobject]@{ id = $candidate.id; reason = 'missing-capture-or-baseline'; before = $publishedPath; after = $capturedPath })
         continue
     }
-    $old = $null
-    if ($baseline.ContainsKey([string]$candidate.path)) { $old = $baseline[[string]$candidate.path] }
+    if (-not [System.IO.File]::Exists($publishedPath))
+    {
+        if (-not $candidate.id.StartsWith('controls/', [System.StringComparison]::Ordinal))
+        {
+            $pending.Add([pscustomobject]@{ id = $candidate.id; reason = 'missing-capture-or-baseline'; before = $publishedPath; after = $capturedPath })
+            continue
+        }
+        # A recorded baseline missing from disk is not a new capture.
+        if ($null -ne $old)
+        {
+            $pending.Add([pscustomobject]@{ id = $candidate.id; reason = 'missing-capture-or-baseline'; before = $publishedPath; after = $capturedPath })
+            continue
+        }
+        $afterHash = Get-FileHashLower $capturedPath
+        $after = Get-DecodedPng $capturedPath
+        $decision = $null
+        if ($decisions.ContainsKey([string]$candidate.id)) { $decision = $decisions[[string]$candidate.id] }
+        if ($null -eq $decision -or $decision.decision -cne 'new-capture' -or
+            -not $decision.PSObject.Properties['candidatePngSha256'] -or $decision.candidatePngSha256 -cne $afterHash -or
+            -not $decision.PSObject.Properties['provenance'] -or [string]::IsNullOrWhiteSpace($decision.provenance))
+        {
+            $pending.Add([pscustomobject]@{ id = $candidate.id; reason = 'new-capture-review-required'; before = $publishedPath; after = $capturedPath })
+            continue
+        }
+        $approved.Add([pscustomobject]@{
+            id = $candidate.id; path = $candidate.path; sourceRelativePath = $candidate.sourceRelativePath
+            sha256 = $afterHash; pngSha256 = $afterHash; decodedPixelSha256 = $after.pixelSha256
+            checkedVisualInputSha256 = $candidate.checkedVisualInputSha256; inputs = @($candidate.inputs)
+            theme = $candidate.theme; state = $candidate.state; mode = $candidate.mode
+            decision = 'new-capture'; provenance = [string]$decision.provenance
+        })
+        continue
+    }
     if ($candidate.id.StartsWith('powershell/images/', [System.StringComparison]::Ordinal) -and
         ($null -eq $old -or -not $old.PSObject.Properties['mode'] -or -not $old.mode))
     {

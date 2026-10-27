@@ -2,7 +2,7 @@
 
 `Fluence.Wpf.PowerShell` is a script module for Fluent dialogs and windows on Windows PowerShell 5.1 and PowerShell 7.4 or later. It uses the [Fluence.Wpf](../README.md) control library. Scripts can show messages, collect validated input, display progress, change appearance, and host custom XAML without compiling a WPF application.
 
-The [PowerShell documentation](https://fluencewpf.com/docs/powershell/) contains a [first dialog tutorial](https://fluencewpf.com/docs/powershell/tutorial), task guides, [command reference](https://fluencewpf.com/docs/powershell/reference/), and [module design](https://fluencewpf.com/docs/powershell/explanation). This page covers module setup and development.
+The [PowerShell documentation](https://fluencewpf.com/docs/powershell/) contains a [first dialog tutorial](https://fluencewpf.com/docs/powershell/usage), task guides, [command reference](https://fluencewpf.com/docs/powershell/reference/), and [module design](https://fluencewpf.com/docs/powershell/explanation). This page covers module setup and development.
 
 ## Requirements
 
@@ -59,7 +59,7 @@ These message dialogs show the module's built-in appearance in light and dark th
 
 ![PowerShell message dialog in dark mode](https://raw.githubusercontent.com/sintaxasn/Fluence.Wpf.Website/main/docs/powershell/images/message-dark.png)
 
-The [capture notes](https://github.com/sintaxasn/Fluence.Wpf.Website/blob/main/docs/powershell/images/CAPTURE.md) document how these module screenshots were rendered and what they omit.
+The [capture notes](build/CAPTURE.md) document how these module screenshots were rendered and what they omit.
 
 ```powershell
 $answer = Show-FluenceMessage -Message 'Install the update?' -Buttons YesNo -Icon Question

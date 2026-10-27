@@ -63,7 +63,7 @@ try {
 & './tools/Docs/Review-VisualCaptures.ps1' -CandidatesPath artifacts/docs/visual-candidates.json -WebsiteRoot $siteRoot
 ```
 
-The review command compares decoded pixels with the published PNGs and reports pending material decisions. For pixel differences, the decision JSON contains `decisions` entries with `id`, `decision` (`material-change` or `visually-unchanged`), `candidatePngSha256`, and a reviewed `provenance`. Once every pending candidate has a decision, write the approved manifest and sync it:
+The review command compares decoded pixels with the published PNGs and reports pending material decisions. For pixel differences, the decision JSON contains `decisions` entries with `id`, `decision` (`material-change` or `visually-unchanged`), `candidatePngSha256`, and a reviewed `provenance`. A control capture with no existing image or recorded baseline uses `new-capture` instead. New gallery captures are not supported by this review flow. Once every pending candidate has a decision, write the approved manifest and sync it:
 
 ```powershell
 pwsh -NoProfile -File tools/Docs/Review-VisualCaptures.ps1 -CandidatesPath artifacts/docs/visual-candidates.json -WebsiteRoot $siteRoot -DecisionsPath artifacts/docs/visual-decisions.json -OutputPath artifacts/docs/approved-captures.json
@@ -71,5 +71,7 @@ pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs
 ```
 
 A visually unchanged decision advances the checked input hash while retaining the published PNG. A material change can replace only its approved image. Review the resulting website diff and site checks before publication.
+
+Sync uses exclusive creation for a new capture. If a write fails partway through and the resulting bytes differ from the approved PNG, rollback leaves the file in place and reports the retained recovery snapshot for inspection.
 
 The [docs workflow](../../.github/workflows/docs-sync.yml) runs on `main` and can be started manually. It always writes and checks ignored references. With `WEBSITE_DOCS_READY` unset or false, it stops there with no Git commit. To enable website sync, set the source repository Actions variable `WEBSITE_DOCS_READY` to `true` and configure `WEBSITE_DOCS_TOKEN` as a fine-grained token with Contents read/write access to the website repository. With readiness true, the workflow initializes the manifest if absent, syncs managed pages, validates the website, checks that source and website `main` have not advanced, and commits only changed website managed paths. It has read-only source permissions and does not capture screenshots, commit generated source files, publish a website deployment, or release a package.

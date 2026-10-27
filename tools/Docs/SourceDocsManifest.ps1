@@ -93,10 +93,13 @@ function Assert-SourceDocsManifest {
         }
         if ($record.kind -eq 'capture') {
             if (-not $image) { throw "Capture is absent from the explicit map: $path" }
+            if ($record.decision -eq 'new-capture' -and -not $path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal)) {
+                throw "New captures are supported only for controls: $path"
+            }
             if ($record.sha256 -notmatch '^[a-f0-9]{64}$' -or $record.pngSha256 -cne $record.sha256 -or
                 $record.inputs.Count -eq 0 -or [string]::IsNullOrWhiteSpace([string]$record.theme) -or
                 [string]::IsNullOrWhiteSpace([string]$record.state) -or [string]::IsNullOrWhiteSpace([string]$record.mode) -or
-                $record.decision -cnotin @('legacy-unverified','material-change','visually-unchanged') -or
+                $record.decision -cnotin @('legacy-unverified','material-change','visually-unchanged','new-capture') -or
                 ($null -ne $record.checkedVisualInputSha256 -and $record.checkedVisualInputSha256 -notmatch '^[a-f0-9]{64}$')) {
                 throw "Invalid capture record: $path"
             }

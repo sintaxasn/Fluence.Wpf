@@ -62,8 +62,8 @@ Describe 'Review-VisualCaptures' {
     BeforeEach {
         $script:website = Join-Path $TestDrive 'website'
         $script:captures = Join-Path $TestDrive 'captures'
-        $script:published = Join-Path $website 'docs/screenshots/gallery'
-        $script:captured = Join-Path $captures 'screenshots/gallery'
+        $script:published = Join-Path $website 'docs/screenshots/controls'
+        $script:captured = Join-Path $captures 'screenshots/controls'
         New-Item -ItemType Directory -Path $published,$captured -Force | Out-Null
         $script:baselinePng = Join-Path $published 'page-light.png'
         $script:candidatePng = Join-Path $captured 'page-light.png'
@@ -72,14 +72,14 @@ Describe 'Review-VisualCaptures' {
         $script:decisionsPath = Join-Path $TestDrive 'decisions.json'
         $script:approvedPath = Join-Path $TestDrive 'approved.json'
         $script:mapPath = Join-Path $TestDrive 'map.psd1'
-        "@{ SchemaVersion=1; Captures=@(@{ Id='gallery/page-light.png'; Path='docs/screenshots/gallery/page-light.png'; SourceRelativePath='screenshots/gallery/page-light.png'; Inputs=@('page.xaml'); Family='gallery/page'; Theme='light'; State='default'; Mode='WpfRender' }) }" |
+        "@{ SchemaVersion=1; Captures=@(@{ Id='controls/page-light.png'; Path='docs/screenshots/controls/page-light.png'; SourceRelativePath='screenshots/controls/page-light.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='light'; State='default'; Mode='WpfRender' }) }" |
             Set-Content -LiteralPath $mapPath -Encoding utf8
         if (Test-Path -LiteralPath $approvedPath) { Remove-Item -LiteralPath $approvedPath }
         Write-TestPng -Path $baselinePng
         Write-TestPng -Path $candidatePng
-        @{schemaVersion=1; files=@(@{path='docs/screenshots/gallery/page-light.png'; mode='WpfRender'; pngSha256=(Get-FileHash $baselinePng).Hash.ToLowerInvariant()})} |
+        @{schemaVersion=1; files=@(@{path='docs/screenshots/controls/page-light.png'; mode='WpfRender'; pngSha256=(Get-FileHash $baselinePng).Hash.ToLowerInvariant()})} |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
-        @{schemaVersion=1; candidates=@(@{id='gallery/page-light.png'; path='docs/screenshots/gallery/page-light.png'; sourceRelativePath='screenshots/gallery/page-light.png'; checkedVisualInputSha256=('a'*64); inputs=@('page.xaml'); theme='light'; state='default'; mode='WpfRender'})} |
+        @{schemaVersion=1; candidates=@(@{id='controls/page-light.png'; path='docs/screenshots/controls/page-light.png'; sourceRelativePath='screenshots/controls/page-light.png'; checkedVisualInputSha256=('a'*64); inputs=@('page.xaml'); theme='light'; state='default'; mode='WpfRender'})} |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
     }
 
@@ -97,7 +97,7 @@ Describe 'Review-VisualCaptures' {
         Write-TestPng -Path $candidatePng -Blue 255
         $result = Invoke-Review
         $result.pending[0].reason | Should -Be 'material-review-required'
-        @{decisions=@(@{id='gallery/page-light.png'; decision='material-change'; provenance='visual-review-approved'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
+        @{decisions=@(@{id='controls/page-light.png'; decision='material-change'; provenance='visual-review-approved'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
         $approved = Invoke-Review -DecisionsPath $decisionsPath -OutputPath $approvedPath
         $approved.captures[0].pngSha256 | Should -Be (Get-FileHash $candidatePng).Hash.ToLowerInvariant()
@@ -114,8 +114,43 @@ Describe 'Review-VisualCaptures' {
         (Invoke-Review).pending[0].reason | Should -Be 'missing-capture-or-baseline'
     }
 
+    It 'requires an explicit hash-bound review for a genuinely new capture' {
+        Remove-Item -LiteralPath $baselinePng
+        @{schemaVersion=1; files=@()} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+        (Invoke-Review).pending[0].reason | Should -Be 'new-capture-review-required'
+        @{decisions=@(@{id='controls/page-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=('0'*64)})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        (Invoke-Review -DecisionsPath $decisionsPath).pending[0].reason | Should -Be 'new-capture-review-required'
+        @{decisions=@(@{id='controls/page-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        $approved = Invoke-Review -DecisionsPath $decisionsPath -OutputPath $approvedPath
+        $approved.captures[0].decision | Should -Be 'new-capture'
+        $approved.captures[0].pngSha256 | Should -Be (Get-FileHash $candidatePng).Hash.ToLowerInvariant()
+    }
+
+    It 'does not treat a recorded but missing baseline as a new capture' {
+        Remove-Item -LiteralPath $baselinePng
+        @{decisions=@(@{id='controls/page-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        (Invoke-Review -DecisionsPath $decisionsPath).pending[0].reason | Should -Be 'missing-capture-or-baseline'
+    }
+
+    It 'does not approve new gallery captures' {
+        $newDir = Join-Path $captures 'screenshots/gallery'
+        New-Item -ItemType Directory -Path $newDir -Force | Out-Null
+        Copy-Item -LiteralPath $candidatePng -Destination (Join-Path $newDir 'page-light.png')
+        (Get-Content -LiteralPath $mapPath -Raw).Replace('controls/page','gallery/page').Replace('screenshots/controls','screenshots/gallery') |
+            Set-Content -LiteralPath $mapPath -Encoding utf8
+        (Get-Content -LiteralPath $candidatesPath -Raw).Replace('controls/page','gallery/page').Replace('screenshots/controls','screenshots/gallery') |
+            Set-Content -LiteralPath $candidatesPath -Encoding utf8
+        @{schemaVersion=1; files=@()} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+        @{decisions=@(@{id='gallery/page-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        (Invoke-Review -DecisionsPath $decisionsPath).pending[0].reason | Should -Be 'missing-capture-or-baseline'
+    }
+
     It 'rejects a submitted capture when its declared family is incomplete' {
-        "@{ SchemaVersion=1; Captures=@(@{ Id='gallery/page-light.png'; Path='docs/screenshots/gallery/page-light.png'; SourceRelativePath='screenshots/gallery/page-light.png'; Inputs=@('page.xaml'); Family='gallery/page'; Theme='light'; State='default'; Mode='WpfRender' }, @{ Id='gallery/page-dark.png'; Path='docs/screenshots/gallery/page-dark.png'; SourceRelativePath='screenshots/gallery/page-dark.png'; Inputs=@('page.xaml'); Family='gallery/page'; Theme='dark'; State='default'; Mode='WpfRender' }) }" |
+        "@{ SchemaVersion=1; Captures=@(@{ Id='controls/page-light.png'; Path='docs/screenshots/controls/page-light.png'; SourceRelativePath='screenshots/controls/page-light.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='light'; State='default'; Mode='WpfRender' }, @{ Id='controls/page-dark.png'; Path='docs/screenshots/controls/page-dark.png'; SourceRelativePath='screenshots/controls/page-dark.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='dark'; State='default'; Mode='WpfRender' }) }" |
             Set-Content -LiteralPath $mapPath -Encoding utf8
         { Invoke-Review -OutputPath $approvedPath } | Should -Throw '*Incomplete capture family*'
         Test-Path -LiteralPath $approvedPath | Should -BeFalse
@@ -132,7 +167,7 @@ Describe 'Review-VisualCaptures' {
         $candidateData.candidates[0].path = 'docs/screenshots/linked/page-light.png'
         $candidateData | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
         $mapText = Get-Content -LiteralPath $mapPath -Raw
-        $mapText.Replace('docs/screenshots/gallery/page-light.png','docs/screenshots/linked/page-light.png') |
+        $mapText.Replace('docs/screenshots/controls/page-light.png','docs/screenshots/linked/page-light.png') |
             Set-Content -LiteralPath $mapPath -Encoding utf8
         try { { Invoke-Review } | Should -Throw '*reparse point*' }
         finally { Remove-Item -LiteralPath $link -Force }
@@ -149,7 +184,7 @@ Describe 'Review-VisualCaptures' {
         $candidateData.candidates[0].sourceRelativePath = 'screenshots/linked/page-light.png'
         $candidateData | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
         $mapText = Get-Content -LiteralPath $mapPath -Raw
-        $mapText.Replace("SourceRelativePath='screenshots/gallery/page-light.png'","SourceRelativePath='screenshots/linked/page-light.png'") |
+        $mapText.Replace("SourceRelativePath='screenshots/controls/page-light.png'","SourceRelativePath='screenshots/linked/page-light.png'") |
             Set-Content -LiteralPath $mapPath -Encoding utf8
         try { { Invoke-Review } | Should -Throw '*reparse point*' }
         finally { Remove-Item -LiteralPath $link -Force }
@@ -176,7 +211,7 @@ Describe 'Review-VisualCaptures' {
         $site = Join-Path $case 'website'
         $siteDocs = Join-Path $site 'docs'
         [System.IO.Directory]::CreateDirectory($siteDocs) | Out-Null
-        Write-FixtureFile (Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1') "@{ SchemaVersion=1; Captures=@(@{ Id='gallery/page-light.png'; Path='docs/screenshots/gallery/page-light.png'; SourceRelativePath='screenshots/gallery/page-light.png'; Inputs=@('page.xaml'); Family='gallery/page'; Theme='light'; State='default'; Mode='WpfRender' }) }"
+        Write-FixtureFile (Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1') "@{ SchemaVersion=1; Captures=@(@{ Id='controls/page-light.png'; Path='docs/screenshots/controls/page-light.png'; SourceRelativePath='screenshots/controls/page-light.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='light'; State='default'; Mode='WpfRender' }) }"
         Write-FixtureFile (Join-Path $repo 'page.xaml') '<Root>Page</Root>'
         Write-FixtureFile (Join-Path $repo 'Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1') "@{ FunctionsToExport=@('Get-FluenceWidget') }"
         $references = @{
@@ -198,8 +233,8 @@ Describe 'Review-VisualCaptures' {
             Write-FixtureFile $sourcePath $references[$name]
             Write-FixtureFile (Join-Path $siteDocs $name) $references[$name]
         }
-        $sitePng = Join-Path $siteDocs 'screenshots/gallery/page-light.png'
-        $integratedCandidate = Join-Path $repo 'artifacts/docs/screenshots/gallery/page-light.png'
+        $sitePng = Join-Path $siteDocs 'screenshots/controls/page-light.png'
+        $integratedCandidate = Join-Path $repo 'artifacts/docs/screenshots/controls/page-light.png'
         [System.IO.Directory]::CreateDirectory((Split-Path -Parent $sitePng)) | Out-Null
         [System.IO.Directory]::CreateDirectory((Split-Path -Parent $integratedCandidate)) | Out-Null
         Copy-Item -LiteralPath $baselinePng -Destination $sitePng
@@ -208,7 +243,7 @@ Describe 'Review-VisualCaptures' {
         & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -InitializeManifest
         $siteManifest = Join-Path $site 'source-docs-manifest.json'
         $legacy = Get-Content -LiteralPath $siteManifest -Raw | ConvertFrom-Json
-        @($legacy.files | Where-Object path -eq 'docs/screenshots/gallery/page-light.png')[0].PSObject.Properties.Name | Should -Not -Contain 'id'
+        @($legacy.files | Where-Object path -eq 'docs/screenshots/controls/page-light.png')[0].PSObject.Properties.Name | Should -Not -Contain 'id'
         $first = & $selector -RepositoryRoot $repo -MapPath (Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1') -WebsiteManifestPath $siteManifest
         $first.candidates.Count | Should -Be 1
         $first.candidates[0].reason | Should -Be 'legacy-unverified'
@@ -218,5 +253,46 @@ Describe 'Review-VisualCaptures' {
         & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath
         $second = & $selector -RepositoryRoot $repo -MapPath (Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1') -WebsiteManifestPath $siteManifest
         $second.candidates.Count | Should -Be 0
+
+        # Add a dark companion with no published baseline, then review the complete family.
+        $integratedMap = Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1'
+        "@{ SchemaVersion=1; Captures=@(@{ Id='controls/page-light.png'; Path='docs/screenshots/controls/page-light.png'; SourceRelativePath='screenshots/controls/page-light.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='light'; State='default'; Mode='WpfRender' }, @{ Id='controls/page-dark.png'; Path='docs/screenshots/controls/page-dark.png'; SourceRelativePath='screenshots/controls/page-dark.png'; Inputs=@('page.xaml'); Family='controls/page'; Theme='dark'; State='default'; Mode='WpfRender' }) }" |
+            Set-Content -LiteralPath $integratedMap -Encoding utf8
+        $newPng = Join-Path $repo 'artifacts/docs/screenshots/controls/page-dark.png'
+        Write-TestPng -Path $newPng -Blue 255
+        $third = & $selector -RepositoryRoot $repo -MapPath $integratedMap -WebsiteManifestPath $siteManifest -CaptureId 'controls/page-dark.png'
+        $third | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
+        @{decisions=@(@{id='controls/page-dark.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $newPng).Hash.ToLowerInvariant()})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        & $review -CandidatesPath $candidatesPath -WebsiteRoot $site -CaptureOutputRoot (Join-Path $repo 'artifacts/docs') -WebsiteManifestPath $siteManifest -MapPath $integratedMap -DecisionsPath $decisionsPath -OutputPath $approvedPath | Out-Null
+        $newTarget = Join-Path $siteDocs 'screenshots/controls/page-dark.png'
+        Write-TestPng -Path $newTarget
+        { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw '*New capture baseline unexpectedly exists*'
+        Remove-Item -LiteralPath $newTarget
+        $manifestBefore = (Get-FileHash -LiteralPath $siteManifest).Hash
+        try {
+            $env:FLUENCE_DOCS_SYNC_TEST_CREATE_RACE_PATH = 'docs/screenshots/controls/page-dark.png'
+            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw
+        } finally { Remove-Item Env:FLUENCE_DOCS_SYNC_TEST_CREATE_RACE_PATH -ErrorAction SilentlyContinue }
+        (Get-Content -LiteralPath $newTarget -Raw) | Should -BeExactly 'concurrent sentinel'
+        (Get-FileHash -LiteralPath $siteManifest).Hash | Should -Be $manifestBefore
+        Remove-Item -LiteralPath $newTarget
+        try {
+            $env:FLUENCE_DOCS_SYNC_TEST_FAIL_AFTER = '1'
+            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw '*Injected sync apply failure*'
+        } finally { Remove-Item Env:FLUENCE_DOCS_SYNC_TEST_FAIL_AFTER -ErrorAction SilentlyContinue }
+        Test-Path -LiteralPath $newTarget | Should -BeFalse
+        (Get-FileHash -LiteralPath $siteManifest).Hash | Should -Be $manifestBefore
+        try {
+            $env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH = 'docs/screenshots/controls/page-dark.png'
+            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw '*Restoration failed*Recovery snapshot*'
+        } finally { Remove-Item Env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH -ErrorAction SilentlyContinue }
+        (Get-Item -LiteralPath $newTarget).Length | Should -Be 1
+        (Get-FileHash -LiteralPath $siteManifest).Hash | Should -Be $manifestBefore
+        Remove-Item -LiteralPath $newTarget
+        & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath
+        (Get-FileHash $newTarget).Hash | Should -Be (Get-FileHash $newPng).Hash
+        $updated = Get-Content -LiteralPath $siteManifest -Raw | ConvertFrom-Json
+        @($updated.files | Where-Object path -eq 'docs/screenshots/controls/page-dark.png')[0].decision | Should -Be 'new-capture'
     }
 }

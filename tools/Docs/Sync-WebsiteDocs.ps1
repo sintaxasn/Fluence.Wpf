@@ -342,7 +342,7 @@ if ($ApprovedCaptureManifest) {
             throw "Approved capture differs from authored map: $path"
         }
         if ($capture.checkedVisualInputSha256 -cnotmatch '^[a-f0-9]{64}$' -or
-            $capture.decision -cnotin @('material-change','visually-unchanged') -or
+            $capture.decision -cnotin @('material-change','visually-unchanged','new-capture') -or
             [string]::IsNullOrWhiteSpace([string]$capture.provenance)) {
             throw "Incomplete approved capture: $path"
         }
@@ -350,10 +350,22 @@ if ($ApprovedCaptureManifest) {
             throw "Approved visual input hash differs from current source: $path"
         }
         $target = Get-DocsContainedPath $siteRoot $path
-        if (-not (Test-Path -LiteralPath $target -PathType Leaf)) { throw "Approved capture baseline is missing: $path" }
         $oldRecord = @($records | Where-Object path -eq $path)
-        if ($oldRecord.Count -ne 1) { throw "Approved capture state is missing: $path" }
-        $hash = Get-DocsSha256 ([IO.File]::ReadAllBytes($target))
+        $exists = Test-Path -LiteralPath $target -PathType Leaf
+        if ($capture.decision -eq 'new-capture') {
+            if (-not $path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal)) { throw "New captures are supported only for controls: $path" }
+            if ($exists -or $oldRecord.Count -ne 0) { throw "New capture baseline unexpectedly exists: $path" }
+            $candidate = Get-DocsContainedPath $captureRoot (Assert-DocsRelativePath ([string]$capture.sourceRelativePath))
+            if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { throw "Capture candidate is missing: $path" }
+            $bytes = [IO.File]::ReadAllBytes($candidate)
+            $hash = Get-DocsSha256 $bytes
+            if ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256) { throw "Capture candidate hash mismatch: $path" }
+            $ops.Add(@{ path=$path; action='create'; bytes=$bytes })
+        } else {
+            if (-not $exists) { throw "Approved capture baseline is missing: $path" }
+            if ($oldRecord.Count -ne 1) { throw "Approved capture state is missing: $path" }
+            $hash = Get-DocsSha256 ([IO.File]::ReadAllBytes($target))
+        }
         if ($capture.decision -eq 'material-change') {
             $sourceRel = Assert-DocsRelativePath ([string]$capture.sourceRelativePath)
             $candidate = Get-DocsContainedPath $captureRoot $sourceRel
@@ -362,10 +374,10 @@ if ($ApprovedCaptureManifest) {
             $hash = Get-DocsSha256 $bytes
             if ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256) { throw "Capture candidate hash mismatch: $path" }
             if ($hash -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($target)))) { $ops.Add(@{ path=$path; action='write'; bytes=$bytes }) }
-        } elseif ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256) {
+        } elseif ($capture.decision -eq 'visually-unchanged' -and ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256)) {
             throw "Unchanged decision does not match published image: $path"
         }
-        [void]$records.Remove($oldRecord[0])
+        if ($oldRecord.Count -eq 1) { [void]$records.Remove($oldRecord[0]) }
         $newRecord = [pscustomobject]@{
             path=$path; kind='capture'; sha256=$hash; provenance=[string]$capture.provenance
             theme=[string]$capture.theme; state=[string]$capture.state; mode=[string]$capture.mode
@@ -456,12 +468,31 @@ $ledgerJson = ([ordered]@{ schemaVersion=1; websiteRoot=$siteRoot; operations=@(
     [byte[]](@(0xEF,0xBB,0xBF) + [Text.Encoding]::UTF8.GetBytes($ledgerJson)))
 
 $applied = 0
+$attemptedPaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 try {
     foreach ($op in $ops) {
         $target = Get-DocsContainedPath $siteRoot ([string]$op.path)
-        if ($op.action -eq 'remove') { Remove-Item -LiteralPath $target -Force }
-        else {
+        if ($op.action -eq 'remove') {
+            [void]$attemptedPaths.Add([string]$op.path)
+            Remove-Item -LiteralPath $target -Force
+        }
+        elseif ($op.action -eq 'create') {
             [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
+            if ($env:FLUENCE_DOCS_SYNC_TEST_CREATE_RACE_PATH -eq $op.path) {
+                [IO.File]::WriteAllText($target, 'concurrent sentinel')
+            }
+            $stream = [IO.File]::Open($target, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+            try {
+                [void]$attemptedPaths.Add([string]$op.path)
+                if ($env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH -eq $op.path) {
+                    $stream.Write([byte[]]$op.bytes, 0, 1)
+                    throw 'Injected partial capture write failure.'
+                }
+                $stream.Write([byte[]]$op.bytes, 0, $op.bytes.Length)
+            } finally { $stream.Dispose() }
+        } else {
+            [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
+            [void]$attemptedPaths.Add([string]$op.path)
             [IO.File]::WriteAllBytes($target,[byte[]]$op.bytes)
         }
         $applied++
@@ -475,10 +506,18 @@ try {
     $restoreFailures = [Collections.Generic.List[string]]::new()
     foreach ($snapshot in $ledger) {
         try {
+            if (-not $attemptedPaths.Contains([string]$snapshot.path)) { continue }
             if ($env:FLUENCE_DOCS_SYNC_TEST_RESTORE_FAIL_PATH -eq $snapshot.path) {
                 throw "Injected restore failure for $($snapshot.path)."
             }
             $target = Get-DocsContainedPath $siteRoot ([string]$snapshot.path)
+            $operation = @($ops | Where-Object path -eq $snapshot.path)[0]
+            if ($snapshot.action -eq 'remove') {
+                if (Test-Path -LiteralPath $target) { throw 'Target changed after removal; not overwriting concurrent data.' }
+            } elseif (-not (Test-Path -LiteralPath $target -PathType Leaf) -or
+                (Get-DocsSha256 ([IO.File]::ReadAllBytes($target))) -cne (Get-DocsSha256 ([byte[]]$operation.bytes))) {
+                throw 'Target changed after write; not overwriting concurrent data.'
+            }
             if ($snapshot.existed) {
                 $oldBytes = [IO.File]::ReadAllBytes((Get-DocsContainedPath $recoveryPath ([string]$snapshot.blob)))
                 if ((Get-DocsSha256 $oldBytes) -cne $snapshot.sha256) { throw 'Recovery blob hash mismatch.' }

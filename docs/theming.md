@@ -1,6 +1,8 @@
-﻿# Theme Resources and publication
+﻿# Theme resources
 
-This page covers the keys an application can consume and how the theme engine updates them. For a first app, begin with the [Basic walkthrough](https://fluencewpf.com/docs/csharp/usage).
+<span id="theme-resources-and-publication"></span>
+
+This page describes the resource keys applications can use. For a first app, begin with the [Basic walkthrough](csharp/usage.md).
 
 This page is the supported resource-key reference for Fluence.Wpf. Use it when styling application content or writing a control template. The complete, build-checked key inventory is [`PublicKeys.txt`](../Fluence.Wpf.Tests/Theming/golden/PublicKeys.txt); the families below explain how to use those keys.
 
@@ -16,9 +18,7 @@ Call `ApplicationThemeManager.Apply` before showing the first window. It creates
 
 Each published color normally has a frozen `SolidColorBrush` sibling with `Brush` appended. Use the brush key for brush properties. Some special brush keys have no color sibling, and a few accent brushes intentionally differ from the same-named color's direct conversion. Consult the frozen inventory for exact spelling.
 
-`ApplicationTheme.Auto` gives High Contrast priority, then follows the Windows app light/dark preference (`AppsUseLightTheme`). Ordinary Windows theme filenames do not override that app preference. Relevant Windows settings broadcasts share one pending dispatcher refresh; a later change can schedule another refresh after the previous one finishes.
-
-When a visible, realized `FluenceWindow` changes between Light and Dark, changes accent, or changes its backdrop request, its previous WPF surface fades away over the new appearance for 167 ms. Theme and accent resources, manager state, and public change events update immediately; the fade is a temporary visual overlay, not interpolated brushes. Windows draws native DWM backdrops outside WPF, so those pixels do not interpolate. High Contrast entry or exit is immediate for accessibility. The fade is skipped when motion is disabled or a usable snapshot cannot be captured. Ordinary WPF `Window` instances update immediately.
+For theme resolution and transition behavior, see [Theme pipeline internals](explanation/theme-pipeline.md).
 
 ## Supported key families
 
@@ -39,9 +39,13 @@ When a visible, realized `FluenceWindow` changes between Light and Dark, changes
 
 The named families contain more keys than the examples shown. The public inventory also includes the `ControlOnImageFillColor*`, `LayerOnMicaBaseAltFillColor*`, acrylic, card, background, and InfoBadge foreground families. `AcrylicBackgroundFillColorDefaultBrush` and `AcrylicBackgroundFillColorBaseBrush` provide painted fallbacks for transient surfaces. `AccentAcrylicBackgroundFillColor*` supplies accent tinted variants. WPF does not offer WinUI's per-element backdrop blur, so these resource values describe a flat surface.
 
-`RadioButtonOuterEllipseCheckedStroke`, `RadioButtonOuterEllipseCheckedStrokePointerOver`, `RadioButtonOuterEllipseCheckedStrokePressed`, and `RadioButtonOuterEllipseCheckedStrokeDisabled` each have a brush twin. In Light and Dark, they follow the checked ring's default, secondary, tertiary, and disabled accent fill roles, respectively. In High Contrast, they map to Highlight, ControlText, Control, and GrayText, respectively, independent of the checked ring fill. Use the state-specific stroke key when customizing the checked outer ring.
+### Control state keys
 
-`TextControlElevationBorderFocusedBrush` paints the rounded focus border for TextBox, PasswordBox, and NumberBox. The stock AutoSuggestBox template receives the same focus treatment through its embedded Fluence TextBox, as do the ColorPicker Hex, RGB, HSV, and alpha editors. Editable ComboBox uses the same resources on its field border. Its accent band follows the border's corner radius. `TextControlBorderThemeThicknessFocused` is `1,1,1,2` in Light and Dark and `2` on every side in High Contrast. Use both resources dynamically in custom templates so an already focused control follows theme and accent changes. Keep content insets independent of the focused stroke thickness to avoid moving the editor.
+| Key family | Light and Dark role | High Contrast role |
+| --- | --- | --- |
+| `RadioButtonOuterEllipseCheckedStroke*` | Checked ring accent states | Highlight, ControlText, Control, and GrayText by state |
+| `TextControlElevationBorderFocusedBrush` | Focused editor border | Uses the active system contrast roles |
+| `CheckBoxCheckBackgroundFillIndeterminate*`, `CheckBoxCheckGlyphForegroundIndeterminate*` | Accent plate and on-accent dash | State-specific Highlight, HighlightText, GrayText, and Window roles |
 
 ### High contrast roles
 
@@ -52,10 +56,6 @@ These brush-only keys map to live WPF `SystemColors` when high contrast resource
 The InfoBadge foreground family also changes with high contrast. Use the published role keys instead of hard-coded colors. A settings broadcast causes the theme engine to read a new `SystemColors` snapshot.
 
 In high contrast, WinUI's shared `AccentFillColor*` brushes use the live window color, while `AccentTextFillColor*` and `TextOnAccentFillColor*` use window text; disabled text uses gray text. Interactive controls use separate state resources for highlight, hover, pressed, and disabled visuals. Brush-only roles such as `SystemControlHighlightAccentBrush` and `TextControlSelectionHighlightBrush` also follow the live highlight color. Fluence publishes these resources in the computed dictionary so existing controls and custom templates update when the Windows contrast scheme changes. The raw `SystemAccentColor` ramp remains available for inspection and custom accent intent, but does not determine high-contrast control states.
-
-CheckBox publishes separate `CheckBoxCheckBackgroundFillIndeterminate*` plate and `CheckBoxCheckGlyphForegroundIndeterminate*` dash families. Each has base, `PointerOver`, `Pressed`, and `Disabled` color keys with brush twins. In High Contrast, the plate uses Highlight, HighlightText, Highlight, and GrayText in that order; the dash uses HighlightText, Highlight, HighlightText, and Window. In Light and Dark, these roles use the same accent and on-accent values as the corresponding checked states. Custom templates should use the indeterminate keys when the high-contrast distinction matters.
-
-`CheckBoxCheckBackgroundStrokeIndeterminatePointerOver` and its `Brush` twin give the indeterminate hover outline its own semantic role. Light and Dark resolve it to `AccentFillSecondary`; High Contrast resolves it to `Highlight`, while the indeterminate fill remains `HighlightText`.
 
 ### Typography, geometry, and motion
 
@@ -71,9 +71,7 @@ Supported radii include `ControlCornerRadius` (4), `OverlayCornerRadius` (8), `C
 
 ## How theme publication works
 
-`ApplicationThemeManager.Apply` resolves a concrete Light, Dark, or High Contrast theme. The engine resolves the system or selected accent, combines theme and accent colors, creates frozen brush values, and replaces the computed resource dictionary. A fingerprint of the published output avoids rebuilding resources for repeated Windows settings broadcasts that change nothing. It also accounts for high contrast system colors and the transparency setting.
-
-The dictionaries are installed in the following order. Because slot `[0]` is replaced, existing `DynamicResource` and `{fluence:ThemeResource}` consumers receive the new values. Typography and templates are loaded once. Theme state and events update as the engine publishes; a visible `FluenceWindow` may show a short WPF surface fade over the new resources. High Contrast changes apply immediately. Native DWM backdrop pixels are outside that WPF transition.
+See [Theme pipeline internals](explanation/theme-pipeline.md) for resolution, publication, and transition behavior.
 
 ## Resource ownership and lookup
 
@@ -99,48 +97,10 @@ The color keys `SystemAccentColorPrimary`, `Secondary`, and `Tertiary` express t
 
 ## Accent, backdrop, and design time
 
-`FluenceWindow` uses the theme's `NavigationViewContentBackgroundBrush` for the NavigationView content layer over Mica. Dark Mica keeps its canonical translucent `#4C3A3A3A` layer on 10-bit displays with advanced color off; Light Mica retains its existing fallback. The window's backdrop compensation leaves source header tint intact. High Contrast behavior and Tabbed backdrop behavior are unchanged. Applications can still provide a window-scoped `NavigationViewContentBackgroundBrush` resource to own that surface; the library preserves an application override.
-
-The system accent is the default intent. `ApplyCustomAccent` pins one seed or separate light and dark seeds. When a seed exactly matches the current Windows accent base and the OS palette is available, Fluence snapshots all seven Windows shades for that custom intent; the pinned snapshot stays fixed if Windows later changes. Other custom seeds use a generated ramp. The visible primary accent fill uses a theme-selected shade of the selected palette, so an arbitrary seed is not guaranteed to appear unchanged on a button. Because Windows may adjust a requested seed before constructing its palette, generated `Light1` through `Light3` and `Dark1` through `Dark3` are not guaranteed to fall above or below the raw `SystemAccentColor`; that published color remains the requested seed. The generated ramp is an approximation of Windows behavior for arbitrary custom colors, not a proven exact Windows color transform. `ApplySystemAccent` returns to the live Windows palette.
-
-Use `ApplyCustomAccent(..., exact: true)` when the visible primary fill must equal a supplied color. With one color, `AccentFillColorDefault` and `SystemAccentColorPrimary` equal that color in Light mode and use the resolved palette's `Light2` tint in Dark mode. That palette is a Windows snapshot if the seed matches the current Windows base, or a generated fallback otherwise. With two colors, those roles equal the supplied light and dark colors respectively, even when both arguments have the same value. Both forms keep the selected palette for other accent roles, and the selection remains sticky across theme changes. The earlier `ApplyCustomAccentExact` overloads remain available for existing callers. For example:
-
-```csharp
-using System.Windows.Media;
-using Fluence.Wpf;
-
-Color light = Color.FromRgb(0x87, 0xAB, 0xC8);
-Color dark = Color.FromRgb(0xAC, 0xCB, 0xDF);
-
-ApplicationAccentColorManager.ApplyCustomAccent(light);            // OS snapshot if the seed matches; otherwise generated.
-ApplicationAccentColorManager.ApplyCustomAccent(light, dark);      // Select the matching snapshot or generated ramp per theme.
-ApplicationAccentColorManager.ApplyCustomAccent(light, exact: true);       // Exact Light fill, resolved Dark Light2 tint.
-ApplicationAccentColorManager.ApplyCustomAccent(light, dark, exact: true); // Exact Light and Dark fills.
-ApplicationAccentColorManager.ApplySystemAccent();                 // Follow Windows again.
-```
-
-High Contrast control fills and text continue to follow live `SystemColors` roles, even with an exact custom accent. The raw `SystemAccentColor` remains the selected ramp seed. `FluenceWindow` uses backdrop policy independently of these color tokens; see [window configuration](how-to/window-and-title-bar.md).
+For accent selection and exact colors, see [Theme and accent](how-to/theme-and-accent.md#pin-a-brand-accent) and [accent resolution](explanation/theme-pipeline.md#accent-resolution).
 
 The XAML designer cannot run the full theme engine. The library includes generated Light and Dark design-time resource dictionaries under `Fluence.Wpf/Properties/`, plus `DesignTimeResources.xaml` for default preview. These are snapshots for the designer and are not merged at runtime. Check the final appearance in the gallery, especially high contrast and DWM surfaces.
 
 ## Gallery appearance examples
 
-These captures demonstrate the gallery's light and dark appearance. They show the system accent in the captured environment; the controls use the shared accent resources described above.
-
-![Fluence gallery home using the light theme](screenshots/gallery/home-light.png)
-
-![Fluence gallery home using the dark theme](screenshots/gallery/home-dark.png)
-
-The button samples also show themed control surfaces and accent styling:
-
-![Gallery button examples using the light theme](screenshots/gallery/buttons-light.png)
-
-![Gallery button examples using the dark theme](screenshots/gallery/buttons-dark.png)
-
-The gallery can pin a custom accent independently of the light or dark theme. These captures show the same button page with blue and orange accent ramps.
-
-![Button gallery with blue accent](screenshots/gallery/buttons-light-accent-blue.png)
-
-![Button gallery with orange accent](screenshots/gallery/buttons-light-accent-orange.png)
-
-The [screenshot manifest](screenshots/gallery/manifest.json) lists the captured routes and states. It records that offscreen WPF rendering omits native DWM backdrops and shadows.
+See the [theme and accent guide](how-to/theme-and-accent.md#gallery-appearance-examples) for gallery captures.

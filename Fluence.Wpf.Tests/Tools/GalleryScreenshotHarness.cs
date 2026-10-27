@@ -982,21 +982,18 @@ namespace Fluence.Wpf.Tests.Tools
 
                 button.IsEnabled = false;
                 await CaptureControlAsync(window, cards[0], disabled, theme, directory, "disabled").ConfigureAwait(true);
-                if (string.Equals(theme, "light", StringComparison.Ordinal))
+                ControlCaptureSpec accent = new("button", route, 3, "Button");
+                foreach ((Color color, string name) in new[]
                 {
-                    ControlCaptureSpec accent = new("button", route, 3, "Button");
-                    foreach ((Color color, string name) in new[]
-                    {
-                        (Color.FromRgb(0, 120, 212), "blue"),
-                        (Color.FromRgb(189, 64, 0), "orange"),
-                    })
-                    {
-                        ApplicationAccentColorManager.ApplyCustomAccent(color);
-                        await CaptureControlAsync(window, cards[2], accent, theme, directory, "accent-" + name).ConfigureAwait(true);
-                    }
-
-                    ApplicationAccentColorManager.ApplySystemAccent();
+                    (Color.FromRgb(0, 120, 212), "blue"),
+                    (Color.FromRgb(189, 64, 0), "orange"),
+                })
+                {
+                    ApplicationAccentColorManager.ApplyCustomAccent(color);
+                    await CaptureControlAsync(window, cards[2], accent, theme, directory, "accent-" + name).ConfigureAwait(true);
                 }
+
+                ApplicationAccentColorManager.ApplySystemAccent();
             }
             else if (string.Equals(route, "selection", StringComparison.Ordinal))
             {
@@ -1256,6 +1253,7 @@ namespace Fluence.Wpf.Tests.Tools
             try
             {
                 PrepareCaptureWindow(window, 480, 240);
+                window.ResizeMode = ResizeMode.CanResize;
                 window.Show();
                 await SettleGalleryAsync(gallery).ConfigureAwait(true);
                 await SaveNamedControlAsync(window, "fluence-window", theme, directory).ConfigureAwait(true);

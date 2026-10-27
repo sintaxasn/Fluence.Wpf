@@ -19,4 +19,4 @@ Run each script in a fresh process when comparing appearance, because theme and 
 | [05-LoadXamlFile.ps1](05-LoadXamlFile.ps1) and [MainWindow.xaml](MainWindow.xaml) | Load layout from a XAML file and wire named controls through `-Initialize` and `-Data`. | [Windows from XAML](https://fluencewpf.com/docs/powershell/how-to/windows-from-xaml) |
 | [06-ControlsTour.ps1](06-ControlsTour.ps1) | Browse and interact with common Fluence controls. | [Windows from XAML](https://fluencewpf.com/docs/powershell/how-to/windows-from-xaml) |
 
-For a guided first script, follow [Your first dialog](https://fluencewpf.com/docs/powershell/tutorial). For parameter details, use the [command reference](https://fluencewpf.com/docs/powershell/reference/).
+For a guided first script, follow [Your first dialog](https://fluencewpf.com/docs/powershell/usage). For parameter details, use the [command reference](https://fluencewpf.com/docs/powershell/reference/).
