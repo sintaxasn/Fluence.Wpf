@@ -296,7 +296,7 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
 
             _textBox?.TextChanged -= OnTextBoxTextChanged;
-            _textBox?.RemoveHandler(UIElement.MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp));
+            _textBox?.RemoveHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp));
             _suggestionsList?.PreviewMouseLeftButtonUp -= OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed -= OnPopupClosed;
             _queryButton?.Click -= OnQueryButtonClick;
@@ -307,7 +307,7 @@ namespace Fluence.Wpf.Controls
             _queryButton = GetTemplateChild(PART_QueryButton) as ButtonBase;
 
             _textBox?.TextChanged += OnTextBoxTextChanged;
-            _textBox?.AddHandler(UIElement.MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp), handledEventsToo: true);
+            _textBox?.AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnTextBoxMouseLeftButtonUp), handledEventsToo: true);
             _suggestionsList?.PreviewMouseLeftButtonUp += OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed += OnPopupClosed;
             _queryButton?.Click += OnQueryButtonClick;
