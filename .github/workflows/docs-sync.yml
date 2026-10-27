@@ -1,8 +1,26 @@
 ﻿name: Generate and sync source documentation
 
+# The paths are the inputs to the generated and synced pages: the library and module sources,
+# the generators and sync tooling, the authored pages Sync-WebsiteDocs.ps1 copies, and the build
+# settings. Add a path here when the sync starts reading a new input. Run the workflow manually
+# to resync after a change outside these paths.
 on:
   push:
     branches: [main]
+    paths:
+      - 'Fluence.Wpf/**'
+      - 'Fluence.Wpf.PowerShell.Module/**'
+      - 'tools/ApiDocs/**'
+      - 'tools/Docs/**'
+      - 'docs/controls.md'
+      - 'docs/theming.md'
+      - 'docs/winui-parity.md'
+      - 'docs/powershell/**'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - 'global.json'
+      - 'nuget.config'
+      - '.github/workflows/docs-sync.yml'
   workflow_dispatch:
 
 permissions:
@@ -16,6 +34,7 @@ jobs:
   generate-and-sync:
     if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout source
         uses: actions/checkout@v7
@@ -27,6 +46,8 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
 
       - name: Build API documentation input
         shell: pwsh
@@ -44,9 +65,20 @@ jobs:
         shell: pwsh
         run: pwsh -NoProfile -File Fluence.Wpf.PowerShell.Module/build/Build-Module.ps1 -Configuration Release -Build
 
+      # Restores the CurrentUser module the next step installs. Its version check then skips
+      # PowerShell Gallery. Change the key when the pinned version changes.
+      - name: Cache PowerShell documentation generator
+        uses: actions/cache@v6
+        with:
+          path: ~/Documents/PowerShell/Modules
+          key: ${{ runner.os }}-psmodules-docs-alt3docusaurus2.0.1
+
       - name: Install PowerShell documentation generator
         shell: pwsh
-        run: Install-Module -Name Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Scope CurrentUser -Force -ErrorAction Stop
+        run: |
+          if (-not (Get-Module -ListAvailable Alt3.Docusaurus.Powershell | Where-Object { $_.Version -eq [version]'2.0.1' })) {
+            Install-Module -Name Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Scope CurrentUser -Force -ErrorAction Stop
+          }
 
       - name: Generate PowerShell function pages in ignored staging
         shell: pwsh
