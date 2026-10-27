@@ -243,11 +243,12 @@ namespace Fluence.Wpf.Tests.Control.Rules
                         "Check-in must reveal a partial path by arc length rather than fading or scaling the whole tick.");
                     Assert.Equal(1.0, checkGlyph.Opacity, 0.001);
                     Assert.True(checkGlyph.RenderTransform?.Value.IsIdentity ?? true);
-                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
-                        () => System.Math.Abs(checkGlyph.StrokeDashOffset) < 0.01).ConfigureAwait(true));
-
                     FieldInfo segmentActiveField = Assert.IsType<FieldInfo>(typeof(Controls.CheckBox).GetField(
                         "_segmentActive", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 2000,
+                        () => System.Math.Abs(checkGlyph.StrokeDashOffset) < 0.01
+                            && !Assert.IsType<bool>(segmentActiveField.GetValue(checkBox))).ConfigureAwait(true));
+
                     FieldInfo segmentKindField = Assert.IsType<FieldInfo>(typeof(Controls.CheckBox).GetField(
                         "_segmentKind", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
                     MethodInfo applyProgress = Assert.IsType<MethodInfo>(typeof(Controls.CheckBox).GetMethod(
