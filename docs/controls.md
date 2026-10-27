@@ -11,6 +11,8 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 
 [FluenceWindow](controls/fluence-window.md) extends `Window`. `SystemBackdropType` requests Mica, Acrylic, Tabbed, Auto, or None. `Window.Icon` is unset by default so WPF can use the consumer application's icon or the Windows default; set it to `FluenceWindow.DefaultIcon` to opt into Fluence branding. Its [TitleBar](controls/title-bar.md) property accepts a UI element; the [TitleBar](controls/title-bar.md) control raises `BackRequested` and `PaneToggleRequested`.
 
+On Windows 11 with Snap layouts enabled, the Maximize and Restore caption glyphs expose Snap hover and perform their window action when clicked. The window handles the caption action on mouse release.
+
 ## Actions and selection
 
 | Types | Use them for | Main behavior |

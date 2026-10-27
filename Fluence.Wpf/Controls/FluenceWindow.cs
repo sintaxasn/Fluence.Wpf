@@ -1446,6 +1446,19 @@ namespace Fluence.Wpf.Controls
             {
                 HandleGetMinMaxInfo(hwnd, lParam, ref handled);
             }
+            else if (msg == PInvoke.WM_NCLBUTTONDOWN &&
+                wParam.ToInt64() == PInvoke.HTMAXBUTTON &&
+                OsVersionHelper.IsWindows11 &&
+                SnapLayoutHelper.IsSnapLayoutEnabled() &&
+                IsMaximizable &&
+                (WindowState is WindowState.Maximized
+                    ? _restoreButton?.Visibility is Visibility.Visible && _restoreButton.IsEnabled
+                    : _maximizeButton?.Visibility is Visibility.Visible && _maximizeButton.IsEnabled))
+            {
+                // Keep the snap-layout hit for hover, but skip default non-client
+                // button tracking here so the custom caption can process the click.
+                handled = true;
+            }
             else if (msg == PInvoke.WM_NCLBUTTONUP && IsMaxButtonRelease(wParam))
             {
                 HandleMaxButtonClick(ref handled);
