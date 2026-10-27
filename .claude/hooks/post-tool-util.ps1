@@ -80,7 +80,7 @@ function Get-RelativePath {
     )
 
     $rootWithSeparator = $Root.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
-    return $Path.Substring($rootWithSeparator.Length).Replace('\', '/')
+    return $Path.Substring($rootWithSeparator.Length).Replace([System.IO.Path]::DirectorySeparatorChar, [char]'/')
 }
 
 function Add-FilePath {
@@ -117,7 +117,8 @@ $projectRoot = Get-ProjectRoot
 $extensions = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
 @(".cs", ".xaml", ".csproj", ".props", ".targets", ".sln", ".slnx", ".md", ".yml", ".yaml", ".json", ".ps1", ".psm1", ".psd1", ".ps1xml") | ForEach-Object { [void]$extensions.Add($_) }
 
-# UTF-8 BOM is mandated only for these source types (AGENTS.md section 2). Other tracked types
+# UTF-8 BOM is mandated for these source types except skill entrypoints, whose YAML
+# frontmatter must start at the first byte. Other tracked types
 # (.yml/.yaml/.json/.ps1/.psm1/.psd1/.sln/.slnx) are still checked for line endings and content,
 # but not for a BOM.
 $bomExtensions = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
@@ -219,7 +220,11 @@ for ($i = 0; $i -lt $fullPaths.Count; $i++) {
         $hasBom = $false
     }
 
-    if (-not $hasBom -and $bomExtensions.Contains($extension)) {
+    $isSkillEntrypoint = $relativePath -cmatch '^skills/[^/]+/SKILL[.]md$'
+    if ($isSkillEntrypoint -and $hasBom) {
+        $violations.Add("$relativePath must be UTF-8 without BOM so YAML frontmatter starts at the first byte.")
+    }
+    elseif (-not $isSkillEntrypoint -and -not $hasBom -and $bomExtensions.Contains($extension)) {
         $violations.Add("$relativePath must be UTF-8 with BOM.")
     }
 

@@ -1259,9 +1259,8 @@ namespace Fluence.Wpf.Tests.Gallery
             // The Fluence brand icon ships as resolution-independent vector DrawingImages in
             // Fluence.Wpf\Themes\Icons\FluenceIcons.xaml (merged into Generic.xaml), replacing the
             // multi-resolution assets\Fluence.ico that previously dominated the library binary.
-            // FluenceWindow rasterizes the brand vector for its default Window.Icon, so neither demo
-            // sets Icon= in XAML (both inherit the embedded default at runtime). The demo executables
-            // do set ApplicationIcon to the brand .ico so the .exe file icon in Explorer is the brand mark.
+            // The demo windows explicitly opt in to the embedded square brand icon. The demo
+            // executables also set ApplicationIcon to the brand .ico so Explorer uses the same mark.
             string libraryProject = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf", "Fluence.Wpf.csproj").ConfigureAwait(true);
             Assert.False(libraryProject.Contains("Fluence.ico", StringComparison.Ordinal),
                 "The library should no longer embed assets\\Fluence.ico now that the brand icon is a XAML vector.");
@@ -1286,10 +1285,10 @@ namespace Fluence.Wpf.Tests.Gallery
             Assert.Contains("<ApplicationIcon>", mvvmProject, StringComparison.Ordinal);
             Assert.Contains("Fluence_Icon.ico", mvvmProject, StringComparison.Ordinal);
 
-            Assert.False((await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "MainWindow.xaml").ConfigureAwait(true)).Contains("Icon=\"", StringComparison.Ordinal),
-                "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
-            Assert.False((await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").ConfigureAwait(true)).Contains("Icon=\"", StringComparison.Ordinal),
-                "The MVVM demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
+            string galleryWindow = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo", "MainWindow.xaml").ConfigureAwait(true);
+            Assert.Contains("Icon=\"{x:Static fluence:FluenceWindow.DefaultIcon}\"", galleryWindow, StringComparison.Ordinal);
+            string mvvmWindow = await DemoTestHost.ReadRepositoryFileAsync("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").ConfigureAwait(true);
+            Assert.Contains("Icon=\"{x:Static fluence:FluenceWindow.DefaultIcon}\"", mvvmWindow, StringComparison.Ordinal);
 
             // The retired .ico is gone from the tree.
             Assert.False(File.Exists(DemoTestHost.GetRepositoryFilePath("assets", "Fluence.ico")),

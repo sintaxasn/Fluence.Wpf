@@ -9,7 +9,9 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 | [FluenceWindow](controls/fluence-window.md) | WPF window with a Fluent title bar, caption controls, backdrop policy, and corner preference | [Window guide](how-to/window-and-title-bar.md) |
 | [TitleBar](controls/title-bar.md) | Title, back request, pane toggle request, and custom title-area content | [Gallery shell](../Fluence.Wpf.Demo/MainWindow.xaml) |
 
-[FluenceWindow](controls/fluence-window.md) extends `Window`. `SystemBackdropType` requests Mica, Acrylic, Tabbed, Auto, or None. Its [TitleBar](controls/title-bar.md) property accepts a UI element; the [TitleBar](controls/title-bar.md) control raises `BackRequested` and `PaneToggleRequested`.
+[FluenceWindow](controls/fluence-window.md) extends `Window`. `SystemBackdropType` requests Mica, Acrylic, Tabbed, Auto, or None. `Window.Icon` is unset by default so WPF can use the consumer application's icon or the Windows default; set it to `FluenceWindow.DefaultIcon` to opt into Fluence branding. Its [TitleBar](controls/title-bar.md) property accepts a UI element; the [TitleBar](controls/title-bar.md) control raises `BackRequested` and `PaneToggleRequested`.
+
+On Windows 11 with Snap layouts enabled, the Maximize and Restore caption glyphs expose Snap hover and perform their window action when clicked. The window handles the caption action on mouse release.
 
 The `TitleBar` provides `LeftHeader` and `RightHeader` slots for custom content. When hosted by `FluenceWindow`, the right header sits before the actual caption-button area; a standalone `TitleBar` reserves no caption-button space. `TitleBarGlyphButtonStyle` is a keyed public resource for buttons in either header whose `Content` is a Segoe Fluent Icons glyph string.
 
@@ -39,6 +41,8 @@ The `RadioButton` keeps native WPF grouping, keyboard navigation, and UI Automat
 | [ComboBox](controls/combo-box.md) | Choose from a drop-down list | `ItemsSource` collections, selection, editable text, and placeholder support |
 | [DatePicker](controls/date-picker.md), [TimePicker](controls/time-picker.md) | Choose a date or time | Dedicated selected-value properties and changed events |
 | [ColorPicker](controls/color-picker.md) | Choose a color | `Color`, `ColorChanged` |
+
+For object-backed items, `DisplayMemberPath` specifies the member shown for the selected value when the ComboBox is closed.
 
 ColorPicker's Hex field omits the character counter while retaining its RGB/ARGB input-length limit. Its RGB, HSV, and alpha fields keep their existing counters.
 

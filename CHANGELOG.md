@@ -8,8 +8,16 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Added
+
+- Added three `dotnet new` consumer starters: `fluence-window`, `fluence-nav-mvvm`, and `fluence-settings`. The navigation shell has generic title-bar artwork, compact navigation, an app-local compact-pane preference, and an accent action. Settings has a text-only title bar, permanently expanded categories, Back history, bundled color category PNGs with provenance notices, monochrome page glyphs, and measured row and navigation spacing. Both shells have working minimize caption actions. Generated projects ignore the local NuGet cache, build output, and temporary feed configuration. The Settings app uses ordinary WPF assets without Windows App SDK components.
+
 ### Fixed
 
+- Fixed Windows 11 Snap-enabled `FluenceWindow` Maximize and Restore caption glyph clicks so the window action completes on release. Snap hover, Minimize, and Close behavior remain intact.
+- Matched the left-pane NavigationView selection rail's width and inset to the WinUI reference at 150% display scaling.
+- Fixed closed ComboBox selections for object-backed items so `DisplayMemberPath` shows the selected member. A rendered selected-member regression covers the closed selection path.
+- Left `FluenceWindow.Icon` unset by default so consumer windows use their application icon or the Windows default. The embedded Fluence brand icon remains available through `FluenceWindow.DefaultIcon`, and both demos opt in explicitly. A regression covers style-provided icons.
 - Fixed #82 so `TitleBar.RightHeader` stops at the visible caption-button panel in `FluenceWindow`, follows RTL layout, and has no unrelated fixed caption inset when used standalone.
 - Fixed #83 by exposing `TitleBarGlyphButtonStyle` as a public keyed resource for Segoe Fluent Icons glyph-string button content.
 - Fixed #84 so an active indeterminate `ProgressRing` continues essential progress animation when Windows animations are disabled or rendering falls back to software, while stopping when paused, inactive, hidden, unloaded, or determinate. Error state overrides pause and remains animated.

@@ -896,6 +896,45 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task ComboBox_DisplayMemberPath_RendersSelectedMemberWhenClosedAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                Controls.ComboBox combo = new()
+                {
+                    Width = 240,
+                    DisplayMemberPath = nameof(DisplayOption.Name),
+                };
+                _ = combo.Items.Add(new DisplayOption("Alpha"));
+                _ = combo.Items.Add(new DisplayOption("Beta"));
+                combo.SelectedIndex = 0;
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter presenter = Assert.IsType<ContentPresenter>(combo.Template.FindName("contentPresenter", combo));
+                    TextBlock renderedText = Assert.IsType<TextBlock>(FindVisualChild<TextBlock>(presenter), exactMatch: false);
+                    Assert.Equal("Alpha", renderedText.Text, StringComparer.Ordinal);
+
+                    combo.SelectedIndex = 1;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.Equal("Beta", renderedText.Text, StringComparer.Ordinal);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task ComboBox_ItemTemplate_HasHoverOverlayAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
@@ -1281,6 +1320,16 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
+        }
+
+        private sealed class DisplayOption
+        {
+            internal DisplayOption(string name)
+            {
+                Name = name;
+            }
+
+            public string Name { get; }
         }
     }
 }

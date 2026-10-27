@@ -670,6 +670,21 @@ namespace Fluence.Wpf.Tests.Windowing
                 Assert.Equal(Visibility.Visible, max.Visibility);
                 Assert.Equal(Visibility.Collapsed, restore.Visibility);
 
+                IntPtr? downResult = InvokeWndProc(
+                    w,
+                    PInvoke.WM_NCLBUTTONDOWN,
+                    new IntPtr(PInvoke.HTMAXBUTTON),
+                    IntPtr.Zero,
+                    out bool downHandled);
+                bool snapHitAvailable = SnapLayoutHelper.IsSnapLayoutEnabled() && w.IsMaximizable && OsVersionHelper.IsWindows11;
+                Assert.Equal(snapHitAvailable, downHandled);
+                Assert.Equal(IntPtr.Zero, downResult);
+                Assert.Equal(WindowState.Normal, w.WindowState);
+
+                _ = InvokeWndProc(w, PInvoke.WM_NCLBUTTONUP, new IntPtr(PInvoke.HTCAPTION), IntPtr.Zero, out bool cancelledHandled);
+                Assert.False(cancelledHandled, "Releasing outside the max button must not toggle the window.");
+                Assert.Equal(WindowState.Normal, w.WindowState);
+
                 _ = InvokeWndProc(
                     w,
                     PInvoke.WM_NCLBUTTONUP,
@@ -686,6 +701,15 @@ namespace Fluence.Wpf.Tests.Windowing
 
                 _ = InvokeWndProc(
                     w,
+                    PInvoke.WM_NCLBUTTONDOWN,
+                    new IntPtr(PInvoke.HTMAXBUTTON),
+                    IntPtr.Zero,
+                    out downHandled);
+                Assert.Equal(snapHitAvailable, downHandled);
+                Assert.Equal(WindowState.Maximized, w.WindowState);
+
+                _ = InvokeWndProc(
+                    w,
                     PInvoke.WM_NCLBUTTONUP,
                     new IntPtr(PInvoke.HTMAXBUTTON),
                     IntPtr.Zero,
@@ -697,6 +721,20 @@ namespace Fluence.Wpf.Tests.Windowing
                 Assert.Equal(WindowState.Normal, w.WindowState);
                 Assert.Equal(Visibility.Visible, max.Visibility);
                 Assert.Equal(Visibility.Collapsed, restore.Visibility);
+
+                _ = InvokeWndProc(w, PInvoke.WM_NCLBUTTONDOWN, new IntPtr(PInvoke.HTCAPTION), IntPtr.Zero, out bool otherHitHandled);
+                Assert.False(otherHitHandled, "A non-max caption press must remain with the default window handler.");
+
+                w.IsMaximizable = false;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                _ = InvokeWndProc(w, PInvoke.WM_NCLBUTTONDOWN, new IntPtr(PInvoke.HTMAXBUTTON), IntPtr.Zero, out bool disabledHandled);
+                Assert.False(disabledHandled, "A disabled maximize button must not consume the native press.");
+
+                w.IsMaximizable = true;
+                w.IsMaximizeButtonVisible = Visibility.Hidden;
+                await w.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                _ = InvokeWndProc(w, PInvoke.WM_NCLBUTTONDOWN, new IntPtr(PInvoke.HTMAXBUTTON), IntPtr.Zero, out bool hiddenHandled);
+                Assert.False(hiddenHandled, "A hidden maximize button must not consume the native press.");
             });
         }
 
