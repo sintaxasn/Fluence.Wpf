@@ -629,7 +629,32 @@ namespace Fluence.Wpf.Tests.Tools
             card.BringIntoView();
             await SettleGalleryAsync(window).ConfigureAwait(true);
             FrameworkElement element = ResolveControlVisual(card, spec, allowEmpty);
-            await SavePaddedControlPngAsync(element, Path.Join(directory, file), allowEmpty).ConfigureAwait(true);
+            bool sizeToContent = string.Equals(spec.Slug, "text-block", StringComparison.Ordinal)
+                || string.Equals(spec.Slug, "text-block-extensions", StringComparison.Ordinal)
+                || string.Equals(spec.Slug, "rating-control", StringComparison.Ordinal)
+                || string.Equals(spec.Slug, "menu", StringComparison.Ordinal);
+            HorizontalAlignment originalAlignment = element.HorizontalAlignment;
+            try
+            {
+                if (sizeToContent)
+                {
+                    // These gallery samples stretch across the page. Capture their natural
+                    // widths so website scaling stays legible without resizing the controls.
+                    element.SetCurrentValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Left);
+                    window.UpdateLayout();
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                }
+
+                await SavePaddedControlPngAsync(element, Path.Join(directory, file), allowEmpty).ConfigureAwait(true);
+            }
+            finally
+            {
+                if (sizeToContent)
+                {
+                    element.SetCurrentValue(FrameworkElement.HorizontalAlignmentProperty, originalAlignment);
+                    window.UpdateLayout();
+                }
+            }
         }
 
         private static void RevealScrollBar(Demo.Pages.DemoSampleControl card)
@@ -1448,7 +1473,7 @@ namespace Fluence.Wpf.Tests.Tools
                 menuCard.BringIntoView();
                 await SettleGalleryAsync(window).ConfigureAwait(true);
                 if (FindDescendant<Controls.Menu>(menuCard) is not Controls.Menu menu
-                    || menu.ItemContainerGenerator.ContainerFromIndex(0) is not System.Windows.Controls.MenuItem menuItem)
+                    || menu.ItemContainerGenerator.ContainerFromIndex(0) is not MenuItem menuItem)
                 {
                     throw new InvalidOperationException("Menus sample has no menu item to open.");
                 }
@@ -1589,13 +1614,13 @@ namespace Fluence.Wpf.Tests.Tools
             // A standalone control image has no dimmed owner surface. Replace only this
             // temporary capture instance's smoke with the same theme canvas used for padding,
             // so transparent rounded corners do not retain a dark rectangular backdrop.
-            if (VisualTreeHelper.GetParent(dialog) is not Panel overlay || overlay.Children[0] is not System.Windows.Controls.Border smoke)
+            if (VisualTreeHelper.GetParent(dialog) is not Panel overlay || overlay.Children[0] is not Border smoke)
             {
                 throw new InvalidOperationException("ContentDialog has no capture overlay.");
             }
 
             Brush canvas = dialog.TryFindResource("SolidBackgroundFillColorBaseBrush") as Brush ?? Brushes.White;
-            smoke.SetCurrentValue(System.Windows.Controls.Border.BackgroundProperty, canvas);
+            smoke.SetCurrentValue(Border.BackgroundProperty, canvas);
             try
             {
                 window.UpdateLayout();
@@ -1604,7 +1629,7 @@ namespace Fluence.Wpf.Tests.Tools
             }
             finally
             {
-                smoke.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SmokeFillColorDefaultBrush");
+                smoke.SetResourceReference(Border.BackgroundProperty, "SmokeFillColorDefaultBrush");
                 dialog.Hide();
             }
         }
@@ -1646,7 +1671,7 @@ namespace Fluence.Wpf.Tests.Tools
                 window.Close();
             }
 
-            Controls.FontIcon icon = new() { Glyph = "\uE713", IconFontSize = 48 };
+            Controls.FontIcon icon = new() { Glyph = "\uE713", IconFontSize = 20 };
             Window iconWindow = new() { Content = icon };
             try
             {
