@@ -1,26 +1,8 @@
 ﻿name: Generate and sync source documentation
 
-# The paths are the inputs to the generated and synced pages: the library and module sources,
-# the generators and sync tooling, the authored pages Sync-WebsiteDocs.ps1 copies, and the build
-# settings. Add a path here when the sync starts reading a new input. Run the workflow manually
-# to resync after a change outside these paths.
 on:
   push:
     branches: [main]
-    paths:
-      - 'Fluence.Wpf/**'
-      - 'Fluence.Wpf.PowerShell.Module/**'
-      - 'tools/ApiDocs/**'
-      - 'tools/Docs/**'
-      - 'docs/controls.md'
-      - 'docs/theming.md'
-      - 'docs/winui-parity.md'
-      - 'docs/powershell/**'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
-      - 'global.json'
-      - 'nuget.config'
-      - '.github/workflows/docs-sync.yml'
   workflow_dispatch:
 
 permissions:

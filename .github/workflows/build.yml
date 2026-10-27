@@ -10,10 +10,12 @@ on:
   pull_request:
     branches: [main]
 
-# A newer push to the same pull request cancels the run it supersedes. Main and tag runs are
-# never cancelled, so a release cannot stop partway through publication.
+# A newer push to the same pull request cancels the run it supersedes. Main and tag runs each get
+# a group of their own, because a new run replaces a pending run in its group even without
+# cancel-in-progress. They are never cancelled or replaced, so a release cannot stop partway
+# through publication.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
