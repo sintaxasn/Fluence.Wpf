@@ -44,11 +44,29 @@ public partial class MainWindow : FluenceWindow
         };
     }
 
+    public override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+
+        SetCaptionCommandTarget("PART_MinimizeButton");
+        SetCaptionCommandTarget("PART_MaximizeButton");
+        SetCaptionCommandTarget("PART_RestoreButton");
+        SetCaptionCommandTarget("PART_CloseButton");
+    }
+
     private void UpdateStatus_Click(object sender, RoutedEventArgs e)
     {
         string name = string.IsNullOrWhiteSpace(NameInput.Text) ? "Guest" : NameInput.Text.Trim();
         string option = (OptionInput.SelectedItem as SampleOption)?.Name ?? "None";
         string notifications = NotificationToggle.IsChecked == true ? "on" : "off";
         StatusText.Text = $"{name} selected {option}. Notifications are {notifications}.";
+    }
+
+    private void SetCaptionCommandTarget(string partName)
+    {
+        if (GetTemplateChild(partName) is System.Windows.Controls.Button button)
+        {
+            button.CommandTarget = this;
+        }
     }
 }

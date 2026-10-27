@@ -7,6 +7,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r6" />
+    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r8" />
   </ItemGroup>
 </Project>

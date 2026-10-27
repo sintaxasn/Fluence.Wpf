@@ -33,4 +33,4 @@ The config contains only the supplied local feed and nuget.org. Keep the feed an
 
 ## Add your own icon
 
-The starter leaves the application and window icons unset. To use your brand, add an `.ico` file to this project, set `<ApplicationIcon>YourIcon.ico</ApplicationIcon>` in the project file, and assign `Icon="YourIcon.ico"` on `MainWindow` if you want a window icon.
+The title bar starts with a generic WPF vector 12 DIP from the client edge, followed by the app name. This simple starter has no Back or pane toggle. It leaves the application and window icons unset. To use your brand, add an `.ico` file to this project, set `<ApplicationIcon>YourIcon.ico</ApplicationIcon>` in the project file, and assign `Icon="YourIcon.ico"` on `MainWindow` if you want a window icon.

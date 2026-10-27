@@ -4,15 +4,15 @@ The `Fluence.Wpf.Templates` package provides three `dotnet new` starters. Each c
 
 | Short name | Starting point |
 | --- | --- |
-| `fluence-window` | Small form and status sample |
-| `fluence-nav-mvvm` | MVVM navigation, compact pane option, and accent action |
-| `fluence-settings` | Four Settings categories, Back history, permanently expanded navigation, bundled color category images, and monochrome page glyphs |
+| `fluence-window` | Small form and status sample with an app-name title bar |
+| `fluence-nav-mvvm` | MVVM navigation, Back history, compact pane option, and accent action |
+| `fluence-settings` | Four Settings categories, Back history, collapsible navigation, bundled color category images, and monochrome page glyphs |
 
-The navigation shell has generic title-bar artwork; the Settings shell has a text-only title bar with Back history. Neither sets the application or window icon. Supply your own application icon when branding your app.
+The simple and MVVM starters place a generic vector first in the title bar, 12 DIP from the client edge. The MVVM starter keeps Back visible but disabled until navigation creates history, then shows the pane toggle. Settings starts with Back at the same 12 DIP inset, followed by its pane toggle, and has no title-bar icon. All title bars keep the app name without a category subtitle. None sets the application or window icon. Supply your own application icon when branding your app.
 
 ## Try the local candidate package
 
-The current development package is local-only: `0.9.4-starters-dev.gb3879f16.r6`. The `.r6` stamp keeps the permanently expanded Settings pane and text-only title bar from `.r5`, with a 12 DIP left title-bar inset. It is not published and is not the normal NuGet install flow. Use the repository checker to pack the fixed library and template packages into a fresh local feed and cache, install the template into an isolated hive, and retain the run paths:
+The current development package is local-only: `0.9.4-starters-dev.gb3879f16.r8`. The `.r8` stamp identifies the three title-bar arrangements, enabled Back history in the MVVM and Settings starters, and collapsible panes. It is not published and is not the normal NuGet install flow. Use the repository checker to pack the fixed library and template packages into a fresh local feed and cache, install the template into an isolated hive, and retain the run paths:
 
 ```powershell
 $result = pwsh -NoProfile -File tools/Check-ConsumerTemplates.ps1 -KeepArtifacts | ConvertFrom-Json

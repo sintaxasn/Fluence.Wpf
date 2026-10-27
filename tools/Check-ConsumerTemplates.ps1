@@ -8,7 +8,7 @@
 
 $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$version = '0.9.4-starters-dev.gb3879f16.r6'
+$version = '0.9.4-starters-dev.gb3879f16.r8'
 $selectedTemplates = @($Template)
 $names = @{
     'fluence-window' = 'window'
@@ -272,23 +272,54 @@ function Assert-GeneratedStructure {
     Assert-TextContains $generatedReadme '\.nuget-packages/' "generated package cache guidance for $ShortName"
 
     if ($ShortName -eq 'fluence-window') {
-        $window = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml')
+        [xml]$window = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml')
         $code = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml.cs')
-        Assert-TextContains $window 'DisplayMemberPath="Name"' 'window typed ComboBox display'
-        Assert-TextContains $window 'x:Name="StatusText"' 'window visible status'
+        $titleHost = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]'))
+        $titleBar = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]/*[local-name()="TitleBar"]'))
+        $icon = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]/*[local-name()="Grid" and @Width="20" and @Height="20" and @Margin="12,0,8,0"]'))
+        if ($titleHost.Count -ne 1 -or $titleBar.Count -ne 1 -or $icon.Count -ne 1 -or
+            @($titleHost[0].SelectNodes('./*[local-name()="Grid.ColumnDefinitions"]/*[local-name()="ColumnDefinition" and @Width="40"]')).Count -ne 1 -or
+            @($icon[0].SelectNodes('./*[local-name()="Ellipse" and @Stroke="{DynamicResource TextFillColorPrimaryBrush}"]')).Count -ne 1 -or
+            @($icon[0].SelectNodes('./*[local-name()="Path" and @Data]')).Count -ne 1 -or
+            $titleBar[0].GetAttribute('Title') -ne 'Contoso.Sample' -or
+            $titleBar[0].GetAttribute('IsBackButtonVisible') -ne 'False' -or
+            $titleBar[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'False' -or
+            $titleBar[0].HasAttribute('Subtitle') -or
+            @($titleBar[0].SelectNodes('./*[local-name()="TitleBar.Icon"]')).Count -ne 0 -or
+            $window.DocumentElement.GetAttribute('ExtendsContentIntoTitleBar') -ne 'True' -or
+            $window.DocumentElement.GetAttribute('MinHeight') -ne '470') {
+            throw 'Simple window icon-first 12-DIP title bar contract failed.'
+        }
+        Assert-TextContains $window.OuterXml 'DisplayMemberPath="Name"' 'window typed ComboBox display'
+        Assert-TextContains $window.OuterXml 'Name="StatusText"' 'window visible status'
+        if (@($window.SelectNodes('/*/*[local-name()="Grid" and @Margin="28,76,28,28"]')).Count -ne 1) {
+            throw 'Simple content must clear the 48-DIP title bar without losing its 28-DIP page inset.'
+        }
         Assert-TextContains $code 'SelectedItem as SampleOption' 'window typed selection'
+        Assert-TextContains $code 'SetCaptionCommandTarget\("PART_MinimizeButton"\)' 'window caption minimize hookup'
     } elseif ($ShortName -eq 'fluence-nav-mvvm') {
         [xml]$window = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml')
-        $titleBar = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="TitleBar"]'))
-        if ($titleBar.Count -ne 1 -or $titleBar[0].GetAttribute('Title') -ne 'Contoso.Sample' -or
+        $titleHost = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]'))
+        $titleBar = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]/*[local-name()="TitleBar"]'))
+        $icon = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="Grid"]/*[local-name()="Grid" and @Width="20" and @Height="20" and @Margin="12,0,8,0"]'))
+        if ($titleHost.Count -ne 1 -or $titleBar.Count -ne 1 -or $icon.Count -ne 1 -or
+            @($titleHost[0].SelectNodes('./*[local-name()="Grid.ColumnDefinitions"]/*[local-name()="ColumnDefinition" and @Width="40"]')).Count -ne 1 -or
+            @($icon[0].SelectNodes('./*[local-name()="Path" and @Data]')).Count -ne 1 -or
+            @($icon[0].SelectNodes('./*[local-name()="Ellipse" and @Stroke="{DynamicResource TextFillColorPrimaryBrush}"]')).Count -ne 1 -or
+            $titleBar[0].GetAttribute('Title') -ne 'Contoso.Sample' -or
+            $titleBar[0].GetAttribute('IsBackButtonVisible') -ne 'True' -or
+            $titleBar[0].GetAttribute('BackCommand') -ne '{Binding DataContext.GoBackCommand, ElementName=ShellWindow}' -or
             $titleBar[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'True' -or
-            @($titleBar[0].SelectNodes('./*[local-name()="TitleBar.Icon"]//*[local-name()="Path"]')).Count -eq 0 -or
-            @($titleBar[0].SelectNodes('./*[local-name()="TitleBar.Icon"]//*[local-name()="Ellipse" and @Stroke="{DynamicResource TextFillColorPrimaryBrush}"]')).Count -eq 0 -or
+            $titleBar[0].HasAttribute('Subtitle') -or
+            @($titleBar[0].SelectNodes('./*[local-name()="TitleBar.Icon"]')).Count -ne 0 -or
+            $titleBar[0].HasAttribute('BackRequested') -or
             $window.DocumentElement.GetAttribute('ExtendsContentIntoTitleBar') -ne 'True') {
-            throw 'Navigation title bar or neutral vector icon contract failed.'
+            throw 'Navigation icon-first 12-DIP title bar, Back, or pane toggle contract failed.'
         }
         $navigation = @($window.SelectNodes('//*[local-name()="NavigationView" and @*[local-name()="Name" and .="AppNavigation"]]'))
         if ($navigation.Count -ne 1 -or $navigation[0].GetAttribute('PaneDisplayMode') -ne 'LeftCompact' -or
+            $navigation[0].GetAttribute('IsBackButtonVisible') -ne 'False' -or
+            $navigation[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'False' -or
             $navigation[0].GetAttribute('IsPaneOpen') -ne '{Binding IsPaneOpen, Mode=TwoWay}') {
             throw 'Navigation compact pane binding contract failed.'
         }
@@ -315,10 +346,16 @@ function Assert-GeneratedStructure {
         Assert-TextContains $adapter 'InvokedItemContainer\.Tag' 'navigation container route adapter'
         Assert-TextContains $adapter 'NavigateCommand\.Execute' 'navigation command forwarding'
         Assert-TextContains $adapter 'TogglePaneCommand\.Execute' 'navigation title bar pane toggle forwarding'
+        Assert-TextContains $adapter 'AppNavigation\.SelectedItem\s*=' 'navigation selected route synchronization'
+        Assert-TextContains $adapter 'AppNavigation\.SelectFooterMenuItem\(SettingsNavigationItem\)' 'navigation footer route synchronization'
         Assert-TextContains $adapter 'PART_MinimizeButton' 'navigation caption minimize part hookup'
         Assert-TextContains $adapter 'minimizeButton\.CommandTarget\s*=\s*this' 'navigation caption command owner target'
         Assert-TextContains $shell 'IRelayCommand<string> NavigateCommand' 'typed navigation command'
         Assert-TextContains $shell 'IRelayCommand TogglePaneCommand' 'navigation pane toggle command'
+        Assert-TextContains $shell 'IRelayCommand GoBackCommand' 'navigation Back command'
+        Assert-TextContains $shell 'Stack<string> _routeHistory' 'navigation route history'
+        Assert-TextContains $shell 'GoBackCommand\.NotifyCanExecuteChanged\(\)' 'navigation Back enabled-state refresh'
+        Assert-TextContains $shell 'public string CurrentRoute' 'navigation observable selected route'
         Assert-TextContains $shell 'IsPaneOpen\s*=\s*!_settingsPage\.UseCompactNavigation' 'settings preference controls navigation pane'
         Assert-TextContains $shell '_settingsPage\.UseCompactNavigation\s*=\s*!value' 'manual pane toggles update settings preference'
         Assert-TextContains $shell 'ObservableObject CurrentPage' 'observable current page'
@@ -337,20 +374,23 @@ function Assert-GeneratedStructure {
         [xml]$window = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml')
         $titleBar = @($window.SelectNodes('//*[local-name()="FluenceWindow.TitleBar"]/*[local-name()="TitleBar"]'))
         if ($titleBar.Count -ne 1 -or $titleBar[0].GetAttribute('Title') -ne 'Contoso.Sample settings' -or
-            $titleBar[0].GetAttribute('Subtitle') -ne 'General' -or
-            $titleBar[0].GetAttribute('Margin') -ne '12,0,0,0' -or
-            $titleBar[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'False' -or
-            $titleBar[0].GetAttribute('BackRequested') -ne 'AppTitleBar_BackRequested' -or
-            $titleBar[0].HasAttribute('PaneToggleRequested') -or
+            $titleBar[0].HasAttribute('Subtitle') -or
+            $titleBar[0].GetAttribute('Margin') -ne '4,0,0,0' -or
+            $titleBar[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'True' -or
+            $titleBar[0].GetAttribute('IsBackButtonVisible') -ne 'True' -or
+            $titleBar[0].GetAttribute('PaneToggleRequested') -ne 'AppTitleBar_PaneToggleRequested' -or
+            $titleBar[0].HasAttribute('BackRequested') -or
             @($titleBar[0].SelectNodes('./*[local-name()="TitleBar.Icon"]')).Count -ne 0 -or
             $window.DocumentElement.GetAttribute('ExtendsContentIntoTitleBar') -ne 'True') {
-            throw 'Settings title, Back, or absent pane toggle/icon contract failed.'
+            throw 'Settings Back-first 12-DIP title bar, absent icon/subtitle, or pane toggle contract failed.'
         }
         $navigation = @($window.SelectNodes('//*[local-name()="NavigationView" and @*[local-name()="Name" and .="CategoryNavigation"]]'))
-        if ($navigation.Count -ne 1 -or $navigation[0].GetAttribute('PaneDisplayMode') -ne 'Left' -or
+        if ($navigation.Count -ne 1 -or $navigation[0].GetAttribute('PaneDisplayMode') -ne 'LeftCompact' -or
+            $navigation[0].GetAttribute('IsBackButtonVisible') -ne 'False' -or
+            $navigation[0].GetAttribute('IsPaneToggleButtonVisible') -ne 'False' -or
             $navigation[0].GetAttribute('IsPaneOpen') -ne 'True' -or
             $navigation[0].GetAttribute('Margin') -ne '10,0,0,0') {
-            throw 'Settings always-expanded pane or 10-DIP navigation inset contract failed.'
+            throw 'Settings compact-capable pane or 10-DIP navigation inset contract failed.'
         }
         if (Test-Path -LiteralPath (Join-Path $Output 'Resources/SettingsArtwork.xaml') -PathType Leaf) {
             throw 'Settings title-bar artwork dictionary must be absent.'
@@ -368,14 +408,14 @@ function Assert-GeneratedStructure {
         $paneStyle = @($navigation[0].SelectNodes('.//*[local-name()="Style" and contains(@TargetType,"NavigationViewItem")]'))
         if ($paneStyle.Count -ne 1 -or
             @($paneStyle[0].SelectNodes('./*[local-name()="Setter" and @Property="Margin" and @Value="0,0,30,0"]')).Count -ne 1 -or
-            @($paneStyle[0].SelectNodes('.//*[local-name()="Trigger" or local-name()="DataTrigger"]')).Count -ne 0) {
-            throw 'Settings fixed expanded item inset contract failed.'
+            @($paneStyle[0].SelectNodes('.//*[local-name()="DataTrigger" and @Value="False"]/*[local-name()="Setter" and @Property="Margin" and @Value="0"]')).Count -ne 1) {
+            throw 'Settings expanded and compact item inset contract failed.'
         }
         $pageHost = @($window.SelectNodes('//*[local-name()="NavigationView.Content"]/*[local-name()="ContentControl" and @*[local-name()="Name" and .="PageHost"]]'))
         if ($pageHost.Count -ne 1 -or
-            $pageHost[0].GetAttribute('Margin') -ne '-28,0,0,0' -or
-            @($pageHost[0].SelectNodes('./*[local-name()="ContentControl.Style"]')).Count -ne 0) {
-            throw 'Settings fixed expanded PageHost margin contract failed.'
+            @($pageHost[0].SelectNodes('./*[local-name()="ContentControl.Style"]/*[local-name()="Style"]/*[local-name()="Setter" and @Property="Margin" and @Value="-28,0,0,0"]')).Count -ne 1 -or
+            @($pageHost[0].SelectNodes('.//*[local-name()="DataTrigger" and @Value="False"]/*[local-name()="Setter" and @Property="Margin" and @Value="0"]')).Count -ne 1) {
+            throw 'Settings expanded and compact PageHost margin contract failed.'
         }
         $adapter = Get-Content -Raw -LiteralPath (Join-Path $Output 'MainWindow.xaml.cs')
         Assert-TextContains $adapter 'InvokedItemContainer\.Tag' 'settings category adapter'
@@ -383,10 +423,13 @@ function Assert-GeneratedStructure {
         Assert-TextContains $adapter 'Stack<string> _categoryHistory' 'settings category Back history'
         Assert-TextContains $adapter '_categoryHistory\.Push\(_currentCategory\)' 'settings history push on category visit'
         Assert-TextContains $adapter 'ShowCategory\(_categoryHistory\.Pop\(\)\)' 'settings Back consumes history without re-push'
-        Assert-TextContains $adapter 'AppTitleBar\.IsBackButtonVisible\s*=\s*_categoryHistory\.Count\s*>\s*0' 'settings root Back availability'
+        Assert-TextContains $adapter 'AppTitleBar\.BackCommand\s*=\s*_backCommand' 'settings Back command wiring'
+        Assert-TextContains $adapter 'CanExecute\(object\? parameter\)\s*=>\s*_owner\._categoryHistory\.Count\s*>\s*0' 'settings Back history enabled state'
+        Assert-TextContains $adapter '_backCommand\.RaiseCanExecuteChanged\(\)' 'settings Back state refresh'
         Assert-TextContains $adapter 'CategoryNavigation\.SelectedItem\s*=\s*_categoryItems\[category\]' 'settings selected category synchronization'
-        if ($adapter -match 'AppTitleBar_PaneToggleRequested|CategoryNavigation\.IsPaneOpen|PaneToggleRequested|SettingsAppArtwork') {
-            throw 'Settings adapter must not expose pane toggle or removed artwork.'
+        Assert-TextContains $adapter 'CategoryNavigation\.IsPaneOpen\s*=\s*!CategoryNavigation\.IsPaneOpen' 'settings pane toggle'
+        if ($adapter -match 'AppTitleBar_BackRequested|SettingsAppArtwork|AppTitleBar\.Subtitle') {
+            throw 'Settings adapter must not duplicate Back handling, category subtitle, or removed artwork.'
         }
         Assert-TextContains $adapter 'SetCaptionCommandTarget\("PART_MinimizeButton"\)' 'settings caption minimize hookup'
         Assert-TextContains $adapter 'button\.CommandTarget\s*=\s*this' 'settings caption command owner target'
@@ -573,7 +616,7 @@ try {
     [xml]$rootProps = Get-Content -Raw (Join-Path $repo 'Directory.Build.props')
     $rootVersion = @($rootProps.Project.PropertyGroup.VersionPrefix | Where-Object { $_ })
     if ($rootVersion.Count -ne 1 -or $rootVersion[0] -ne '0.9.4') { throw 'Root VersionPrefix changed unexpectedly during Phase 2.' }
-    if ($version -ne "0.9.4-starters-dev.g$($fix.Substring(0, 8)).r6") { throw 'Candidate version does not match the Settings title-bar inset local stamp.' }
+    if ($version -ne "0.9.4-starters-dev.g$($fix.Substring(0, 8)).r8") { throw 'Candidate version does not match the three-title-bar local stamp.' }
     if ($version -eq '0.9.4') { throw 'The pre-fix 0.9.4 package is ineligible.' }
     Assert-WorkflowContract
     foreach ($shortName in $selectedTemplates) {

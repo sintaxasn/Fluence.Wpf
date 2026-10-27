@@ -41,11 +41,14 @@ public partial class MainWindow : FluenceWindow
     private readonly Dictionary<string, UserControl> _pages;
     private readonly Dictionary<string, NavigationViewItem> _categoryItems;
     private readonly Stack<string> _categoryHistory = new();
+    private readonly HistoryBackCommand _backCommand;
     private string _currentCategory = "general";
 
     public MainWindow()
     {
         InitializeComponent();
+        _backCommand = new HistoryBackCommand(this);
+        AppTitleBar.BackCommand = _backCommand;
 
         _pages = new Dictionary<string, UserControl>(StringComparer.Ordinal)
         {
@@ -89,7 +92,10 @@ public partial class MainWindow : FluenceWindow
         }
     }
 
-    private void AppTitleBar_BackRequested(object? sender, EventArgs e) => GoBack();
+    private void AppTitleBar_PaneToggleRequested(object? sender, EventArgs e)
+    {
+        CategoryNavigation.IsPaneOpen = !CategoryNavigation.IsPaneOpen;
+    }
 
     private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
     {
@@ -116,8 +122,7 @@ public partial class MainWindow : FluenceWindow
         _currentCategory = category;
         PageHost.Content = _pages[category];
         CategoryNavigation.SelectedItem = _categoryItems[category];
-        AppTitleBar.Subtitle = _categoryItems[category].Content?.ToString() ?? string.Empty;
-        AppTitleBar.IsBackButtonVisible = _categoryHistory.Count > 0;
+        _backCommand.RaiseCanExecuteChanged();
     }
 
     private void SetCaptionCommandTarget(string partName)
@@ -126,5 +131,26 @@ public partial class MainWindow : FluenceWindow
         {
             button.CommandTarget = this;
         }
+    }
+
+    private sealed class HistoryBackCommand : ICommand
+    {
+        private readonly MainWindow _owner;
+
+        public HistoryBackCommand(MainWindow owner) => _owner = owner;
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => _owner._categoryHistory.Count > 0;
+
+        public void Execute(object? parameter)
+        {
+            if (CanExecute(parameter))
+            {
+                _ = _owner.GoBack();
+            }
+        }
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 }

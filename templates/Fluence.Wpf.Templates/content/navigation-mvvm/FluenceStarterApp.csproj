@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r6" />
+    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r8" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
 

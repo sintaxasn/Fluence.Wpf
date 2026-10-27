@@ -35,10 +35,21 @@ namespace FluenceStarterApp;
 
 public partial class MainWindow : FluenceWindow
 {
+    private bool _handlingItemInvocation;
+
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = new ShellViewModel();
+        ShellViewModel shell = new();
+        DataContext = shell;
+        shell.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ShellViewModel.CurrentRoute))
+            {
+                SelectCurrentRoute(shell.CurrentRoute);
+            }
+        };
+        SelectCurrentRoute(shell.CurrentRoute);
     }
 
     public override void OnApplyTemplate()
@@ -60,9 +71,46 @@ public partial class MainWindow : FluenceWindow
 
     private void AppNavigation_ItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
     {
-        if (e.InvokedItemContainer.Tag is string route)
+        if (!_handlingItemInvocation && e.InvokedItemContainer.Tag is string route)
         {
-            ((ShellViewModel)DataContext).NavigateCommand.Execute(route);
+            _handlingItemInvocation = true;
+            try
+            {
+                ((ShellViewModel)DataContext).NavigateCommand.Execute(route);
+            }
+            finally
+            {
+                _handlingItemInvocation = false;
+            }
         }
+    }
+
+    private void SelectCurrentRoute(string route)
+    {
+        if (_handlingItemInvocation)
+        {
+            return;
+        }
+
+        if (route == "settings")
+        {
+            _handlingItemInvocation = true;
+            try
+            {
+                AppNavigation.SelectFooterMenuItem(SettingsNavigationItem);
+            }
+            finally
+            {
+                _handlingItemInvocation = false;
+            }
+            return;
+        }
+
+        AppNavigation.SelectedItem = route switch
+        {
+            "home" => HomeNavigationItem,
+            "activity" => ActivityNavigationItem,
+            _ => HomeNavigationItem
+        };
     }
 }

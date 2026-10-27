@@ -31,8 +31,8 @@ The project targets `net10.0-windows10.0.26100.0`. The config contains only the 
 
 `MainWindow` forwards the invoked navigation item's `Tag` to `ShellViewModel.NavigateCommand`. The shell maps `home`, `activity`, and `settings` to stable view-model instances, while XAML data templates select each `UserControl` view. The Activity page includes a sample command, counter, and observable activity list.
 
-The hamburger switches between the expanded pane and a compact icon rail. The Settings page's compact-navigation option controls the same pane state for this session. Activity has a normal-size accent action button. Settings are in-memory examples for this app session. They do not read or change Windows settings.
+The title bar starts with a generic vector at 12 DIP, followed by an always-visible Back button and the pane toggle. Back is disabled until a different page is visited. It retraces page visits while retaining each cached page's state. The hamburger switches between the expanded pane and a compact icon rail. The Settings page's compact-navigation option controls the same pane state for this session. Activity has a normal-size accent action button. Settings are in-memory examples for this app session. They do not read or change Windows settings.
 
 ## App identity
 
-The title bar uses generic sample vector artwork. The starter does not set an application or window icon and contains no Fluence brand icon. Add your own `.ico` as the application icon and set your own window icon if your app needs one.
+The title bar uses generic sample vector artwork and keeps the app name without a page subtitle. The starter does not set an application or window icon and contains no Fluence brand icon. Add your own `.ico` as the application icon and set your own window icon if your app needs one.

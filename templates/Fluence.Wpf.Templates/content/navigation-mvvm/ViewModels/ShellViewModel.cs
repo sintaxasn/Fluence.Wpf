@@ -28,6 +28,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 
 namespace FluenceStarterApp.ViewModels;
 
@@ -36,6 +37,7 @@ public sealed class ShellViewModel : ObservableObject
     private readonly HomeViewModel _homePage = new();
     private readonly ActivityViewModel _activityPage = new();
     private readonly SettingsViewModel _settingsPage = new();
+    private readonly Stack<string> _routeHistory = new();
     private ObservableObject _currentPage;
     private string _currentRoute;
     private bool _isPaneOpen = true;
@@ -52,6 +54,7 @@ public sealed class ShellViewModel : ObservableObject
             }
         };
         TogglePaneCommand = new RelayCommand(() => IsPaneOpen = !IsPaneOpen);
+        GoBackCommand = new RelayCommand(GoBack, () => _routeHistory.Count > 0);
         NavigateCommand = new RelayCommand<string>(route =>
         {
             if (route is not null)
@@ -71,6 +74,14 @@ public sealed class ShellViewModel : ObservableObject
 
     public IRelayCommand TogglePaneCommand { get; }
 
+    public IRelayCommand GoBackCommand { get; }
+
+    public string CurrentRoute
+    {
+        get => _currentRoute;
+        private set => SetProperty(ref _currentRoute, value);
+    }
+
     public bool IsPaneOpen
     {
         get => _isPaneOpen;
@@ -85,20 +96,41 @@ public sealed class ShellViewModel : ObservableObject
 
     private void Navigate(string route)
     {
-        (ObservableObject Page, string Route)? destination = route switch
+        ObservableObject? destination = route switch
         {
-            "home" => (_homePage, "home"),
-            "activity" => (_activityPage, "activity"),
-            "settings" => (_settingsPage, "settings"),
+            "home" => _homePage,
+            "activity" => _activityPage,
+            "settings" => _settingsPage,
             _ => null
         };
 
-        if (destination is null || string.Equals(_currentRoute, destination.Value.Route, StringComparison.Ordinal))
+        if (destination is null || string.Equals(_currentRoute, route, StringComparison.Ordinal))
         {
             return;
         }
 
-        _currentRoute = destination.Value.Route;
-        CurrentPage = destination.Value.Page;
+        _routeHistory.Push(_currentRoute);
+        CurrentRoute = route;
+        CurrentPage = destination;
+        GoBackCommand.NotifyCanExecuteChanged();
+    }
+
+    private void GoBack()
+    {
+        if (_routeHistory.Count == 0)
+        {
+            return;
+        }
+
+        string route = _routeHistory.Pop();
+        CurrentRoute = route;
+        CurrentPage = route switch
+        {
+            "home" => _homePage,
+            "activity" => _activityPage,
+            "settings" => _settingsPage,
+            _ => throw new InvalidOperationException("The navigation history contains an unknown route.")
+        };
+        GoBackCommand.NotifyCanExecuteChanged();
     }
 }
