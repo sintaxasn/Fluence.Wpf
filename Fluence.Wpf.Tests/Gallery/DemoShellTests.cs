@@ -43,7 +43,6 @@ using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
-using static Fluence.Wpf.Tests.Infrastructure.DispatcherDelayWaits;
 using static Fluence.Wpf.Tests.Infrastructure.FluentButtonQueries;
 using static Fluence.Wpf.Tests.Infrastructure.VisualGeometry;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
@@ -2034,7 +2033,9 @@ namespace Fluence.Wpf.Tests.Gallery
                         "Clicking the shell pane toggle should collapse the Left pane.");
                     Assert.Equal(2, navigationStyle.SelectedIndex);
 
-                    await WaitForAnimationAndDrainByDelayAsync(window.Dispatcher, 220).ConfigureAwait(true);
+                    Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 3000,
+                        () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 48.0) <= 0.5).ConfigureAwait(true),
+                        "Collapsed Left navigation must reach compact width before the pane toggles open again.");
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
