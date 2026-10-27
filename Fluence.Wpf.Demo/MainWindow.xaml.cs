@@ -74,6 +74,7 @@ namespace Fluence.Wpf.Demo
         private readonly DemoNavigationShellState _navigationState;
         private bool _isNavigatingBack;
         private bool _isUpdatingExtendedTitleOverlap;
+        private readonly TranslateTransform _navSearchCenterTransform = new();
         private NavigationViewItem? _currentNavigationItem;
         private System.Windows.Controls.Image? _titleBarIconView;
         private DependencyPropertyDescriptor? _extendsDpd;
@@ -90,6 +91,8 @@ namespace Fluence.Wpf.Demo
         public MainWindow()
         {
             InitializeComponent();
+
+            NavSearchBox.RenderTransform = _navSearchCenterTransform;
 
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
@@ -840,7 +843,26 @@ namespace Fluence.Wpf.Demo
 
         private void ScheduleExtendedTitleOverlapCheck()
         {
-            _ = Dispatcher.BeginInvoke(new Action(UpdateExtendedTitleOverlap), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(UpdateTitleBarLayout), DispatcherPriority.Loaded);
+        }
+
+        private void UpdateTitleBarLayout()
+        {
+            CenterTitleBarSearchInWindow();
+            UpdateExtendedTitleOverlap();
+        }
+
+        private void CenterTitleBarSearchInWindow()
+        {
+            if (ShellTitleBar is null || NavSearchBox is null || ShellTitleBar.ActualWidth <= 0.0
+                || !IsVisualAncestorOf(this, ShellTitleBar))
+            {
+                return;
+            }
+
+            Rect titleBarBounds = ShellTitleBar.TransformToAncestor(this).TransformBounds(
+                new Rect(new Size(ShellTitleBar.ActualWidth, ShellTitleBar.ActualHeight)));
+            _navSearchCenterTransform.X = (ActualWidth / 2.0) - (titleBarBounds.Left + (titleBarBounds.Width / 2.0));
         }
 
         // Hide the title text when the centered search box would overlap it; runs after every

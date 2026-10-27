@@ -157,6 +157,12 @@
   Fluence.Wpf.Tests.Windowing.TitleBarTests.CaptionButtons_AboveContent_WhenExtendsContentIntoTitleBarAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_Template_ExposesNavigationButtonsAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_BackButton_UsesCompactSlotAsync
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: False, hideMinimizeAndMaximize: False, rightToLeft: False, expectedCaptionWidth: 138)
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: True, hideMinimizeAndMaximize: False, rightToLeft: False, expectedCaptionWidth: 138)
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: True, hideMinimizeAndMaximize: True, rightToLeft: False, expectedCaptionWidth: 46)
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: False, hideMinimizeAndMaximize: False, rightToLeft: True, expectedCaptionWidth: 138)
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: True, hideMinimizeAndMaximize: False, rightToLeft: True, expectedCaptionWidth: 138)
+  Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_RightHeader_EndsAtVisibleCaptionButtonsAsync(extendsContentIntoTitleBar: True, hideMinimizeAndMaximize: True, rightToLeft: True, expectedCaptionWidth: 46)
   Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequestedAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_BackButtonVisibilityAndCommand_WorkAsync
   Fluence.Wpf.Tests.Windowing.TitleBarTests.TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlersAsync
@@ -405,6 +411,7 @@
   Fluence.Wpf.Tests.Theming.ThemeParityTests.HighContrast_GrayTextDerivedAccentBrushes_BindToLiveSystemGrayTextAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.ApplyTheme_Alone_UsesSystemAccentPaletteAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.FirstApply_RaisesAccentColorChanged_BeforeAnyOtherThemeAccessAsync
+  Fluence.Wpf.Tests.Theming.ThemeParityTests.TitleBarGlyphButtonStyle_IsIncludedInPublicKeyInventoryAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_MatchesFrozenSetAsync
   Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_IsTheSameInEveryThemeAsync(theme: Dark)
   Fluence.Wpf.Tests.Theming.ThemeParityTests.PublicKeyInventory_IsTheSameInEveryThemeAsync(theme: HighContrast)
@@ -432,7 +439,7 @@
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_SourceRendererPreservesIndentationAsync
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTabAsync
   Fluence.Wpf.Tests.Gallery.DemoSampleContractTests.DemoSampleControl_SourceExpander_ReopensAfterCollapseAsync
-  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync
+  Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_TitleBarSearchBox_CentresInWindowAndFitsBarHeightAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_AccentColorButtons_UseButtonControlAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_SettingsSelectors_UseExpectedControlsAsync
   Fluence.Wpf.Tests.Gallery.DemoShellTests.MainWindow_AppThemeComboBox_UpdatesStateLabelAsync
@@ -1458,7 +1465,8 @@
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_CheckBox_SnapsCheckAndDashWithoutClocksAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_RadioButton_SnapsGlyphSizesWithoutClocksAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressBar_Indeterminate_KeepsAnimatingAsync
-  Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocksAsync
+  Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_KeepsAnimatingAsync(size: 16)
+  Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ProgressRing_Indeterminate_KeepsAnimatingAsync(size: 32)
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_FontIcon_IsSpinning_DoesNotAnimateRotationAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_ToggleSwitch_Toggle_SnapsKnobToFinalOffsetSynchronouslyAsync
   Fluence.Wpf.Tests.Control.Rules.ReducedMotionTests.ReducedMotion_Expander_Expand_OpensContentAtRestWithoutSlideClockAsync

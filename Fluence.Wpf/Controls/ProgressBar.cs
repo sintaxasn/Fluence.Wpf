@@ -587,9 +587,7 @@ namespace Fluence.Wpf.Controls
             //
             // Without this exception, an operation with animation effects off could return normally
             // while its progress dialog sat motionless and made the work look frozen. ProgressRing
-            // solves the same problem the other way, by rendering a
-            // meaningful static resting arc; a bar has no equivalent resting frame that reads as
-            // "busy" rather than "stopped part-way".
+            // follows the same essential-feedback rule for its indeterminate arc.
             //
             // Covered by ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating.
             if (!IsLoaded || !IsVisible || _indeterminateTranslate is null || _indeterminateBar is null)

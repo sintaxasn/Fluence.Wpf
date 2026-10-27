@@ -8,6 +8,14 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed #82 so `TitleBar.RightHeader` stops at the visible caption-button panel in `FluenceWindow`, follows RTL layout, and has no unrelated fixed caption inset when used standalone.
+- Fixed #83 by exposing `TitleBarGlyphButtonStyle` as a public keyed resource for Segoe Fluent Icons glyph-string button content.
+- Fixed #84 so an active indeterminate `ProgressRing` continues essential progress animation when Windows animations are disabled or rendering falls back to software, while stopping when paused, inactive, hidden, unloaded, or determinate. Error state overrides pause and remains animated.
+
+These fixes add eight regression cases on each full test target framework.
+
 ## [0.9.4] - 2026-10-26
 
 ### Changed

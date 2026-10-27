@@ -381,6 +381,7 @@ TextOnAccentFillColorSelectedText
 TextOnAccentFillColorSelectedTextBrush
 TitleBarActiveColor
 TitleBarActiveColorBrush
+TitleBarGlyphButtonStyle
 TitleBarInactiveColor
 TitleBarInactiveColorBrush
 TitleLargeTextBlockStyle

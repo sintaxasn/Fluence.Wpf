@@ -167,7 +167,7 @@ namespace Fluence.Wpf.Tests.Gallery
         }
 
         [Fact]
-        public Task MainWindow_TitleBarSearchBox_CentresOnTheTitleBarAsync()
+        public Task MainWindow_TitleBarSearchBox_CentresInWindowAndFitsBarHeightAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -189,14 +189,9 @@ namespace Fluence.Wpf.Tests.Gallery
                     FrameworkElement search = FindVisualChildByName<FrameworkElement>(window, "NavSearchBox")
                         ?? throw new InvalidOperationException("The title bar search box is missing.");
 
-                    double searchCentre = search.TransformToAncestor(titleBar).Transform(new Point(0, 0)).X
-                        + (search.ActualWidth / 2.0);
-
-                    // The title bar spans the window, so its centre is the window's centre; the
-                    // caption buttons overlay the right end rather than shortening it.
-                    // The title bar spans the window, so its centre is the window's centre; the
-                    // caption buttons overlay the right end rather than shortening it.
-                    Assert.Equal(titleBar.ActualWidth / 2.0, searchCentre, 1.0);
+                    // The title bar leaves room for caption buttons, while the gallery search box
+                    // remains centered in the full window.
+                    Assert.Equal(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0);
 
                     // Vertically the box must both sit centred and measure what it draws: while the
                     // field reserved a helper row it never showed, its layout box ran 9 dip taller
