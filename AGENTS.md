@@ -25,6 +25,7 @@ This file sets repository-wide rules and routes work to the smallest relevant gu
 | MVVM sample application | [Fluence.Wpf.Demo.Mvvm/AGENTS.md](Fluence.Wpf.Demo.Mvvm/AGENTS.md) |
 | PowerShell module | [Fluence.Wpf.PowerShell.Module/AGENTS.md](Fluence.Wpf.PowerShell.Module/AGENTS.md) |
 | Repository and public product documentation | [docs/AGENTS.md](docs/AGENTS.md) |
+| New consumer WPF application using Fluence.Wpf in this checkout | Read [skills/fluence-consumer-starter/SKILL.md](skills/fluence-consumer-starter/SKILL.md) and generate from the matching `dotnet new` template; use the gallery only for control behavior examples. |
 | GitHub workflows or pull request automation | Inspect the relevant files under .github/ and the matching validation instructions in CONTRIBUTING.md. |
 | In-repository AI tooling | [.claude/AGENTS.md](.claude/AGENTS.md) describes its agents, skills, and hooks. Use a specialized lane only when its trigger matches the task. |
 

@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Added
+
+- Added three `dotnet new` consumer starters: `fluence-window`, `fluence-nav-mvvm`, and `fluence-settings`. The navigation and settings shells have generic title-bar artwork, compact navigation, and working minimize caption actions; navigation includes an app-local compact-pane preference and accent action, while settings includes category Back history and multicolor vector artwork. Generated projects ignore the local NuGet cache, build output, and temporary feed configuration.
+
 ### Fixed
 
 - Fixed Windows 11 Snap-enabled `FluenceWindow` Maximize and Restore caption glyph clicks so the window action completes on release. Snap hover, Minimize, and Close behavior remain intact.
