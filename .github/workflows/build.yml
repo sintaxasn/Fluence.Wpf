@@ -9,28 +9,55 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main]
+
+# A newer push to the same pull request cancels the run it supersedes. Main and tag runs each get
+# a group of their own, because a new run replaces a pending run in its group even without
+# cancel-in-progress. They are never cancelled or replaced, so a release cannot stop partway
+# through publication.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
+      # The NuGet cache is keyed on the committed lock files, which RestoreLockedMode keeps
+      # exact in CI, so a package version change produces a new cache entry.
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      # Tag runs fail here, before the build and test gates, when the tag cannot be released.
+      # The release job repeats both checks as its final gate before publication.
+      - name: Verify tag, tree version, and changelog section
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          $version = (dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFramework=net472 -nologo).Trim()
+          if ($env:TAG -ne "v$version") {
+            Write-Error "Tag $env:TAG does not match the tree version, which is v$version. Bump VersionPrefix and VersionSuffix in Directory.Build.props, or delete the tag and re-tag the right commit."
+            exit 1
+          }
+          if (-not (Select-String -Path CHANGELOG.md -Pattern ('^##\s+\[' + [regex]::Escape($version) + '\]') -Quiet)) {
+            Write-Error "CHANGELOG.md has no '## [$version]' section. Add one before tagging."
+            exit 1
+          }
+          Write-Host "Tag $env:TAG matches the tree version and has a changelog section."
 
       - name: Check text policy (UTF-8 BOM, LF, banned APIs, hard-coded hex, em/en dashes)
         run: pwsh .claude/hooks/post-tool-util.ps1 -CheckAll
-
-      - uses: actions/cache@v6
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
 
       - name: Restore
         run: dotnet restore Fluence.Wpf.sln
@@ -183,10 +210,13 @@ jobs:
   powershell:
     needs: build
     runs-on: windows-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Download library binaries (.NET Framework 4.7.2)
         uses: actions/download-artifact@v8
@@ -205,6 +235,18 @@ jobs:
         with:
           name: fluence-wpf-release-dotnet10
           path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0
+
+      # Restores the CurrentUser modules and NuGet provider the next two steps install. Their
+      # version checks then skip PowerShell Gallery. Change the key when a pinned version changes;
+      # a stale key only costs a reinstall.
+      - name: Cache pinned PowerShell build tools
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/Documents/WindowsPowerShell/Modules
+            ~/Documents/PowerShell/Modules
+            ~/AppData/Local/PackageManagement/ProviderAssemblies
+          key: ${{ runner.os }}-psmodules-nuget2.8.5.208-psscriptanalyzer1.25.0-pester5.8.0-alt3docusaurus2.0.1
 
       # Network setup is explicit and isolated from local package creation. Windows PowerShell
       # needs the external NuGet provider; PowerShell 7 uses its bundled provider.
@@ -278,6 +320,7 @@ jobs:
           name: fluence-ps-module-package
           path: Fluence.Wpf.PowerShell.Module/artifacts/
           if-no-files-found: error
+          retention-days: 30
 
       - name: Upload PowerShell module test results
         if: always()
@@ -296,6 +339,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build, powershell]
     runs-on: windows-latest
+    timeout-minutes: 15
     # The job runs in the "release" environment so its public release and package publication
     # steps can sit behind a required reviewer. Configure the release environment
     # in repository settings so the publishing job cannot proceed without review.
@@ -303,12 +347,17 @@ jobs:
     permissions:
       contents: write
       id-token: write
+    # Scripts read the tag from the environment rather than from an expression expanded into
+    # their source, so a tag name cannot alter the script text.
+    env:
+      TAG: ${{ github.ref_name }}
 
     steps:
       - name: Checkout the tag
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -322,11 +371,11 @@ jobs:
         run: |
           $version = (dotnet msbuild Fluence.Wpf/Fluence.Wpf.csproj -getProperty:Version -p:TargetFramework=net472 -nologo).Trim()
           $expected = "v$version"
-          if ('${{ github.ref_name }}' -ne $expected) {
-            Write-Error "Tag ${{ github.ref_name }} does not match the tree version, which is $expected. Bump VersionPrefix and VersionSuffix in Directory.Build.props, or delete the tag and re-tag the right commit."
+          if ($env:TAG -ne $expected) {
+            Write-Error "Tag $env:TAG does not match the tree version, which is $expected. Bump VersionPrefix and VersionSuffix in Directory.Build.props, or delete the tag and re-tag the right commit."
             exit 1
           }
-          Write-Host "Tag ${{ github.ref_name }} matches the tree version $version."
+          Write-Host "Tag $env:TAG matches the tree version $version."
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -343,10 +392,10 @@ jobs:
       - name: Stage release assets
         run: |
           New-Item -ItemType Directory dist | Out-Null
-          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet472/* -DestinationPath "dist/Fluence.Wpf-${{ github.ref_name }}-net472.zip"
-          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet8/* -DestinationPath "dist/Fluence.Wpf-${{ github.ref_name }}-net8.0-windows.zip"
-          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet10/* -DestinationPath "dist/Fluence.Wpf-${{ github.ref_name }}-net10.0-windows.zip"
-          Compress-Archive -Path artifacts/fluence-wpf-demo/* -DestinationPath "dist/Fluence.Wpf.Demo-${{ github.ref_name }}-net472.zip"
+          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet472/* -DestinationPath "dist/Fluence.Wpf-${env:TAG}-net472.zip"
+          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet8/* -DestinationPath "dist/Fluence.Wpf-${env:TAG}-net8.0-windows.zip"
+          Compress-Archive -Path artifacts/fluence-wpf-release-dotnet10/* -DestinationPath "dist/Fluence.Wpf-${env:TAG}-net10.0-windows.zip"
+          Compress-Archive -Path artifacts/fluence-wpf-demo/* -DestinationPath "dist/Fluence.Wpf.Demo-${env:TAG}-net472.zip"
           Copy-Item artifacts/fluence-wpf-nupkg/*.nupkg dist/
           Copy-Item artifacts/fluence-wpf-nupkg/*.snupkg dist/
           Copy-Item artifacts/fluence-ps-module-package/*.zip dist/
@@ -358,7 +407,7 @@ jobs:
       # release with no notes is worse than not shipping it.
       - name: Slice the changelog for this version
         run: |
-          $version = '${{ github.ref_name }}'.TrimStart('v')
+          $version = $env:TAG.TrimStart('v')
           $lines = Get-Content CHANGELOG.md
           $start = -1
           for ($i = 0; $i -lt $lines.Count; $i++) {
@@ -418,7 +467,7 @@ jobs:
         run: |
           $releaseExists = $false
           try {
-            gh release view '${{ github.ref_name }}' --repo '${{ github.repository }}' *> $null
+            gh release view $env:TAG --repo '${{ github.repository }}' *> $null
             $releaseExists = ($LASTEXITCODE -eq 0)
           } catch {
             $releaseExists = $false
@@ -428,17 +477,17 @@ jobs:
             if ($assets.Count -eq 0) {
               throw 'No staged release assets were found in dist.'
             }
-            Write-Host "Release ${{ github.ref_name }} already exists. Refreshing its assets from this run's verified artifacts."
-            gh release upload '${{ github.ref_name }}' @assets --repo '${{ github.repository }}' --clobber
+            Write-Host "Release $env:TAG already exists. Refreshing its assets from this run's verified artifacts."
+            gh release upload $env:TAG @assets --repo '${{ github.repository }}' --clobber
             if ($LASTEXITCODE -ne 0) {
               throw 'Refreshing the existing GitHub release assets failed.'
             }
           } else {
-            $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
+            $ghArgs = @('release', 'create', $env:TAG, '--repo', '${{ github.repository }}')
             $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
-            $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--notes-file', 'release-notes.md', '--verify-tag')
+            $ghArgs += @('--title', "Fluence.Wpf $env:TAG", '--notes-file', 'release-notes.md', '--verify-tag')
             # Any SemVer prerelease identifier (-rc.1, -preview, -beta) marks a prerelease.
-            if ('${{ github.ref_name }}'.Contains('-')) { $ghArgs += '--prerelease' }
+            if ($env:TAG.Contains('-')) { $ghArgs += '--prerelease' }
             gh @ghArgs
           }
 
