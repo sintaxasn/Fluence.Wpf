@@ -63,9 +63,6 @@ public partial class MainWindow : FluenceWindow
             ["about"] = AboutNavigationItem,
         };
 
-        // LeftCompact switches to the 48-DIP rail when the mode is applied.
-        // Start expanded so the sample categories are legible on first launch.
-        CategoryNavigation.IsPaneOpen = true;
         ShowCategory("general");
     }
 
@@ -93,11 +90,6 @@ public partial class MainWindow : FluenceWindow
     }
 
     private void AppTitleBar_BackRequested(object? sender, EventArgs e) => GoBack();
-
-    private void AppTitleBar_PaneToggleRequested(object? sender, EventArgs e)
-    {
-        CategoryNavigation.IsPaneOpen = !CategoryNavigation.IsPaneOpen;
-    }
 
     private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
     {

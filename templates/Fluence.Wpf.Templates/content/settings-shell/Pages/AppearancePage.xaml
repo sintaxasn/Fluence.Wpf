@@ -7,7 +7,7 @@
     <fluence:SmoothScrollViewer
         HorizontalScrollBarVisibility="Disabled"
         VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="1000" Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel MaxWidth="1000" Margin="28,16,28,24" HorizontalAlignment="Stretch">
             <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Appearance" />
             <TextBlock
                 Margin="0,8,0,0"
@@ -20,12 +20,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsAppearanceArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE790;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Color mode" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Light, Dark, Auto or High Contrast for this app." />
@@ -51,12 +51,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsResetArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE72C;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Restore automatic theme" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Follow the current Windows app theme again." />

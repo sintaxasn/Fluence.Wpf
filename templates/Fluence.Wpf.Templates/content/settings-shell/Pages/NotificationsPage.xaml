@@ -7,7 +7,7 @@
     <fluence:SmoothScrollViewer
         HorizontalScrollBarVisibility="Disabled"
         VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="1000" Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel MaxWidth="1000" Margin="28,16,28,24" HorizontalAlignment="Stretch">
             <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Notifications" />
             <TextBlock
                 Margin="0,8,0,0"
@@ -20,12 +20,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsNotificationsArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE7F4;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Activity alerts" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Include new activity in the sample summary." />
@@ -39,16 +39,16 @@
                             IsChecked="True" />
                     </Grid>
                 </Border>
-                <Border Margin="0,8,0,0" Style="{StaticResource SettingRowCardStyle}">
+                <Border Margin="0,5,0,0" Style="{StaticResource SettingRowCardStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsQuietArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE916;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Quiet summary" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Show a shorter sample status message." />
@@ -68,12 +68,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsReviewArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE8A5;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Update preview" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Read the current in-memory preference values." />

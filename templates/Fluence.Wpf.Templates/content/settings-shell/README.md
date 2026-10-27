@@ -34,8 +34,10 @@ Keep the local feed and restored package folder available for this session. The 
 - Replace the sample setting rows and their code-behind actions with your app's values and behavior.
 - The example controls update only local, in-memory state. Values stay while you switch categories in this window and reset when you restart. They do not read or change Windows or OS settings.
 - The Appearance choice changes only this app's Fluence theme. Auto follows the Windows app theme.
-- The left categories are cached UserControls. The Back button retraces category visits while keeping page state. The hamburger switches between the expanded pane and compact icon rail. Add a category in MainWindow.xaml and its view in MainWindow.xaml.cs.
-- The title bar uses generic sample vector artwork. Category and setting-row artwork uses multicolor vectors; replace these with your own app's imagery when you customize the shell.
+- The left categories are cached UserControls. The Back button retraces category visits while keeping page state. Navigation stays expanded and has no hamburger or compact mode. Add a category in MainWindow.xaml and its view in MainWindow.xaml.cs.
+- The title bar shows app text and Back history without a sample icon. The four sidebar categories use bundled color PNGs, while all setting rows use monochrome, theme-aware FontIcons. Replace the sample imagery as appropriate for your app.
+- `Assets/SettingsIcons/ARTWORK-NOTICE.md` records the source and terms of each category image. General and Appearance use Windows Settings artwork with no explicit redistribution grant found during this template's research. Notifications and About use Microsoft Fluent Emoji derivatives under the included `MICROSOFT-FLUENT-LICENSE.txt`. Both notices copy beside the built app; assess the Windows image rights before redistributing it.
+- Category images are WPF resources loaded from this app's assembly. The app has no Windows App SDK package, bootstrap code, runtime component, or PRI reader.
 - Resources/SettingRowStyles.xaml holds the page and row styles. Theme colors use Fluence dynamic resources so they follow Light, Dark, and High Contrast.
 - This project does not set an application or window icon. Supply your own .ico as ApplicationIcon in the project file and, if desired, set the window Icon to your own asset.
 

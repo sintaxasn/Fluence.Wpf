@@ -6,13 +6,13 @@ The `Fluence.Wpf.Templates` package provides three `dotnet new` starters. Each c
 | --- | --- |
 | `fluence-window` | Small form and status sample |
 | `fluence-nav-mvvm` | MVVM navigation, compact pane option, and accent action |
-| `fluence-settings` | Settings categories, Back history, compact pane, and multicolor sample artwork |
+| `fluence-settings` | Four Settings categories, Back history, permanently expanded navigation, bundled color category images, and monochrome page glyphs |
 
-The navigation and settings shells use generic title-bar artwork; they do not set the application or window icon. Replace the sample artwork and add your own application icon when branding your app.
+The navigation shell has generic title-bar artwork; the Settings shell has a text-only title bar with Back history. Neither sets the application or window icon. Supply your own application icon when branding your app.
 
 ## Try the local candidate package
 
-The current development package is local-only: `0.9.4-starters-dev.gb3879f16.r2`. The `.r2` stamp distinguishes this candidate, which includes the caption fix, from the earlier local package built from the same base commit. It is not published and is not the normal NuGet install flow. Use the repository checker to pack the fixed library and template packages into a fresh local feed, install the template into an isolated hive, and retain the run paths:
+The current development package is local-only: `0.9.4-starters-dev.gb3879f16.r6`. The `.r6` stamp keeps the permanently expanded Settings pane and text-only title bar from `.r5`, with a 12 DIP left title-bar inset. It is not published and is not the normal NuGet install flow. Use the repository checker to pack the fixed library and template packages into a fresh local feed and cache, install the template into an isolated hive, and retain the run paths:
 
 ```powershell
 $result = pwsh -NoProfile -File tools/Check-ConsumerTemplates.ps1 -KeepArtifacts | ConvertFrom-Json
@@ -20,6 +20,8 @@ if ($result.status -ne 'PASS') { throw "Template check failed: $($result.error)"
 ```
 
 The checker returns JSON with `run`, `feed`, `packages`, `generated`, `hive`, and `nugetConfig` paths. It installs the package in its isolated hive, generates all three apps under `generated`, builds them, then uninstalls the package from that hive before returning. This command retains the run directory so you can run the generated apps or reinstall the package for manual generation below. The generated projects restore the matching fixed library package from the local feed, so keep that feed available through restore.
+
+The Settings starter bundles four color category images as ordinary WPF PNG resources and uses theme-aware monochrome FontIcons in page rows. The `Assets/SettingsIcons/ARTWORK-NOTICE.md` and `MICROSOFT-FLUENT-LICENSE.txt` files are copied to its build output. The General and Appearance images come from Windows Settings artwork; the artwork notice records that no explicit redistribution grant was found. Notifications and About use Microsoft Fluent Emoji derivatives under the included MIT notice. Review those distinct terms before distributing a generated app. The app does not load Windows PRI files or require Windows App SDK components.
 
 Install the exact local template package into the isolated hive and list its templates. Pass the custom hive to every `dotnet new` command so this flow does not use the normal template registration:
 

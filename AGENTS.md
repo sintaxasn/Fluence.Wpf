@@ -6,6 +6,7 @@ This file sets repository-wide rules and routes work to the smallest relevant gu
 
 - Fluence.Wpf is a WPF library that follows the Windows 11 Fluent and WinUI 3 visual language. The library targets .NET Framework 4.7.2, .NET 8 for Windows, and .NET 10 for Windows. Full tests target .NET Framework 4.7.2 and .NET 10; a separate smoke project covers .NET 8.
 - Keep the library portable across downstream consumers. Consumer-specific paths and instructions belong in the consumer repository.
+- Keep Fluence.Wpf and generated consumer apps free of Windows App SDK components. Use WPF controls and ordinary image assets; do not add App SDK packages, bootstrap code, or runtime components.
 - Preserve existing user changes and keep edits within the requested scope. Add package dependencies only after the user approves them. Create commits only when the user has authorized a commit.
 - Use Directory.Build.props, Directory.Packages.props, .editorconfig, project files, and scripts as the source of truth for build settings, analyzers, package versions, and commands. Do not duplicate their full configuration in guidance.
 - New C# files need the existing BSD 3-Clause header. Public API changes need XML documentation. Follow the configured nullable and analyzer policies.

@@ -7,6 +7,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r2" />
+    <PackageReference Include="Fluence.Wpf" Version="0.9.4-starters-dev.gb3879f16.r6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets/SettingsIcons/*.png" />
+    <Content Include="Assets/SettingsIcons/ARTWORK-NOTICE.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets/SettingsIcons/MICROSOFT-FLUENT-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@
     <fluence:SmoothScrollViewer
         HorizontalScrollBarVisibility="Disabled"
         VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="1000" Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel MaxWidth="1000" Margin="28,16,28,24" HorizontalAlignment="Stretch">
             <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
             <TextBlock
                 Margin="0,8,0,0"
@@ -20,26 +20,26 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsAboutArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE946;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="FluenceStarterApp" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="A local example. Replace these rows with settings for your app." />
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Border Margin="0,8,0,0" Style="{StaticResource SettingRowCardStyle}">
+                <Border Margin="0,5,0,0" Style="{StaticResource SettingRowCardStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsGeneralArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE946;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Sample state" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Confirm that these examples do not store settings outside this app." />

@@ -7,7 +7,7 @@
     <fluence:SmoothScrollViewer
         HorizontalScrollBarVisibility="Disabled"
         VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="1000" Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel MaxWidth="1000" Margin="28,16,28,24" HorizontalAlignment="Stretch">
             <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="General" />
             <TextBlock
                 Margin="0,8,0,0"
@@ -20,12 +20,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsWorkspaceArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE80F;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Open to your workspace" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Choose the starting view for this sample session." />
@@ -39,16 +39,16 @@
                             IsChecked="True" />
                     </Grid>
                 </Border>
-                <Border Margin="0,8,0,0" Style="{StaticResource SettingRowCardStyle}">
+                <Border Margin="0,5,0,0" Style="{StaticResource SettingRowCardStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsDensityArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE8D2;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Reading density" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Choose how much content the app would show at once." />
@@ -71,12 +71,12 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Image Width="20" Height="20" VerticalAlignment="Center" Source="{StaticResource SettingsReviewArtwork}" />
+                        <fluence:FontIcon Style="{StaticResource SettingRowIconStyle}" Glyph="&#xE8A5;" />
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource SettingRowTitleStyle}" Text="Review sample choices" />
                             <TextBlock Margin="0,4,0,0" Style="{StaticResource SettingRowDescriptionStyle}" Text="Show the values currently held in this page." />

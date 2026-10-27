@@ -10,7 +10,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Added
 
-- Added three `dotnet new` consumer starters: `fluence-window`, `fluence-nav-mvvm`, and `fluence-settings`. The navigation and settings shells have generic title-bar artwork, compact navigation, and working minimize caption actions; navigation includes an app-local compact-pane preference and accent action, while settings includes category Back history and multicolor vector artwork. Generated projects ignore the local NuGet cache, build output, and temporary feed configuration.
+- Added three `dotnet new` consumer starters: `fluence-window`, `fluence-nav-mvvm`, and `fluence-settings`. The navigation shell has generic title-bar artwork, compact navigation, an app-local compact-pane preference, and an accent action. Settings has a text-only title bar, permanently expanded categories, Back history, bundled color category PNGs with provenance notices, monochrome page glyphs, and measured row and navigation spacing. Both shells have working minimize caption actions. Generated projects ignore the local NuGet cache, build output, and temporary feed configuration. The Settings app uses ordinary WPF assets without Windows App SDK components.
 
 ### Fixed
 
