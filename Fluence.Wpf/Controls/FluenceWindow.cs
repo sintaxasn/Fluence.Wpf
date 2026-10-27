@@ -468,10 +468,9 @@ namespace Fluence.Wpf.Controls
         #region Construction
 
         /// <summary>
-        /// The Fluence brand icon embedded in this assembly, loaded once and shared (frozen) as the
-        /// default <see cref="Window.Icon"/> for every <see cref="FluenceWindow"/>. <see langword="null"/>
-        /// only if the embedded resource cannot be loaded. Exposed so a consumer can apply the same
-        /// square, no-background brand mark to its own windows.
+        /// The Fluence brand icon embedded in this assembly, loaded once and shared (frozen). It is
+        /// available for consumers that want to opt in to the square, no-background brand mark on
+        /// their own windows. <see langword="null"/> only if the embedded resource cannot be loaded.
         /// </summary>
         public static ImageSource? DefaultIcon { get; } = CreateDefaultIcon();
 
@@ -498,7 +497,7 @@ namespace Fluence.Wpf.Controls
 
                 return icon;
             }
-            // The default icon is a best-effort enhancement. Any failure to load the embedded icon
+            // The exposed icon is a best-effort enhancement. Any failure to load the embedded icon
             // resource (a missing or renamed resource, or a COM / GPU / memory failure under a headless
             // or session-0 host such as PSADT running as SYSTEM) must degrade to a null icon, never
             // escape this static field initializer and fault the FluenceWindow type with a
@@ -521,9 +520,9 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FluenceWindow"/> class: loads the default
-        /// style explicitly, attaches the four <see cref="SystemCommands"/> command bindings, and
-        /// installs the <see cref="WindowChrome"/> that collapses the native frame.
+        /// Initializes a new instance of the <see cref="FluenceWindow"/> class: loads the style
+        /// explicitly, attaches the four <see cref="SystemCommands"/> command bindings, and installs
+        /// the <see cref="WindowChrome"/> that collapses the native frame.
         /// </summary>
         /// <remarks>
         /// The theme-manager subscriptions are intentionally deferred to
@@ -542,13 +541,6 @@ namespace Fluence.Wpf.Controls
                 Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute),
             };
             Style = resourceDictionary[typeof(FluenceWindow)] as Style;
-
-            // Default the window icon to the embedded Fluence brand icon. A consumer-assigned Icon
-            // (XAML attribute or code) is applied after construction and overrides this default.
-            if (DefaultIcon is not null)
-            {
-                Icon = DefaultIcon;
-            }
 
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, OnCloseWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, OnMaximizeWindow, OnCanResizeWindow));

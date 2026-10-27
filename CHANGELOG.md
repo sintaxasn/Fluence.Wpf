@@ -8,6 +8,12 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Fixed
+
+- Matched the left-pane NavigationView selection rail's width and inset to the WinUI reference at 150% display scaling.
+- Fixed closed ComboBox selections for object-backed items so `DisplayMemberPath` shows the selected member. A rendered selected-member regression covers the closed selection path.
+- Left `FluenceWindow.Icon` unset by default so consumer windows use their application icon or the Windows default. The embedded Fluence brand icon remains available through `FluenceWindow.DefaultIcon`, and both demos opt in explicitly. A regression covers style-provided icons.
+
 ## [0.9.4] - 2026-10-26
 
 ### Changed

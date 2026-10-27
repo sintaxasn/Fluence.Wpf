@@ -177,11 +177,8 @@ namespace Fluence.Wpf.Controls
         }
 
         // Margins and offsets used in indicator and top overflow positioning calculations.
-        // The indicator sits flush with the left edge of the selected item's painted pill, drawn
-        // over the pill fill, which is where WinUI puts it: a top-level selected item in the WinUI
-        // 3 Gallery measures its indicator's left edge at the same x as the pill's. The pill starts
-        // at the item's own origin plus NavigationViewItemButtonMargin (4), so this is that 4.
-        private const double NavigationItemOuterHorizontalMargin = 4.0;
+        // Align the shared rail with the painted pill's left edge in the left pane.
+        private const double NavigationItemSelectionIndicatorLeftInset = 6.0;
         // Gap between the bottom edge of a top-mode item and the indicator under it. WinUI's top
         // item template gives its indicator a 4 dip bottom margin inside the item.
         private const double TopIndicatorBottomInset = 4.0;
@@ -1588,7 +1585,7 @@ defaultValue: null,
                 // (NavigationViewItemPresenter.cpp:264-276), and the indicator sits in a sibling
                 // wrapper grid nothing writes to (NavigationView_themeresources.xaml:601-604), so
                 // the selection rail stays one straight column down the pane at any tree depth.
-                double x = itemPos.X + NavigationItemOuterHorizontalMargin;
+                double x = itemPos.X + NavigationItemSelectionIndicatorLeftInset;
                 return new Point(x, itemPos.Y + ((item.ActualHeight - indicator.Height) / 2.0));
             }
             catch (InvalidOperationException ex)
