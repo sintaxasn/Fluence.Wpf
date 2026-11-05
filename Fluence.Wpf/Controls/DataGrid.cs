@@ -37,27 +37,25 @@ using System.Windows.Threading;
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// Represents a Fluent table built on the WPF <see cref="System.Windows.Controls.DataGrid"/>; it is the
-    /// Fluence counterpart of the WinUI 3 <c language="csharp">TableView</c>.
+    /// Represents a table of bound rows and columns built on the WPF
+    /// <see cref="System.Windows.Controls.DataGrid"/>. It covers the WinUI 3 <c language="csharp">TableView</c>
+    /// scenarios with WPF names.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// All native DataGrid behavior is kept: column types, sorting, resizing, reordering, frozen leading
-    /// columns, editing transactions, <see cref="System.ComponentModel.INotifyDataErrorInfo"/> validation,
-    /// grouping and filtering through <see cref="System.ComponentModel.ICollectionView"/>, and row
-    /// virtualization. The theme supplies Fluent row, cell, header, and group styles.
+    /// Column types, sorting, resizing, reordering, frozen leading columns, editing,
+    /// <see cref="System.ComponentModel.INotifyDataErrorInfo"/> validation, grouping and filtering through
+    /// <see cref="System.ComponentModel.ICollectionView"/>, and row virtualization work as they do in WPF.
     /// </para>
     /// <para>
-    /// <see cref="DataGridTextColumn"/> and <see cref="DataGridCheckBoxColumn"/> columns that do not set an
-    /// element or editing style receive the Fluent display and editing styles from the theme, so a column that
-    /// sets its own style keeps it. When the grid loads and <see cref="ItemsControl.GroupStyle"/> is
-    /// empty, the grid adds a group style with a Fluent collapsible header; <see cref="ExpandAllGroups"/> and
-    /// <see cref="CollapseAllGroups"/> control those headers.
+    /// When the grid loads and <see cref="ItemsControl.GroupStyle"/> is empty, the grid shows each group under
+    /// a collapsible header. <see cref="ExpandAllGroups"/> and <see cref="CollapseAllGroups"/> open or close
+    /// those headers.
     /// </para>
     /// <para>
     /// A frozen <see cref="SolidColorBrush"/> assigned to <see cref="System.Windows.Controls.DataGrid.HorizontalGridLinesBrush"/>
     /// or <see cref="System.Windows.Controls.DataGrid.VerticalGridLinesBrush"/> reads back as a grid-owned copy
-    /// with the same color, which keeps open edits across theme changes.
+    /// with the same color.
     /// </para>
     /// </remarks>
     public class DataGrid : System.Windows.Controls.DataGrid
@@ -172,7 +170,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Expands every realized group header of this grid that uses the Fluent group header. Groups of a grid
+        /// Expands every realized group header of this grid that uses the built-in group header. Groups of a grid
         /// nested in a cell or the row details are left as they are.
         /// </summary>
         /// <remarks>
@@ -185,7 +183,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Collapses every realized group header of this grid that uses the Fluent group header. Groups of a grid
+        /// Collapses every realized group header of this grid that uses the built-in group header. Groups of a grid
         /// nested in a cell or the row details are left as they are.
         /// </summary>
         public void CollapseAllGroups()
