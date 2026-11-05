@@ -41,6 +41,6 @@ When a correction repeats a rule below, move its enforcement up a row: from guid
 | Gallery routes resolve to their pages; header anchors match doc headings | DemoShellTests.PageExpectations; GalleryPageHeaderTests |
 | Get-FluenceInput offers only New-FluencePrompt input types | Get-FluenceInput.Tests.ps1 |
 | Exported commands match FunctionsToExport | Import-FluenceModule.Tests.ps1; Sync-WebsiteDocs.ps1 page count |
-| Every input type has a New-FluenceInputControl branch, docs row, and count | Guidance only: new-control references/powershell-module.md |
+| Every input type has a New-FluenceInputControl branch, docs row, and count | InputTypeParity.Tests.ps1 |
 | Gallery pages appear in every page list | Guidance only: demo-sample-page SPEC.md catalog integration |
 | Skills link to owner guidance instead of copying values | Guidance only: this file |

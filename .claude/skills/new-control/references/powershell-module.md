@@ -34,7 +34,7 @@ powershell.exe -NoProfile -STA -File .\examples\06-ControlsTour.ps1
 
 ## New prompt input type
 
-The list of input types is copied by hand across several files, and nothing checks that all of them agree. The most dangerous gap is the last one: `New-FluenceInputControl` renders any type without its own branch as a plain `TextBox`, so a missing branch fails silently. Change all of these together:
+The list of input types is copied by hand across several files. `tests/InputTypeParity.Tests.ps1` reads the `New-FluencePrompt` `ValidateSet` and fails when a value has no `New-FluenceInputControl` branch, no row in `input-types.md`, or is missing from the input type count in the reference README. The `default` branch of `New-FluenceInputControl` throws for a type without its own branch. Nothing checks the help text, the dialog label condition, or validation. Change all of these together:
 
 1. `src/Fluence.Wpf.PowerShell/Public/New-FluencePrompt.ps1`: add the value to the `-InputType` `ValidateSet` and to the `.PARAMETER InputType` help text. Add a default-value conversion to the coercion switch so that a bad default fails before a window opens. Add parameter-combination checks like the existing ones for `-MultiSelect` and `-AsPlainText`.
 2. `src/Fluence.Wpf.PowerShell/Public/Get-FluenceInput.ps1`: add the same `ValidateSet` value and help text, unless the wrapper leaves the type out on purpose, as it does for `List`. `Get-FluenceInput.Tests.ps1` checks that the wrapper accepts only types that `New-FluencePrompt` accepts.
