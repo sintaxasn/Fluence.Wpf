@@ -50,7 +50,7 @@ Resolve visual and behavioral choices in the order given in Fluence.Wpf/AGENTS.m
    - Add a genuinely new color to all three `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml` tables. `BrushFactory` emits the brush twin. Use `SpecialBrushes` only for the exceptions that Themes/AGENTS.md lists.
    - A new color changes the generated `Fluence.Wpf/Properties/DesignTime.{Light,Dark}.xaml` snapshots. Do not edit them, or `DesignTimeResources.xaml`, by hand. Run the explicit `DesignTimeResourceTests.RegenerateDesignTimeResourcesAsync` test to rewrite them. `DesignTimeResources_AreCurrentAsync` fails until you do.
 
-3. **Gallery page.** Build the page with the `demo-sample-page` skill. Then register it in every place that lists gallery pages. The SPEC's catalog integration section lists them: the navigation catalog, the `MainWindow.CreatePageForRoute` case, the shell and sample-contract test lists, and a page test. Set the page header's `DocsAnchor` to the control's heading slug in `docs/controls.md`.
+3. **Gallery page.** Build the page with the `demo-sample-page` skill. Then register it in `DemoNavigationCatalog`, the only gallery page list, as the SPEC's catalog integration section describes; the gallery shell and sample-contract tests pick it up from there. Add a page test. Set the page header's `DocsAnchor` to the control's heading slug in `docs/controls.md`.
 
 4. **Tests** in `Fluence.Wpf.Tests/Control/<Name>Tests.cs`, with one sealed class.
    - Follow Fluence.Wpf.Tests/AGENTS.md for isolation, fixtures, and the shared helpers: `WpfTestSta`, `TestApp`, `VisualTree.CloseWindowAndDrain`, and `ThemeTestHelpers.ApplyStandardThemeCycle`.
