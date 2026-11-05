@@ -14,7 +14,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
-- `FluenceWindow` now defaults `ShowActivated` to `false` and activates itself after its first frame renders, so a dialog no longer becomes active while its controls are still being set up. After that first render, `ShowActivated` is `true`, so later shows and restores activate normally. A maximized window is still shown activated because Windows cannot show it otherwise. An explicit `ShowActivated` value turns off the deferred activation. Six test cases cover this on each full test target framework.
+- `FluenceWindow` now defaults `ShowActivated` to `false` and activates itself after its first frame renders, so a dialog no longer becomes active while its controls are still being set up. After that first render, `ShowActivated` is `true`, so later shows and restores activate normally. A maximized window is still shown activated because Windows cannot show it otherwise. When the app is launched with a startup show state, such as a shortcut set to run maximized or minimized, the first `FluenceWindow` shown is shown activated so Windows applies that state. An explicit `ShowActivated` value turns off the deferred activation, and a style applied after the first render still takes effect. `ContentRendered` handlers run after the window has activated itself. These changes add 18 test cases on each full test target framework.
 
 ## [0.9.5] - 2026-10-27
 

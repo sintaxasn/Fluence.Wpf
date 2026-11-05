@@ -1373,7 +1373,7 @@ namespace Fluence.Wpf.Tests.Windowing
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                     Assert.True(w.ShowActivated);
 
-                    w.ClearValue(Window.ShowActivatedProperty);
+                    w.SetCurrentValue(Window.ShowActivatedProperty, value: false);
                     w.Content = new System.Windows.Controls.Grid();
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
 
@@ -1386,6 +1386,142 @@ namespace Fluence.Wpf.Tests.Windowing
                     WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
                 }
             });
+        }
+
+        [Fact]
+        public Task ContentRendered_FirstHandler_RunsAfterDeferredActivationAsync()
+        {
+            // A first-render handler that looks for the active window, for example to open a
+            // ContentDialog, must run after the window has tried to activate itself.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                bool? showActivatedInHandler = null;
+                w.ContentRendered += (_, _) => showActivatedInHandler ??= w.ShowActivated;
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.True(showActivatedInHandler);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task Style_AfterFirstRender_CanStillSetShowActivatedAsync()
+        {
+            // The first render must not install a local value, which would outrank style setters.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.True(w.ShowActivated);
+
+                    Style style = new(typeof(FluenceWindow), w.Style);
+                    style.Setters.Add(new Setter(Window.ShowActivatedProperty, value: false));
+                    w.Style = style;
+
+                    Assert.False(w.ShowActivated);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task WindowStateChange_KeepsShowActivatedSetAfterFirstRenderAsync()
+        {
+            // The first render sets ShowActivated with SetCurrentValue. Re-coercing on a WindowState
+            // change must keep that value, or later restores would stop activating.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = new();
+                try
+                {
+                    w.SetCurrentValue(Window.ShowActivatedProperty, value: true);
+
+                    w.WindowState = WindowState.Maximized;
+                    w.WindowState = WindowState.Normal;
+
+                    Assert.True(w.ShowActivated);
+                }
+                finally { w.Close(); }
+            });
+        }
+
+        [Fact]
+        public Task Restore_FromMaximized_ReadsExplicitShowActivatedFalseAsync()
+        {
+            // Window restores the HWND inside its WindowState callback and reads ShowActivated there.
+            // The maximized coercion must be removed first, or a window that opted out of activation
+            // is activated on restore. OnStateChanged runs inside that restore.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                StateProbeWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = WindowBackdropType.None,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000,
+                    Content = new System.Windows.Controls.Grid(),
+                    ShowActivated = false,
+                };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    w.WindowState = WindowState.Maximized;
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    w.ShowActivatedOnStateChanged = null;
+                    w.WindowState = WindowState.Normal;
+
+                    Assert.False(w.ShowActivatedOnStateChanged);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Records <see cref="Window.ShowActivated"/> when <see cref="Window.StateChanged"/> is raised
+        /// from the native size change.
+        /// </summary>
+        private sealed class StateProbeWindow : FluenceWindow
+        {
+            public bool? ShowActivatedOnStateChanged { get; set; }
+
+            protected override void OnStateChanged(EventArgs e)
+            {
+                ShowActivatedOnStateChanged = ShowActivated;
+                base.OnStateChanged(e);
+            }
         }
     }
 }
