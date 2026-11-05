@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                     // A longer result message must wrap rather than widen the rail and take width from the grid.
                     double width = grid.ActualWidth;
-                    output.Text = "Edit rejected: Quantity cannot be negative.";
+                    output.Text = "Validation error: Quantity cannot be negative.";
                     window.UpdateLayout();
                     Assert.Equal(width, grid.ActualWidth);
                 }

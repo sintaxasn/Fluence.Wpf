@@ -219,7 +219,7 @@
                                 TextWrapping="Wrap" />
                         </StackPanel>
                     </ContentControl>
-                    <local:DemoSampleControl SampleDescription="Edit text, check box, and validated cells: double-click a Product or Quantity cell, then clear the name or enter a negative quantity to see the edit rejected. Template columns host a RatingControl and a ProgressBar, and EmptyContent shows when the rows are cleared." />
+                    <local:DemoSampleControl SampleDescription="Edit text, check box, and validated cells: double-click a Product or Quantity cell, then clear the name or enter a negative quantity to see a validation error. Template columns host a RatingControl and a ProgressBar, and EmptyContent shows when the rows are cleared." />
                 </StackPanel>
             </fluence:SmoothScrollViewer>
         </Grid>

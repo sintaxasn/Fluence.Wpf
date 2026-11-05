@@ -459,6 +459,12 @@
         </Setter>
         <Setter Property="Validation.ErrorTemplate" Value="{StaticResource DataGridValidationErrorTemplate}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Style.Triggers>
+            <!--  A failed commit keeps the editor open in place of the display TextBlock, so the editor explains the error too.  -->
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!--  Check box column: compact Fluent check box for the native CheckBox the column generates.  -->
@@ -623,7 +629,9 @@
                         <Expander.Template>
                             <ControlTemplate TargetType="{x:Type Expander}">
                                 <StackPanel>
+                                    <!--  GroupItem measures the header for virtualized grouping through the part named HeaderSite.  -->
                                     <ToggleButton
+                                        x:Name="HeaderSite"
                                         FocusVisualStyle="{DynamicResource DefaultCollectionFocusVisualStyle}"
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">

@@ -560,6 +560,79 @@ namespace Fluence.Wpf.Tests.Control
         }
 
         [Fact]
+        public Task DataGrid_GroupHeader_ReportsItsSizeToGroupVirtualizationAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                ListCollectionView view = new(CreateRows(6));
+                view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(SampleRow.Category)));
+                Controls.DataGrid grid = CreateGrid(view);
+                VirtualizingPanel.SetIsVirtualizingWhenGrouping(grid, value: true);
+                Window window = ShowInWindow(grid);
+
+                try
+                {
+                    Assert.True(
+                        await WaitUntilAsync(window.Dispatcher, 2000, () => FindVisualChildren<GroupItem>(grid).Any()).ConfigureAwait(true),
+                        "A category group should be realized.");
+
+                    // Virtualized grouping measures each group's header through the Expander template part
+                    // named HeaderSite; without it the header counts as zero height in the scroll extent.
+                    GroupItem groupItem = FindVisualChildren<GroupItem>(grid).First();
+                    Size header = ((IHierarchicalVirtualizationAndScrollInfo)groupItem).HeaderDesiredSizes.PixelSize;
+                    Assert.True(header.Height >= 32, "The group header must report its 32 DIP height to group virtualization.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_GroupCommands_LeaveNestedGridGroupsAloneAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                ListCollectionView innerView = new(CreateRows(6));
+                innerView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(SampleRow.Category)));
+                FrameworkElementFactory inner = new(typeof(Controls.DataGrid));
+                inner.SetValue(ItemsControl.ItemsSourceProperty, innerView);
+                inner.SetValue(FrameworkElement.HeightProperty, 160d);
+
+                ListCollectionView outerView = new(CreateRows(3));
+                outerView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(SampleRow.Category)));
+                Controls.DataGrid outer = CreateGrid(outerView);
+                outer.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Visible;
+                outer.RowDetailsTemplate = new DataTemplate { VisualTree = inner };
+                Window window = ShowInWindow(outer);
+
+                try
+                {
+                    List<Controls.DataGrid> nested = [];
+                    Assert.True(
+                        await WaitUntilAsync(window.Dispatcher, 2000, () =>
+                        {
+                            nested = [.. FindVisualChildren<Controls.DataGrid>(outer).Where(grid => !ReferenceEquals(grid, outer))];
+                            return nested.Count is 3 && nested.TrueForAll(static grid => FindVisualChildren<GroupItem>(grid).Any());
+                        }).ConfigureAwait(true),
+                        "Each of the three rows should realize a grouped grid in its details.");
+
+                    // The grid's commands act on its own groups only, never on a grid nested in its rows.
+                    List<Expander> nestedExpanders = [.. nested.SelectMany(static grid => GroupExpanders(grid))];
+                    outer.CollapseAllGroups();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.All(GroupExpanders(outer).Except(nestedExpanders), static expander => Assert.False(expander.IsExpanded));
+                    Assert.All(nestedExpanders, static expander => Assert.True(expander.IsExpanded));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
         public Task DataGrid_ThemeCycle_ReresolvesGridLineAndHeaderBrushesAsync()
         {
             return WpfTestSta.RunOnStaAsync(static async () =>
@@ -702,6 +775,41 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(SystemColors.HighlightColor, SolidColor(edge.BorderBrush));
                     Assert.Equal((Thickness)application.TryFindResource("TextControlBorderThemeThicknessFocused"), edge.BorderThickness);
                     Assert.NotEqual(SolidColor(editor.Background), SolidColor(edge.BorderBrush));
+
+                    Assert.True(grid.CancelEdit(DataGridEditingUnit.Row));
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_EditingTextBox_ShowsValidationErrorToolTipAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static async () =>
+            {
+                List<SampleRow> rows = CreateRows(3);
+                Controls.DataGrid grid = CreateGrid(rows);
+                Window window = ShowInWindow(grid);
+
+                try
+                {
+                    grid.CurrentCell = new DataGridCellInfo(rows[0], grid.Columns[1]);
+                    Assert.True(grid.BeginEdit(), "BeginEdit should start editing the current cell.");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    TextBox editor = Assert.IsType<TextBox>(grid.Columns[1].GetCellContent(rows[0]));
+
+                    // Text the Quantity binding cannot convert fails the commit and keeps the editor open,
+                    // so the editor itself must explain the error.
+                    editor.Text = "abc";
+                    _ = grid.CommitEdit(DataGridEditingUnit.Cell, exitEditingMode: true);
+                    Assert.True(
+                        await WaitUntilAsync(window.Dispatcher, 2000, () => Validation.GetHasError(editor)).ConfigureAwait(true),
+                        "The unconvertible text should leave a validation error on the open editor.");
+                    Assert.Same(editor, grid.Columns[1].GetCellContent(rows[0]));
+                    Assert.Equal(Validation.GetErrors(editor)[0].ErrorContent, editor.ToolTip);
 
                     Assert.True(grid.CancelEdit(DataGridEditingUnit.Row));
                 }
@@ -879,7 +987,7 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                System.Windows.Controls.DataGrid native = new()
+                DataGrid native = new()
                 {
                     AutoGenerateColumns = false,
                     Width = 480,
