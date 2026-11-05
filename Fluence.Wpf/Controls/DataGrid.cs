@@ -170,7 +170,8 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Expands every realized group header that uses the Fluent group header.
+        /// Expands every realized group header of this grid that uses the Fluent group header. Groups of a grid
+        /// nested in a cell or the row details are left as they are.
         /// </summary>
         /// <remarks>
         /// Grouping turns off row virtualization unless <see cref="VirtualizingPanel.IsVirtualizingWhenGroupingProperty"/>
@@ -182,7 +183,8 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Collapses every realized group header that uses the Fluent group header.
+        /// Collapses every realized group header of this grid that uses the Fluent group header. Groups of a grid
+        /// nested in a cell or the row details are left as they are.
         /// </summary>
         public void CollapseAllGroups()
         {
@@ -388,6 +390,14 @@ namespace Fluence.Wpf.Controls
                 if (child is GroupItem groupItem)
                 {
                     yield return groupItem;
+                }
+
+                // A nested ItemsControl, such as a grid in a cell template or the row details, owns its
+                // own groups. Multilevel grouping nests GroupItems with no ItemsControl between them,
+                // so the walk still reaches every level of this grid's groups.
+                if (child is ItemsControl)
+                {
+                    continue;
                 }
 
                 foreach (GroupItem nested in FindGroupItems(child))

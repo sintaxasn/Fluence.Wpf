@@ -291,7 +291,7 @@ namespace Fluence.Wpf.Demo.Pages
                 .FirstOrDefault();
             EditResultText.Text = error is null
                 ? "Edited " + column + " on " + item.Name + "."
-                : "Edit rejected: " + error;
+                : "Validation error: " + error;
         }
 
         private void ClearRows_Click(object sender, RoutedEventArgs e)
