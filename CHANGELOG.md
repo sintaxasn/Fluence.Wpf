@@ -12,6 +12,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 - Added `DataGrid`, a Fluent table built on the WPF `DataGrid` and the Fluence counterpart of the WinUI TableView. It keeps native sorting, resizing, frozen columns, editing, validation, grouping, and row virtualization, and adds `IsItemSelectable`, `EmptyContent`, `CornerRadius`, `ExpandAllGroups`, and `CollapseAllGroups`. Text and check box columns get Fluent display and editing styles unless they set their own. Native `DataGrid` instances keep their existing look. `ExpandAllGroups` and `CollapseAllGroups` leave the groups of a grid nested in a cell or the row details unchanged. The gallery has a new DataGrid page, and the PowerShell `06-ControlsTour.ps1` example shows PowerShell objects in a `DataGrid`. The opt-in screenshot capture produces Light and Dark `DataGrid` control candidates, and [known issues](KNOWN_ISSUES.md) lists the native grid behavior that `DataGrid` keeps. These changes add 30 test cases on each full test target framework.
 
+### Fixed
+
+- Fixed the gallery's Documentation links. All 17 pointed at headings that `docs/controls.md` and `docs/theming.md` no longer have, so they opened the top of the page. Each page now links to its current catalog section, and Typography links to the type ramp in the theme guide. A new test reads every gallery page header and fails when its anchor matches no GitHub heading slug in the linked document, which adds one test case on each full test target framework.
+
 ## [0.9.5] - 2026-10-27
 
 ### Added

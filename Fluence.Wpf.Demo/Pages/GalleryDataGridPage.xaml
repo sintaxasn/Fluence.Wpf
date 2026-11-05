@@ -18,7 +18,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <local:GalleryPageHeader DocsAnchor="data-and-collections" Title="DataGrid" />
+            <local:GalleryPageHeader DocsAnchor="data-collections-and-people" Title="DataGrid" />
             <TextBlock Grid.Row="1" Style="{StaticResource SectionDescriptionStyle}" Text="DataGrid shows rows and columns of data with sorting, resizing, grouping, filtering, editing, and validation. It is the Fluence counterpart of the WinUI TableView and keeps the WPF DataGrid API." />
 
             <fluence:SmoothScrollViewer
