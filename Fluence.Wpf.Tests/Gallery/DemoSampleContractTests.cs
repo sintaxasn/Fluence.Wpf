@@ -65,6 +65,7 @@ namespace Fluence.Wpf.Tests.Gallery
             static () => new GalleryInputsPage(),
             static () => new GalleryFormsPage(),
             static () => new GalleryDataPage(),
+            static () => new GalleryDataGridPage(),
             static () => new GalleryDataBindingPage(),
             static () => new GalleryTreesPage(),
             static () => new GalleryMenusPage(),

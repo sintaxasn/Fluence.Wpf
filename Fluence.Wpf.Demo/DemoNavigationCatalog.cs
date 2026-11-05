@@ -60,6 +60,7 @@ namespace Fluence.Wpf.Demo
             new("Inputs", "inputs", "textbox passwordbox numberbox slider text input validation", "\uE70F", isDefault: false),
             new("Forms", "forms", "signin checkout settings form text input", "\uE7C3", isDefault: false),
             new("Data", "data", "card listbox listview collection empty state", "\uE8FD", isDefault: false),
+            new("DataGrid", "data grid", "datagrid table tableview grid rows columns sort group filter edit validation", "\uE80A", isDefault: false),
             new("Data binding", "data binding", "observablecollection binding selection datatemplate", "\uE8FD", isDefault: false),
             new("Trees", "trees", "treeview hierarchy expand collapse selection", "\uE8EB", isDefault: false),
             new("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command dialog message box contentdialog teachingtip commandbar", "\uE115", isDefault: false),

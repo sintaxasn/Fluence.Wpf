@@ -8,6 +8,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Added
+
+- Added `DataGrid`, a Fluent table built on the WPF `DataGrid` and the Fluence counterpart of the WinUI TableView. It keeps native sorting, resizing, frozen columns, editing, validation, grouping, and row virtualization, and adds `IsItemSelectable`, `EmptyContent`, `CornerRadius`, `ExpandAllGroups`, and `CollapseAllGroups`. Text and check box columns get Fluent display and editing styles unless they set their own. Native `DataGrid` instances keep their existing look. The gallery has a new DataGrid page. These changes add 27 test cases on each full test target framework.
+
 ## [0.9.5] - 2026-10-27
 
 ### Added
