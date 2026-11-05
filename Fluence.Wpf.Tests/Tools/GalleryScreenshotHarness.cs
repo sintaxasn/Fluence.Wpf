@@ -1719,7 +1719,7 @@ namespace Fluence.Wpf.Tests.Tools
                     routes.Add((item.Route.Replace(' ', '-'), item.Title));
                 }
 
-                routes.Add(("settings", "Settings"));
+                routes.Add((Demo.DemoNavigationCatalog.SettingsItem.Route, Demo.DemoNavigationCatalog.SettingsItem.Title));
                 foreach ((string route, string title) in routes)
                 {
                     if (!HasSelectedRouteTheme("gallery/" + route + "-", themeSlug))
