@@ -117,12 +117,57 @@ function Test-IsAgentGuidance {
         [string]$RelativePath
     )
 
-    # Files that instruct agents: in-repo skills, agents and hooks, every AGENTS.md, the root skills
-    # folder, and the Copilot instructions.
+    # Files that instruct agents and contributors: in-repo skills, agents and hooks, every AGENTS.md,
+    # the root skills folder, the Copilot instructions, and the pull request template.
     return $RelativePath -match '^\.claude/' -or
         $RelativePath -match '(^|/)AGENTS\.md$' -or
         $RelativePath -match '^skills/' -or
-        $RelativePath -eq '.github/copilot-instructions.md'
+        $RelativePath -eq '.github/copilot-instructions.md' -or
+        $RelativePath -eq '.github/PULL_REQUEST_TEMPLATE.md'
+}
+
+function Get-NumberedSectionReferenceProblem {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Text,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ProjectRoot
+    )
+
+    # A pointer to a numbered section of another Markdown file survives a rewrite of that file that
+    # drops its numbered headings, and then leads nowhere. Require each referenced number to match a
+    # heading that starts with the same number and a period.
+    $problems = New-Object "System.Collections.Generic.List[string]"
+    $references = [System.Text.RegularExpressions.Regex]::Matches($Text, '`?(?<file>[A-Za-z0-9_./-]+[.]md)`?\s+sections?\s+(?<numbers>\d+(\s*(,|and)\s*\d+)*)', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    foreach ($reference in $references) {
+        $file = $reference.Groups['file'].Value
+        $candidates = @(
+            (Join-Path $ProjectRoot $file),
+            (Join-Path (Join-Path $ProjectRoot (Split-Path -Parent $RelativePath)) $file)
+        )
+        $target = $candidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
+        if ($null -eq $target) {
+            $problems.Add("$RelativePath refers to $file section(s) $($reference.Groups['numbers'].Value), but $file does not exist.")
+            continue
+        }
+
+        $headings = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::Ordinal)
+        foreach ($heading in [System.Text.RegularExpressions.Regex]::Matches([System.IO.File]::ReadAllText($target), '(?m)^#{1,6}\s+(?<number>\d+)[.]')) {
+            [void]$headings.Add($heading.Groups['number'].Value)
+        }
+
+        $missing = @([System.Text.RegularExpressions.Regex]::Matches($reference.Groups['numbers'].Value, '\d+') | ForEach-Object { $_.Value } | Where-Object { -not $headings.Contains($_) })
+        if ($missing.Count -gt 0) {
+            $problems.Add("$RelativePath refers to $file section(s) $($missing -join ', '), but $file has no heading with that number. Name the heading instead.")
+        }
+    }
+
+    return $problems
 }
 
 function Get-FrontmatterProblem {
@@ -323,6 +368,13 @@ for ($i = 0; $i -lt $fullPaths.Count; $i++) {
     if ($isCSharp -or $isMarkdown) {
         if ($text.Contains([char]0x2014) -or $text.Contains([char]0x2013)) {
             $violations.Add("$relativePath contains an em dash or en dash. Use hyphens in comments and documentation.")
+        }
+    }
+
+    # CHANGELOG entries describe earlier states of the documents they mention, so they are exempt.
+    if ($isMarkdown -and $relativePath -ne 'CHANGELOG.md') {
+        foreach ($problem in @(Get-NumberedSectionReferenceProblem -RelativePath $relativePath -Text $text -ProjectRoot $projectRoot)) {
+            $violations.Add($problem)
         }
     }
 

@@ -21,7 +21,7 @@ Skills and agents order the work and name files; they link to the owning AGENTS.
 ## Hooks
 
 - pre-tool-theme-slot.ps1 gives a non-blocking reminder for theme-slot-critical edits.
-- post-tool-util.ps1 enforces text policy when invoked by the editor and supports the repository-wide CI check with -CheckAll. For agent guidance (.claude/, every AGENTS.md, skills/, and .github/copilot-instructions.md) it also checks skill and agent frontmatter and rejects numbered handbook section references.
+- post-tool-util.ps1 enforces text policy when invoked by the editor and supports the repository-wide CI check with -CheckAll. For agent guidance (.claude/, every AGENTS.md, skills/, .github/copilot-instructions.md, and the pull request template) it also checks skill and agent frontmatter and rejects numbered handbook section references. In every Markdown file except CHANGELOG.md, a reference to a numbered section of another Markdown file must match a heading with that number.
 
 Keep authoring and review in separate passes. A scaffold is not an independent review.
 
@@ -33,6 +33,7 @@ When a correction repeats a rule below, move its enforcement up a row: from guid
 | --- | --- |
 | Skill entrypoints and agent definitions start with frontmatter that has `name:` and `description:` | post-tool-util.ps1 (edit hook and CI) |
 | Guidance names the owning file, never a numbered handbook section | post-tool-util.ps1 (edit hook and CI) |
+| A numbered section reference to another Markdown file matches a numbered heading there | post-tool-util.ps1 (edit hook and CI) |
 | UTF-8 BOM, LF, no em or en dashes, banned APIs, no hex in control templates | post-tool-util.ps1 (edit hook and CI) |
 | Generated design-time XAML is regenerated, not edited | DesignTimeResourceTests.DesignTimeResources_AreCurrentAsync |
 | New public symbols are declared | Public API analyzer through PublicAPI.Unshipped.txt (build) |
