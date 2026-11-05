@@ -20,3 +20,4 @@ override Fluence.Wpf.Controls.DataGrid.OnSelectionChanged(System.Windows.Control
 static readonly Fluence.Wpf.Controls.DataGrid.CornerRadiusProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.DataGrid.EmptyContentProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.DataGrid.IsItemSelectableProperty -> System.Windows.DependencyProperty!
+override Fluence.Wpf.Controls.FluenceWindow.OnContentRendered(System.EventArgs! e) -> void

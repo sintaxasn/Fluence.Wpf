@@ -1219,5 +1219,173 @@ namespace Fluence.Wpf.Tests.Windowing
             Assert.False(FluenceWindow.IsMaxButtonRelease(new IntPtr((1L << 32) | 9L)));
             Assert.False(FluenceWindow.IsMaxButtonRelease(new IntPtr(long.MinValue)));
         }
+
+        // ---------------------------------------------------------------------------
+        // Deferred first activation
+        // ---------------------------------------------------------------------------
+
+        private static FluenceWindow CreateOffScreenWindow(object? content)
+        {
+            return new FluenceWindow
+            {
+                Width = 320,
+                Height = 240,
+                ShowInTaskbar = false,
+                SystemBackdropType = WindowBackdropType.None,
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                Left = -10000,
+                Top = -10000,
+                Content = content,
+            };
+        }
+
+        [Fact]
+        public Task ShowActivated_DefaultsToFalseOnlyForFluenceWindowAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow fluenceWindow = new();
+                Window plainWindow = new();
+                try
+                {
+                    Assert.False(fluenceWindow.ShowActivated);
+                    Assert.True(plainWindow.ShowActivated);
+                }
+                finally
+                {
+                    fluenceWindow.Close();
+                    plainWindow.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task ShowActivated_IsCoercedTrueWhileMaximizedAsync()
+        {
+            // Window throws when asked to show a maximized window without activating it, so the
+            // deferred-activation default must not apply while WindowState is Maximized.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = new();
+                try
+                {
+                    w.WindowState = WindowState.Maximized;
+                    Assert.True(w.ShowActivated);
+
+                    w.WindowState = WindowState.Normal;
+                    Assert.False(w.ShowActivated);
+                }
+                finally { w.Close(); }
+            });
+        }
+
+        [Fact]
+        public Task Show_AfterFirstRender_SetsShowActivatedTrueAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.True(w.ShowActivated);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task Show_WithoutContent_SetsShowActivatedTrueAsync()
+        {
+            // Window raises ContentRendered only after Content is set, so a window without content
+            // needs the Loaded fallback to complete its deferred activation.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(content: null);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.True(w.ShowActivated);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task Show_ExplicitShowActivatedFalse_IsKeptAfterFirstRenderAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                w.ShowActivated = false;
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.False(w.ShowActivated);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
+        [Fact]
+        public Task ContentChange_AfterFirstRender_DoesNotRepeatDeferredActivationAsync()
+        {
+            // ContentRendered is raised again after every Content change. Only the first render
+            // completes the deferred activation, even when ShowActivated is back at its default.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                int contentRenderedCount = 0;
+                w.ContentRendered += (_, _) => contentRenderedCount++;
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                    Assert.True(w.ShowActivated);
+
+                    w.ClearValue(Window.ShowActivatedProperty);
+                    w.Content = new System.Windows.Controls.Grid();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Assert.Equal(2, contentRenderedCount);
+                    Assert.False(w.ShowActivated);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
     }
 }

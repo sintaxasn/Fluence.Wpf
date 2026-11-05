@@ -37,6 +37,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
+using System.Windows.Threading;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using Fluence.Wpf.Theming;
@@ -59,6 +60,14 @@ namespace Fluence.Wpf.Controls
     /// Win32 message hook so the custom chrome stays authoritative. Theme, accent, and backdrop are
     /// applied directly to the HWND via DWM attributes and kept in sync with the shared theme
     /// managers for the lifetime of the realised window.
+    /// <para>
+    /// <see cref="Window.ShowActivated"/> defaults to <see langword="false"/>, so the first show does
+    /// not activate the window before its content has rendered. The window activates itself once the
+    /// first frame has rendered, then sets <see cref="Window.ShowActivated"/> to
+    /// <see langword="true"/> so later shows and restores activate normally. A maximized window is
+    /// always shown activated, because Windows cannot show a maximized window without activating it.
+    /// Setting <see cref="Window.ShowActivated"/> explicitly turns off this deferred activation.
+    /// </para>
     /// </remarks>
     [TemplatePart(Name = PART_MinimizeButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PART_MaximizeButton, Type = typeof(System.Windows.Controls.Button))]
@@ -517,7 +526,40 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(FluenceWindow),
                 new FrameworkPropertyMetadata(typeof(FluenceWindow)));
+
+            // Show without activation by default; CompleteDeferredActivation activates the window
+            // once its first frame has rendered.
+            ShowActivatedProperty.OverrideMetadata(
+                typeof(FluenceWindow),
+                new FrameworkPropertyMetadata(
+                    defaultValue: false,
+                    propertyChangedCallback: null,
+                    coerceValueCallback: CoerceShowActivated));
         }
+
+        /// <summary>
+        /// Coerces <see cref="Window.ShowActivated"/> to <see langword="true"/> while the window is
+        /// maximized.
+        /// </summary>
+        /// <remarks>
+        /// Windows cannot show a maximized window without activating it, and <see cref="Window"/>
+        /// throws when asked to, so the deferred-activation default must not reach a maximized
+        /// window. This callback replaces the base <see cref="Window"/> coercion, which only verifies
+        /// thread access, so it verifies access too.
+        /// </remarks>
+        /// <param name="d">The window whose value is being coerced.</param>
+        /// <param name="baseValue">The uncoerced value.</param>
+        /// <returns><see langword="true"/> for a maximized window; otherwise <paramref name="baseValue"/>.</returns>
+        private static object CoerceShowActivated(DependencyObject d, object baseValue)
+        {
+            d.VerifyAccess();
+            return d is FluenceWindow { WindowState: WindowState.Maximized } ? BoxedTrue : baseValue;
+        }
+
+        /// <summary>
+        /// A shared boxed <see langword="true"/> returned by <see cref="CoerceShowActivated"/>.
+        /// </summary>
+        private static readonly object BoxedTrue = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FluenceWindow"/> class: loads the style
@@ -560,6 +602,8 @@ namespace Fluence.Wpf.Controls
             SetValue(WindowChrome.WindowChromeProperty, _windowChrome);
             UpdateWindowChrome();
             UpdateShellMetrics();
+
+            Loaded += OnLoadedForDeferredActivation;
         }
 
         #endregion Construction
@@ -624,6 +668,17 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        /// <remarks>
+        /// The first call activates a window whose activation on show was deferred by the
+        /// <see cref="Window.ShowActivated"/> default. See <see cref="CompleteDeferredActivation"/>.
+        /// </remarks>
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            CompleteDeferredActivation();
+        }
+
+        /// <inheritdoc />
         protected override void OnStateChanged(EventArgs e)
         {
             ClearSnapHover();
@@ -675,6 +730,8 @@ namespace Fluence.Wpf.Controls
             }
             if (e.Property == WindowStateProperty)
             {
+                // A maximized window cannot be shown without activation; see CoerceShowActivated.
+                CoerceValue(ShowActivatedProperty);
                 UpdateCaptionButtons();
             }
         }
@@ -698,6 +755,59 @@ namespace Fluence.Wpf.Controls
         }
 
         #endregion Lifecycle overrides
+
+        #region Deferred activation
+
+        /// <summary>
+        /// Completes deferred activation for a window shown without <see cref="ContentControl.Content"/>,
+        /// which never raises <see cref="Window.ContentRendered"/>.
+        /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">The routed event data (unused).</param>
+        private void OnLoadedForDeferredActivation(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnLoadedForDeferredActivation;
+
+            // Window raises ContentRendered from an Input-priority work item posted once Content is
+            // set and the window has loaded. Without Content, use the same point after the first render.
+            if (Content is null)
+            {
+                _ = Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(CompleteDeferredActivation));
+            }
+        }
+
+        /// <summary>
+        /// Activates the window after its first frame has rendered when the
+        /// <see cref="Window.ShowActivated"/> default deferred activation on show.
+        /// </summary>
+        /// <remarks>
+        /// Runs once. <see cref="Window.ContentRendered"/> is raised again after every later
+        /// <see cref="ContentControl.Content"/> change, and activating then would pull the window in
+        /// front of the window the user is working in. An explicit <see cref="Window.ShowActivated"/>
+        /// value from a local value, style, or binding is left unchanged.
+        /// </remarks>
+        private void CompleteDeferredActivation()
+        {
+            if (_deferredActivationHandled)
+            {
+                return;
+            }
+
+            _deferredActivationHandled = true;
+            if (DependencyPropertyHelper.GetValueSource(this, ShowActivatedProperty).BaseValueSource is not BaseValueSource.Default)
+            {
+                return;
+            }
+
+            // Activate now that the first frame has rendered. Later shows and restores activate normally.
+            ShowActivated = true;
+            if (IsVisible && !IsActive)
+            {
+                _ = Activate();
+            }
+        }
+
+        #endregion Deferred activation
 
         #region Dependency property change callbacks
 
@@ -2012,6 +2122,12 @@ namespace Fluence.Wpf.Controls
         /// itself set.
         /// </summary>
         private bool _contentLayerPreBlendApplied;
+
+        /// <summary>
+        /// <see langword="true"/> once <see cref="CompleteDeferredActivation"/> has run, so later
+        /// <see cref="Window.ContentRendered"/> events do not activate the window again.
+        /// </summary>
+        private bool _deferredActivationHandled;
 
         /// <summary>
         /// The monitor <see cref="_handle"/> was on as of the last <see cref="ApplyBackdrop"/>, used

@@ -12,6 +12,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 - Added `DataGrid`, a Fluent table built on the WPF `DataGrid` and the Fluence counterpart of the WinUI TableView. It keeps native sorting, resizing, frozen columns, editing, validation, grouping, and row virtualization, and adds `IsItemSelectable`, `EmptyContent`, `CornerRadius`, `ExpandAllGroups`, and `CollapseAllGroups`. Text and check box columns get Fluent display and editing styles unless they set their own. Native `DataGrid` instances keep their existing look. `ExpandAllGroups` and `CollapseAllGroups` leave the groups of a grid nested in a cell or the row details unchanged. The gallery has a new DataGrid page, and the PowerShell `06-ControlsTour.ps1` example shows PowerShell objects in a `DataGrid`. The opt-in screenshot capture produces Light and Dark `DataGrid` control candidates, and [known issues](KNOWN_ISSUES.md) lists the native grid behavior that `DataGrid` keeps. These changes add 30 test cases on each full test target framework.
 
+### Changed
+
+- `FluenceWindow` now defaults `ShowActivated` to `false` and activates itself after its first frame renders, so a dialog no longer becomes active while its controls are still being set up. After that first render, `ShowActivated` is `true`, so later shows and restores activate normally. A maximized window is still shown activated because Windows cannot show it otherwise. An explicit `ShowActivated` value turns off the deferred activation. Six test cases cover this on each full test target framework.
+
 ## [0.9.5] - 2026-10-27
 
 ### Added
