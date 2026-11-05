@@ -16,6 +16,10 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 - `FluenceWindow` now defaults `ShowActivated` to `false` and activates itself after its first frame renders, so a dialog no longer becomes active while its controls are still being set up. After that first render, `ShowActivated` is `true`, so later shows and restores activate normally. A maximized window is still shown activated because Windows cannot show it otherwise. When the app is launched with a startup show state, such as a shortcut set to run maximized or minimized, the first `FluenceWindow` shown is shown activated so Windows applies that state. An explicit `ShowActivated` value turns off the deferred activation, and a style applied after the first render still takes effect. `ContentRendered` handlers run after the window has activated itself. These changes add 18 test cases on each full test target framework.
 
+### Fixed
+
+- Fixed the gallery's Documentation links. All 17 pointed at headings that `docs/controls.md` and `docs/theming.md` no longer have, so they opened the top of the page. Each page now links to its current catalog section, and Typography links to the type ramp in the theme guide. A new test reads every gallery page header and fails when its anchor matches no GitHub heading slug in the linked document, which adds one test case on each full test target framework.
+
 ## [0.9.5] - 2026-10-27
 
 ### Added
