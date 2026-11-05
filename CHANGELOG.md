@@ -15,6 +15,13 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 ### Changed
 
 - `FluenceWindow` now defaults `ShowActivated` to `false` and activates itself after its first frame renders, so a dialog no longer becomes active while its controls are still being set up. After that first render, `ShowActivated` is `true`, so later shows and restores activate normally. A maximized window is still shown activated because Windows cannot show it otherwise. When the app is launched with a startup show state, such as a shortcut set to run maximized or minimized, the first `FluenceWindow` shown is shown activated so Windows applies that state. An explicit `ShowActivated` value turns off the deferred activation, and a style applied after the first render still takes effect. `ContentRendered` handlers run after the window has activated itself. These changes add 18 test cases on each full test target framework.
+- The repository text-policy check, `.claude/hooks/post-tool-util.ps1`, now also checks agent guidance in `.claude/`, every `AGENTS.md`, `skills/`, and `.github/copilot-instructions.md`. Skill and agent files must start with frontmatter that has `name` and `description` entries, and guidance must name the owning file instead of a numbered handbook section. The check runs in the editor hook and in CI.
+- Updated the in-repository `new-control` skill to cover every place a new control touches: the PowerShell module (the controls tour example, a new `New-FluencePrompt` input type, or a new public function), gallery catalog registrations, test baselines and CI case-count floors, public API entries, regenerated design-time resources, and screenshot capture entries. The `demo-sample-page` skill now links to its `SPEC.md` for the page contract instead of repeating surface brushes that no longer matched, and `SPEC.md` lists the gallery page registrations.
+- Brought the review agents, the theme-slot hook reminder, and the Copilot instructions up to date with the per-area `AGENTS.md` files. They no longer cite handbook section numbers, a pinned xunit.v3 version, or an exact count of merged dictionaries.
+
+### Removed
+
+- Removed `Fluence.Wpf.PowerShell.Module/build/Export-ModuleReference.ps1`. It wrote command pages into tracked `docs/` and was superseded by `tools/Docs/Generate-PowerShellReference.ps1`, which CI checks and the module README now documents.
 
 ### Fixed
 
