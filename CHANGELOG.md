@@ -8,6 +8,8 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-11-05
+
 ### Added
 
 - Added `DataGrid`, a Fluent table built on the WPF `DataGrid` and the Fluence counterpart of the WinUI TableView. It keeps native sorting, resizing, frozen columns, editing, validation, grouping, and row virtualization, and adds `IsItemSelectable`, `EmptyContent`, `CornerRadius`, `ExpandAllGroups`, and `CollapseAllGroups`. Text and check box columns get Fluent display and editing styles unless they set their own. Native `DataGrid` instances keep their existing look. `ExpandAllGroups` and `CollapseAllGroups` leave the groups of a grid nested in a cell or the row details unchanged. The gallery has a new DataGrid page, and the PowerShell `06-ControlsTour.ps1` example shows PowerShell objects in a `DataGrid`. The opt-in screenshot capture produces Light and Dark `DataGrid` control candidates, and [known issues](KNOWN_ISSUES.md) lists the native grid behavior that `DataGrid` keeps. These changes add 30 test cases on each full test target framework.
@@ -805,7 +807,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.5...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.6...main
+[0.9.6]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.2-pre...v0.9.3
