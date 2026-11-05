@@ -361,6 +361,7 @@ namespace Fluence.Wpf.Demo
                 "inputs" => new GalleryInputsPage(),
                 "forms" => new GalleryFormsPage(),
                 "data" => new GalleryDataPage(),
+                "data grid" => new GalleryDataGridPage(),
                 "data binding" => new GalleryDataBindingPage(),
                 "trees" => new GalleryTreesPage(),
                 "menus" => new GalleryMenusPage(),
