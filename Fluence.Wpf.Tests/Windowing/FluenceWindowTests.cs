@@ -1509,6 +1509,40 @@ namespace Fluence.Wpf.Tests.Windowing
             });
         }
 
+        [Fact]
+        public Task Show_KeepsRequestedPositionThroughLoadedAndContentRenderedAsync()
+        {
+            // Deferred activation replaces the old workaround of parking a dialog off-screen until
+            // its first render. Guard against a position hold coming back: the window must stay
+            // where the caller placed it when Loaded and ContentRendered are raised.
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application app = WpfTestSta.EnsureApplication();
+                ResetAndApply(app);
+                FluenceWindow w = CreateOffScreenWindow(new System.Windows.Controls.Grid());
+                double requestedLeft = w.Left;
+                double requestedTop = w.Top;
+                Point? positionOnLoaded = null;
+                Point? positionOnContentRendered = null;
+                w.Loaded += (_, _) => positionOnLoaded = new Point(w.Left, w.Top);
+                w.ContentRendered += (_, _) => positionOnContentRendered ??= new Point(w.Left, w.Top);
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+
+                    Point requested = new(requestedLeft, requestedTop);
+                    Assert.Equal(requested, positionOnLoaded);
+                    Assert.Equal(requested, positionOnContentRendered);
+                }
+                finally
+                {
+                    w.Close();
+                    WpfTestSta.DrainDispatcher(WpfTestSta.Dispatcher);
+                }
+            });
+        }
+
         /// <summary>
         /// Records <see cref="Window.ShowActivated"/> when <see cref="Window.StateChanged"/> is raised
         /// from the native size change.
