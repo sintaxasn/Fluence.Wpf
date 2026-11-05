@@ -280,6 +280,18 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
   inter-tab separator or corner fillets; `PipsPager` does not scale pips or
   use a pressed scale on its nav buttons). See `docs/winui-parity.md`
   section 6 for the full geometry table.
+- **`DataGrid` behavior kept from the native WPF grid** - with
+  `IsItemSelectable` set to `False`, a mouse click does not begin editing a
+  cell, because the native cell starts a click edit only when it is selected;
+  F2 and typing still begin editing. The click also selects the row or cell
+  briefly and then clears it, so `SelectedCellsChanged`, and `SelectionChanged`
+  when whole rows are selected, report a selection and then its removal. The
+  Fluent group header is added as the first `GroupStyle` when the grid loads
+  with no group style, so set an application group style before the grid
+  loads, usually in XAML; one added later applies only to the second grouping
+  level and below. Grouping turns off row virtualization unless
+  `VirtualizingPanel.IsVirtualizingWhenGrouping` is set, so a large grouped
+  source realizes every row.
 
 ## net472 accessibility API gaps
 
