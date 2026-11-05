@@ -38,9 +38,9 @@ When a correction repeats a rule below, move its enforcement up a row: from guid
 | Generated design-time XAML is regenerated, not edited | DesignTimeResourceTests.DesignTimeResources_AreCurrentAsync |
 | New public symbols are declared | Public API analyzer through PublicAPI.Unshipped.txt (build) |
 | Test cases are not lost | CI lane floors in .github/workflows/build.yml and Fluence.Wpf.Tests/Baselines |
-| Gallery routes resolve to their pages; header anchors match doc headings | DemoShellTests.PageExpectations; GalleryPageHeaderTests |
+| Gallery routes resolve to their pages; header anchors match doc headings | DemoShellTests.MainWindow_DirectNavigation_LoadsConcretePagesAsync over DemoNavigationCatalog; GalleryPageHeaderTests |
 | Get-FluenceInput offers only New-FluencePrompt input types | Get-FluenceInput.Tests.ps1 |
 | Exported commands match FunctionsToExport | Import-FluenceModule.Tests.ps1; Sync-WebsiteDocs.ps1 page count |
 | Every input type has a New-FluenceInputControl branch, docs row, and count | InputTypeParity.Tests.ps1 |
-| Gallery pages appear in every page list | Guidance only: demo-sample-page SPEC.md catalog integration |
+| Gallery pages are registered once, in DemoNavigationCatalog | GalleryPageCatalog feeds the catalog to DemoShellTests.GalleryPages_UseSharedWinUiGalleryPageLayoutAsync, MainWindow_DirectNavigation_LoadsConcretePagesAsync, MainWindow_NonHomePagesExposeInlineSourceSamplesAsync, and DemoSampleContractTests.GallerySamplePages_AllVisibleDemoSamplesExposeSourceAsync |
 | Skills link to owner guidance instead of copying values | Guidance only: this file |

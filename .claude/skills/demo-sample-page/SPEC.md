@@ -81,17 +81,17 @@ Colors renders directly without `DemoSampleControl`, like Icons, because the Win
 
 ## Catalog integration
 
-Several files list the gallery pages by hand. A new page must be added to each of them in the same change:
+`Fluence.Wpf.Demo/DemoNavigationCatalog.cs` is the only gallery page list. Register a new page there, in the same change as the page:
 
 | File | Entry |
 | --- | --- |
-| `Fluence.Wpf.Demo/DemoNavigationCatalog.cs` | A `DemoNavigationItem` in `CatalogItems` with the title, route, search keywords, and Segoe Fluent Icons glyph. The catalog order is the navigation order. |
-| `Fluence.Wpf.Demo/MainWindow.xaml.cs` | A case for the route in `CreatePageForRoute`. |
-| `Fluence.Wpf.Tests/Gallery/DemoShellTests.cs` | The page in the `GalleryPages_UseSharedWinUiGalleryPageLayoutAsync` page list, and a route and type pair in `PageExpectations`. |
-| `Fluence.Wpf.Tests/Gallery/DemoSampleContractTests.cs` | A factory in `SamplePageFactories` when the page uses `DemoSampleControl`. |
+| `Fluence.Wpf.Demo/DemoNavigationCatalog.cs` | A `DemoNavigationItem.Create(...)` entry in `CatalogItems` with the title, route, search keywords, Segoe Fluent Icons glyph, and a factory such as `static _ => new GalleryDataGridPage()`. The page type comes from the factory, and the catalog order is the navigation order. |
+| `Fluence.Wpf.Tests/Gallery/GalleryPageCatalog.cs` | Only for a page that renders directly instead of through `DemoSampleControl`: its type in `DirectRenderPageTypes`, with the reason in the comment. |
 | `Fluence.Wpf.Tests/Gallery/Pages/Gallery<Name>PageTests.cs` | A focused page test, such as `GalleryDataGridPageTests`. |
 
-`GalleryPageHeaderTests` finds every page by reflection and fails when a `DocsAnchor` matches no heading slug in the linked document, so the header needs no list entry. The Settings page is a footer item that `MainWindow.PopulateNavigation` registers, so it is not in the catalog.
+`MainWindow` creates each page through its catalog entry's factory, so it has no route switch to update. The gallery tests read their page lists from the catalog through `GalleryPageCatalog`. `DemoShellTests` navigates to every catalog route and checks the page type, and checks the shared page layout on every catalog page and Settings. `DemoShellTests` and `DemoSampleContractTests` check the `DemoSampleControl` source contract on every catalog page except the direct-render pages: Home, Icons, and Colors. An exclusion that names a page no longer in the catalog fails those tests.
+
+`GalleryPageHeaderTests` finds every page by reflection and fails when a `DocsAnchor` matches no heading slug in the linked document, so the header needs no list entry. The Settings page is a footer item, so its entry is `DemoNavigationCatalog.SettingsItem` rather than a `CatalogItems` entry.
 
 ## Definition of done
 
