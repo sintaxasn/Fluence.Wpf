@@ -114,6 +114,7 @@ namespace Fluence.Wpf.Tests.Tools
             new("check-box", "selection", 1, "CheckBox"),
             new("color-picker", "forms", 3, "ColorPicker"),
             new("combo-box", "selection", 5, "ComboBox"),
+            new("data-grid", "data-grid", 1, "DataGrid"),
             new("date-picker", "forms", 2, "DatePicker"),
             new("dock-panel", "layout", 2, "DockPanel"),
             new("drop-down-button", "buttons", 6, "DropDownButton"),
@@ -606,8 +607,13 @@ namespace Fluence.Wpf.Tests.Tools
                 }
             }
 
-            throw new InvalidOperationException(
-                Invariant("No rendered {0} visual in {1} sample {2}.", spec.TypeName, spec.Route, spec.Ordinal));
+            // A sample whose live content is itself the control, as in the DataGrid samples, has no
+            // matching descendant.
+            return string.Equals(content.GetType().Name, spec.TypeName, StringComparison.Ordinal)
+                && (allowEmpty || (content.IsVisible && content.ActualWidth > 0 && content.ActualHeight > 0))
+                ? content
+                : throw new InvalidOperationException(
+                    Invariant("No rendered {0} visual in {1} sample {2}.", spec.TypeName, spec.Route, spec.Ordinal));
         }
 
         private static async Task CaptureControlAsync(
@@ -1391,7 +1397,8 @@ namespace Fluence.Wpf.Tests.Tools
                         continue;
                     }
 
-                    window.NavigateTo(string.Equals(route, "data-binding", StringComparison.Ordinal) ? "data binding" : route);
+                    // Capture IDs hyphenate the catalog route; two-word routes such as "data grid" navigate by the original.
+                    window.NavigateTo(route.Replace('-', ' '));
                     await SettleGalleryAsync(window).ConfigureAwait(true);
                     if (window.PageFrame.Content is not DependencyObject page)
                     {
@@ -1720,7 +1727,8 @@ namespace Fluence.Wpf.Tests.Tools
                         continue;
                     }
 
-                    window.NavigateTo(string.Equals(route, "data-binding", StringComparison.Ordinal) ? "data binding" : route);
+                    // Capture IDs hyphenate the catalog route; two-word routes such as "data grid" navigate by the original.
+                    window.NavigateTo(route.Replace('-', ' '));
                     await SettleGalleryAsync(window).ConfigureAwait(true);
                     string routeFile = Invariant("{0}-{1}.png", route, themeSlug);
                     if (ShouldCapture("gallery/" + routeFile))

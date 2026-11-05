@@ -159,9 +159,11 @@ namespace Fluence.Wpf.Controls
         /// is the equivalent of WinUI TableView <c language="csharp">SelectionMode="None"</c>. Cells stay
         /// focusable, so keyboard navigation works, and F2 or typing still begins editing. A mouse click does
         /// not begin editing, because the native cell starts a click edit only when it is selected. A click
-        /// briefly selects the row or cell and then clears it, so <c language="csharp">SelectionChanged</c> is raised twice and
-        /// a two-way <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> binding sees a
-        /// transient value.
+        /// briefly selects the row or cell and then clears it, so
+        /// <see cref="System.Windows.Controls.DataGrid.SelectedCellsChanged"/>, and
+        /// <see cref="System.Windows.Controls.Primitives.Selector.SelectionChanged"/> when whole rows are
+        /// selected, report a selection and then its removal. With row selection, a two-way
+        /// <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> binding sees a transient value.
         /// </summary>
         public bool IsItemSelectable
         {
