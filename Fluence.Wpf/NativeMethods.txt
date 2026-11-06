@@ -42,6 +42,9 @@ IsZoomed
 MINMAXINFO
 MonitorFromWindow
 MONITORINFOEXW
+MSG
+PEEK_MESSAGE_REMOVE_TYPE
+PeekMessage
 QUERY_DISPLAY_CONFIG_FLAGS
 QueryDisplayConfig
 RtlGetVersion

@@ -472,7 +472,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Decides whether <see cref="NativeMethods.TryTakeForeground"/> attaches this thread's input
+        /// Decides whether <see cref="NativeMethods.TryTakeForeground(IntPtr)"/> attaches a worker thread's input
         /// queue to the foreground thread's queue before retrying <c language="csharp">SetForegroundWindow</c>.
         /// </summary>
         /// <remarks>
