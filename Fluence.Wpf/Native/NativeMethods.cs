@@ -435,6 +435,53 @@ namespace Fluence.Wpf.Native
         }
 
         /// <summary>
+        /// Brings a window to the foreground when a plain <c language="csharp">SetForegroundWindow</c> call was
+        /// refused.
+        /// </summary>
+        /// <remarks>
+        /// Windows refuses <c language="csharp">SetForegroundWindow</c> from a process that does not hold the
+        /// foreground, was not started by the foreground process, and has not received input; the
+        /// window's taskbar button flashes instead. This retries once with this thread's input queue
+        /// attached to the foreground thread's queue, which Windows treats as permission. The
+        /// attachment lasts only for the retry, and is skipped when
+        /// <see cref="Controls.WindowPolicy.ShouldAttachForegroundThread"/> says it is pointless or
+        /// unsafe, in which case the plain call is retried.
+        /// </remarks>
+        /// <param name="hwnd">The window to bring to the foreground.</param>
+        /// <returns><see langword="true"/> when the window holds the foreground afterwards.</returns>
+        public static bool TryTakeForeground(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            HWND target = (HWND)hwnd;
+            HWND foreground = PInvoke.GetForegroundWindow();
+            if (foreground == target)
+            {
+                return true;
+            }
+
+            uint currentThread = PInvoke.GetCurrentThreadId();
+            uint foregroundThread = foreground == HWND.Null ? 0 : PInvoke.GetWindowThreadProcessId(foreground);
+            bool attached = Controls.WindowPolicy.ShouldAttachForegroundThread(currentThread, foregroundThread, foreground != HWND.Null && PInvoke.IsHungAppWindow(foreground))
+                && PInvoke.AttachThreadInput(currentThread, foregroundThread, fAttach: true);
+            try
+            {
+                _ = PInvoke.BringWindowToTop(target);
+                return PInvoke.SetForegroundWindow(target) && PInvoke.GetForegroundWindow() == target;
+            }
+            finally
+            {
+                if (attached)
+                {
+                    _ = PInvoke.AttachThreadInput(currentThread, foregroundThread, fAttach: false);
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads the show command that the launching process passed in this process's
         /// <c language="csharp">STARTUPINFO</c>, such as the run state of a shortcut.
         /// </summary>
