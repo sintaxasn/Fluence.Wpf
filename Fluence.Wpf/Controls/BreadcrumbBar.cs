@@ -195,7 +195,13 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            bool hasOverflow = _itemsScrollViewer.ExtentWidth > _itemsScrollViewer.ViewportWidth + 0.5;
+            double availableWidth = _itemsScrollViewer.ViewportWidth;
+            if (_overflowButton.Visibility is Visibility.Visible)
+            {
+                availableWidth += _overflowButton.ActualWidth + _overflowButton.Margin.Left + _overflowButton.Margin.Right;
+            }
+
+            bool hasOverflow = _itemsScrollViewer.ExtentWidth > availableWidth + 0.5;
             _overflowButton.Visibility = hasOverflow ? Visibility.Visible : Visibility.Collapsed;
 
             if (e.ExtentWidthChange is not 0 || e.ViewportWidthChange is not 0)
@@ -246,6 +252,11 @@ namespace Fluence.Wpf.Controls
                     ? container.GetAccessibleText()
                     : string.Empty;
                 MenuItem menuItem = new();
+                if (ItemContainerGenerator.ContainerFromIndex(index) is BreadcrumbBarItem sourceContainer)
+                {
+                    _ = menuItem.SetBinding(IsEnabledProperty,
+                        new Binding(nameof(IsEnabled)) { Source = sourceContainer });
+                }
 
                 if (displayItem is UIElement element)
                 {

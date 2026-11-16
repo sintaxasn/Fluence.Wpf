@@ -400,6 +400,12 @@ finally
     # Finish its inline dispatcher before PowerShell tears down the pipeline thread.
     $applicationType = 'System.Windows.Application' -as [type]
     $application = if ($null -ne $applicationType) { $applicationType::Current } else { $null }
+    if ($null -ne $application -and $application.Dispatcher.CheckAccess() -and
+        [object]::ReferenceEquals($application.Properties['ControlsTourCaptureState'], $state))
+    {
+        if ($null -ne $state.Timer) { $state.Timer.Stop() }
+        $application.Properties.Remove('ControlsTourCaptureState')
+    }
     $createdApplication = $null -eq $applicationBeforeCapture -and $null -ne $application
     Write-Output "Controls Tour cleanup: created WPF Application = $createdApplication."
     if ($createdApplication)
