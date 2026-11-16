@@ -224,10 +224,12 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
   smoke (dimming) layer; there is **no** WinUI `DialogShowingWithoutSmokeLayer`
   state, and **no** `FullDialogSizing` stretch mode. The entrance and the
   `DialogHidden` exit animations are both implemented.
-- **`BreadcrumbBar` ellipsis overflow** - the bar does **not** collapse leading
-  crumbs into an ellipsis (WinUI collapses them into an `E712` ellipsis item
-  with a flyout). Long trails extend to their natural width and clip when
-  constrained.
+- **`BreadcrumbBar` constrained-width behavior** - WPF keeps the original
+  trail in a horizontal scrolling viewport and provides an overflow button with
+  a menu of the full trail. The viewport scrolls to keep the current location in
+  view and resizing updates the visible trail. Unlike WinUI, WPF does not replace
+  the leading crumbs with an ellipsis item; the overflow menu is a WPF context
+  menu over the original trail.
 - **`PipsPager` edge-pip scale and nav-button scale** - the pager realizes every
   pip and scrolls them inside the stationary edge-scrolling viewport WinUI
   describes, but it does **not** scale the pips down as they approach the
@@ -242,37 +244,15 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
   per-keystroke churn WinUI would coalesce and should debounce in the handler.
   Adding the timer would change the event timing every existing `AutoSuggestBox`
   test observes, so it is deferred until a consumer needs it.
-- **`NavigationView` Top-overflow fitting deviations** - the overflow pass
-  (`NavigationView.UpdateTopOverflow`) no longer forces a layout pass, caches each
-  item's measured width on the item, and applies a 5px recovery grace before an
-  item returns from the menu. Three deliberate deviations from WinUI's
-  `NavigationView` remain. The available width is the width
-  `PART_TopItemsHost` was last arranged at rather than a width computed inside a
-  measure override: the host is the star-sized column of the pane header grid, so
-  item visibility cannot change it, but a pass that runs before the host's first
-  arrange reads zero and bails, leaving the work to the pass that the following
-  arrange schedules. The cached width is evicted only on a non-zero
-  `SizeChanged` (a zero size is this control collapsing the item into the menu,
-  not a content change), so a content change made while an item is hidden in the
-  menu is not picked up until the item is shown again. Fitting stays first-fit
-  greedy, so a narrow item after a wide one keeps its place on the strip instead
-  of being pushed into the menu with everything that follows it.
-- **`TitleBar` has no deactivated family** - WinUI's `TitleBar` dims eight
-  regions (back button, pane toggle, left header, icon, title text, subtitle
-  text, content presenter, right header) when the window loses activation,
-  most to `TitleBarDeactivatedOpacity` (0.5) and the text elements to
-  `TextFillColorTertiaryBrush` (`TitleBar.xaml:25-133`,
-  `TitleBar_themeresources.xaml:86` under WinUI CommonStyles). `FluenceWindow`
-  dims only its own title text; the icon, subtitle, and title-bar content
-  slots stay at full opacity on deactivation.
-- **High contrast interaction states collapse into one** - Fluence's high
-  contrast table resolves both `SubtleFillColorSecondary` and
-  `SubtleFillColorTertiary` to `SystemColors.Control`, so hover, pressed, and
-  selected visuals on menu items, list rows, and `NavigationView` items are
-  indistinguishable from each other and from the resting surface. WinUI keeps
-  these states visually distinct in high contrast by mapping pointer-over and
-  pressed to two different System accent-derived brushes
-  (`NavigationView_themeresources.xaml:142-143`).
+- **`NavigationView` Top-overflow fitting** - the WPF adaptation measures the
+  available width after arrange, keeps items in first-fit order, and uses a 5px
+  recovery grace before returning an item from the overflow menu to the strip.
+  If a hidden item's `Content` is replaced, or its direct WPF `TextBlock` content's
+  `Text` changes, Fluence evicts the cached width and measures the item again.
+  Other changes inside arbitrary visual content, custom templates, and text in
+  `TextBlock.Inlines` are not observed automatically. For those cases, set an
+  explicit `AutomationProperties.Name` when the overflow menu needs a readable
+  label. A `TextBlock` content item uses its `Text` as the menu label.
 - **Pressed states are absent on stock WPF item containers** -
   `ListViewItem`, `ListBoxItem`, `TreeViewItem`, and `TabViewItem` derive from
   WPF base classes with no `IsPressed` concept the way `ButtonBase` has, so
@@ -283,24 +263,28 @@ See Microsoft's documentation for [TextBox selection opacity](https://learn.micr
 - **Text controls have no `Header` or `Description` template parts** -
   `TextBox` and `PasswordBox` carry neither slot, so a consumer wanting a
   label or helper text above or below the field must add its own
-  `TextBlock`; `NumberBox`'s header also does not dim when the control is
-  disabled, unlike WinUI's.
-- **`TreeView`, `TabView`, and `PipsPager` geometry gaps** - `TreeView` and
-  `TabView` selection and separator metrics, and `PipsPager` pip pitch and
-  hover sizing, were not part of the current colour and role fix pass and
-  still differ from their WinUI CommonStyles sources (`TabView` draws no
-  inter-tab separator or corner fillets; `PipsPager` does not scale pips or
-  use a pressed scale on its nav buttons).
-- **`DataGrid` behavior kept from the native WPF grid** - with
-  `IsItemSelectable` set to `False`, a mouse click does not begin editing a
-  cell, because the native cell starts a click edit only when it is selected;
-  F2 and typing still begin editing. The click also selects the row or cell
-  briefly and then clears it, so `SelectedCellsChanged`, and `SelectionChanged`
-  when whole rows are selected, report a selection and then its removal. The
-  Fluent group header is added as the first `GroupStyle` when the grid loads
-  with no group style, so set an application group style before the grid
-  loads, usually in XAML; one added later applies only to the second grouping
-  level and below. Grouping turns off row virtualization unless
+  `TextBlock`. Connect the visible label with `AutomationProperties.LabeledBy`
+  and expose supplementary instructions through `AutomationProperties.HelpText`.
+- **`TreeView` and `TabView` geometry follow-ups** - remaining TreeView
+  selection metrics and TabView selected-tab bottom-corner fillets still
+  need comparison with the current WinUI reference before claiming geometry
+  parity. TabView inter-tab separators and PipsPager hover sizing are already
+  implemented; the remaining pager edge-pip and pressed navigation-button
+  scales are listed above.
+- **`DataGrid` nonselectable mode and grouping** - `IsItemSelectable="False"`
+  clears selection, keeps `SelectedItem`, `SelectedIndex`, and `SelectedValue`
+  empty, and suppresses public and UI Automation selection events for rejected row or cell selections.
+  Turning the property off still reports removal of a selection that was
+  already active. WPF may briefly add a rejected entry to its native
+  `SelectedItems` or `SelectedCells` collection before Fluence clears it; those
+  collections are not guaranteed to remain unchanged at every instant. The
+  grid retains its native current-cell state and editing APIs, including
+  programmatic `BeginEdit()`. Mouse and keyboard input behavior in nonselectable mode remains
+  a separate acceptance check. The Fluent group header is added as the first
+  `GroupStyle` when
+  the grid loads with no group style, so set an application group style before
+  the grid loads, usually in XAML; one added later applies only to the second
+  grouping level and below. Grouping turns off row virtualization unless
   `VirtualizingPanel.IsVirtualizingWhenGrouping` is set, so a large grouped
   source realizes every row.
 

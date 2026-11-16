@@ -248,6 +248,7 @@
                             <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="HeaderPresenter" Property="TextBlock.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter TargetName="PlaceholderTextBlock" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />

@@ -34,6 +34,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -707,6 +708,7 @@ defaultValue: null,
         {
             if (element is NavigationViewItem navItem)
             {
+                navItem.StopObservingHiddenText();
                 navItem.Selected -= OnNavigationViewItemSelected;
                 navItem.Loaded -= OnNavigationViewItemLoaded;
                 navItem.SizeChanged -= OnNavigationViewItemSizeChanged;
@@ -896,12 +898,19 @@ defaultValue: null,
             // across an unload/reload (e.g. a cached page being revisited) and does NOT re-run
             // OnApplyTemplate, so nulling the parts would strand the selection indicator and chrome
             // handlers after the control reloads. OnApplyTemplate re-resolves the parts (with a
-            // detach/reattach) if the template is genuinely re-applied. Here we only release the
-            // external window watcher and stop in-flight animations, and reset the positioned flag
-            // so the indicator re-snaps to the current selection on reload.
+            // detach/reattach) if the template is genuinely re-applied. Release external watchers,
+            // stop in-flight animations, and reset the positioned flag so the indicator re-snaps
+            // to the current selection on reload. Hidden-content widths are measured anew after
+            // reload because their content may have changed while this control was detached.
             DetachTitleBarWindowWatcher();
             StopAnimation();
             StopPaneColumnAnimation();
+            foreach (NavigationViewItem navItem in GetTopNavigationItems())
+            {
+                navItem.StopObservingHiddenText();
+                navItem.ClearValue(TopOverflowItemWidthProperty);
+            }
+
             _indicatorPositioned = false;
         }
 
@@ -1937,7 +1946,7 @@ defaultValue: null,
         {
             _topOverflowUpdateScheduled = false;
 
-            if (_updatingTopOverflow)
+            if (_updatingTopOverflow || !IsLoaded)
             {
                 return;
             }
@@ -2145,7 +2154,7 @@ defaultValue: null,
                     _ = menuItems.Add(menuItem);
                 }
 
-                menuItem.Header = GetOverflowItemText(navItem);
+                SyncOverflowHeader(menuItem, navItem);
                 SyncOverflowIcon(menuItem, navItem);
                 menuItem.Tag = navItem;
             }
@@ -2215,14 +2224,58 @@ defaultValue: null,
             menuItem.Icon = overflowIcon;
         }
 
+        /// <summary>
+        /// Carries a data item's presentation into the overflow menu. A WPF element stays in the
+        /// source item, because putting that same element in a menu header would reparent it.
+        /// Every property is assigned on each pass so a reused menu entry cannot retain the
+        /// previous item's template or accessible name.
+        /// </summary>
+        /// <param name="menuItem">The owned overflow entry to update.</param>
+        /// <param name="navItem">The navigation item whose content is presented.</param>
+        private static void SyncOverflowHeader(MenuItem menuItem, NavigationViewItem navItem)
+        {
+            object? content = navItem.Content;
+            bool isElementContent = content is Visual or ContentElement;
+            menuItem.Header = isElementContent || content is null ? GetOverflowItemText(navItem) : content;
+            menuItem.HeaderTemplate = isElementContent ? null : navItem.ContentTemplate;
+            menuItem.HeaderTemplateSelector = isElementContent ? null : navItem.ContentTemplateSelector;
+            menuItem.HeaderStringFormat = isElementContent ? null : navItem.ContentStringFormat;
+
+            string? name = AutomationProperties.GetName(navItem);
+            if (string.IsNullOrWhiteSpace(name) && (isElementContent || content is string || content is null))
+            {
+                name = GetOverflowItemText(navItem);
+            }
+
+            AutomationProperties.SetName(menuItem, name ?? string.Empty);
+        }
+
         private static string GetOverflowItemText(NavigationViewItem navItem)
         {
-            string text = navItem.Content as string
-                ?? navItem.Content?.ToString()
-                ?? navItem.Tag as string
-                ?? string.Empty;
+            string? text = navItem.Content switch
+            {
+                string contentText => contentText,
+                System.Windows.Controls.TextBlock textBlock => string.IsNullOrWhiteSpace(textBlock.Text)
+                    ? AutomationProperties.GetName(textBlock)
+                    : textBlock.Text,
+                DependencyObject contentElement => AutomationProperties.GetName(contentElement),
+                null => null,
+                object content => content.ToString(),
+            };
 
-            return string.IsNullOrWhiteSpace(text) ? navItem.GetType().Name : text;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                text = AutomationProperties.GetName(navItem);
+            }
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                text = navItem.Tag as string;
+            }
+
+            return text is { Length: > 0 } && !string.IsNullOrWhiteSpace(text)
+                ? text
+                : navItem.GetType().Name;
         }
 
         /// <summary>

@@ -35,6 +35,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -850,6 +851,45 @@ namespace Fluence.Wpf.Tests.Control
                         Assert.Equal(expected, mainBorder.BorderThickness);
                         Assert.Same(Application.Current.TryFindResource("TextControlElevationBorderFocusedBrush"), mainBorder.BorderBrush);
                     }
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public Task NumberBox_DisabledHeader_UsesDisabledTextRoleAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                _ = TestApp.EnsureLibraryTheme(theme);
+                Window window = new() { Width = 320, Height = 180 };
+                Controls.NumberBox numberBox = new()
+                {
+                    Header = "Disabled number",
+                    IsEnabled = false,
+                    Width = 200,
+                };
+
+                try
+                {
+                    window.Content = numberBox;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ContentPresenter header = Assert.IsType<ContentPresenter>(numberBox.Template.FindName("HeaderPresenter", numberBox));
+                    SolidColorBrush actual = Assert.IsType<SolidColorBrush>(header.GetValue(TextElement.ForegroundProperty));
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource("TextFillColorDisabledBrush"));
+                    SolidColorBrush primary = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource("TextFillColorPrimaryBrush"));
+
+                    Assert.Equal(expected.Color, actual.Color);
+                    Assert.NotEqual(primary.Color, actual.Color);
                 }
                 finally
                 {

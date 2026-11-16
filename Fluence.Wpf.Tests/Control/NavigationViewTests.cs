@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -126,6 +127,50 @@ namespace Fluence.Wpf.Tests.Control
         public ValueTask DisposeAsync()
         {
             return new ValueTask(WpfTestSta.RunOnStaAsync(static () => _ = TestApp.EnsureLibraryTheme()));
+        }
+
+        [Fact]
+        public Task NavigationViewItem_HighContrastPressed_UsesSystemHighlightPairAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                _ = TestApp.EnsureLibraryTheme(ApplicationTheme.HighContrast);
+                Window window = new() { Width = 480, Height = 360 };
+                NavigationView nav = new() { IsPaneOpen = true };
+                NavigationViewItem selected = new() { Content = "Selected" };
+                NavigationViewItem pressed = new() { Content = "Pressed" };
+                _ = nav.Items.Add(selected);
+                _ = nav.Items.Add(pressed);
+                nav.SelectedItem = selected;
+
+                try
+                {
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FieldInfo field = Assert.IsType<FieldInfo>(typeof(NavigationViewItem).GetField("IsPressedPropertyKey", BindingFlags.NonPublic | BindingFlags.Static), exactMatch: false);
+                    DependencyPropertyKey key = Assert.IsType<DependencyPropertyKey>(field.GetValue(null));
+                    pressed.SetValue(key, value: true);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    System.Windows.Controls.Border border = Assert.IsType<System.Windows.Controls.Border>(
+                        FindVisualChildByName<System.Windows.Controls.Border>(pressed, "OuterBorder"), exactMatch: false);
+                    SolidColorBrush background = Assert.IsType<SolidColorBrush>(border.Background);
+                    SolidColorBrush foreground = Assert.IsType<SolidColorBrush>(pressed.Foreground);
+
+                    Assert.False(pressed.IsSelected);
+                    Assert.True(pressed.IsPressed);
+                    Assert.Equal(SystemColors.HighlightColor, background.Color);
+                    Assert.Equal(SystemColors.HighlightTextColor, foreground.Color);
+                    Assert.Null(border.BorderBrush);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
         }
 
         /// <summary>

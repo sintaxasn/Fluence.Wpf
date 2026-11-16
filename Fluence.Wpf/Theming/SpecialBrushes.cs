@@ -116,6 +116,14 @@ namespace Fluence.Wpf.Theming
             // overridden below with the live SystemColors.HighlightColor (HighlightText would be
             // invisible on the HC selected-row fill; see AddHighContrastBrushes).
             dict["NavigationViewSelectionIndicatorForeground"] = Solid(colors["AccentFillColorDefault"]);
+            // NavigationView's nonselected interaction pair needs its own roles. Shared subtle
+            // brushes also serve buttons, menus, list items, and other unrelated templates.
+            // Keep the existing Light/Dark values; High Contrast uses the live system highlight
+            // and paired text colors below, as WinUI's NavigationView/Reveal roles do.
+            dict["NavigationViewItemPointerOverBackgroundBrush"] = dict["SubtleFillColorSecondaryBrush"];
+            dict["NavigationViewItemPressedBackgroundBrush"] = dict["SubtleFillColorTertiaryBrush"];
+            dict["NavigationViewItemPointerOverForegroundBrush"] = dict["TextFillColorPrimaryBrush"];
+            dict["NavigationViewItemPressedForegroundBrush"] = dict["TextFillColorSecondaryBrush"];
             // WinUI ScrollBarTrackFill is AcrylicInAppFillColorDefaultBrush, which its acrylic theme
             // dictionary defines with the same tint, opacity, and fallback as
             // AcrylicBackgroundFillColorDefaultBrush in every theme, so the two resolve identically.
@@ -597,6 +605,10 @@ namespace Fluence.Wpf.Theming
             // The content background binds to Window.
             dict["NavigationViewSelectionIndicatorForeground"] = Solid(highlight);
             dict["NavigationViewContentBackgroundBrush"] = Solid(window);
+            dict["NavigationViewItemPointerOverBackgroundBrush"] = Solid(highlight);
+            dict["NavigationViewItemPressedBackgroundBrush"] = Solid(highlight);
+            dict["NavigationViewItemPointerOverForegroundBrush"] = Solid(highlightText);
+            dict["NavigationViewItemPressedForegroundBrush"] = Solid(highlightText);
 
             // Elevation borders are solid in HC.
             dict["ControlElevationBorderBrush"] = Solid(controlDark);

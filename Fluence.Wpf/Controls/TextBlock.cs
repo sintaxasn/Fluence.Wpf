@@ -28,6 +28,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Fluence.Wpf.Controls
 {
@@ -155,6 +156,16 @@ namespace Fluence.Wpf.Controls
             SyncPartTextBlock();
         }
 
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.Property == FontSizeProperty)
+            {
+                SyncPartFontSize();
+            }
+        }
+
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TextBlock control = (TextBlock)d;
@@ -171,6 +182,35 @@ namespace Fluence.Wpf.Controls
             _partTextBlock.SetTypography(Typography);
             _partTextBlock.TextWrapping = TextWrapping;
             _partTextBlock.TextTrimming = TextTrimming;
+            SyncPartFontSize();
+        }
+
+        private void SyncPartFontSize()
+        {
+            if (_partTextBlock is null)
+            {
+                return;
+            }
+
+            // The named inner style owns the default type ramp. A consumer's explicit
+            // FontSize value on the wrapper takes precedence and continues to update.
+            BaseValueSource source = DependencyPropertyHelper.GetValueSource(this, FontSizeProperty).BaseValueSource;
+            bool hasConsumerValue = source is BaseValueSource.Local
+                or BaseValueSource.Style
+                or BaseValueSource.StyleTrigger
+                or BaseValueSource.ParentTemplate
+                or BaseValueSource.ParentTemplateTrigger;
+
+            if (hasConsumerValue)
+            {
+                _ = _partTextBlock.SetBinding(
+                    System.Windows.Controls.TextBlock.FontSizeProperty,
+                    new Binding(nameof(FontSize)) { Source = this, Mode = BindingMode.OneWay });
+            }
+            else
+            {
+                BindingOperations.ClearBinding(_partTextBlock, System.Windows.Controls.TextBlock.FontSizeProperty);
+            }
         }
 
         /// <summary>

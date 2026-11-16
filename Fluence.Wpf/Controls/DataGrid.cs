@@ -68,6 +68,8 @@ namespace Fluence.Wpf.Controls
         private const string CheckBoxEditingElementStyleKey = "DataGridCheckBoxColumnEditingElementStyle";
 
         private bool _clearSelectionPending;
+        private bool _clearingExistingSelection;
+        private bool _clearingRejectedSelection;
         private SolidColorBrush? _horizontalGridLinesBrush;
         private SolidColorBrush? _verticalGridLinesBrush;
 
@@ -81,6 +83,19 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(DataGrid),
                 new FrameworkPropertyMetadata(typeof(DataGrid)));
+
+            // Selector publishes these values before it invokes OnSelectionChanged. Coerce them
+            // before a rejected selection reaches a two-way binding. Delegate to the native
+            // coercion callbacks when selection is enabled so WPF retains its validation rules.
+            SelectedItemProperty.OverrideMetadata(
+                typeof(DataGrid),
+                new FrameworkPropertyMetadata(defaultValue: null, propertyChangedCallback: null, coerceValueCallback: CoerceSelectedItem));
+            SelectedIndexProperty.OverrideMetadata(
+                typeof(DataGrid),
+                new FrameworkPropertyMetadata(defaultValue: -1, propertyChangedCallback: null, coerceValueCallback: CoerceSelectedIndex));
+            SelectedValueProperty.OverrideMetadata(
+                typeof(DataGrid),
+                new FrameworkPropertyMetadata(defaultValue: null, propertyChangedCallback: null, coerceValueCallback: CoerceSelectedValue));
 
             // Only the coerce callback is supplied, so the native default value and the native
             // property-changed callback are kept.
@@ -153,15 +168,15 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Gets or sets a value indicating whether rows and cells can be selected. Setting it to
-        /// <see langword="false"/> clears the selection and suppresses the hover and selection visuals; it
-        /// is the equivalent of WinUI TableView <c language="csharp">SelectionMode="None"</c>. Cells stay
-        /// focusable, so keyboard navigation works, and F2 or typing still begins editing. A mouse click does
-        /// not begin editing, because the native cell starts a click edit only when it is selected. A click
-        /// briefly selects the row or cell and then clears it, so
-        /// <see cref="System.Windows.Controls.DataGrid.SelectedCellsChanged"/>, and
-        /// <see cref="System.Windows.Controls.Primitives.Selector.SelectionChanged"/> when whole rows are
-        /// selected, report a selection and then its removal. With row selection, a two-way
-        /// <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> binding sees a transient value.
+        /// <see langword="false"/> clears selection, keeps the single-selection properties empty, and
+        /// suppresses selection events for rejected row or cell selections. Existing selection still reports
+        /// its removal when this property changes to <see langword="false"/>. The native
+        /// <see cref="System.Windows.Controls.Primitives.MultiSelector.SelectedItems"/> and
+        /// <see cref="System.Windows.Controls.DataGrid.SelectedCells"/> collections can briefly contain a
+        /// rejected entry before the deferred clear. This is the WPF adaptation of WinUI TableView
+        /// <c language="csharp">SelectionMode="None"</c>. Cells stay focusable, so keyboard navigation works,
+        /// and F2 or typing still begins editing. A mouse click does not begin editing, because the native
+        /// cell starts a click edit only when it is selected.
         /// </summary>
         public bool IsItemSelectable
         {
@@ -192,29 +207,75 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Clears a new row selection when <see cref="IsItemSelectable"/> is <see langword="false"/>.
+        /// Clears a rejected row selection without publishing its native selection event.
         /// </summary>
         /// <param name="e">The selection change.</param>
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            base.OnSelectionChanged(e);
-            if (!IsItemSelectable && e.AddedItems.Count > 0)
+            if (_clearingRejectedSelection || (!IsItemSelectable && !_clearingExistingSelection))
             {
-                ScheduleClearSelection();
+                if (!IsItemSelectable && e.AddedItems.Count > 0)
+                {
+                    ScheduleClearSelection();
+                }
+
+                return;
             }
+
+            base.OnSelectionChanged(e);
         }
 
         /// <summary>
-        /// Clears a new cell selection when <see cref="IsItemSelectable"/> is <see langword="false"/>.
+        /// Clears a rejected cell selection without publishing its native selection event.
         /// </summary>
         /// <param name="e">The selected-cells change.</param>
         protected override void OnSelectedCellsChanged(SelectedCellsChangedEventArgs e)
         {
-            base.OnSelectedCellsChanged(e);
-            if (!IsItemSelectable && e.AddedCells.Count > 0)
+            if (_clearingRejectedSelection || (!IsItemSelectable && !_clearingExistingSelection))
             {
-                ScheduleClearSelection();
+                if (!IsItemSelectable && e.AddedCells.Count > 0)
+                {
+                    ScheduleClearSelection();
+                }
+
+                return;
             }
+
+            base.OnSelectedCellsChanged(e);
+        }
+
+        private static object CoerceSelectedItem(DependencyObject d, object baseValue)
+        {
+            // Null must still clear an existing selection when the mode is switched off.
+            return baseValue switch
+            {
+                null => SelectedItemProperty.GetMetadata(typeof(System.Windows.Controls.DataGrid)).DefaultValue,
+                _ when !((DataGrid)d).IsItemSelectable => DependencyProperty.UnsetValue,
+                _ => CoerceNativeSelectionValue(SelectedItemProperty, d, baseValue),
+            };
+        }
+
+        private static object CoerceSelectedIndex(DependencyObject d, object baseValue)
+        {
+            return ((DataGrid)d).IsItemSelectable
+                ? CoerceNativeSelectionValue(SelectedIndexProperty, d, baseValue)
+                : -1;
+        }
+
+        private static object CoerceSelectedValue(DependencyObject d, object baseValue)
+        {
+            // The native metadata default is null. Use that value to pass an enabled null clear
+            // through Selector's callback, which also resolves the pending selection by value.
+            object nativeNull = SelectedValueProperty.GetMetadata(typeof(System.Windows.Controls.DataGrid)).DefaultValue;
+            return ((DataGrid)d).IsItemSelectable
+                ? CoerceNativeSelectionValue(SelectedValueProperty, d, baseValue ?? nativeNull)
+                : baseValue is null ? nativeNull : DependencyProperty.UnsetValue;
+        }
+
+        private static object CoerceNativeSelectionValue(DependencyProperty property, DependencyObject d, object baseValue)
+        {
+            CoerceValueCallback? callback = property.GetMetadata(typeof(System.Windows.Controls.DataGrid)).CoerceValueCallback;
+            return callback is null ? baseValue : callback(d, baseValue);
         }
 
         /// <summary>
@@ -268,9 +329,36 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsItemSelectableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            DataGrid grid = (DataGrid)d;
             if (!(bool)e.NewValue)
             {
-                ((DataGrid)d).UnselectAllCells();
+                grid._clearingExistingSelection = true;
+                try
+                {
+                    grid.UnselectAllCells();
+                }
+                finally
+                {
+                    grid._clearingExistingSelection = false;
+                }
+
+                grid.CoerceValue(SelectedItemProperty);
+                grid.CoerceValue(SelectedIndexProperty);
+                grid.CoerceValue(SelectedValueProperty);
+            }
+            else if (grid._clearSelectionPending)
+            {
+                // A rejected collection add may still be present when selection is re-enabled
+                // before the deferred clear runs. Remove it now, before a valid new selection.
+                grid._clearingRejectedSelection = true;
+                try
+                {
+                    grid.UnselectAllCells();
+                }
+                finally
+                {
+                    grid._clearingRejectedSelection = false;
+                }
             }
         }
 

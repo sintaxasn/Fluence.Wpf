@@ -7,7 +7,6 @@
     <Style TargetType="{x:Type controls:TextBlock}">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="IsTabStop" Value="False" />
@@ -19,7 +18,6 @@
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         FontFamily="{TemplateBinding FontFamily}"
-                        FontSize="{TemplateBinding FontSize}"
                         Foreground="{TemplateBinding Foreground}"
                         TextTrimming="{TemplateBinding TextTrimming}"
                         TextWrapping="{TemplateBinding TextWrapping}" />

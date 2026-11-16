@@ -65,6 +65,8 @@ namespace Fluence.Wpf.Tests.Theming
         {
             "AccentControlElevationBorderBrush",
             "FocusStrokeColorOuterBrush",
+            "NavigationViewItemPointerOverBackgroundBrush",
+            "NavigationViewItemPressedBackgroundBrush",
             "NavigationViewSelectionIndicatorForeground",
             "SystemAccentColorPrimaryBrush",
             "SystemAccentColorSecondaryBrush",
@@ -90,6 +92,8 @@ namespace Fluence.Wpf.Tests.Theming
             "ControlStrokeColorOnAccentSecondaryBrush",
             "ControlStrokeColorOnAccentTertiaryBrush",
             "FocusStrokeColorInnerBrush",
+            "NavigationViewItemPointerOverForegroundBrush",
+            "NavigationViewItemPressedForegroundBrush",
             "PersonPictureBadgeForegroundBrush",
             "PickerSelectedForegroundBrush",
             "WindowCloseButtonForegroundPointerOverBrush",
@@ -112,6 +116,51 @@ namespace Fluence.Wpf.Tests.Theming
             "RadioButtonCheckGlyph", "ToggleSwitchFillOn", "ToggleSwitchKnobFillOn", "SliderThumbBackground",
             "SliderTrackValueFill", "HyperlinkButtonForeground",
         ];
+
+        [Fact]
+        public Task HighContrast_NavigationViewInteraction_UsesPairedSystemHighlightAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Application application = TestApp.EnsureLibraryTheme(ApplicationTheme.HighContrast);
+                foreach (string key in new[] { "NavigationViewItemPointerOverBackgroundBrush", "NavigationViewItemPressedBackgroundBrush" })
+                {
+                    SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(key));
+                    Assert.Equal(SystemColors.HighlightColor, brush.Color);
+                }
+
+                foreach (string key in new[] { "NavigationViewItemPointerOverForegroundBrush", "NavigationViewItemPressedForegroundBrush" })
+                {
+                    SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(key));
+                    Assert.Equal(SystemColors.HighlightTextColor, brush.Color);
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        public Task NavigationViewInteractionRoles_PreserveNormalThemeAliasesAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Application application = TestApp.EnsureLibraryTheme(theme);
+                (string stateKey, string existingKey)[] aliases =
+                [
+                    ("NavigationViewItemPointerOverBackgroundBrush", "SubtleFillColorSecondaryBrush"),
+                    ("NavigationViewItemPressedBackgroundBrush", "SubtleFillColorTertiaryBrush"),
+                    ("NavigationViewItemPointerOverForegroundBrush", "TextFillColorPrimaryBrush"),
+                    ("NavigationViewItemPressedForegroundBrush", "TextFillColorSecondaryBrush"),
+                ];
+
+                foreach ((string stateKey, string existingKey) in aliases)
+                {
+                    SolidColorBrush actual = Assert.IsType<SolidColorBrush>(application.TryFindResource(stateKey));
+                    SolidColorBrush expected = Assert.IsType<SolidColorBrush>(application.TryFindResource(existingKey));
+                    Assert.Equal(expected.Color, actual.Color);
+                }
+            });
+        }
 
         /// <summary>
         /// Applies <paramref name="theme"/> with a pinned accent and returns a map of every

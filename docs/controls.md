@@ -30,6 +30,8 @@ This catalog lists the public controls in `Fluence.Wpf.Controls`. Add `xmlns:flu
 | [DatePicker](controls/date-picker.md), [TimePicker](controls/time-picker.md) | Choose a date or time | Dedicated selected-value properties and changed events |
 | [ColorPicker](controls/color-picker.md) | Choose a color | `Color`, `ColorChanged` |
 
+Give each editor a visible label and connect it with `AutomationProperties.LabeledBy="{Binding ElementName=FieldLabel}"`, where `FieldLabel` names the label element. Put supplementary instructions in `AutomationProperties.HelpText`. This composition works for Fluence `TextBox` and native WPF `PasswordBox`; a placeholder does not replace the field label.
+
 ## Navigation and tabs
 
 | Types | Use them for | Main behavior |

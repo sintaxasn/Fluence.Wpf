@@ -344,9 +344,14 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(Visibility.Collapsed, periodText.Visibility);
                     Assert.Equal(Visibility.Collapsed, secondDivider.Visibility);
 
+                    int openedCount = 0;
+                    int closedCount = 0;
+                    popup.Opened += (_, _) => openedCount++;
+                    popup.Closed += (_, _) => closedCount++;
                     RaiseButtonClick(flyoutButton);
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
-                        "Clicking the field must open the selector flyout.");
+                        $"Clicking the field must open the selector flyout. Opened={openedCount.ToString(CultureInfo.InvariantCulture)}; Closed={closedCount.ToString(CultureInfo.InvariantCulture)}; " +
+                        $"WindowActive={window.IsActive}; KeyboardFocus={Keyboard.FocusedElement?.GetType().Name ?? "null"}.");
 
                     Assert.Equal(24, LoopingColumnSourceCount(hourList));
                     Assert.Equal(0.ToString(culture), hourList.Items[0]);

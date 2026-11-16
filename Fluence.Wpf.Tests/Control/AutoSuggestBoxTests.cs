@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -444,35 +445,61 @@ namespace Fluence.Wpf.Tests.Control
 
                     TextBox editor = Assert.IsType<TextBox>(box.Template.FindName("PART_TextBox", box), exactMatch: false);
                     Popup popup = Assert.IsType<Popup>(box.Template.FindName("PART_SuggestionsPopup", box));
-                    editor.Select(0, 1);
+                    List<string> selectionTrace = [];
+                    void RecordSelection(string stage, bool? handled = null)
+                    {
+                        string capture = ReferenceEquals(Mouse.Captured, editor)
+                            ? "editor"
+                            : Mouse.Captured?.GetType().Name ?? "none";
+                        selectionTrace.Add(string.Format(CultureInfo.InvariantCulture,
+                            "{0}: start={1}, length={2}, textLength={3}, caret={4}, handled={5}, capture={6}, left={7}, focus={8}",
+                            stage, editor.SelectionStart, editor.SelectionLength, editor.Text.Length, editor.CaretIndex,
+                            handled?.ToString() ?? "n/a", capture, Mouse.LeftButton,
+                            Keyboard.FocusedElement?.GetType().Name ?? "none"));
+                    }
 
-                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    RecordSelection("before down");
+
+                    MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
                     {
                         RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
-                    });
+                    };
+                    editor.RaiseEvent(pressed);
+                    RecordSelection("after down", pressed.Handled);
                     _ = editor.Focus();
+                    RecordSelection("after focus");
                     Assert.True(editor.IsKeyboardFocused);
                     Assert.True(popup.IsOpen, "Focus opens the popup during the mouse-down path.");
 
                     Assert.True(Mouse.Capture(editor), "The editor takes mouse capture for its click/selection gesture.");
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    RecordSelection("after capture and drain");
                     Assert.False(popup.IsOpen, "Transferring capture from the light-dismiss popup closes it.");
                     Assert.False(box.IsSuggestionListOpen);
+                    editor.Select(0, 1);
+                    RecordSelection("selected during capture");
+                    Assert.Equal(0, editor.SelectionStart);
+                    Assert.Equal(1, editor.SelectionLength);
 
                     _ = Mouse.Capture(element: null);
-                    editor.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    RecordSelection("after release capture");
+                    MouseButtonEventArgs released = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
                     {
                         RoutedEvent = UIElement.MouseLeftButtonUpEvent,
                         Handled = true,
-                    });
+                    };
+                    editor.RaiseEvent(released);
+                    RecordSelection("after up", released.Handled);
 
                     Assert.True(await WaitUntilAsync(window.Dispatcher, 2000, () => popup.IsOpen).ConfigureAwait(true),
                         "The completed editor click must show the available suggestions.");
+                    RecordSelection("after popup wait");
                     Assert.True(box.IsSuggestionListOpen);
                     Assert.True(editor.IsKeyboardFocused);
                     Assert.Equal("ap", editor.Text, StringComparer.Ordinal);
                     Assert.Equal(0, editor.SelectionStart);
-                    Assert.Equal(1, editor.SelectionLength);
+                    Assert.True(editor.SelectionLength is 1,
+                        "The editor must keep the selected character through capture loss. " + string.Join(" | ", selectionTrace));
 
                     // A further click restores a list dismissed while the editor retained focus.
                     box.IsSuggestionListOpen = false;

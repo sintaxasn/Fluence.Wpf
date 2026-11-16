@@ -129,6 +129,7 @@ namespace Fluence.Wpf.Tests.Theming
                     Assert.Same(
                         application.TryFindResource("BodyLargeTextBlockStyle"),
                         textBlock.Style);
+                    Assert.Equal(18.0, textBlock.FontSize);
                 }
                 finally
                 {

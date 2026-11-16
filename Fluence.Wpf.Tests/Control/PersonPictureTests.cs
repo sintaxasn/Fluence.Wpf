@@ -31,6 +31,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
@@ -159,7 +161,65 @@ namespace Fluence.Wpf.Tests.Control
 
                 System.Windows.Controls.TextBlock initialsText = Assert.IsType<System.Windows.Controls.TextBlock>(FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_InitialsText"), exactMatch: false);
                 Assert.Equal("\uE716", initialsText.Text, StringComparer.Ordinal);
+                Assert.Contains("Segoe Fluent Icons", initialsText.FontFamily.Source, StringComparison.Ordinal);
                 w.Close();
+            });
+        }
+
+        [Fact]
+        public Task PersonPicture_GroupInitialsPhotoAndPlaceholder_UseCorrectFontAndImageAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                PersonPicture picture = new() { Initials = "XY", IsGroup = true };
+                Window window = new() { Content = picture, Width = 200, Height = 200 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    System.Windows.Controls.TextBlock text = Assert.IsType<System.Windows.Controls.TextBlock>(
+                        FindVisualChildByName<System.Windows.Controls.TextBlock>(picture, "PART_InitialsText"), exactMatch: false);
+                    Ellipse image = Assert.IsType<Ellipse>(
+                        FindVisualChildByName<Ellipse>(picture, "PART_ImageEllipse"), exactMatch: false);
+
+                    Assert.Equal("\uE716", text.Text);
+                    Assert.Contains("Segoe Fluent Icons", text.FontFamily.Source, StringComparison.Ordinal);
+                    Assert.Equal(Visibility.Visible, text.Visibility);
+
+                    picture.IsGroup = false;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("XY", text.Text);
+                    Assert.Equal(((FontFamily)picture.FindResource("FluentFontFamily")).Source, text.FontFamily.Source);
+
+                    byte[] pixel = [0, 0, 255, 255];
+                    _ = picture.ProfilePicture = BitmapSource.Create(pixelWidth: 1, pixelHeight: 1, dpiX: 96, dpiY: 96, pixelFormat: PixelFormats.Bgra32, palette: null, pixels: pixel, stride: 4);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, image.Visibility);
+                    _ = Assert.IsType<ImageBrush>(image.Fill);
+
+                    picture.IsGroup = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("\uE716", text.Text);
+                    Assert.Contains("Segoe Fluent Icons", text.FontFamily.Source, StringComparison.Ordinal);
+                    Assert.Equal(Visibility.Hidden, image.Visibility);
+
+                    picture.IsGroup = false;
+                    picture.ClearValue(PersonPicture.ProfilePictureProperty);
+                    picture.Initials = string.Empty;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("\uE77B", text.Text);
+                    Assert.Contains("Segoe Fluent Icons", text.FontFamily.Source, StringComparison.Ordinal);
+
+                    picture.Initials = "AB";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("AB", text.Text);
+                    Assert.Equal(((FontFamily)picture.FindResource("FluentFontFamily")).Source, text.FontFamily.Source);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
             });
         }
 

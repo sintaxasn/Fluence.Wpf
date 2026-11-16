@@ -8,6 +8,23 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Changed
+
+- Reorganized the PowerShell Controls Tour into nine labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
+- Gallery capture coverage now follows the navigation and sample catalogs, waits for selection indicators to settle, and records source, binary, state, and image hashes. Image review and website sync validate that provenance before accepting new captures.
+
+### Fixed
+
+- `TextBox` preserves consumer-supplied automation HelpText through loading, templates, and validation, including bindings, dynamic resources, and styles applied after validation begins. Validation messages provide fallback HelpText only when none was supplied. Five regression cases were added on each full test target framework.
+- `BreadcrumbBar` keeps the current location in view at narrow widths. An overflow menu lists the full trail and reports the selected original item and index through `ItemClicked`.
+- `NavigationView` Top overflow remeasures an item when its content is replaced or the `Text` of a hidden `TextBlock` changes. Overflow entries keep data-item templates and use readable text or an automation name for content.
+- `DataGrid` nonselectable mode keeps single-selection properties empty and suppresses rejected selection events, preserves current-cell APIs and programmatic `BeginEdit()`, and may briefly leave a rejected entry in native selected-item and selected-cell collections before clearing it.
+- Fixed Fluence `TextBlock.Typography` so named styles apply their font sizes while preserving explicit local, bound, and application-style `FontSize` values.
+- Fixed `PersonPicture` group and contact placeholders to use an icon font while initials retain the body font.
+- Disabled `NumberBox` headers now use the disabled text brush, and hosted `TitleBar` text and content slots follow window activation.
+- NavigationView hover and pressed states now use paired system highlight and highlight-text brushes in High Contrast.
+- Added visible label associations and contextual accessible names to the MVVM task example and navigation starter settings, and allowed the navigation starter's Home heading to wrap in a narrow window.
+
 ## [0.9.6] - 2026-11-05
 
 ### Added
@@ -183,7 +200,7 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - The `Fluence.Wpf.PowerShell` module is the primary scripting interface. The standalone PowerShell demo and direct-library bootstrap guide are removed; documentation points to `Fluence.Wpf.PowerShell.Module/examples/`. Background parity checks and the screenshot harness now use the module examples. The two PowerShell checks are renamed to `PowerShellModuleExamples_UseModule` and `PowerShellModuleXaml_UsesCurrentFluenceWindowProperties`, with no change to test counts.
 
-- Regression coverage adds 17 .NET cases per full target framework for homepage navigation/reflow, native-handle theme watching, footer automation, tree removal/reset, smooth scrolling and dialog ownership. One homepage method is renamed to reflect rendered social-link coverage; no case is removed. The reviewer follow-up adds seven further cases for collapsed data-bound tree selection, safe collection additions, input-pressure scrolling and hosted Colors/Data scrolling. Discovery baselines are now 1375 on net472 and 1378 on net10, with CI floors of 1374 and 1375 after screenshot generators are excluded.
+- Regression coverage adds 17 .NET cases per full target framework for homepage navigation/reflow, native-handle theme watching, footer automation, tree removal/reset, smooth scrolling and dialog ownership. One homepage method is renamed to reflect rendered social-link coverage; no case is removed. The reviewer follow-up adds seven further cases for collapsed data-bound tree selection, safe collection additions, input-pressure scrolling and hosted Colors/Data scrolling. With the five TextBox HelpText regressions, ordinary runtime TRX totals are 1683 on net472 and 1689 on net10, with CI floors at those values after screenshot generators are excluded; unfiltered discovery lists contain 1635 net472 IDs and 1693 net10 IDs, and net472 theory rows expand at runtime.
 - PowerShell review hardens apostrophe-path imports, result-name collisions, choice defaults, callback output and failed-window cleanup, progress closure/reimport, explicit false switches and Escape dismissal. Core hosts now fail clearly below PowerShell 7.4; foreign WPF dispatchers without PowerShell execution context are explicitly unsupported. The module ships its BSD license. Nineteen focused logic and runspace-ownership regressions plus three UI lifetime/keyboard regressions bring the Pester suite from 162 to 184 cases. The reviewer follow-up adds 28 logic cases covering secure passwords, safe result display, package imports, version agreement and missing-provider rejection, for 212 cases in total.
 - PowerShell Password prompts return `SecureString` by default; `-AsPlainText` explicitly opts into string results. Secure password validators receive `SecureString`, and pattern validation requires the plaintext opt-in. `Fluence.DialogResult` has a default format view that omits all user input, including arbitrarily named password fields.
 - Module function discovery accepts literal installation paths and fails clearly for incomplete packages. Format definitions live under `Formats/`; pack-image URI documentation now distinguishes early validation from resource resolution on the UI thread.

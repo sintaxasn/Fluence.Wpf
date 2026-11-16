@@ -28,8 +28,13 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 namespace Fluence.Wpf.Controls
 {
@@ -48,14 +53,20 @@ namespace Fluence.Wpf.Controls
     /// to <see cref="ItemClicked"/> to navigate; the event is raised for every crumb including
     /// the last one, matching WinUI.
     /// </para>
-    /// <para>
-    /// WinUI collapses leading crumbs into an ellipsis crumb when the bar is width-constrained;
-    /// that overflow collapse is a deliberate v1 omission here. The strip simply extends to its
-    /// natural width and clips when constrained.
-    /// </para>
+    /// <para>When width is constrained, an ellipsis button gives access to the trail and the
+    /// current location remains in view.</para>
     /// </remarks>
+    [TemplatePart(Name = PART_OverflowButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_ItemsScrollViewer, Type = typeof(ScrollViewer))]
     public class BreadcrumbBar : System.Windows.Controls.ItemsControl
     {
+        private const string PART_OverflowButton = "PART_OverflowButton";
+        private const string PART_ItemsScrollViewer = "PART_ItemsScrollViewer";
+
+        private System.Windows.Controls.Button? _overflowButton;
+        private ScrollViewer? _itemsScrollViewer;
+        private ContextMenu? _overflowMenu;
+
         /// <summary>
         /// Initializes static members of the BreadcrumbBar class and overrides the default
         /// style metadata so the control picks up its themed template from Generic.xaml.
@@ -83,6 +94,57 @@ namespace Fluence.Wpf.Controls
         /// zero-based index in the items collection.
         /// </summary>
         public event EventHandler<BreadcrumbBarItemClickedEventArgs>? ItemClicked;
+
+        /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            if (_overflowButton is { } previousButton)
+            {
+                previousButton.Click -= OnOverflowButtonClick;
+                if (ReferenceEquals(previousButton.ContextMenu, _overflowMenu))
+                {
+                    previousButton.ContextMenu = null;
+                }
+            }
+
+            if (_itemsScrollViewer is { } previousViewer)
+            {
+                previousViewer.ScrollChanged -= OnItemsScrollChanged;
+            }
+
+            if (_overflowMenu is not null)
+            {
+                _overflowMenu.Opened -= OnOverflowMenuOpened;
+                _overflowMenu.IsOpen = false;
+                _overflowMenu.Items.Clear();
+                _overflowMenu.PlacementTarget = null;
+            }
+
+            _overflowButton = null;
+            _itemsScrollViewer = null;
+            _overflowMenu = null;
+
+            base.OnApplyTemplate();
+
+            _overflowButton = GetTemplateChild(PART_OverflowButton) as System.Windows.Controls.Button;
+            _itemsScrollViewer = GetTemplateChild(PART_ItemsScrollViewer) as ScrollViewer;
+            if (_overflowButton is not null)
+            {
+                _overflowMenu = new ContextMenu
+                {
+                    Placement = PlacementMode.Bottom,
+                    PlacementTarget = _overflowButton,
+                };
+                _overflowMenu.Opened += OnOverflowMenuOpened;
+                _overflowButton.ContextMenu = _overflowMenu;
+                _overflowButton.Click += OnOverflowButtonClick;
+            }
+
+            if (_itemsScrollViewer is { } itemsScrollViewer)
+            {
+                itemsScrollViewer.ScrollChanged += OnItemsScrollChanged;
+            }
+        }
 
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
@@ -120,6 +182,119 @@ namespace Fluence.Wpf.Controls
             // Adds, removes, moves, and resets can all change which crumb is last; refresh the
             // realized containers immediately (new containers refresh again when prepared).
             UpdateLastItemState();
+            if (_overflowMenu?.IsOpen is true)
+            {
+                RebuildOverflowMenu();
+            }
+        }
+
+        private void OnItemsScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (_overflowButton is null || _itemsScrollViewer is null)
+            {
+                return;
+            }
+
+            bool hasOverflow = _itemsScrollViewer.ExtentWidth > _itemsScrollViewer.ViewportWidth + 0.5;
+            _overflowButton.Visibility = hasOverflow ? Visibility.Visible : Visibility.Collapsed;
+
+            if (e.ExtentWidthChange is not 0 || e.ViewportWidthChange is not 0)
+            {
+                for (int index = 0; index < Items.Count; index++)
+                {
+                    if (ItemContainerGenerator.ContainerFromIndex(index) is BreadcrumbBarItem { IsKeyboardFocusWithin: true } focused)
+                    {
+                        focused.BringIntoView();
+                        return;
+                    }
+                }
+
+                if (ItemContainerGenerator.ContainerFromIndex(Items.Count - 1) is BreadcrumbBarItem current)
+                {
+                    current.BringIntoView();
+                }
+            }
+        }
+
+        private void OnOverflowButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (_overflowMenu is { } overflowMenu)
+            {
+                overflowMenu.IsOpen = true;
+            }
+        }
+
+        private void OnOverflowMenuOpened(object sender, RoutedEventArgs e)
+        {
+            RebuildOverflowMenu();
+        }
+
+        private void RebuildOverflowMenu()
+        {
+            if (_overflowMenu is null)
+            {
+                return;
+            }
+
+            _overflowMenu.Items.Clear();
+            for (int index = 0; index < Items.Count; index++)
+            {
+                int itemIndex = index;
+                object item = Items[index];
+                object displayItem = item is BreadcrumbBarItem crumb ? crumb.Content : item;
+                string accessibleText = ItemContainerGenerator.ContainerFromIndex(index) is BreadcrumbBarItem container
+                    ? container.GetAccessibleText()
+                    : string.Empty;
+                MenuItem menuItem = new();
+
+                if (displayItem is UIElement element)
+                {
+                    // A live element cannot be parented into both the crumb and the menu.
+                    menuItem.Header = !string.IsNullOrWhiteSpace(accessibleText)
+                        ? accessibleText
+                        : GetElementLabel(element, index);
+                }
+                else if (item is not BreadcrumbBarItem && !string.IsNullOrWhiteSpace(DisplayMemberPath))
+                {
+                    _ = menuItem.SetBinding(HeaderedItemsControl.HeaderProperty,
+                        new Binding(DisplayMemberPath) { Source = item });
+                }
+                else if (item is not BreadcrumbBarItem)
+                {
+                    menuItem.Header = item;
+                    menuItem.HeaderTemplate = ItemTemplate;
+                    menuItem.HeaderTemplateSelector = ItemTemplateSelector;
+                    menuItem.HeaderStringFormat = ItemStringFormat;
+                }
+                else
+                {
+                    BreadcrumbBarItem directCrumb = (BreadcrumbBarItem)item;
+                    menuItem.Header = displayItem;
+                    menuItem.HeaderTemplate = directCrumb.ContentTemplate;
+                    menuItem.HeaderTemplateSelector = directCrumb.ContentTemplateSelector;
+                    menuItem.HeaderStringFormat = directCrumb.ContentStringFormat;
+                }
+
+                if (!string.IsNullOrWhiteSpace(accessibleText))
+                {
+                    AutomationProperties.SetName(menuItem, accessibleText);
+                }
+
+                menuItem.Click += (_, _) =>
+                    ItemClicked?.Invoke(this, new BreadcrumbBarItemClickedEventArgs(item, itemIndex));
+                _ = _overflowMenu.Items.Add(menuItem);
+            }
+        }
+
+        private static string GetElementLabel(UIElement element, int index)
+        {
+            string name = AutomationProperties.GetName(element);
+            return !string.IsNullOrWhiteSpace(name)
+                ? name
+                : element is System.Windows.Controls.TextBlock textBlock &&
+                    !string.IsNullOrWhiteSpace(textBlock.Text)
+                        ? textBlock.Text
+                        : string.Format(CultureInfo.InvariantCulture, "Location {0}", index + 1);
         }
 
         private void OnBreadcrumbItemClick(object sender, RoutedEventArgs e)

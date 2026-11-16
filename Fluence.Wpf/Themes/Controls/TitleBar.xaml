@@ -45,6 +45,9 @@
                             TextAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+                        </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -214,6 +217,15 @@
                             Content="{TemplateBinding RightHeader}" />
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!--  Dim built-in title content and hosted slot containers when the owning window is inactive.  -->
+                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
+                            <Setter TargetName="PART_TitleText" Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+                            <Setter TargetName="PART_SubtitleText" Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+                            <Setter TargetName="PART_LeftHeaderPresenter" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="PART_IconPresenter" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="PART_ContentPresenter" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="PART_RightHeaderPresenter" Property="Opacity" Value="0.5" />
+                        </DataTrigger>
                         <!--  Navigation button visibility  -->
                         <Trigger Property="IsBackButtonVisible" Value="True">
                             <Setter TargetName="PART_BackButton" Property="Visibility" Value="Visible" />

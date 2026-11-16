@@ -278,8 +278,11 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.NotNull(grid.SelectedItem);
 
+                    int removedRows = 0;
+                    grid.SelectionChanged += (_, e) => removedRows += e.RemovedItems.Count;
                     grid.IsItemSelectable = false;
                     Assert.Null(grid.SelectedItem);
+                    Assert.Equal(1, removedRows);
 
                     grid.SelectedIndex = 1;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
@@ -289,7 +292,234 @@ namespace Fluence.Wpf.Tests.Control
                     grid.IsItemSelectable = true;
                     grid.SelectedIndex = 1;
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.NotNull(grid.SelectedItem);
+                    object selected = Assert.IsType<SampleRow>(grid.SelectedItem);
+
+                    // The enabled path must retain Selector's native item-membership coercion.
+                    grid.SelectedItem = new SampleRow { Name = "Not in source" };
+                    Assert.Same(selected, grid.SelectedItem);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_IsItemSelectableFalse_RejectsRowSelectionWithoutConsumerNotificationsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                List<SampleRow> rows = CreateRows(2);
+                Controls.DataGrid grid = CreateGrid(rows);
+                grid.IsItemSelectable = false;
+                grid.SelectedValuePath = nameof(SampleRow.Name);
+                Window window = ShowInWindow(grid);
+
+                try
+                {
+                    int rowNotifications = 0;
+                    int cellNotifications = 0;
+                    int selectedItemChanges = 0;
+                    int selectedIndexChanges = 0;
+                    int selectedValueChanges = 0;
+                    grid.SelectionChanged += (_, _) => rowNotifications++;
+                    grid.SelectedCellsChanged += (_, _) => cellNotifications++;
+                    DependencyPropertyDescriptor.FromProperty(Selector.SelectedItemProperty, typeof(Controls.DataGrid))
+                        .AddValueChanged(grid, (_, _) => selectedItemChanges++);
+                    DependencyPropertyDescriptor.FromProperty(Selector.SelectedIndexProperty, typeof(Controls.DataGrid))
+                        .AddValueChanged(grid, (_, _) => selectedIndexChanges++);
+                    DependencyPropertyDescriptor.FromProperty(Selector.SelectedValueProperty, typeof(Controls.DataGrid))
+                        .AddValueChanged(grid, (_, _) => selectedValueChanges++);
+
+                    grid.SelectedItem = rows[0];
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Null(grid.SelectedItem);
+                    Assert.Equal(-1, grid.SelectedIndex);
+                    Assert.Empty(grid.SelectedItems);
+                    Assert.Empty(grid.SelectedCells);
+                    Assert.Equal(0, rowNotifications);
+                    Assert.Equal(0, cellNotifications);
+                    Assert.Equal(0, selectedItemChanges);
+                    Assert.Equal(0, selectedIndexChanges);
+                    Assert.Equal(0, selectedValueChanges);
+
+                    grid.SelectedIndex = 1;
+                    grid.SelectedValue = rows[1].Name;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Null(grid.SelectedItem);
+                    Assert.Equal(-1, grid.SelectedIndex);
+                    Assert.Null(grid.SelectedValue);
+                    Assert.Empty(grid.SelectedItems);
+                    Assert.Empty(grid.SelectedCells);
+                    Assert.Equal(0, rowNotifications);
+                    Assert.Equal(0, cellNotifications);
+                    Assert.Equal(0, selectedItemChanges);
+                    Assert.Equal(0, selectedIndexChanges);
+                    Assert.Equal(0, selectedValueChanges);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_IsItemSelectableFalse_RejectsCellSelectionWithoutConsumerNotificationsAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                List<SampleRow> rows = CreateRows(2);
+                Controls.DataGrid grid = CreateGrid(rows);
+                grid.SelectionUnit = DataGridSelectionUnit.Cell;
+                grid.IsItemSelectable = false;
+                Window window = ShowInWindow(grid);
+
+                try
+                {
+                    int cellNotifications = 0;
+                    grid.SelectedCellsChanged += (_, _) => cellNotifications++;
+
+                    grid.SelectedCells.Add(new DataGridCellInfo(rows[0], grid.Columns[0]));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Empty(grid.SelectedCells);
+                    Assert.Equal(0, cellNotifications);
+
+                    grid.CurrentCell = new DataGridCellInfo(rows[0], grid.Columns[0]);
+                    Assert.True(grid.BeginEdit(), "A current cell must remain editable without selection.");
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(CellFor(grid, rows[0], grid.Columns[0]).IsEditing);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_SelectedValueNull_UsesNativeEnabledSelectionClearAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                List<SampleRow> rows = CreateRows(2);
+                DataGrid native = new()
+                {
+                    Width = 480,
+                    Height = 320,
+                    ItemsSource = rows,
+                    CanUserAddRows = false,
+                    SelectedValuePath = nameof(SampleRow.Name),
+                };
+                Window nativeWindow = ShowInWindow(native);
+                try
+                {
+                    native.SelectedValue = rows[0].Name;
+                    WpfTestSta.DrainDispatcher(nativeWindow.Dispatcher);
+                    Assert.Same(rows[0], native.SelectedItem);
+
+                    native.SelectedValue = null;
+                    WpfTestSta.DrainDispatcher(nativeWindow.Dispatcher);
+                    Assert.Null(native.SelectedItem);
+                    Assert.Equal(-1, native.SelectedIndex);
+                    Assert.Null(native.SelectedValue);
+                    Assert.Empty(native.SelectedItems);
+                    Assert.Empty(native.SelectedCells);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(nativeWindow);
+                }
+
+                Controls.DataGrid grid = CreateGrid(rows);
+                grid.CanUserAddRows = false;
+                grid.SelectedValuePath = nameof(SampleRow.Name);
+                Window window = ShowInWindow(grid);
+                try
+                {
+                    grid.SelectedValue = rows[0].Name;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(rows[0], grid.SelectedItem);
+
+                    grid.SelectedValue = null;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Null(grid.SelectedItem);
+                    Assert.Equal(-1, grid.SelectedIndex);
+                    Assert.Null(grid.SelectedValue);
+                    Assert.Empty(grid.SelectedItems);
+                    Assert.Empty(grid.SelectedCells);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_IsItemSelectableFalse_RapidReenable_DiscardsRejectedCellAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                List<SampleRow> rows = CreateRows(2);
+                Controls.DataGrid grid = CreateGrid(rows);
+                grid.SelectionUnit = DataGridSelectionUnit.Cell;
+                grid.IsItemSelectable = false;
+                Window window = ShowInWindow(grid);
+                try
+                {
+                    int cellNotifications = 0;
+                    grid.SelectedCellsChanged += (_, _) => cellNotifications++;
+                    grid.SelectedCells.Add(new DataGridCellInfo(rows[0], grid.Columns[0]));
+                    grid.IsItemSelectable = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Empty(grid.SelectedCells);
+                    Assert.Equal(0, cellNotifications);
+
+                    grid.SelectedCells.Add(new DataGridCellInfo(rows[1], grid.Columns[0]));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(rows[1], Assert.Single(grid.SelectedCells).Item);
+                    Assert.Equal(1, cellNotifications);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task DataGrid_IsItemSelectableFalse_RapidReenable_DiscardsRejectedRowAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                List<SampleRow> rows = CreateRows(2);
+                Controls.DataGrid grid = CreateGrid(rows);
+                grid.IsItemSelectable = false;
+                Window window = ShowInWindow(grid);
+                try
+                {
+                    int rowNotifications = 0;
+                    grid.SelectionChanged += (_, _) => rowNotifications++;
+                    _ = grid.SelectedItems.Add(rows[0]);
+                    grid.IsItemSelectable = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Null(grid.SelectedItem);
+                    Assert.Empty(grid.SelectedItems);
+                    Assert.Empty(grid.SelectedCells);
+                    Assert.Equal(0, rowNotifications);
+
+                    grid.SelectedItem = rows[1];
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(rows[1], grid.SelectedItem);
+                    Assert.Same(rows[1], Assert.Single(grid.SelectedItems));
+                    Assert.Equal(1, rowNotifications);
                 }
                 finally
                 {
