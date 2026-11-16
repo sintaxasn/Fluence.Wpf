@@ -28,7 +28,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -51,6 +54,9 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
     /// </summary>
     public sealed class GalleryColorsPageTests : IAsyncLifetime
     {
+        private const int ClipboardCannotOpenHResult = unchecked((int)0x800401D0);
+        private const int CopyCompletionTimeoutMilliseconds = 12000;
+
         // Transcribed from WinUIGallery/Controls/DesignGuidance/ColorSections/*Section.xaml: the
         // ColorPageExample titles in order and the tile-row column counts in order, per SelectorBar item.
         private static readonly SectionExpectation[] Sections =
@@ -581,24 +587,52 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             Assert.True(copy.IsHitTestVisible, "The copy button must stay clickable.");
             Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
             Assert.Equal(restingTooltip, copy.ToolTip as string, StringComparer.Ordinal);
+            Stopwatch copyTimer = Stopwatch.StartNew();
             copy.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 
-            // DemoClipboard retries on a background-priority dispatcher timer, five attempts 40 ms apart.
-            await DispatcherDelayWaits.WaitForAnimationAndDrainByDelayAsync(dispatcher, 400).ConfigureAwait(true);
-            if (string.Equals(glyph.Glyph, "", StringComparison.Ordinal))
+            // The clipboard callback reports success or exhausted retries. A resting glyph
+            // alone cannot distinguish pending retries from a completed failed copy. WPF's
+            // persistent write has up to 1,810 ms of OLE retry sleeps per attempt.
+            // five attempts and four 40 ms demo retry gaps total 9,210 ms before native
+            // calls and dispatcher scheduling (dotnet/wpf clipboard.cs, 9fe50c7).
+            Assert.True(await DispatcherWaits.WaitUntilAsync(dispatcher, CopyCompletionTimeoutMilliseconds,
+                () => tile.LastCopyResult is not null).ConfigureAwait(true),
+                "The copy attempt must complete within the bounded retry window. " +
+                $"Tile={tile.ColorName}; Result={(tile.LastCopyResult is null ? "pending" : "completed")}; " +
+                $"Elapsed={copyTimer.Elapsed.ToString("c", CultureInfo.InvariantCulture)}.");
+            if (tile.LastCopyResult is true)
             {
+                Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
                 Assert.Equal(copiedTooltip, copy.ToolTip as string, StringComparer.Ordinal);
-                Assert.Equal(expectedText, Clipboard.GetText(), StringComparer.Ordinal);
+                string? clipboardText = null;
+                bool clipboardRead = false;
+                Assert.True(await DispatcherWaits.WaitUntilAsync(dispatcher, 1300,
+                    () =>
+                    {
+                        if (!clipboardRead)
+                        {
+                            try
+                            {
+                                clipboardText = Clipboard.GetText();
+                                clipboardRead = true;
+                            }
+                            catch (ExternalException ex) when (ex.ErrorCode == ClipboardCannotOpenHResult)
+                            {
+                                // OpenClipboard is global; another process can briefly own it after our copy succeeds.
+                            }
+                        }
+
+                        return clipboardRead && string.Equals(glyph.Glyph, "", StringComparison.Ordinal);
+                    }).ConfigureAwait(true),
+                    "The copied text must become readable and the cue must return within its reset window.");
+                Assert.Equal(expectedText, clipboardText, StringComparer.Ordinal);
+                Assert.Equal(restingTooltip, copy.ToolTip as string, StringComparer.Ordinal);
             }
             else
             {
                 Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
                 Assert.Equal(restingTooltip, copy.ToolTip as string, StringComparer.Ordinal);
             }
-
-            await DispatcherDelayWaits.WaitForAnimationAndDrainByDelayAsync(dispatcher, 1300).ConfigureAwait(true);
-            Assert.Equal("", glyph.Glyph, StringComparer.Ordinal);
-            Assert.Equal(restingTooltip, copy.ToolTip as string, StringComparer.Ordinal);
         }
 
         private static void AssertBackdropLinkForegrounds(Application application, IEnumerable<ColorTile> tiles)

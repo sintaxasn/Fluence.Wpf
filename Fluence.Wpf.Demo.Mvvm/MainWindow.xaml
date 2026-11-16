@@ -95,9 +95,12 @@
                                     Margin="0,0,10,0"
                                     MinWidth="0"
                                     VerticalAlignment="Center"
+                                    AutomationProperties.LabeledBy="{Binding ElementName=TaskTitleLabel}"
+                                    AutomationProperties.Name="{Binding Title, StringFormat='Complete {0}'}"
                                     IsChecked="{Binding IsCompleted, Mode=TwoWay}" />
 
                                 <TextBlock
+                                    x:Name="TaskTitleLabel"
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     FontFamily="{DynamicResource FluentFontFamily}"
@@ -131,6 +134,7 @@
                                     VerticalAlignment="Center"
                                     Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
+                                    AutomationProperties.Name="{Binding Title, StringFormat='Delete {0}'}"
                                     ToolTip="Delete task">
                                     <fluence:FontIcon Glyph="&#xE74D;" IconFontSize="12" />
                                 </fluence:Button>
@@ -143,14 +147,29 @@
 
         <!--  Row 3: Add input  -->
         <Grid Grid.Row="3" Margin="0,0,0,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
+            <TextBlock
+                x:Name="NewTaskLabel"
+                Grid.ColumnSpan="3"
+                Margin="0,0,0,4"
+                FontFamily="{DynamicResource FluentFontFamily}"
+                FontSize="12"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="New task" />
+
             <fluence:TextBox
+                Grid.Row="1"
                 Grid.Column="0"
+                AutomationProperties.LabeledBy="{Binding ElementName=NewTaskLabel}"
                 PlaceholderText="New task…"
                 Text="{Binding NewTaskText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <fluence:TextBox.InputBindings>
@@ -159,6 +178,7 @@
             </fluence:TextBox>
 
             <fluence:Button
+                Grid.Row="1"
                 Grid.Column="2"
                 MinWidth="80"
                 Appearance="Accent"
