@@ -33,6 +33,7 @@ param(
     [Parameter(Mandatory)][string]$WebsiteRoot,
     [string]$CaptureOutputRoot = (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'artifacts\docs'),
     [string]$MapPath = (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1'),
+    [string]$RepositoryRoot = (Split-Path (Split-Path (Split-Path $MapPath -Parent) -Parent) -Parent),
     [string]$WebsiteManifestPath = (Join-Path $WebsiteRoot 'source-docs-manifest.json'),
     [string]$DecisionsPath,
     [string]$OutputPath
@@ -132,6 +133,7 @@ if ($DecisionsPath)
 }
 $approved = [System.Collections.Generic.List[object]]::new()
 $pending = [System.Collections.Generic.List[object]]::new()
+$galleryEntries = [System.Collections.Generic.List[object]]::new()
 $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 foreach ($candidate in $candidateData.candidates)
 {
@@ -147,7 +149,7 @@ foreach ($candidate in $candidateData.candidates)
     }
     if (-not [System.IO.File]::Exists($publishedPath))
     {
-        if (-not $candidate.id.StartsWith('controls/', [System.StringComparison]::Ordinal))
+        if (-not (Test-DocsNewCapturePath ([string]$candidate.path)))
         {
             $pending.Add([pscustomobject]@{ id = $candidate.id; reason = 'missing-capture-or-baseline'; before = $publishedPath; after = $capturedPath })
             continue
@@ -160,6 +162,43 @@ foreach ($candidate in $candidateData.candidates)
         }
         $afterHash = Get-FileHashLower $capturedPath
         $after = Get-DecodedPng $capturedPath
+        $galleryEntry = $null
+        $galleryReceiptSha256 = $null
+        if ([string]$candidate.id -clike 'gallery/*')
+        {
+            $receiptPath = Get-DocsContainedPath -Root $CaptureOutputRoot -RelativePath 'screenshots/gallery/manifest.json'
+            if (-not [IO.File]::Exists($receiptPath))
+            {
+                $pending.Add([pscustomobject]@{ id=$candidate.id; reason='gallery-capture-receipt-required'; after=$capturedPath })
+                continue
+            }
+            $galleryReceipt = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json -Depth 40
+            $entryMatches = @($galleryReceipt.entries | Where-Object { $_.file -ceq [IO.Path]::GetFileName($capturedPath) })
+            if ($galleryReceipt.status -cne 'complete' -or $galleryReceipt.partial -ne $false -or
+                $null -ne $galleryReceipt.failure -or $null -eq $galleryReceipt.environment -or
+                $null -eq $galleryReceipt.sourceInputRawSha256 -or $null -eq $galleryReceipt.producerBinarySha256 -or
+                $entryMatches.Count -ne 1)
+            {
+                $pending.Add([pscustomobject]@{ id=$candidate.id; reason='gallery-capture-receipt-invalid'; after=$capturedPath })
+                continue
+            }
+            $galleryEntry = $entryMatches[0]
+            if ($galleryEntry.outputSha256 -cne $afterHash -or $galleryEntry.pixelWidth -ne $after.width -or
+                $galleryEntry.pixelHeight -ne $after.height -or $galleryEntry.theme -cne $candidate.theme -or
+                $galleryEntry.state -cne $candidate.state -or -not $galleryEntry.observedState.contentLoaded -or
+                -not $galleryEntry.observedState.indicatorAligned)
+            {
+                $pending.Add([pscustomobject]@{ id=$candidate.id; reason='gallery-capture-receipt-invalid'; after=$capturedPath })
+                continue
+            }
+            try { Assert-DocsGalleryReceiptProvenance -Receipt $galleryReceipt -RepositoryRoot $RepositoryRoot -MapPath $MapPath }
+            catch {
+                $pending.Add([pscustomobject]@{ id=$candidate.id; reason='gallery-capture-provenance-mismatch';
+                    detail=$_.Exception.Message; after=$capturedPath })
+                continue
+            }
+            $galleryReceiptSha256 = Get-FileHashLower $receiptPath
+        }
         $decision = $null
         if ($decisions.ContainsKey([string]$candidate.id)) { $decision = $decisions[[string]$candidate.id] }
         if ($null -eq $decision -or $decision.decision -cne 'new-capture' -or
@@ -175,7 +214,9 @@ foreach ($candidate in $candidateData.candidates)
             checkedVisualInputSha256 = $candidate.checkedVisualInputSha256; inputs = @($candidate.inputs)
             theme = $candidate.theme; state = $candidate.state; mode = $candidate.mode
             decision = 'new-capture'; provenance = [string]$decision.provenance
+            galleryReceiptSha256 = $galleryReceiptSha256
         })
+        if ($null -ne $galleryEntry) { $galleryEntries.Add($galleryEntry) }
         continue
     }
     if ($candidate.id.StartsWith('powershell/images/', [System.StringComparison]::Ordinal) -and
@@ -233,11 +274,13 @@ foreach ($candidate in $candidateData.candidates)
         decision = $resultDecision; provenance = $provenance
     })
 }
-$result = [pscustomobject]@{ schemaVersion = 1; captures = @($approved.ToArray()); pending = @($pending.ToArray()) }
+$result = [pscustomobject]@{ schemaVersion = 1; captures = @($approved.ToArray());
+    galleryEntries = @($galleryEntries.ToArray()); pending = @($pending.ToArray()) }
 if ($OutputPath)
 {
     if ($pending.Count -gt 0) { throw "Visual review is incomplete for $($pending.Count) capture(s); approved output was not written." }
-    $json = [pscustomobject]@{ schemaVersion = 1; captures = @($approved.ToArray()) } | ConvertTo-Json -Depth 12
+    $json = [pscustomobject]@{ schemaVersion = 1; captures = @($approved.ToArray());
+        galleryEntries = @($galleryEntries.ToArray()) } | ConvertTo-Json -Depth 12
     $json = $json.Replace("`r`n", "`n") + "`n"
     [System.IO.File]::WriteAllText($OutputPath, $json, [System.Text.UTF8Encoding]::new($true))
 }

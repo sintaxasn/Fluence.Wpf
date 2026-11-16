@@ -33,13 +33,27 @@ param(
     [string]$PowerShellOutputRoot = 'artifacts/docs/powershell/reference',
     [string]$WebsiteDocsPath = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path 'Fluence.Wpf.Website/docs'),
     [string]$ApprovedCaptureManifest,
+    [string]$ExpectedWebsiteManifestHash,
     [string]$CaptureOutputRoot = 'artifacts/docs',
     [switch]$InitializeManifest,
+    [switch]$CapturesOnly,
+    [switch]$AllowVerifiedOwnedDrafts,
     [switch]$DryRun
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'SourceDocsManifest.ps1')
+$hasExpectedManifestHash = $PSBoundParameters.ContainsKey('ExpectedWebsiteManifestHash')
+if ($hasExpectedManifestHash) {
+    if ($ExpectedWebsiteManifestHash -cnotmatch '^[0-9a-fA-F]{64}$') {
+        throw 'Expected website manifest hash must be a 64-character SHA-256 hex value.'
+    }
+    $ExpectedWebsiteManifestHash = $ExpectedWebsiteManifestHash.ToLowerInvariant()
+}
+if ($AllowVerifiedOwnedDrafts -and (-not $hasExpectedManifestHash -or -not $ApprovedCaptureManifest -or
+    $InitializeManifest -or $CapturesOnly)) {
+    throw 'Verified owned draft image sync requires an expected website manifest hash and approved capture manifest, without initialization or capture-only mode.'
+}
 
 function Resolve-SourceRoot([string]$root, [string]$value) {
     if ([IO.Path]::IsPathRooted($value)) { return [IO.Path]::GetFullPath($value) }
@@ -47,6 +61,18 @@ function Resolve-SourceRoot([string]$root, [string]$value) {
 }
 function Read-DocsJson([string]$path) {
     return Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 40
+}
+function Get-DocsOpenStreamBytes([IO.FileStream]$stream) {
+    $stream.Position = 0
+    $memory = [IO.MemoryStream]::new()
+    try { $stream.CopyTo($memory); return $memory.ToArray() }
+    finally { $memory.Dispose() }
+}
+function Set-DocsOpenStreamBytes([IO.FileStream]$stream, [byte[]]$bytes) {
+    $stream.Position = 0
+    $stream.SetLength(0)
+    $stream.Write($bytes,0,$bytes.Length)
+    $stream.Flush($true)
 }
 function Get-ReferenceRecord([string]$path, [string]$hash, [string]$provenance = 'source-generated') {
     return [pscustomobject]@{ path=$path; kind='reference'; sha256=$hash; provenance=$provenance }
@@ -237,11 +263,18 @@ foreach ($spec in @($map.Captures)) {
 $capturePaths = @($specs.Keys)
 $prior = $null
 $owned = @{}
+$initialManifestHash = $null
 if (Test-Path -LiteralPath $statePath -PathType Leaf) {
-    $prior = Read-DocsJson $statePath
+    $stateBytes = [IO.File]::ReadAllBytes($statePath)
+    $initialManifestHash = Get-DocsSha256 $stateBytes
+    $stateText = [Text.UTF8Encoding]::new($false,$true).GetString($stateBytes).TrimStart([char]0xFEFF)
+    $prior = $stateText | ConvertFrom-Json -Depth 40
     Assert-SourceDocsManifest $prior $capturePaths
+    if ($hasExpectedManifestHash -and $initialManifestHash -cne $ExpectedWebsiteManifestHash) {
+        throw 'Website source docs manifest differs from expected current SHA-256.'
+    }
     $stateStatus = Get-WebsiteStatus $siteRoot 'source-docs-manifest.json'
-    if ($stateStatus -and -not $stateStatus.StartsWith('??',[StringComparison]::Ordinal)) {
+    if ($stateStatus -and -not $stateStatus.StartsWith('??',[StringComparison]::Ordinal) -and -not $hasExpectedManifestHash) {
         throw 'Dirty tracked website source docs manifest blocks sync.'
     }
     if ($stateStatus) {
@@ -251,15 +284,64 @@ if (Test-Path -LiteralPath $statePath -PathType Leaf) {
         }
     }
     foreach ($record in @($prior.files)) { $owned[[string]$record.path] = $record }
+    if ($hasExpectedManifestHash) {
+        # An acknowledged draft is a known set of current files, not a new ownership baseline.
+        foreach ($record in @($prior.files)) {
+            $path = [string]$record.path
+            $target = Get-DocsContainedPath $siteRoot $path
+            if (-not (Test-Path -LiteralPath $target -PathType Leaf)) { throw "Owned website path is missing: $path" }
+            if ((Get-DocsSha256 ([IO.File]::ReadAllBytes($target))) -cne [string]$record.sha256) {
+                throw "Website path differs from approved ownership: $path"
+            }
+            if (-not $AllowVerifiedOwnedDrafts -and $record.kind -eq 'reference' -and (Get-WebsiteStatus $siteRoot $path)) {
+                throw "Dirty owned website reference blocks sync: $path"
+            }
+        }
+    }
 }
+elseif ($hasExpectedManifestHash) { throw 'Expected website manifest hash requires an existing ownership manifest.' }
 if ($InitializeManifest -and $prior) { throw 'Website manifest already exists.' }
 if ($InitializeManifest -and $ApprovedCaptureManifest) { throw 'Initialization cannot approve captures.' }
+if ($CapturesOnly -and $InitializeManifest) { throw 'Capture-only sync cannot initialize a manifest.' }
+if ($CapturesOnly -and -not $ApprovedCaptureManifest) { throw 'Capture-only sync requires an approved capture manifest.' }
+if ($CapturesOnly -and -not $prior) { throw 'Capture-only sync requires an existing website ownership manifest.' }
 $records = [Collections.Generic.List[object]]::new()
 $ops = [Collections.Generic.List[object]]::new()
 $expected = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-$sourceItems = @(Get-CompleteReferenceSourceSet $repository $ApiOutputRoot $PowerShellOutputRoot)
+$sourceItems = if ($CapturesOnly) { @() } else { @(Get-CompleteReferenceSourceSet $repository $ApiOutputRoot $PowerShellOutputRoot) }
+if ($AllowVerifiedOwnedDrafts) {
+    # The acknowledged draft already contains every reference. This mode only advances
+    # reviewed images, so a new, changed, or obsolete source reference is a hard stop.
+    $sourceReferences = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($item in $sourceItems) {
+        $path = Assert-DocsRelativePath ([string]$item.path)
+        [void]$sourceReferences.Add($path)
+        $old = $owned[$path]
+        if (-not $old -or $old.kind -ne 'reference' -or
+            (Get-DocsSha256 ([IO.File]::ReadAllBytes([string]$item.source))) -cne [string]$old.sha256) {
+            throw "Verified owned draft reference differs from generated source: $path"
+        }
+    }
+    foreach ($old in @($prior.files)) {
+        if ($old.kind -eq 'reference' -and -not $sourceReferences.Contains([string]$old.path)) {
+            throw "Verified owned draft cannot remove a reference: $($old.path)"
+        }
+    }
+}
 
-if ($InitializeManifest) {
+if ($CapturesOnly) {
+    foreach ($old in @($prior.files)) {
+        if ($old.kind -eq 'reference') {
+            $path = [string]$old.path
+            $target = Get-DocsContainedPath $siteRoot $path
+            if (-not (Test-Path -LiteralPath $target -PathType Leaf)) { throw "Owned website page is missing: $path" }
+            if ((Get-DocsSha256 ([IO.File]::ReadAllBytes($target))) -cne $old.sha256) {
+                throw "Website path differs from approved ownership: $path"
+            }
+            $records.Add($old)
+        }
+    }
+} elseif ($InitializeManifest) {
     # Establish ownership only for complete, currently matching source references.
     foreach ($item in $sourceItems) {
         $path = [string]$item.path
@@ -289,7 +371,9 @@ if ($InitializeManifest) {
                 throw "Website path differs from approved ownership: $path"
             }
         } elseif ($old) { throw "Owned website page is missing: $path" }
-        if (-not $exists -or $current -cne $hash) { $ops.Add(@{ path=$path; action='write'; bytes=$bytes }) }
+        if (-not $exists -or $current -cne $hash) {
+            $ops.Add(@{ path=$path; action='write'; bytes=$bytes; expectedSha256=$(if ($exists) { $current } else { $null }) })
+        }
         if ($old -and $old.sha256 -ceq $hash) { $records.Add($old) }
         else { $records.Add((Get-ReferenceRecord $path $hash)) }
     }
@@ -308,19 +392,30 @@ foreach ($path in $capturePaths) {
 }
 $galleryPath = 'docs/screenshots/gallery/manifest.json'
 $galleryTarget = Get-DocsContainedPath $siteRoot $galleryPath
-if (Test-Path -LiteralPath $galleryTarget -PathType Leaf) {
+if ($CapturesOnly) {
+    foreach ($old in @($prior.files)) {
+        if ($old.kind -eq 'gallery-manifest') {
+            if (-not (Test-Path -LiteralPath $galleryTarget -PathType Leaf) -or
+                (Get-DocsSha256 ([IO.File]::ReadAllBytes($galleryTarget))) -cne $old.sha256) {
+                throw 'Owned gallery manifest changed or is missing.'
+            }
+            $records.Add($old)
+        }
+    }
+} elseif (Test-Path -LiteralPath $galleryTarget -PathType Leaf) {
     $galleryHash = Get-DocsSha256 ([IO.File]::ReadAllBytes($galleryTarget))
     if ($owned[$galleryPath] -and $owned[$galleryPath].sha256 -cne $galleryHash) { throw 'Owned gallery manifest changed.' }
-    $records.Add([pscustomobject]@{ path=$galleryPath; kind='gallery-manifest'; sha256=$galleryHash; provenance='website-gallery' })
+    if ($owned[$galleryPath]) { $records.Add($owned[$galleryPath]) }
+    else { $records.Add([pscustomobject]@{ path=$galleryPath; kind='gallery-manifest'; sha256=$galleryHash; provenance='website-gallery' }) }
 }
-if (-not $InitializeManifest) {
+if (-not $InitializeManifest -and -not $CapturesOnly) {
     foreach ($old in @($owned.Values)) {
         if ($old.kind -ne 'reference' -or $expected.Contains([string]$old.path)) { continue }
         $path = [string]$old.path
         $target = Get-DocsContainedPath $siteRoot $path
         if (Test-Path -LiteralPath $target -PathType Leaf) {
             if ((Get-DocsSha256 ([IO.File]::ReadAllBytes($target))) -cne $old.sha256) { throw "Stale owned page changed: $path" }
-            $ops.Add(@{ path=$path; action='remove' })
+            $ops.Add(@{ path=$path; action='remove'; expectedSha256=[string]$old.sha256 })
         }
     }
 }
@@ -328,7 +423,12 @@ if (-not $InitializeManifest) {
 if ($ApprovedCaptureManifest) {
     $approval = Read-DocsJson $ApprovedCaptureManifest
     if ($approval.schemaVersion -ne 1 -or $null -eq $approval.captures) { throw 'Invalid approved capture manifest.' }
+    if ($CapturesOnly -and $approval.PSObject.Properties.Name -contains 'galleryEntries' -and @($approval.galleryEntries).Count -gt 0) {
+        throw 'Capture-only sync does not update the gallery manifest.'
+    }
     $approved = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $newGalleryApproved = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $newGalleryReceiptEntries = [Collections.Generic.Dictionary[string, object]]::new([StringComparer]::Ordinal)
     $captureRoot = Resolve-SourceRoot $repository $CaptureOutputRoot
     foreach ($capture in @($approval.captures)) {
         $path = Assert-DocsRelativePath ([string]$capture.path)
@@ -353,14 +453,36 @@ if ($ApprovedCaptureManifest) {
         $oldRecord = @($records | Where-Object path -eq $path)
         $exists = Test-Path -LiteralPath $target -PathType Leaf
         if ($capture.decision -eq 'new-capture') {
-            if (-not $path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal)) { throw "New captures are supported only for controls: $path" }
+            if (-not (Test-DocsNewCapturePath $path)) { throw "New capture path is unsupported: $path" }
             if ($exists -or $oldRecord.Count -ne 0) { throw "New capture baseline unexpectedly exists: $path" }
             $candidate = Get-DocsContainedPath $captureRoot (Assert-DocsRelativePath ([string]$capture.sourceRelativePath))
             if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { throw "Capture candidate is missing: $path" }
             $bytes = [IO.File]::ReadAllBytes($candidate)
             $hash = Get-DocsSha256 $bytes
             if ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256) { throw "Capture candidate hash mismatch: $path" }
-            $ops.Add(@{ path=$path; action='create'; bytes=$bytes })
+            $ops.Add(@{ path=$path; action='create'; bytes=$bytes; expectedSha256=$null })
+            if ($path.StartsWith('docs/screenshots/gallery/', [StringComparison]::Ordinal)) {
+                $receiptPath = Get-DocsContainedPath $captureRoot 'screenshots/gallery/manifest.json'
+                if (-not [IO.File]::Exists($receiptPath) -or
+                    $capture.galleryReceiptSha256 -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($receiptPath)))) {
+                    throw "New Gallery approval receipt hash is missing or changed: $path"
+                }
+                $receipt = Read-DocsJson $receiptPath
+                if ($receipt.status -cne 'complete' -or $receipt.partial -ne $false -or $null -ne $receipt.failure) {
+                    throw "New Gallery approval receipt is incomplete: $path"
+                }
+                Assert-DocsGalleryReceiptProvenance -Receipt $receipt -RepositoryRoot $repository -MapPath $mapPath
+                $entryMatches = @($receipt.entries | Where-Object file -ceq ([IO.Path]::GetFileName($path)))
+                if ($entryMatches.Count -ne 1 -or $entryMatches[0].theme -cne $capture.theme -or
+                    $entryMatches[0].state -cne $capture.state -or $entryMatches[0].outputSha256 -cne $hash -or
+                    $entryMatches[0].pixelWidth -le 0 -or $entryMatches[0].pixelHeight -le 0 -or
+                    -not $entryMatches[0].observedState.contentLoaded -or
+                    -not $entryMatches[0].observedState.indicatorAligned) {
+                    throw "New Gallery approval lacks one coherent receipt entry: $path"
+                }
+                [void]$newGalleryApproved.Add($path)
+                $newGalleryReceiptEntries[$path] = $entryMatches[0]
+            }
         } else {
             if (-not $exists) { throw "Approved capture baseline is missing: $path" }
             if ($oldRecord.Count -ne 1) { throw "Approved capture state is missing: $path" }
@@ -373,7 +495,9 @@ if ($ApprovedCaptureManifest) {
             $bytes = [IO.File]::ReadAllBytes($candidate)
             $hash = Get-DocsSha256 $bytes
             if ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256) { throw "Capture candidate hash mismatch: $path" }
-            if ($hash -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($target)))) { $ops.Add(@{ path=$path; action='write'; bytes=$bytes }) }
+            if ($hash -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($target)))) {
+                $ops.Add(@{ path=$path; action='write'; bytes=$bytes; expectedSha256=[string]$oldRecord[0].sha256 })
+            }
         } elseif ($capture.decision -eq 'visually-unchanged' -and ($hash -cne $capture.sha256 -or $hash -cne $capture.pngSha256)) {
             throw "Unchanged decision does not match published image: $path"
         }
@@ -387,7 +511,43 @@ if ($ApprovedCaptureManifest) {
         if ($capture.PSObject.Properties.Name -contains 'decodedPixelSha256' -and $null -ne $capture.decodedPixelSha256) {
             $newRecord | Add-Member NoteProperty decodedPixelSha256 ([string]$capture.decodedPixelSha256)
         }
+        if ($newGalleryApproved.Contains($path)) {
+            $newRecord | Add-Member NoteProperty galleryReceiptSha256 ([string]$capture.galleryReceiptSha256)
+        }
         $records.Add($newRecord)
+    }
+    if ($newGalleryApproved.Count -gt 0) {
+        if ($CapturesOnly) { throw 'New Gallery images require ordinary sync with Gallery entries.' }
+        if ($approval.PSObject.Properties.Name -notcontains 'galleryEntries' -or @($approval.galleryEntries).Count -eq 0) {
+            throw 'New Gallery approval is missing its receipt entry.'
+        }
+        $newEntries = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        foreach ($entry in @($approval.galleryEntries)) {
+            $entryPath = "docs/screenshots/gallery/$([string]$entry.file)"
+            if ($newGalleryApproved.Contains($entryPath)) {
+                if (-not $newEntries.Add($entryPath)) { throw "Duplicate new Gallery entry: $entryPath" }
+                $receiptEntry = $newGalleryReceiptEntries[$entryPath]
+                foreach ($name in 'route','kind','theme','state','file','title','outputSha256','pixelWidth','pixelHeight') {
+                    if ([string]$entry.$name -cne [string]$receiptEntry.$name) {
+                        throw "New Gallery entry differs from capture receipt: $entryPath ($name)"
+                    }
+                }
+                $observedNames = @($receiptEntry.observedState.PSObject.Properties.Name)
+                if (@($entry.observedState.PSObject.Properties.Name).Count -ne $observedNames.Count) {
+                    throw "New Gallery observed state differs from capture receipt: $entryPath"
+                }
+                foreach ($name in $observedNames) {
+                    if ([string]$entry.observedState.$name -cne [string]$receiptEntry.observedState.$name) {
+                        throw "New Gallery observed state differs from capture receipt: $entryPath ($name)"
+                    }
+                }
+            } elseif (-not $approved.Contains($entryPath)) {
+                throw "Gallery entry lacks approved image: $entryPath"
+            }
+        }
+        foreach ($path in $newGalleryApproved) {
+            if (-not $newEntries.Contains($path)) { throw "New Gallery approval is missing its receipt entry: $path" }
+        }
     }
     if ($approval.PSObject.Properties.Name -contains 'galleryEntries' -and @($approval.galleryEntries).Count -gt 0) {
         if (-not (Test-Path -LiteralPath $galleryTarget -PathType Leaf)) { throw 'Gallery manifest is missing.' }
@@ -399,20 +559,39 @@ if ($ApprovedCaptureManifest) {
             $patches[$key] = $patch
         }
         $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        $existingFiles = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
         $merged = [Collections.Generic.List[object]]::new()
         foreach ($entry in @($gallery.entries)) {
             $key = Get-EntryKey $entry
+            if (-not $existingFiles.Add([string]$entry.file)) { throw 'Gallery manifest has duplicate file names.' }
             if ($patches.ContainsKey($key)) {
                 if (-not $approved.Contains("docs/screenshots/gallery/$($entry.file)")) { throw 'Gallery patch lacks approved image.' }
                 $merged.Add($patches[$key]); [void]$seen.Add($key)
             } else { $merged.Add($entry) }
+        }
+        foreach ($patch in @($approval.galleryEntries | Sort-Object file -CaseSensitive)) {
+            $key = Get-EntryKey $patch
+            if ($seen.Contains($key)) { continue }
+            $path = "docs/screenshots/gallery/$($patch.file)"
+            if (-not $newGalleryApproved.Contains($path) -or -not $existingFiles.Add([string]$patch.file)) {
+                throw 'Gallery patch contains unknown or duplicate identity.'
+            }
+            if ($patch.outputSha256 -cne @($approval.captures | Where-Object path -eq $path)[0].pngSha256 -or
+                $patch.pixelWidth -le 0 -or $patch.pixelHeight -le 0 -or
+                -not $patch.observedState.contentLoaded -or -not $patch.observedState.indicatorAligned) {
+                throw 'New Gallery entry lacks matching capture provenance.'
+            }
+            $merged.Add($patch)
+            [void]$seen.Add($key)
         }
         if ($seen.Count -ne $patches.Count) { throw 'Gallery patch contains unknown identity.' }
         $gallery.entries = @($merged)
         $json = ($gallery | ConvertTo-Json -Depth 40).Replace("`r`n","`n").TrimEnd("`n") + "`n"
         $bytes = [byte[]](@(0xEF,0xBB,0xBF) + [Text.Encoding]::UTF8.GetBytes($json))
         $hash = Get-DocsSha256 $bytes
-        if ($hash -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($galleryTarget)))) { $ops.Add(@{ path=$galleryPath; action='write'; bytes=$bytes }) }
+        if ($hash -cne $galleryHash) {
+            $ops.Add(@{ path=$galleryPath; action='write'; bytes=$bytes; expectedSha256=$galleryHash })
+        }
         (@($records | Where-Object path -eq $galleryPath)[0]).sha256 = $hash
     }
 }
@@ -420,18 +599,30 @@ if ($ApprovedCaptureManifest) {
 $manifestBytes = ConvertTo-SourceDocsManifestByteArray ([pscustomobject]@{ schemaVersion=1; files=@($records) }) $capturePaths
 if (-not (Test-Path -LiteralPath $statePath -PathType Leaf) -or
     (Get-DocsSha256 $manifestBytes) -cne (Get-DocsSha256 ([IO.File]::ReadAllBytes($statePath)))) {
-    $ops.Add(@{ path='source-docs-manifest.json'; action='write'; bytes=$manifestBytes })
+    $ops.Add(@{ path='source-docs-manifest.json'; action='write'; bytes=$manifestBytes; expectedSha256=$initialManifestHash })
 }
 foreach ($op in $ops) {
+    if ($AllowVerifiedOwnedDrafts -and ($op.action -eq 'remove' -or $expected.Contains([string]$op.path) -or
+        ($owned[[string]$op.path] -and $owned[[string]$op.path].kind -eq 'reference'))) {
+        throw "Verified owned draft image sync cannot change a reference or remove a path: $($op.path)"
+    }
     $target = Get-DocsContainedPath $siteRoot ([string]$op.path)
     $status = Get-WebsiteStatus $siteRoot ([string]$op.path)
-    if ($op.path -eq 'source-docs-manifest.json' -and $status -and
+    if ($op.path -eq 'source-docs-manifest.json' -and $status -and -not $hasExpectedManifestHash -and
         -not $status.StartsWith('??',[StringComparison]::Ordinal)) {
         throw 'Dirty tracked website source docs manifest blocks sync.'
     }
-    if ($op.path -ne 'source-docs-manifest.json' -and $status) {
+    $oldOperationRecord = $owned[[string]$op.path]
+    $verifiedDirtyImageWrite = $AllowVerifiedOwnedDrafts -and $oldOperationRecord -and
+        $oldOperationRecord.kind -cin @('capture','gallery-manifest') -and $op.action -eq 'write' -and
+        $op.expectedSha256 -ceq [string]$oldOperationRecord.sha256
+    if ($op.path -ne 'source-docs-manifest.json' -and $status -and -not $verifiedDirtyImageWrite) {
         throw "Dirty website path blocks sync: $($op.path)"
     }
+}
+if ($hasExpectedManifestHash -and
+    (Get-DocsSha256 ([IO.File]::ReadAllBytes($statePath))) -cne $ExpectedWebsiteManifestHash) {
+    throw 'Website source docs manifest changed after preflight.'
 }
 if ($DryRun) { Write-Output "Dry run: $($ops.Count) managed website operation(s)."; return }
 if ($ops.Count -eq 0) { Write-Output 'Synced 0 managed website operation(s).'; return }
@@ -457,6 +648,10 @@ for ($index = 0; $index -lt $ops.Count; $index++) {
         $oldHash = Get-DocsSha256 $oldBytes
         [IO.File]::WriteAllBytes((Get-DocsContainedPath $recoveryPath $blobName),$oldBytes)
     }
+    if (($exists -and $oldHash -cne $op.expectedSha256) -or
+        (-not $exists -and $null -ne $op.expectedSha256)) {
+        throw "Managed website path changed before recovery snapshot: $($op.path)"
+    }
     $ledger.Add([pscustomobject]@{
         path=[string]$op.path; action=[string]$op.action
         existed=$exists; sha256=$oldHash; blob=$blobName
@@ -470,32 +665,85 @@ $ledgerJson = ([ordered]@{ schemaVersion=1; websiteRoot=$siteRoot; operations=@(
 $applied = 0
 $attemptedPaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 try {
-    foreach ($op in $ops) {
-        $target = Get-DocsContainedPath $siteRoot ([string]$op.path)
-        if ($op.action -eq 'remove') {
-            [void]$attemptedPaths.Add([string]$op.path)
-            Remove-Item -LiteralPath $target -Force
+    for ($index = 0; $index -lt $ops.Count; $index++) {
+        $op = $ops[$index]
+        $snapshot = $ledger[$index]
+        if ($hasExpectedManifestHash -and
+            (Get-DocsSha256 ([IO.File]::ReadAllBytes($statePath))) -cne $ExpectedWebsiteManifestHash) {
+            throw 'Website source docs manifest changed before managed website write.'
         }
-        elseif ($op.action -eq 'create') {
+        $target = Get-DocsContainedPath $siteRoot ([string]$op.path)
+        if ($env:FLUENCE_DOCS_SYNC_TEST_TARGET_RACE_PATH -eq $op.path) {
+            [IO.File]::WriteAllText($target,'concurrent user edit')
+        }
+        if ($op.path -eq 'source-docs-manifest.json' -and $env:FLUENCE_DOCS_SYNC_TEST_MANIFEST_RACE_BEFORE_WRITE) {
+            [IO.File]::AppendAllText($target,"`nconcurrent manifest edit")
+        }
+        if ($op.action -eq 'remove') {
+            # Deletion needs a handle that excludes content writers but permits the delete itself.
+            $stream = [IO.File]::Open($target,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Delete)
+            try {
+                if ((Get-DocsSha256 (Get-DocsOpenStreamBytes $stream)) -cne $snapshot.sha256) {
+                    throw "Managed website path changed before removal: $($op.path)"
+                }
+                [IO.File]::Delete($target)
+                [void]$attemptedPaths.Add([string]$op.path)
+            } finally { $stream.Dispose() }
+        }
+        elseif (-not $snapshot.existed) {
             [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
             if ($env:FLUENCE_DOCS_SYNC_TEST_CREATE_RACE_PATH -eq $op.path) {
                 [IO.File]::WriteAllText($target, 'concurrent sentinel')
             }
-            $stream = [IO.File]::Open($target, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+            # Create in the target directory so the final exclusive move is on the same volume.
+            # A failed write can leave only our private temporary file, never a partial published PNG.
+            $temporary = Join-Path (Split-Path -Parent $target) ('.codex-create-' + [guid]::NewGuid().ToString('N') + '.tmp')
             try {
-                [void]$attemptedPaths.Add([string]$op.path)
-                if ($env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH -eq $op.path) {
-                    $stream.Write([byte[]]$op.bytes, 0, 1)
-                    throw 'Injected partial capture write failure.'
+                $stream = [IO.File]::Open($temporary, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+                try {
+                    if ($env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH -eq $op.path) {
+                        $stream.Write([byte[]]$op.bytes, 0, 1)
+                        throw 'Injected partial capture write failure.'
+                    }
+                    $stream.Write([byte[]]$op.bytes, 0, $op.bytes.Length)
+                } finally { $stream.Dispose() }
+                if ((Get-DocsSha256 ([IO.File]::ReadAllBytes($temporary))) -cne (Get-DocsSha256 ([byte[]]$op.bytes))) {
+                    throw "Private create bytes changed before publication: $($op.path)"
                 }
-                $stream.Write([byte[]]$op.bytes, 0, $op.bytes.Length)
-            } finally { $stream.Dispose() }
+                [IO.File]::Move($temporary,$target)
+                [void]$attemptedPaths.Add([string]$op.path)
+            } finally {
+                if ([IO.File]::Exists($temporary)) { [IO.File]::Delete($temporary) }
+            }
         } else {
-            [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
-            [void]$attemptedPaths.Add([string]$op.path)
-            [IO.File]::WriteAllBytes($target,[byte[]]$op.bytes)
+            # The comparison and write share one exclusive handle. No other writer can
+            # replace a checked target between these two steps, including the manifest.
+            $stream = [IO.File]::Open($target,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+            try {
+                $beforeBytes = Get-DocsOpenStreamBytes $stream
+                if ((Get-DocsSha256 $beforeBytes) -cne $snapshot.sha256) {
+                    throw "Managed website path changed before managed website write: $($op.path)"
+                }
+                [void]$attemptedPaths.Add([string]$op.path)
+                try { Set-DocsOpenStreamBytes $stream ([byte[]]$op.bytes) }
+                catch {
+                    # A failed in-place write is repaired while the exclusive handle is held.
+                    try {
+                        Set-DocsOpenStreamBytes $stream $beforeBytes
+                        [void]$attemptedPaths.Remove([string]$op.path)
+                    } catch { Write-Verbose "Locked repair failed for $($op.path): $_" }
+                    throw
+                }
+            } finally { $stream.Dispose() }
         }
         $applied++
+        if ($env:FLUENCE_DOCS_SYNC_TEST_TARGET_RACE_AFTER -eq $op.path) {
+            [IO.File]::WriteAllText($target,'concurrent user edit')
+        }
+        if ($hasExpectedManifestHash -and $env:FLUENCE_DOCS_SYNC_TEST_MANIFEST_RACE_AFTER -and
+            $applied -eq [int]$env:FLUENCE_DOCS_SYNC_TEST_MANIFEST_RACE_AFTER) {
+            [IO.File]::AppendAllText($statePath,"`n")
+        }
         if ($env:FLUENCE_DOCS_SYNC_TEST_FAIL_AFTER -and
             $applied -eq [int]$env:FLUENCE_DOCS_SYNC_TEST_FAIL_AFTER) {
             throw "Injected sync apply failure after $applied operation(s)."
@@ -513,18 +761,29 @@ try {
             $target = Get-DocsContainedPath $siteRoot ([string]$snapshot.path)
             $operation = @($ops | Where-Object path -eq $snapshot.path)[0]
             if ($snapshot.action -eq 'remove') {
-                if (Test-Path -LiteralPath $target) { throw 'Target changed after removal; not overwriting concurrent data.' }
-            } elseif (-not (Test-Path -LiteralPath $target -PathType Leaf) -or
-                (Get-DocsSha256 ([IO.File]::ReadAllBytes($target))) -cne (Get-DocsSha256 ([byte[]]$operation.bytes))) {
-                throw 'Target changed after write; not overwriting concurrent data.'
-            }
-            if ($snapshot.existed) {
                 $oldBytes = [IO.File]::ReadAllBytes((Get-DocsContainedPath $recoveryPath ([string]$snapshot.blob)))
                 if ((Get-DocsSha256 $oldBytes) -cne $snapshot.sha256) { throw 'Recovery blob hash mismatch.' }
-                [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
-                [IO.File]::WriteAllBytes($target,$oldBytes)
-            } elseif (Test-Path -LiteralPath $target -PathType Leaf) {
-                Remove-Item -LiteralPath $target -Force
+                $stream = [IO.File]::Open($target,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+                try { $stream.Write($oldBytes,0,$oldBytes.Length); $stream.Flush($true) }
+                finally { $stream.Dispose() }
+            } elseif ($snapshot.existed) {
+                $oldBytes = [IO.File]::ReadAllBytes((Get-DocsContainedPath $recoveryPath ([string]$snapshot.blob)))
+                if ((Get-DocsSha256 $oldBytes) -cne $snapshot.sha256) { throw 'Recovery blob hash mismatch.' }
+                $stream = [IO.File]::Open($target,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+                try {
+                    if ((Get-DocsSha256 (Get-DocsOpenStreamBytes $stream)) -cne (Get-DocsSha256 ([byte[]]$operation.bytes))) {
+                        throw 'Target changed after write; not overwriting concurrent data.'
+                    }
+                    Set-DocsOpenStreamBytes $stream $oldBytes
+                } finally { $stream.Dispose() }
+            } else {
+                $stream = [IO.File]::Open($target,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Delete)
+                try {
+                    if ((Get-DocsSha256 (Get-DocsOpenStreamBytes $stream)) -cne (Get-DocsSha256 ([byte[]]$operation.bytes))) {
+                        throw 'Target changed after write; not overwriting concurrent data.'
+                    }
+                    [IO.File]::Delete($target)
+                } finally { $stream.Dispose() }
             }
         } catch { $restoreFailures.Add("$($snapshot.path): $_") }
     }

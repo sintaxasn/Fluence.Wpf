@@ -17,6 +17,19 @@ pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot ar
 git status --short
 ```
 
+If a reviewed capture draft has already changed the tracked website `source-docs-manifest.json`, ordinary text sync still blocks it by default. For an explicitly reviewed draft, hash the **current website manifest bytes** and pass that value to both preview and apply:
+
+```powershell
+$manifest = Join-Path $siteRoot 'source-docs-manifest.json'
+$expectedHash = (Get-FileHash -LiteralPath $manifest -Algorithm SHA256).Hash.ToLowerInvariant()
+pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -ExpectedWebsiteManifestHash $expectedHash -DryRun
+pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -ExpectedWebsiteManifestHash $expectedHash
+```
+
+This opt-in requires every currently owned page and image to match its manifest record. Dirty owned reference pages still block sync; reviewed capture records and image bytes are retained. During apply, existing targets and manifest promotion are compared with their expected bytes under a file handle that excludes other content writers. A concurrent edit stops the sync; rollback restores only paths that still contain sync's own bytes and reports conflicts without replacing newer user bytes. If the manifest changes after preview, calculate a new hash only after reviewing that change. Capture writes still require the separate approved capture manifest.
+
+After that reference sync has already applied, its tracked pages may remain dirty while matching the current ownership manifest byte for byte. For a follow-on reviewed image sync, add `-AllowVerifiedOwnedDrafts` to both preview and apply, together with `-ExpectedWebsiteManifestHash` for the current manifest and `-ApprovedCaptureManifest` for the reviewed images. This mode requires every owned website file to match the acknowledged manifest and every generated reference to match its already owned bytes. It refuses reference writes and removals, initialization, and `-CapturesOnly`. Only hash-bound approved images may change; new Gallery images still require their complete capture receipt and reviewed Gallery manifest entries. Existing targets are checked and written under the same exclusive file handle. Without this switch, dirty owned references and image targets remain blocked.
+
 `-Check` compares exact output bytes and rejects missing, changed, or extra generated pages in the selected output root. It does not create a baseline in a fresh checkout. The API coverage report is at `artifacts/docs/coverage.md`. The PowerShell generator checks one page per exported function; authored reference introduction/type pages are outside that generated set. Use dedicated output roots, not directories containing authored content.
 
 ## Review and sync to a website checkout
@@ -63,11 +76,23 @@ try {
 & './tools/Docs/Review-VisualCaptures.ps1' -CandidatesPath artifacts/docs/visual-candidates.json -WebsiteRoot $siteRoot
 ```
 
-The review command compares decoded pixels with the published PNGs and reports pending material decisions. For pixel differences, the decision JSON contains `decisions` entries with `id`, `decision` (`material-change` or `visually-unchanged`), `candidatePngSha256`, and a reviewed `provenance`. A control capture with no existing image or recorded baseline uses `new-capture` instead. New gallery captures are not supported by this review flow. Once every pending candidate has a decision, write the approved manifest and sync it:
+The review command compares decoded pixels with the published PNGs and reports pending material decisions. For pixel differences, the decision JSON contains `decisions` entries with `id`, `decision` (`material-change` or `visually-unchanged`), `candidatePngSha256`, and a reviewed `provenance`. A control capture with no existing image or recorded baseline uses `new-capture` instead. The mapped PowerShell Controls Tour images (`powershell-{color,selection,commands,data,navigation,status,surfaces,layout}-{light,dark}.png`) also use `new-capture` when they have no published baseline. The existing overview images retain their baseline review flow. Review the complete PowerShell family together.
+
+The ten newly mapped Gallery IDs for the DataGrid route and cards and Selection sample 06 have a one-time reviewed `new-capture` path. Capture the **complete** Gallery catalog into a fresh private output directory with `FLUENCE_CAPTURE_INCLUDE` unset and the `CaptureGalleryCatalogAndCardsAsync` method filter. Require process exit 0 and `gallery/manifest.json` with `status: complete`, `partial: false`, no failure, source-input and producer-binary SHA-256 hashes, dimensions and output hashes. Review the actual route, selected item, indicator placement, tab state and disabled sample state in the images and receipt. `Review-VisualCaptures.ps1` checks that receipt and binds each new Gallery decision to its PNG hash; it produces the Gallery manifest entries alongside image approvals. The new capture path rejects any other Gallery filename and a missing or recorded-but-absent website baseline. Keep the full Light/Dark family in the candidate selection. A partial harness capture is useful for diagnosis but cannot initialize new Gallery images.
+
+After every pending candidate has a decision, write the approved manifest and preview the website operations before applying them:
 
 ```powershell
 pwsh -NoProfile -File tools/Docs/Review-VisualCaptures.ps1 -CandidatesPath artifacts/docs/visual-candidates.json -WebsiteRoot $siteRoot -DecisionsPath artifacts/docs/visual-decisions.json -OutputPath artifacts/docs/approved-captures.json
+pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest artifacts/docs/approved-captures.json -DryRun
 pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest artifacts/docs/approved-captures.json
+```
+
+For a capture-only update when generated references are unavailable, use an existing valid website ownership manifest and add `-CapturesOnly`. It requires `-ApprovedCaptureManifest`, cannot be combined with `-InitializeManifest`, and retains prior reference records and files. New Gallery onboarding updates the Gallery manifest, so run the ordinary sync with generated references available. Preview the approved image and manifest operations first:
+
+```powershell
+pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -CapturesOnly -ApprovedCaptureManifest artifacts/docs/approved-captures.json -DryRun
+pwsh -NoProfile -File tools/Docs/Sync-WebsiteDocs.ps1 -WebsiteDocsPath $siteDocs -CapturesOnly -ApprovedCaptureManifest artifacts/docs/approved-captures.json
 ```
 
 A visually unchanged decision advances the checked input hash while retaining the published PNG. A material change can replace only its approved image. Review the resulting website diff and site checks before publication.

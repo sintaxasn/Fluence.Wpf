@@ -57,6 +57,60 @@ Describe 'Review-VisualCaptures' {
             if ($OutputPath) { $args.OutputPath = $OutputPath }
             & $script:review @args
         }
+        function Initialize-GalleryReviewFixture {
+            $script:repository = Join-Path $TestDrive 'gallery-source'
+            $script:mapPath = Join-Path $repository 'tools/Docs/VisualCaptureMap.psd1'
+            $galleryOutput = Join-Path $captures 'screenshots/gallery'
+            New-Item -ItemType Directory -Path $galleryOutput -Force | Out-Null
+            $rows = foreach ($theme in @('light','dark')) {
+                $id = "gallery/data-grid-$theme.png"
+                "@{ Id='$id'; Path='docs/screenshots/$id'; SourceRelativePath='screenshots/$id'; Inputs=@('page.xaml'); Family='gallery/data-grid'; Theme='$theme'; State='default'; Mode='WpfRender' }"
+            }
+            Write-FixtureFile $mapPath "@{ SchemaVersion=1; Captures=@($($rows -join ', ')) }"
+            Write-FixtureFile (Join-Path $repository 'page.xaml') '<Page />'
+            Write-FixtureFile (Join-Path $repository 'Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs') 'harness source'
+            Write-FixtureFile (Join-Path $repository 'Fluence.Wpf.Demo/DemoNavigationCatalog.cs') 'catalog source'
+            $binaryRoot = Join-Path $repository 'Fluence.Wpf.Tests/bin/Debug/net10.0-windows10.0.26100.0'
+            $binaryHashes = @{}
+            foreach ($name in 'Fluence.Wpf.Tests.dll','Fluence.Wpf.Demo.dll','Fluence.Wpf.dll') {
+                $binary = Join-Path $binaryRoot $name
+                Write-FixtureFile $binary "producer $name"
+                $binaryHashes[$binary] = (Get-FileHash -LiteralPath $binary).Hash.ToLowerInvariant()
+            }
+            $sourceHashes = @{}
+            foreach ($path in @('page.xaml','tools/Docs/VisualCaptureMap.psd1',
+                    'Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs','Fluence.Wpf.Demo/DemoNavigationCatalog.cs')) {
+                $sourceHashes[$path] = (Get-FileHash -LiteralPath (Join-Path $repository $path)).Hash.ToLowerInvariant()
+            }
+            $candidateRows = foreach ($theme in @('light','dark')) {
+                $id = "gallery/data-grid-$theme.png"
+                $png = Join-Path $galleryOutput "data-grid-$theme.png"
+                Write-TestPng -Path $png
+                @{id=$id; path="docs/screenshots/$id"; sourceRelativePath="screenshots/$id";
+                    checkedVisualInputSha256=('a'*64); inputs=@('page.xaml'); theme=$theme; state='default'; mode='WpfRender'}
+            }
+            @{schemaVersion=1; candidates=@($candidateRows)} | ConvertTo-Json -Depth 8 |
+                Set-Content -LiteralPath $candidatesPath -Encoding utf8
+            @{schemaVersion=1; files=@()} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+            $receiptEntries = foreach ($theme in @('light','dark')) {
+                $png = Join-Path $galleryOutput "data-grid-$theme.png"
+                @{kind='route'; route='data-grid'; title='DataGrid'; theme=$theme; state='default';
+                    file="data-grid-$theme.png"; outputSha256=(Get-FileHash $png).Hash.ToLowerInvariant();
+                    pixelWidth=1; pixelHeight=1; observedState=@{contentLoaded=$true; indicatorAligned=$true}}
+            }
+            $receiptPath = Join-Path $galleryOutput 'manifest.json'
+            @{status='complete'; partial=$false; failure=$null; environment=@{os='test'};
+                sourceInputRawSha256=$sourceHashes; producerBinarySha256=$binaryHashes;
+                entries=@($receiptEntries)} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $receiptPath -Encoding utf8
+            $decisionRows = foreach ($theme in @('light','dark')) {
+                @{id="gallery/data-grid-$theme.png"; decision='new-capture'; provenance='reviewed-gallery-state';
+                    candidatePngSha256=(Get-FileHash (Join-Path $galleryOutput "data-grid-$theme.png")).Hash.ToLowerInvariant()}
+            }
+            @{decisions=@($decisionRows)} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+            return [pscustomobject]@{ receiptPath=$receiptPath;
+                pagePath=(Join-Path $repository 'page.xaml');
+                binaryPath=(Join-Path $binaryRoot 'Fluence.Wpf.Tests.dll') }
+        }
     }
 
     BeforeEach {
@@ -135,6 +189,22 @@ Describe 'Review-VisualCaptures' {
         (Invoke-Review -DecisionsPath $decisionsPath).pending[0].reason | Should -Be 'missing-capture-or-baseline'
     }
 
+    It 'requires a hash-bound decision for a new PowerShell tour image' {
+        $path = 'docs/screenshots/powershell-color-light.png'
+        $source = 'screenshots/powershell-color-light.png'
+        $target = Join-Path $captures $source
+        Copy-Item -LiteralPath $candidatePng -Destination $target
+        "@{ SchemaVersion=1; Captures=@(@{ Id='powershell-color-light.png'; Path='$path'; SourceRelativePath='$source'; Inputs=@('page.xaml'); Family='powershell'; Theme='light'; State='default'; Mode='WpfRender' }) }" |
+            Set-Content -LiteralPath $mapPath -Encoding utf8
+        @{schemaVersion=1; candidates=@(@{id='powershell-color-light.png'; path=$path; sourceRelativePath=$source; checkedVisualInputSha256=('a'*64); inputs=@('page.xaml'); theme='light'; state='default'; mode='WpfRender'})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
+        @{schemaVersion=1; files=@()} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+        (Invoke-Review).pending[0].reason | Should -Be 'new-capture-review-required'
+        @{decisions=@(@{id='powershell-color-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $target).Hash.ToLowerInvariant()})} |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
+        (Invoke-Review -DecisionsPath $decisionsPath -OutputPath $approvedPath).captures[0].decision | Should -Be 'new-capture'
+    }
+
     It 'does not approve new gallery captures' {
         $newDir = Join-Path $captures 'screenshots/gallery'
         New-Item -ItemType Directory -Path $newDir -Force | Out-Null
@@ -147,6 +217,40 @@ Describe 'Review-VisualCaptures' {
         @{decisions=@(@{id='gallery/page-light.png'; decision='new-capture'; provenance='visual-review'; candidatePngSha256=(Get-FileHash $candidatePng).Hash.ToLowerInvariant()})} |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $decisionsPath -Encoding utf8
         (Invoke-Review -DecisionsPath $decisionsPath).pending[0].reason | Should -Be 'missing-capture-or-baseline'
+    }
+
+    It 'onboards a mapped new Gallery pair only with a complete hashed receipt and explicit review' {
+        $fixture = Initialize-GalleryReviewFixture
+        Remove-Item -LiteralPath $fixture.receiptPath
+        @((Invoke-Review).pending | ForEach-Object reason | Select-Object -Unique) | Should -Be @('gallery-capture-receipt-required')
+        $fixture = Initialize-GalleryReviewFixture
+        $receipt = Get-Content -LiteralPath $fixture.receiptPath -Raw | ConvertFrom-Json
+        $receipt.status='failed'; $receipt.partial=$true; $receipt.failure='capture error'
+        $receipt | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $fixture.receiptPath -Encoding utf8
+        @((Invoke-Review).pending | ForEach-Object reason | Select-Object -Unique) | Should -Be @('gallery-capture-receipt-invalid')
+        $receipt.status='complete'; $receipt.partial=$false; $receipt.failure=$null
+        $receipt | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $fixture.receiptPath -Encoding utf8
+        @((Invoke-Review -DecisionsPath $decisionsPath).pending | ForEach-Object { "$($_.reason): $($_.detail)" }) | Should -Be @()
+        $approved = Invoke-Review -DecisionsPath $decisionsPath -OutputPath $approvedPath
+        @($approved.captures).Count | Should -Be 2
+        @($approved.galleryEntries).Count | Should -Be 2
+        @((Get-Content -LiteralPath $approvedPath -Raw | ConvertFrom-Json).galleryEntries).Count | Should -Be 2
+    }
+
+    It 'rejects an old Gallery receipt after mapped source or producer bytes change' {
+        $fixture = Initialize-GalleryReviewFixture
+        Write-FixtureFile $fixture.pagePath '<Page>changed</Page>'
+        $freshHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
+            [Text.Encoding]::UTF8.GetBytes("page.xaml`0<Page>changed</Page>"))).ToLowerInvariant()
+        $candidates = Get-Content -LiteralPath $candidatesPath -Raw | ConvertFrom-Json
+        foreach ($candidate in $candidates.candidates) { $candidate.checkedVisualInputSha256 = $freshHash }
+        $candidates | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $candidatesPath -Encoding utf8
+        @((Invoke-Review -DecisionsPath $decisionsPath).pending | ForEach-Object reason | Select-Object -Unique) |
+            Should -Be @('gallery-capture-provenance-mismatch')
+        Write-FixtureFile $fixture.pagePath '<Page />'
+        Write-FixtureFile $fixture.binaryPath 'changed producer binary'
+        @((Invoke-Review -DecisionsPath $decisionsPath).pending | ForEach-Object reason | Select-Object -Unique) |
+            Should -Be @('gallery-capture-provenance-mismatch')
     }
 
     It 'rejects a submitted capture when its declared family is incomplete' {
@@ -285,11 +389,10 @@ Describe 'Review-VisualCaptures' {
         (Get-FileHash -LiteralPath $siteManifest).Hash | Should -Be $manifestBefore
         try {
             $env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH = 'docs/screenshots/controls/page-dark.png'
-            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw '*Restoration failed*Recovery snapshot*'
+            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath } | Should -Throw '*website paths were restored*Recovery snapshot*'
         } finally { Remove-Item Env:FLUENCE_DOCS_SYNC_TEST_PARTIAL_CREATE_PATH -ErrorAction SilentlyContinue }
-        (Get-Item -LiteralPath $newTarget).Length | Should -Be 1
+        Test-Path -LiteralPath $newTarget | Should -BeFalse
         (Get-FileHash -LiteralPath $siteManifest).Hash | Should -Be $manifestBefore
-        Remove-Item -LiteralPath $newTarget
         & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approvedPath
         (Get-FileHash $newTarget).Hash | Should -Be (Get-FileHash $newPng).Hash
         $updated = Get-Content -LiteralPath $siteManifest -Raw | ConvertFrom-Json

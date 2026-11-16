@@ -28,12 +28,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -68,8 +71,8 @@ namespace Fluence.Wpf.Tests.Tools
         private const int GalleryCaptureWidth = 1280;
         private const int GalleryCaptureHeight = 900;
         private const double CardCaptureScale = 0.8;
-        private const int PowerShellCaptureWidth = 620;
-        private const int PowerShellCaptureHeight = 640;
+        private const int PowerShellCaptureWidth = 1120;
+        private const int PowerShellCaptureHeight = 900;
 #if NET10_0_OR_GREATER
         private const int AppCaptureWidth = 960;
         private const int AppCaptureHeight = 740;
@@ -333,7 +336,23 @@ namespace Fluence.Wpf.Tests.Tools
             return path;
         }
 
-        private sealed class CaptureEntry(string kind, string route, string title, string theme, string state, string file)
+        private sealed class CaptureState
+        {
+            public string SelectedItem { get; set; } = string.Empty;
+            public bool ContentLoaded { get; set; }
+            public bool IndicatorAligned { get; set; }
+            public double IndicatorCenterX { get; set; }
+            public double IndicatorCenterY { get; set; }
+            public double SelectedItemCenterX { get; set; }
+            public double SelectedItemCenterY { get; set; }
+            public int? SelectedTabIndex { get; set; }
+            public bool? TabIndicatorSettled { get; set; }
+            public bool? ButtonEnabled { get; set; }
+            public bool? EnableCheckboxChecked { get; set; }
+        }
+
+        private sealed class CaptureEntry(string kind, string route, string title, string theme, string state, string file,
+            CaptureState? observed = null)
         {
             public string Kind { get; } = kind;
             public string Route { get; } = route;
@@ -341,6 +360,7 @@ namespace Fluence.Wpf.Tests.Tools
             public string Theme { get; } = theme;
             public string State { get; } = state;
             public string File { get; } = file;
+            public CaptureState? Observed { get; } = observed;
         }
 
         private static string JsonString(string value)
@@ -364,12 +384,134 @@ namespace Fluence.Wpf.Tests.Tools
             return result.Append('"').ToString();
         }
 
-        private static async Task WriteGalleryManifestAsync(string directory, IList<CaptureEntry> entries, bool partial)
+        private static async Task<string> Sha256FileAsync(string path)
         {
+#if NET10_0_OR_GREATER
+            byte[] digest = SHA256.HashData(await File.ReadAllBytesAsync(path,
+                System.Threading.CancellationToken.None).ConfigureAwait(false));
+#else
+            byte[] digest = await Task.Run(() =>
+            {
+                using SHA256 sha = SHA256.Create();
+                return sha.ComputeHash(File.ReadAllBytes(path));
+            }, System.Threading.CancellationToken.None).ConfigureAwait(false);
+#endif
+            StringBuilder hex = new(digest.Length * 2);
+            foreach (byte value in digest)
+            {
+                _ = hex.Append(value.ToString("x2", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            return hex.ToString();
+        }
+
+        private static (HashSet<string> ids, HashSet<string> inputs, List<string> duplicates) ReadGalleryMap()
+        {
+            HashSet<string> ids = new(StringComparer.Ordinal);
+            HashSet<string> inputs = new(StringComparer.Ordinal);
+            List<string> duplicates = [];
+            string mapPath = Path.Join(FindRepoRoot(), "tools", "Docs", "VisualCaptureMap.psd1");
+            foreach (string line in File.ReadLines(mapPath))
+            {
+                const string idPrefix = "@{ Id = 'gallery/";
+                int idStart = line.IndexOf(idPrefix, StringComparison.Ordinal);
+                if (idStart < 0)
+                {
+                    continue;
+                }
+
+                idStart += idPrefix.Length;
+                int idEnd = line.IndexOf('\'', idStart);
+                string id = "gallery/" + line[idStart..idEnd];
+                if (!ids.Add(id))
+                {
+                    duplicates.Add(id);
+                }
+
+                const string inputPrefix = "Inputs = @(";
+                int inputStart = line.IndexOf(inputPrefix, StringComparison.Ordinal);
+                int inputEnd = line.IndexOf("); Family", StringComparison.Ordinal);
+                if (inputStart < 0 || inputEnd < inputStart)
+                {
+                    throw new InvalidOperationException("Gallery map entry has no input list: " + id);
+                }
+
+                string[] paths = line.Substring(inputStart + inputPrefix.Length,
+                    inputEnd - inputStart - inputPrefix.Length).Split('\'');
+                for (int index = 1; index < paths.Length; index += 2)
+                {
+                    _ = inputs.Add(paths[index]);
+                }
+            }
+
+            return (ids, inputs, duplicates);
+        }
+
+        private static async Task AppendHashObjectAsync(StringBuilder json, string name, IEnumerable<string> paths, string root)
+        {
+            _ = json.Append("  ").Append(JsonString(name)).Append(": {\n");
+            bool first = true;
+            foreach (string path in paths)
+            {
+                string fullPath = Path.IsPathRooted(path) ? path : Path.Join(root, path.Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(fullPath))
+                {
+                    continue;
+                }
+
+                if (!first)
+                {
+                    _ = json.Append(",\n");
+                }
+
+                _ = json.Append("    ").Append(JsonString(path)).Append(": ")
+                    .Append(JsonString(await Sha256FileAsync(fullPath).ConfigureAwait(false)));
+                first = false;
+            }
+
+            _ = json.Append("\n  },\n");
+        }
+
+        private static async Task WriteGalleryManifestAsync(string directory, IList<CaptureEntry> entries, bool filtered, Exception? failure)
+        {
+            string root = FindRepoRoot();
             StringBuilder json = new();
             _ = json.Append("{\n  \"captureMethod\": \"WPF RenderTargetBitmap\",\n");
-            _ = json.Append("  \"partial\": ").Append(partial ? "true" : "false").Append(",\n");
+            _ = json.Append("  \"status\": ").Append(JsonString(failure is null ? "complete" : "failed")).Append(",\n");
+            _ = json.Append("  \"partial\": ").Append(filtered || failure is not null ? "true" : "false").Append(",\n");
+            _ = json.Append("  \"capturedUtc\": ").Append(JsonString(DateTimeOffset.UtcNow.ToString("O"))).Append(",\n");
+            _ = json.Append("  \"environment\": {\"os\": ").Append(JsonString(Environment.OSVersion.VersionString))
+                .Append(", \"runtime\": ").Append(JsonString(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription))
+                .Append(", \"is64BitProcess\": ").Append(Environment.Is64BitProcess ? "true" : "false")
+                .Append(", \"captureDpi\": ").Append(Invariant("{0}", BaseDpi)).Append("},\n");
+            _ = json.Append("  \"requestedIds\": ");
+            if (IncludedCaptureIds.Value is null)
+            {
+                _ = json.Append("\"all\",\n");
+            }
+            else
+            {
+                _ = json.Append('[');
+                bool first = true;
+                foreach (string id in IncludedCaptureIds.Value)
+                {
+                    if (!first) { _ = json.Append(", "); }
+                    _ = json.Append(JsonString(id));
+                    first = false;
+                }
+                _ = json.Append("],\n");
+            }
+            _ = json.Append("  \"failure\": ").Append(failure is null ? "null" : JsonString(failure.ToString())).Append(",\n");
             _ = json.Append("  \"limitation\": \"Offscreen WPF captures omit DWM window shadow and Mica or Acrylic backdrop; no shadow has been simulated.\",\n");
+            HashSet<string> sources = ReadGalleryMap().inputs;
+            _ = sources.Add("tools/Docs/VisualCaptureMap.psd1");
+            _ = sources.Add("Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs");
+            _ = sources.Add("Fluence.Wpf.Demo/DemoNavigationCatalog.cs");
+            await AppendHashObjectAsync(json, "sourceInputRawSha256", sources, root).ConfigureAwait(false);
+            await AppendHashObjectAsync(json, "producerBinarySha256", [
+                typeof(GalleryScreenshotHarness).Assembly.Location,
+                typeof(Demo.MainWindow).Assembly.Location,
+                typeof(Controls.NavigationView).Assembly.Location,
+            ], root).ConfigureAwait(false);
             _ = json.Append("  \"entries\": [\n");
             for (int index = 0; index < entries.Count; index++)
             {
@@ -379,12 +521,73 @@ namespace Fluence.Wpf.Tests.Tools
                     .Append(", \"title\": ").Append(JsonString(entry.Title))
                     .Append(", \"theme\": ").Append(JsonString(entry.Theme))
                     .Append(", \"state\": ").Append(JsonString(entry.State))
-                    .Append(", \"file\": ").Append(JsonString(entry.File)).Append('}');
+                    .Append(", \"requestedState\": ").Append(JsonString(entry.State))
+                    .Append(", \"file\": ").Append(JsonString(entry.File));
+                if (entry.Observed is CaptureState observed)
+                {
+                    _ = json.Append(", \"observedState\": {\"selectedItem\": ").Append(JsonString(observed.SelectedItem))
+                        .Append(", \"contentLoaded\": ").Append(observed.ContentLoaded ? "true" : "false")
+                        .Append(", \"indicatorAligned\": ").Append(observed.IndicatorAligned ? "true" : "false")
+                        .Append(", \"indicatorCenterX\": ").Append(Invariant("{0:R}", observed.IndicatorCenterX))
+                        .Append(", \"indicatorCenterY\": ").Append(Invariant("{0:R}", observed.IndicatorCenterY))
+                        .Append(", \"selectedItemCenterX\": ").Append(Invariant("{0:R}", observed.SelectedItemCenterX))
+                        .Append(", \"selectedItemCenterY\": ").Append(Invariant("{0:R}", observed.SelectedItemCenterY));
+                    if (observed.SelectedTabIndex is int selectedIndex)
+                    {
+                        _ = json.Append(", \"selectedTabIndex\": ").Append(selectedIndex)
+                            .Append(", \"tabIndicatorSettled\": ").Append(observed.TabIndicatorSettled is true ? "true" : "false");
+                    }
+                    if (observed.ButtonEnabled is bool enabled)
+                    {
+                        _ = json.Append(", \"buttonEnabled\": ").Append(enabled ? "true" : "false")
+                            .Append(", \"enableCheckboxChecked\": ").Append(observed.EnableCheckboxChecked is true ? "true" : "false");
+                    }
+                    _ = json.Append('}');
+                }
+                string fullPath = Path.Join(directory, entry.File);
+                if (File.Exists(fullPath))
+                {
+                    FileStream stream = File.OpenRead(fullPath);
+#if NET10_0_OR_GREATER
+                    await using (stream.ConfigureAwait(false))
+#else
+                    using (stream)
+#endif
+                    {
+                        BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                        int pixelWidth = decoder.Frames[0].PixelWidth;
+                        int pixelHeight = decoder.Frames[0].PixelHeight;
+                        _ = json.Append(", \"outputSha256\": ")
+                            .Append(JsonString(await Sha256FileAsync(fullPath).ConfigureAwait(false)))
+                            .Append(", \"pixelWidth\": ").Append(pixelWidth)
+                            .Append(", \"pixelHeight\": ").Append(pixelHeight);
+                    }
+                }
+                else
+                {
+                    _ = json.Append(", \"outputSha256\": null, \"pixelWidth\": null, \"pixelHeight\": null");
+                }
+                _ = json.Append('}');
                 _ = json.Append(index == entries.Count - 1 ? "\n" : ",\n");
             }
 
-            _ = json.Append("  ]\n}\n");
-            await File.WriteAllTextAsync(Path.Join(directory, "manifest.json"), json.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), TestContext.Current.CancellationToken).ConfigureAwait(true);
+            _ = json.Append("  ],\n  \"unlistedOutputs\": [");
+            HashSet<string> listed = new(StringComparer.Ordinal);
+            foreach (CaptureEntry entry in entries) { _ = listed.Add(entry.File); }
+            bool firstUnlisted = true;
+            foreach (string path in Directory.GetFiles(directory, "*.png"))
+            {
+                string name = Path.GetFileName(path);
+                if (listed.Contains(name)) { continue; }
+                if (!firstUnlisted) { _ = json.Append(", "); }
+                _ = json.Append("{\"file\": ").Append(JsonString(name))
+                    .Append(", \"outputSha256\": ")
+                    .Append(JsonString(await Sha256FileAsync(path).ConfigureAwait(false))).Append('}');
+                firstUnlisted = false;
+            }
+            _ = json.Append("]\n}\n");
+            await File.WriteAllTextAsync(Path.Join(directory, "manifest.json"), json.ToString(),
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), System.Threading.CancellationToken.None).ConfigureAwait(false);
         }
 
         private static async Task SavePngAsync(Visual visual, int pixelWidth, int pixelHeight, double dpi, string fullPath)
@@ -701,6 +904,7 @@ namespace Fluence.Wpf.Tests.Tools
             window.Top = -10000;
             window.Left = -10000;
             window.ShowInTaskbar = false;
+            window.ShowActivated = false;
             window.ResizeMode = ResizeMode.NoResize;
             window.SizeToContent = SizeToContent.Manual;
             window.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
@@ -711,6 +915,7 @@ namespace Fluence.Wpf.Tests.Tools
             }
         }
 
+#if NET10_0_OR_GREATER
         private static async Task ShowSettleAndCaptureAsync(Window window, ApplicationTheme theme, string fullPath)
         {
             window.Show();
@@ -723,6 +928,7 @@ namespace Fluence.Wpf.Tests.Tools
 
             await SaveElementPngAsync(window, ReferenceScale, fullPath).ConfigureAwait(true);
         }
+#endif
 
         private static void PumpDispatcher(Dispatcher dispatcher, TimeSpan duration)
         {
@@ -782,10 +988,7 @@ namespace Fluence.Wpf.Tests.Tools
 
                 window.NavigateTo(route);
                 ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
-                WpfTestSta.DrainDispatcher(window.Dispatcher);
-                PumpDispatcher(window.Dispatcher, AnimationSettleDelay);
-                window.UpdateLayout();
-                await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
+                _ = await WaitForGalleryRouteAsync(window, route).ConfigureAwait(true);
 
                 string fullPath = Path.Join(outputDirectory, Invariant("{0}-{1}.png", outputName, themeSlug));
                 await SaveElementPngAsync(window, ReferenceScale, fullPath).ConfigureAwait(true);
@@ -839,6 +1042,123 @@ namespace Fluence.Wpf.Tests.Tools
             await window.Dispatcher.InvokeAsync(static () => { }, priority: DispatcherPriority.Render, cancellationToken: TestContext.Current.CancellationToken).Task.ConfigureAwait(true);
         }
 
+        private static CaptureState ObserveGalleryState(Demo.MainWindow window, Demo.Pages.DemoSampleControl? card = null)
+        {
+            CaptureState state = new()
+            {
+                ContentLoaded = window.PageFrame.Content is FrameworkElement { IsLoaded: true },
+            };
+            Controls.NavigationView nav = window.DemoNav;
+            Controls.NavigationViewItem? item = nav.SelectedFooterItem ?? nav.SelectedItem as Controls.NavigationViewItem;
+            FrameworkElement? indicator = nav.SelectedFooterItem is null
+                ? nav.GetSelectionIndicatorForTesting() : nav.GetFooterSelectionIndicatorForTesting();
+            if (item is not null)
+            {
+                state.SelectedItem = item.Content?.ToString() ?? string.Empty;
+            }
+            if (item is { IsVisible: true, ActualWidth: > 0, ActualHeight: > 0 } &&
+                indicator is { IsVisible: true, Opacity: >= 0.99 })
+            {
+                try
+                {
+                    Rect itemBounds = item.TransformToAncestor(nav).TransformBounds(
+                        new Rect(0, 0, item.ActualWidth, item.ActualHeight));
+                    Rect indicatorBounds = indicator.TransformToAncestor(nav).TransformBounds(
+                        new Rect(0, 0, indicator.ActualWidth, indicator.ActualHeight));
+                    state.SelectedItemCenterX = itemBounds.Left + (itemBounds.Width / 2);
+                    state.SelectedItemCenterY = itemBounds.Top + (itemBounds.Height / 2);
+                    state.IndicatorCenterX = indicatorBounds.Left + (indicatorBounds.Width / 2);
+                    state.IndicatorCenterY = indicatorBounds.Top + (indicatorBounds.Height / 2);
+                    state.IndicatorAligned = nav.PaneDisplayMode is NavigationViewPaneDisplayMode.Top
+                        ? Math.Abs(state.IndicatorCenterX - state.SelectedItemCenterX) <= 2 &&
+                          Math.Abs(indicatorBounds.Bottom - (itemBounds.Bottom - 4)) <= 2
+                        : Math.Abs(state.IndicatorCenterY - state.SelectedItemCenterY) <= 2 &&
+                          Math.Abs(indicatorBounds.Left - (itemBounds.Left + 6)) <= 2;
+                }
+                catch (InvalidOperationException)
+                {
+                    // Template swaps can briefly detach the selected item. The polling caller retries.
+                }
+            }
+
+            if (card is not null && FindDescendant<TabControl>(card) is TabControl tabs)
+            {
+                state.SelectedTabIndex = tabs.SelectedIndex;
+                bool indicatorsSettled = tabs.SelectedIndex >= 0;
+                foreach (object tabObject in tabs.Items)
+                {
+                    if (tabObject is not TabItem tab || tab.Template.FindName("SelectionIndicator", tab) is not FrameworkElement tabIndicator)
+                    {
+                        indicatorsSettled = false;
+                        continue;
+                    }
+
+                    bool selected = ReferenceEquals(tabObject, tabs.SelectedItem);
+                    double scale = tabIndicator.RenderTransform is ScaleTransform transform ? transform.ScaleX : 0;
+                    indicatorsSettled &= selected
+                        ? tabIndicator.Opacity >= 0.99 && scale >= 0.99
+                        : tabIndicator.Opacity <= 0.01 && scale <= 0.01;
+                }
+
+                state.TabIndicatorSettled = indicatorsSettled;
+            }
+
+            if (card is not null && FindDescendant<Controls.Button>(card) is Controls.Button button &&
+                FindDescendant<Controls.CheckBox>(card) is Controls.CheckBox checkBox)
+            {
+                state.ButtonEnabled = button.IsEnabled;
+                state.EnableCheckboxChecked = checkBox.IsChecked is true;
+            }
+
+            return state;
+        }
+
+        private static async Task<CaptureState> WaitForGalleryRouteAsync(Demo.MainWindow window, string route)
+        {
+            CaptureState state = new();
+            string expectedTag = route.Replace('-', ' ');
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                state = ObserveGalleryState(window);
+                Controls.NavigationViewItem? selected = window.DemoNav.SelectedFooterItem ??
+                    window.DemoNav.SelectedItem as Controls.NavigationViewItem;
+                string tag = selected?.Tag?.ToString() ?? string.Empty;
+                bool routeSelected = string.Equals(tag, expectedTag, StringComparison.Ordinal) ||
+                    tag.StartsWith(expectedTag + " ", StringComparison.Ordinal);
+                if (state.ContentLoaded && routeSelected && state.IndicatorAligned)
+                {
+                    return state;
+                }
+            }
+
+            throw new TimeoutException(Invariant(
+                "Gallery route {0} did not reach final state: loaded={1}, selected={2}, indicatorAligned={3}, indicator=({4:R},{5:R}), item=({6:R},{7:R}).",
+                route, state.ContentLoaded, state.SelectedItem, state.IndicatorAligned,
+                state.IndicatorCenterX, state.IndicatorCenterY, state.SelectedItemCenterX, state.SelectedItemCenterY));
+        }
+
+        private static async Task<CaptureState> WaitForTabStateAsync(Demo.MainWindow window,
+            Demo.Pages.DemoSampleControl card, string stateName)
+        {
+            CaptureState state = new();
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                state = ObserveGalleryState(window, card);
+                if (state.TabIndicatorSettled is true && state.IndicatorAligned)
+                {
+                    return state;
+                }
+            }
+
+            throw new TimeoutException(Invariant(
+                "Tab sample {0} did not settle: selectedIndex={1}, tabIndicatorSettled={2}, navigationIndicatorAligned={3}.",
+                stateName, state.SelectedTabIndex is int selectedIndex
+                    ? selectedIndex.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null",
+                state.TabIndicatorSettled?.ToString() ?? "null", state.IndicatorAligned));
+        }
+
         private static async Task CaptureGalleryCardAsync(
             Demo.MainWindow window,
             Demo.Pages.DemoSampleControl card,
@@ -858,9 +1178,40 @@ namespace Fluence.Wpf.Tests.Tools
 
             card.BringIntoView();
             await SettleGalleryAsync(window).ConfigureAwait(true);
+            CaptureState observed = string.Equals(route, "tabs", StringComparison.Ordinal) && ordinal is 1
+                ? await WaitForTabStateAsync(window, card, state).ConfigureAwait(true)
+                : ObserveGalleryState(window, card);
+            Assert.True(observed.ContentLoaded && observed.IndicatorAligned,
+                Invariant("Gallery card {0}/{1} lacks a loaded page or settled navigation selection.", route, ordinal));
             Assert.True(card.ActualWidth > 0 && card.ActualHeight > 0, Invariant("Card {0} on {1} has no rendered area.", ordinal, route));
             await SaveElementPngAsync(card, CardCaptureScale, Path.Join(directory, file)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("card", route, card.SampleDescription, theme, state, file));
+            entries.Add(new CaptureEntry("card", route, card.SampleDescription, theme, state, file, observed));
+        }
+
+        private static void DisableButtonThroughSample(Demo.Pages.DemoSampleControl card)
+        {
+            if (FindDescendant<Controls.Button>(card) is not Controls.Button button ||
+                FindDescendant<Controls.CheckBox>(card) is not Controls.CheckBox checkBox)
+            {
+                throw new InvalidOperationException("Buttons sample lacks its bound Button or enable CheckBox.");
+            }
+
+            if (checkBox.IsChecked is not true || !button.IsEnabled)
+            {
+                throw new InvalidOperationException("Buttons sample did not begin in its enabled state.");
+            }
+
+            AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(checkBox);
+            if (peer.GetPattern(PatternInterface.Toggle) is not IToggleProvider toggle)
+            {
+                throw new InvalidOperationException("Buttons sample CheckBox has no toggle interaction.");
+            }
+
+            toggle.Toggle();
+            if (checkBox.IsChecked is not false || button.IsEnabled)
+            {
+                throw new InvalidOperationException("Buttons sample enable CheckBox did not disable the bound Button.");
+            }
         }
 
         private static async Task CaptureGalleryChangedStateAsync(
@@ -894,12 +1245,7 @@ namespace Fluence.Wpf.Tests.Tools
             {
                 ordinal = 1;
                 state = "disabled";
-                if (FindDescendant<Controls.Button>(cards[ordinal - 1]) is not Controls.Button button)
-                {
-                    throw new InvalidOperationException("Buttons sample has no Button for disabled state.");
-                }
-
-                button.IsEnabled = false;
+                DisableButtonThroughSample(cards[ordinal - 1]);
             }
             else if (string.Equals(route, "selection", StringComparison.Ordinal))
             {
@@ -1100,12 +1446,7 @@ namespace Fluence.Wpf.Tests.Tools
             if (string.Equals(route, "buttons", StringComparison.Ordinal))
             {
                 ControlCaptureSpec disabled = new("button", route, 1, "Button");
-                if (FindDescendant<Controls.Button>(cards[0]) is not Controls.Button button)
-                {
-                    throw new InvalidOperationException("Buttons sample has no Button for disabled state.");
-                }
-
-                button.IsEnabled = false;
+                DisableButtonThroughSample(cards[0]);
                 await CaptureControlAsync(window, cards[0], disabled, theme, directory, "disabled").ConfigureAwait(true);
                 ControlCaptureSpec accent = new("button", route, 3, "Button");
                 foreach ((Color color, string name) in new[]
@@ -1703,7 +2044,8 @@ namespace Fluence.Wpf.Tests.Tools
             ApplicationTheme theme,
             string themeSlug,
             string outputDirectory,
-            IList<CaptureEntry> entries)
+            IList<CaptureEntry> entries,
+            ISet<string> expectedIds)
         {
             _ = ResetApplication(theme, includeDemoSharedStyles: true);
             Demo.MainWindow window = new();
@@ -1729,12 +2071,13 @@ namespace Fluence.Wpf.Tests.Tools
 
                     // Capture IDs hyphenate the catalog route; two-word routes such as "data grid" navigate by the original.
                     window.NavigateTo(route.Replace('-', ' '));
-                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    CaptureState routeState = await WaitForGalleryRouteAsync(window, route).ConfigureAwait(true);
                     string routeFile = Invariant("{0}-{1}.png", route, themeSlug);
+                    _ = expectedIds.Add("gallery/" + routeFile);
                     if (ShouldCapture("gallery/" + routeFile))
                     {
                         await SaveElementPngAsync(window, ReferenceScale, Path.Join(outputDirectory, routeFile)).ConfigureAwait(true);
-                        entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile));
+                        entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile, routeState));
                     }
 
                     if (window.PageFrame.Content is not DependencyObject page)
@@ -1746,6 +2089,7 @@ namespace Fluence.Wpf.Tests.Tools
                     CollectSampleCards(page, cards);
                     for (int ordinal = 1; ordinal <= cards.Count; ordinal++)
                     {
+                        _ = expectedIds.Add("gallery/" + Invariant("{0}-sample-{1:00}-{2}.png", route, ordinal, themeSlug));
                         await CaptureGalleryCardAsync(window, cards[ordinal - 1], route, themeSlug, ordinal, "default", outputDirectory, entries).ConfigureAwait(true);
                     }
 
@@ -1802,75 +2146,133 @@ namespace Fluence.Wpf.Tests.Tools
             }
         }
 
-        /// <summary>
-        /// Reads the inline XAML here-string from <c language="text">06-ControlsTour.ps1</c> so the captured window
-        /// stays in lock-step with the script the screenshot documents.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if the XAML here-string cannot be located.</exception>
-        private static async Task<string> ExtractControlsTourXamlAsync()
+        private static void ValidateGalleryCoverage(ISet<string> derivedIds, IList<CaptureEntry> entries,
+            string directory, bool filtered)
         {
-            string scriptPath = Path.Join(FindRepoRoot(), "Fluence.Wpf.PowerShell.Module", "examples", "06-ControlsTour.ps1");
-            string[] lines = await File.ReadAllLinesAsync(scriptPath, TestContext.Current.CancellationToken).ConfigureAwait(true);
-
-            int start = -1;
-            int end = -1;
-            for (int i = 0; i < lines.Length; i++)
+            (HashSet<string> mappedIds, _, List<string> duplicateMapIds) = ReadGalleryMap();
+            HashSet<string> expected = new(StringComparer.Ordinal);
+            if (filtered)
             {
-                if (start < 0)
+                foreach (string id in IncludedCaptureIds.Value!)
                 {
-                    if (lines[i].TrimEnd().EndsWith("@'", StringComparison.Ordinal))
-                    {
-                        start = i + 1;
-                    }
-
-                    continue;
-                }
-
-                if (lines[i].TrimStart().StartsWith("'@", StringComparison.Ordinal))
-                {
-                    end = i;
-                    break;
+                    if (id.StartsWith("gallery/", StringComparison.Ordinal)) { _ = expected.Add(id); }
                 }
             }
-
-            if (start < 0 || end < 0)
+            else
             {
-                throw new InvalidOperationException(
-                    "Could not locate the XAML here-string in 06-ControlsTour.ps1.");
+                expected.UnionWith(derivedIds);
+                foreach (CaptureEntry entry in entries) { _ = expected.Add("gallery/" + entry.File); }
             }
 
-            StringBuilder builder = new();
-            for (int i = start; i < end; i++)
+            HashSet<string> recorded = new(StringComparer.Ordinal);
+            List<string> duplicateEntries = [];
+            foreach (CaptureEntry entry in entries)
             {
-                if (builder.Length > 0)
-                {
-                    _ = builder.Append('\n');
-                }
-
-                _ = builder.Append(lines[i]);
+                string id = "gallery/" + entry.File;
+                if (!recorded.Add(id)) { duplicateEntries.Add(id); }
             }
 
-            return builder.ToString();
+            HashSet<string> actual = new(StringComparer.Ordinal);
+            foreach (string path in Directory.GetFiles(directory, "*.png"))
+            {
+                _ = actual.Add("gallery/" + Path.GetFileName(path));
+            }
+
+            List<string> issues = [];
+            if (duplicateMapIds.Count > 0) { issues.Add("duplicate map IDs: " + string.Join(", ", duplicateMapIds)); }
+            if (duplicateEntries.Count > 0) { issues.Add("duplicate receipt IDs: " + string.Join(", ", duplicateEntries)); }
+            foreach (string id in expected)
+            {
+                if (!mappedIds.Contains(id)) { issues.Add("missing map ID: " + id); }
+                if (!recorded.Contains(id)) { issues.Add("missing capture entry: " + id); }
+                if (!actual.Contains(id)) { issues.Add("missing PNG: " + id); }
+            }
+            foreach (string id in mappedIds)
+            {
+                if (!filtered && !expected.Contains(id)) { issues.Add("obsolete map ID: " + id); }
+            }
+            foreach (string id in actual)
+            {
+                if (!recorded.Contains(id)) { issues.Add("unlisted PNG: " + id); }
+            }
+            if (issues.Count > 0)
+            {
+                throw new InvalidOperationException("Gallery coverage failed: " + string.Join("; ", issues));
+            }
         }
 
-        private static async Task CapturePowerShellControlsAtAsync(ApplicationTheme theme, string themeSlug, string outputDirectory)
+        /// <summary>
+        /// Delegates to the single Controls Tour producer, which runs the real PowerShell
+        /// initializer and captures the selected category in a fresh STA process.
+        /// </summary>
+        /// <param name="themeSlug">The Light or Dark theme slug.</param>
+        /// <param name="category">The Controls Tour category to capture.</param>
+        /// <param name="outputDirectory">The destination for candidate screenshots.</param>
+        /// <exception cref="InvalidOperationException">The child capture process could not start or failed.</exception>
+        /// <exception cref="TimeoutException">The child capture process exceeded its time limit.</exception>
+        /// <exception cref="FileNotFoundException">The child process did not write the expected screenshot.</exception>
+        private static async Task CapturePowerShellControlsAtAsync(string themeSlug, string category, string outputDirectory)
         {
-            _ = ResetApplication(theme, includeDemoSharedStyles: false);
-
-            Window? window = null;
-            try
+            string scriptPath = Path.Join(FindRepoRoot(), "Fluence.Wpf.PowerShell.Module", "build", "Capture-ControlsTour.ps1");
+            string fileName = string.Equals(category, "Inputs", StringComparison.Ordinal)
+                ? Invariant("powershell-{0}.png", themeSlug)
+                : Invariant("powershell-{0}-{1}.png", category.ToLowerInvariant(), themeSlug);
+            string fullPath = Path.Join(outputDirectory, fileName);
+            string executable = Path.Join(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "WindowsPowerShell", "v1.0", "powershell.exe");
+            ProcessStartInfo start = new()
             {
-                window = XamlReader.Parse(await ExtractControlsTourXamlAsync().ConfigureAwait(true)) as Window
-                    ?? throw new InvalidOperationException("06-ControlsTour.ps1 XAML did not load as a WPF Window.");
+                FileName = executable,
+                Arguments = Invariant(
+                    "-NoProfile -STA -ExecutionPolicy Bypass -File \"{0}\" -Theme {1} -Category {2} -OutputDirectory \"{3}\"",
+                    scriptPath, themeSlug, category, outputDirectory),
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
 
-                PrepareCaptureWindow(window, PowerShellCaptureWidth, PowerShellCaptureHeight);
-                string fullPath = Path.Join(outputDirectory, Invariant("powershell-{0}.png", themeSlug));
-                await ShowSettleAndCaptureAsync(window, theme, fullPath).ConfigureAwait(true);
+            using Process process = new() { StartInfo = start };
+            if (!process.Start())
+            {
+                throw new InvalidOperationException("Could not start Controls Tour capture.");
             }
-            finally
+
+#if NET10_0_OR_GREATER
+            Task<string> output = process.StandardOutput.ReadToEndAsync(TestContext.Current.CancellationToken);
+            Task<string> error = process.StandardError.ReadToEndAsync(TestContext.Current.CancellationToken);
+#else
+            Task<string> output = process.StandardOutput.ReadToEndAsync();
+            Task<string> error = process.StandardError.ReadToEndAsync();
+#endif
+            if (!process.WaitForExit(milliseconds: 120000))
             {
-                window?.Close();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
+                process.Kill();
+                throw new TimeoutException(Invariant("Controls Tour {0}/{1} capture timed out.", category, themeSlug));
+            }
+            string standardOutput = await output.ConfigureAwait(true);
+            string standardError = await error.ConfigureAwait(true);
+            if (process.ExitCode is not 0)
+            {
+                throw new InvalidOperationException(Invariant(
+                    "Controls Tour {0}/{1} capture exited {2}. {3} {4}",
+                    category, themeSlug, process.ExitCode, standardOutput, standardError));
+            }
+            if (!File.Exists(fullPath))
+            {
+                throw new FileNotFoundException("Controls Tour capture did not write its expected PNG.", fullPath);
+            }
+            FileStream png = File.OpenRead(fullPath);
+#if NET10_0_OR_GREATER
+            await using (png.ConfigureAwait(false))
+#else
+            using (png)
+#endif
+            {
+                BitmapDecoder decoder = BitmapDecoder.Create(png, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                Assert.Equal(PowerShellCaptureWidth, decoder.Frames[0].PixelWidth);
+                Assert.Equal(PowerShellCaptureHeight, decoder.Frames[0].PixelHeight);
             }
         }
 
@@ -1954,63 +2356,47 @@ namespace Fluence.Wpf.Tests.Tools
             return IncludedCaptureIds.Value is not null && !HasSelectedPrefix("gallery/") && !HasSelectedPrefix("controls/")
                 ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
-                if (ControlsOnlyCaptureEnabled || (IncludedCaptureIds.Value is not null && HasSelectedPrefix("controls/")))
-                {
-                    string controlsDirectory = EnsureControlOutputDirectory();
-                    foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
-                    {
-                        if (HasSelectedRouteTheme("controls/", themeSlug))
-                        {
-                            await CaptureControlCatalogAtAsync(theme, themeSlug, controlsDirectory).ConfigureAwait(true);
-                        }
-                    }
-
-                    if (ControlsOnlyCaptureEnabled || !HasSelectedPrefix("gallery/"))
-                    {
-                        return;
-                    }
-                }
-
                 string output = EnsureGalleryOutputDirectory();
                 List<CaptureEntry> entries = [];
-                foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
+                HashSet<string> derivedIds = new(StringComparer.Ordinal);
+                bool filtered = IncludedCaptureIds.Value is not null || ControlsOnlyCaptureEnabled;
+                Exception? failure = null;
+                try
                 {
-                    if (HasSelectedRouteTheme("gallery/", themeSlug))
+                    if (ControlsOnlyCaptureEnabled || (IncludedCaptureIds.Value is not null && HasSelectedPrefix("controls/")))
                     {
-                        await CaptureGalleryCatalogAtAsync(theme, themeSlug, output, entries).ConfigureAwait(true);
-                    }
-                }
-
-                int cardCount = 0;
-                foreach (CaptureEntry entry in entries)
-                {
-                    if (string.Equals(entry.Kind, "card", StringComparison.Ordinal) &&
-                        string.Equals(entry.State, "default", StringComparison.Ordinal))
-                    {
-                        cardCount++;
-                    }
-                }
-
-                if (IncludedCaptureIds.Value is null)
-                {
-                    Assert.Equal(152, cardCount);
-                }
-                else
-                {
-                    int expected = 0;
-                    foreach (string id in IncludedCaptureIds.Value)
-                    {
-                        if (id.StartsWith("gallery/", StringComparison.Ordinal) && ContainsOrdinal(id, "-sample-") &&
-                            (id.EndsWith("-light.png", StringComparison.Ordinal) ||
-                             id.EndsWith("-dark.png", StringComparison.Ordinal)))
+                        string controlsDirectory = EnsureControlOutputDirectory();
+                        foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
                         {
-                            expected++;
+                            if (HasSelectedRouteTheme("controls/", themeSlug))
+                            {
+                                await CaptureControlCatalogAtAsync(theme, themeSlug, controlsDirectory).ConfigureAwait(true);
+                            }
+                        }
+
+                        if (ControlsOnlyCaptureEnabled || !HasSelectedPrefix("gallery/"))
+                        {
+                            return;
                         }
                     }
-
-                    Assert.Equal(expected, cardCount);
+                    foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
+                    {
+                        if (HasSelectedRouteTheme("gallery/", themeSlug))
+                        {
+                            await CaptureGalleryCatalogAtAsync(theme, themeSlug, output, entries, derivedIds).ConfigureAwait(true);
+                        }
+                    }
+                    ValidateGalleryCoverage(derivedIds, entries, output, filtered);
                 }
-                await WriteGalleryManifestAsync(output, entries, IncludedCaptureIds.Value is not null).ConfigureAwait(true);
+                catch (Exception ex)
+                {
+                    failure = ex;
+                    throw;
+                }
+                finally
+                {
+                    await WriteGalleryManifestAsync(output, entries, filtered, failure).ConfigureAwait(true);
+                }
             });
         }
 
@@ -2020,11 +2406,18 @@ namespace Fluence.Wpf.Tests.Tools
             return !HasSelectedPrefix("powershell-") ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
                 string output = EnsureOutputDirectory();
-                foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
+                string[] categories = ["Inputs", "Color", "Selection", "Commands", "Data", "Navigation", "Status", "Surfaces", "Layout"];
+                foreach ((ApplicationTheme _, string themeSlug) in DocumentationThemes)
                 {
-                    if (ShouldCapture("powershell-" + themeSlug + ".png"))
+                    foreach (string category in categories)
                     {
-                        await CapturePowerShellControlsAtAsync(theme, themeSlug, output).ConfigureAwait(true);
+                        string fileName = string.Equals(category, "Inputs", StringComparison.Ordinal)
+                            ? Invariant("powershell-{0}.png", themeSlug)
+                            : Invariant("powershell-{0}-{1}.png", category.ToLowerInvariant(), themeSlug);
+                        if (ShouldCapture(fileName))
+                        {
+                            await CapturePowerShellControlsAtAsync(themeSlug, category, output).ConfigureAwait(true);
+                        }
                     }
                 }
             });
