@@ -27,7 +27,8 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,20,0">
-                            <TextBlock FontWeight="SemiBold"
+                            <TextBlock x:Name="HelpfulTipsLabel"
+                                       FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                        Text="Helpful tips preference" />
                             <TextBlock Margin="0,4,0,0"
@@ -37,6 +38,7 @@
                         </StackPanel>
                         <fluence:ToggleSwitch Grid.Column="1"
                                               VerticalAlignment="Center"
+                                              AutomationProperties.LabeledBy="{Binding ElementName=HelpfulTipsLabel}"
                                               IsChecked="{Binding ShowHelpfulTips, Mode=TwoWay}" />
                     </Grid>
 
@@ -46,7 +48,8 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,20,0">
-                            <TextBlock FontWeight="SemiBold"
+                            <TextBlock x:Name="CompactNavigationLabel"
+                                       FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                        Text="Compact navigation preference" />
                             <TextBlock Margin="0,4,0,0"
@@ -56,6 +59,7 @@
                         </StackPanel>
                         <fluence:ToggleSwitch Grid.Column="1"
                                               VerticalAlignment="Center"
+                                              AutomationProperties.LabeledBy="{Binding ElementName=CompactNavigationLabel}"
                                               IsChecked="{Binding UseCompactNavigation, Mode=TwoWay}" />
                     </Grid>
                 </StackPanel>

@@ -317,8 +317,14 @@ namespace Fluence.Wpf.Demo.Pages
             set => SetValue(TileCornerRadiusProperty, value);
         }
 
+        /// <summary>
+        /// Reports the most recent completed copy attempt for the gallery test fixture.
+        /// </summary>
+        internal bool? LastCopyResult { get; private set; }
+
         private void CopyBrushNameButton_Click(object sender, RoutedEventArgs e)
         {
+            LastCopyResult = null;
             string copyText = string.IsNullOrWhiteSpace(CopyPayload) ? ColorBrushName : CopyPayload;
             if (string.IsNullOrWhiteSpace(copyText))
             {
@@ -333,6 +339,7 @@ namespace Fluence.Wpf.Demo.Pages
                 // never happen.
                 DemoClipboard.SetText(copyText, copied =>
                 {
+                    LastCopyResult = copied;
                     if (copied)
                     {
                         ShowCopiedFeedback();
@@ -342,6 +349,7 @@ namespace Fluence.Wpf.Demo.Pages
             catch (ThreadStateException)
             {
                 Debug.WriteLine("Clipboard access requires an STA thread.");
+                LastCopyResult = false;
             }
         }
 

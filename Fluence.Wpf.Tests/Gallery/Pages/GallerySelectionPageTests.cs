@@ -117,7 +117,10 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Assert.Same(add, Keyboard.FocusedElement);
                 Assert.True(add.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)));
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
-                Assert.Same(editor, Keyboard.FocusedElement);
+                Assert.True(ReferenceEquals(editor, Keyboard.FocusedElement),
+                    $"Tab traversal must focus the editable text box. WindowActive={window.IsActive}; " +
+                    $"KeyboardFocus={Keyboard.FocusedElement?.GetType().Name ?? "null"}; " +
+                    $"LogicalFocus={FocusManager.GetFocusedElement(window)?.GetType().Name ?? "null"}.");
 
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
                 Assert.False(editable.IsTabStop);

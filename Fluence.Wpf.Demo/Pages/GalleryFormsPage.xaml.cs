@@ -38,28 +38,44 @@ namespace Fluence.Wpf.Demo.Pages
                                                     "    <StackPanel MaxWidth=\"480\" HorizontalAlignment=\"Left\">\n" +
                                                     "        <TextBlock Margin=\"0,0,0,4\" Text=\"Email\" />\n" +
                                                     "        <fluence:TextBox\n" +
+                                                    "            x:Name=\"SignInEmailBox\"\n" +
                                                     "            Margin=\"0,0,0,12\"\n" +
-                                                    "            PlaceholderText=\"name@example.com\" />\n" +
+                                                    "            PlaceholderText=\"name@example.com\"\n" +
+                                                    "            TextChanged=\"SignInField_Changed\" />\n" +
                                                     "        <TextBlock Margin=\"0,0,0,4\" Text=\"Password\" />\n" +
                                                     "        <PasswordBox\n" +
+                                                    "            x:Name=\"SignInPasswordBox\"\n" +
                                                     "            Margin=\"0,0,0,12\"\n" +
+                                                    "            PasswordChanged=\"SignInField_Changed\"\n" +
                                                     "            fluence:PasswordBoxExtensions.PlaceholderText=\"Password\"\n" +
                                                     "            fluence:PasswordBoxExtensions.RevealButtonEnabled=\"True\"\n" +
                                                     "            fluence:PasswordBoxExtensions.ShowCapsLockIndicator=\"True\"\n" +
                                                     "            fluence:PasswordBoxExtensions.ShowPasswordStrength=\"True\" />\n" +
                                                     "        <fluence:CheckBox\n" +
+                                                    "            x:Name=\"RememberMeCheckBox\"\n" +
                                                     "            Margin=\"0,0,0,24\"\n" +
                                                     "            Content=\"Remember me\" />\n" +
                                                     "        <StackPanel Orientation=\"Horizontal\">\n" +
                                                     "            <fluence:Button\n" +
+                                                    "                x:Name=\"SignInButton\"\n" +
                                                     "                Margin=\"0,0,8,0\"\n" +
                                                     "                Appearance=\"Accent\"\n" +
-                                                    "                Content=\"Sign in\" />\n" +
+                                                    "                Click=\"SignInButton_Click\"\n" +
+                                                    "                Content=\"Sign in\"\n" +
+                                                    "                IsEnabled=\"False\" />\n" +
                                                     "            <fluence:Button Content=\"Create account\" />\n" +
                                                     "        </StackPanel>\n" +
+                                                    "        <fluence:InfoBar\n" +
+                                                    "            x:Name=\"SignInStatusBar\"\n" +
+                                                    "            Title=\"Ready\"\n" +
+                                                    "            IsClosable=\"True\"\n" +
+                                                    "            IsOpen=\"False\"\n" +
+                                                    "            Message=\"Signed in for this demo session.\"\n" +
+                                                    "            Severity=\"{x:Static fluence:InfoBarSeverity.Success}\" />\n" +
                                                     "    </StackPanel>\n");
 
-        private const string SignInFormCSharpSource = "using System.Windows.Controls;\n" +
+        private const string SignInFormCSharpSource = "using System.Windows;\n" +
+                                                      "using System.Windows.Controls;\n" +
                                                       "\n" +
                                                       "namespace Fluence.Wpf.Demo.Pages.Forms\n" +
                                                       "{\n" +
@@ -68,6 +84,23 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "        public SignInForm()\n" +
                                                       "        {\n" +
                                                       "            InitializeComponent();\n" +
+                                                      "        }\n" +
+                                                      "\n" +
+                                                      "        private void SignInField_Changed(object sender, RoutedEventArgs e)\n" +
+                                                      "        {\n" +
+                                                      "            if (SignInButton is null || SignInEmailBox is null || SignInPasswordBox is null)\n" +
+                                                      "            {\n" +
+                                                      "                return;\n" +
+                                                      "            }\n" +
+                                                      "\n" +
+                                                      "            SignInButton.IsEnabled =\n" +
+                                                      "                !string.IsNullOrWhiteSpace(SignInEmailBox.Text) &&\n" +
+                                                      "                !string.IsNullOrWhiteSpace(SignInPasswordBox.Password);\n" +
+                                                      "        }\n" +
+                                                      "\n" +
+                                                      "        private void SignInButton_Click(object sender, RoutedEventArgs e)\n" +
+                                                      "        {\n" +
+                                                      "            SignInStatusBar.IsOpen = true;\n" +
                                                       "        }\n" +
                                                       "    }\n" +
                                                       "}\n";
@@ -150,18 +183,29 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "            <ComboBoxItem Content=\"Dark\" />\n" +
                                                       "        </fluence:ComboBox>\n" +
                                                       "        <fluence:ToggleSwitch\n" +
+                                                      "            x:Name=\"EmailUpdatesToggle\"\n" +
                                                       "            Margin=\"0,0,0,24\"\n" +
                                                       "            Content=\"Email updates\"\n" +
                                                       "            IsChecked=\"True\"\n" +
                                                       "            OffContent=\"Off\"\n" +
                                                       "            OnContent=\"On\" />\n" +
                                                       "        <fluence:Button\n" +
+                                                      "            x:Name=\"SaveSettingsButton\"\n" +
                                                       "            HorizontalAlignment=\"Left\"\n" +
                                                       "            Appearance=\"Accent\"\n" +
+                                                      "            Click=\"SaveSettingsButton_Click\"\n" +
                                                       "            Content=\"Save settings\" />\n" +
+                                                      "        <fluence:InfoBar\n" +
+                                                      "            x:Name=\"SettingsSavedBar\"\n" +
+                                                      "            Title=\"Saved\"\n" +
+                                                      "            IsClosable=\"True\"\n" +
+                                                      "            IsOpen=\"False\"\n" +
+                                                      "            Message=\"Your preferences were saved.\"\n" +
+                                                      "            Severity=\"{x:Static fluence:InfoBarSeverity.Success}\" />\n" +
                                                       "    </StackPanel>\n");
 
-        private const string SettingsFormCSharpSource = "using System.Windows.Controls;\n" +
+        private const string SettingsFormCSharpSource = "using System.Windows;\n" +
+                                                        "using System.Windows.Controls;\n" +
                                                         "\n" +
                                                         "namespace Fluence.Wpf.Demo.Pages.Forms\n" +
                                                         "{\n" +
@@ -170,6 +214,11 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        public SettingsForm()\n" +
                                                         "        {\n" +
                                                         "            InitializeComponent();\n" +
+                                                        "        }\n" +
+                                                        "\n" +
+                                                        "        private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)\n" +
+                                                        "        {\n" +
+                                                        "            SettingsSavedBar.IsOpen = true;\n" +
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
