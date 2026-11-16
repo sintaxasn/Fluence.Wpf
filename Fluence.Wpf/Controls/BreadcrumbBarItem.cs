@@ -181,6 +181,14 @@ namespace Fluence.Wpf.Controls
                 return explicitName;
             }
 
+            UIElement? label = AutomationProperties.GetLabeledBy(this);
+            if (label is not null &&
+                UIElementAutomationPeer.CreatePeerForElement(label)?.GetName() is string labelName &&
+                !string.IsNullOrWhiteSpace(labelName))
+            {
+                return labelName;
+            }
+
             string namedContent = FindExplicitName(this);
             if (!string.IsNullOrWhiteSpace(namedContent))
             {

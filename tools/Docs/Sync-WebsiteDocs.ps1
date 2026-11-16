@@ -405,7 +405,7 @@ if ($CapturesOnly) {
 } elseif (Test-Path -LiteralPath $galleryTarget -PathType Leaf) {
     $galleryHash = Get-DocsSha256 ([IO.File]::ReadAllBytes($galleryTarget))
     if ($owned[$galleryPath] -and $owned[$galleryPath].sha256 -cne $galleryHash) { throw 'Owned gallery manifest changed.' }
-    if ($owned[$galleryPath]) { $records.Add($owned[$galleryPath]) }
+    if ($owned[$galleryPath]) { $records.Add($owned[$galleryPath].PSObject.Copy()) }
     else { $records.Add([pscustomobject]@{ path=$galleryPath; kind='gallery-manifest'; sha256=$galleryHash; provenance='website-gallery' }) }
 }
 if (-not $InitializeManifest -and -not $CapturesOnly) {
