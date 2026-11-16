@@ -292,6 +292,10 @@
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTertiaryBrush" Color="#FF2C2C2C" />
     <SolidColorBrush x:Key="LayerOnMicaBaseAltFillColorTransparentBrush" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="#4C3A3A3A" />
+    <SolidColorBrush x:Key="NavigationViewItemPointerOverBackgroundBrush" Color="#0FFFFFFF" />
+    <SolidColorBrush x:Key="NavigationViewItemPointerOverForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="NavigationViewItemPressedBackgroundBrush" Color="#0AFFFFFF" />
+    <SolidColorBrush x:Key="NavigationViewItemPressedForegroundBrush" Color="#C5FFFFFF" />
     <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#FF58B6FF" />
     <SolidColorBrush x:Key="PersonPictureBadgeForegroundBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="PickerSelectedForegroundBrush" Color="#FF000000" />

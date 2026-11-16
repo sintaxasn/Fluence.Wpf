@@ -44,6 +44,7 @@ using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Windows.Win32;
 using Xunit;
+using static Fluence.Wpf.Tests.Infrastructure.DispatcherWaits;
 using static Fluence.Wpf.Tests.Infrastructure.VisualTree;
 
 namespace Fluence.Wpf.Tests.Windowing
@@ -1456,6 +1457,92 @@ namespace Fluence.Wpf.Tests.Windowing
         #endregion WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
 
         #region TitleBar control - template parts, back/pane-toggle commands, unload cleanup
+
+        [Theory]
+        [InlineData(ApplicationTheme.Light)]
+        [InlineData(ApplicationTheme.Dark)]
+        [InlineData(ApplicationTheme.HighContrast)]
+        public Task TitleBar_HostedSlots_FollowWindowActivationWithoutChangingCustomBrushAsync(ApplicationTheme theme)
+        {
+            return WpfTestSta.RunOnStaAsync(async () =>
+            {
+                _ = TestApp.EnsureLibraryTheme(theme);
+                System.Windows.Controls.TextBlock custom = new()
+                {
+                    Text = "Custom slot",
+                    Foreground = Brushes.OrangeRed,
+                };
+                TitleBar titleBar = new()
+                {
+                    Title = "Title",
+                    Subtitle = "Subtitle",
+                    LeftHeader = new System.Windows.Controls.TextBlock { Text = "Left" },
+                    Icon = new System.Windows.Controls.TextBlock { Text = "Icon" },
+                    CustomContent = custom,
+                    RightHeader = new System.Windows.Controls.TextBlock { Text = "Right" },
+                    IsBackButtonVisible = true,
+                    IsPaneToggleButtonVisible = true,
+                };
+                FluenceWindow window = new()
+                {
+                    Width = 720,
+                    Height = 300,
+                    Left = 100,
+                    Top = 100,
+                    ExtendsContentIntoTitleBar = true,
+                    TitleBar = titleBar,
+                    ShowActivated = true,
+                };
+                Window companion = new() { Width = 240, Height = 160, Left = 850, Top = 100 };
+                try
+                {
+                    window.Show();
+                    _ = window.Activate();
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 1000, () => window.IsActive).ConfigureAwait(true));
+
+                    System.Windows.Controls.TextBlock title = Assert.IsType<System.Windows.Controls.TextBlock>(titleBar.Template.FindName("PART_TitleText", titleBar));
+                    System.Windows.Controls.TextBlock subtitle = Assert.IsType<System.Windows.Controls.TextBlock>(titleBar.Template.FindName("PART_SubtitleText", titleBar));
+                    string[] slotNames = ["PART_LeftHeaderPresenter", "PART_IconPresenter", "PART_ContentPresenter", "PART_RightHeaderPresenter"];
+                    foreach (string name in slotNames)
+                    {
+                        System.Windows.Controls.ContentPresenter slot = Assert.IsType<System.Windows.Controls.ContentPresenter>(titleBar.Template.FindName(name, titleBar));
+                        Assert.Equal(1d, slot.Opacity);
+                    }
+
+                    companion.Show();
+                    _ = companion.Activate();
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 1000, () => companion.IsActive && !window.IsActive).ConfigureAwait(true));
+
+                    SolidColorBrush inactive = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource("TextFillColorTertiaryBrush"));
+                    Assert.Equal(inactive.Color, Assert.IsType<SolidColorBrush>(title.Foreground).Color);
+                    Assert.Equal(inactive.Color, Assert.IsType<SolidColorBrush>(subtitle.Foreground).Color);
+                    Assert.Equal(inactive.Color, Assert.IsType<SolidColorBrush>(GetTemplateButton(titleBar, "PART_BackButton").Foreground).Color);
+                    Assert.Equal(inactive.Color, Assert.IsType<SolidColorBrush>(GetTemplateButton(titleBar, "PART_PaneToggleButton").Foreground).Color);
+                    foreach (string name in slotNames)
+                    {
+                        System.Windows.Controls.ContentPresenter slot = Assert.IsType<System.Windows.Controls.ContentPresenter>(titleBar.Template.FindName(name, titleBar));
+                        Assert.Equal(0.5d, slot.Opacity);
+                    }
+
+                    Assert.Same(Brushes.OrangeRed, custom.Foreground);
+
+                    _ = window.Activate();
+                    Assert.True(await WaitUntilAsync(window.Dispatcher, 1000, () => window.IsActive).ConfigureAwait(true));
+                    SolidColorBrush active = Assert.IsType<SolidColorBrush>(Application.Current.TryFindResource("TextFillColorPrimaryBrush"));
+                    Assert.Equal(active.Color, Assert.IsType<SolidColorBrush>(title.Foreground).Color);
+                    foreach (string name in slotNames)
+                    {
+                        System.Windows.Controls.ContentPresenter slot = Assert.IsType<System.Windows.Controls.ContentPresenter>(titleBar.Template.FindName(name, titleBar));
+                        Assert.Equal(1d, slot.Opacity);
+                    }
+                }
+                finally
+                {
+                    companion.Close();
+                    window.Close();
+                }
+            });
+        }
 
         [Fact]
         public Task TitleBar_Template_ExposesNavigationButtonsAsync()

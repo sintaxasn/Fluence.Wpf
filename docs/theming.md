@@ -39,6 +39,8 @@ For theme resolution and transition behavior, see [Theme pipeline internals](exp
 
 The named families contain more keys than the examples shown. The public inventory also includes the `ControlOnImageFillColor*`, `LayerOnMicaBaseAltFillColor*`, acrylic, card, background, and InfoBadge foreground families. `AcrylicBackgroundFillColorDefaultBrush` and `AcrylicBackgroundFillColorBaseBrush` provide painted fallbacks for transient surfaces. `AccentAcrylicBackgroundFillColor*` supplies accent tinted variants. WPF does not offer WinUI's per-element backdrop blur, so these resource values describe a flat surface.
 
+When a `TitleBar` is hosted by `FluenceWindow`, it follows the window's active state. Built-in title text uses the tertiary text role while inactive, and its title-area content slots use 0.5 opacity.
+
 ### Control state keys
 
 | Key family | Light and Dark role | High Contrast role |
@@ -46,6 +48,7 @@ The named families contain more keys than the examples shown. The public invento
 | `RadioButtonOuterEllipseCheckedStroke*` | Checked ring accent states | Highlight, ControlText, Control, and GrayText by state |
 | `TextControlElevationBorderFocusedBrush` | Focused editor border | Uses the active system contrast roles |
 | `CheckBoxCheckBackgroundFillIndeterminate*`, `CheckBoxCheckGlyphForegroundIndeterminate*` | Accent plate and on-accent dash | State-specific Highlight, HighlightText, GrayText, and Window roles |
+| `NavigationViewItemPointerOver*Brush`, `NavigationViewItemPressed*Brush` | Existing subtle fill and text roles for nonselected items | Paired system Highlight and HighlightText colors for both interaction states |
 
 ### High contrast roles
 
@@ -60,6 +63,8 @@ In high contrast, WinUI's shared `AccentFillColor*` brushes use the live window 
 ### Typography, geometry, and motion
 
 `Themes/Typography/Typography.xaml` publishes `CaptionTextBlockStyle`, `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, `BodyLargeTextBlockStyle`, `SubtitleTextBlockStyle`, `TitleTextBlockStyle`, `TitleLargeTextBlockStyle`, and `DisplayTextBlockStyle`. It also publishes `ContentControlThemeFontFamily`.
+
+Fluence `TextBlock.Typography` selects the named font-size ramp, including Body (14), Title (28), TitleLarge (40), and Display (68). An explicit `FontSize` set locally, by a binding, or by an application style takes precedence. Removing that override restores the named size. The font family continues to follow `ContentControlThemeFontFamily` through theme changes.
 
 Supported radii include `ControlCornerRadius` (4), `OverlayCornerRadius` (8), `ComboBoxItemCornerRadius` (3), and `PopupCornerRadius`. Motion tokens include `ControlFasterAnimationDuration` (83 ms), `ControlFastAnimationDuration` (167 ms), `ControlNormalAnimationDuration` (250 ms), and `ControlFastOutSlowInKeySpline`. `ControlPressAnimationDuration` (100 ms) and `ControlSlowAnimationDuration` (333 ms) are Fluence extensions of the naming pattern.
 

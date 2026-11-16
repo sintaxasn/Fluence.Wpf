@@ -27,6 +27,10 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -307,20 +311,42 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(w.Dispatcher);
 
                     Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
-
-                    MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                    List<string> captureTrace = [];
+                    void RecordCapture(string stage, MouseEventArgs? args = null)
                     {
-                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
-                    };
-                    input.RaiseEvent(pressed);
+                        string captured = ReferenceEquals(Mouse.Captured, input)
+                            ? "input"
+                            : Mouse.Captured?.GetType().Name ?? "none";
+                        captureTrace.Add(string.Format(CultureInfo.InvariantCulture,
+                            "{0}: left={1}, captured={2}, checked={3}, eventHandled={4}",
+                            stage, Mouse.LeftButton, captured, ts.IsChecked,
+                            args?.Handled.ToString() ?? "n/a"));
+                    }
+                    input.AddHandler(UIElement.LostMouseCaptureEvent,
+                        new MouseEventHandler((_, args) => RecordCapture("observed LostMouseCapture", args)),
+                        handledEventsToo: true);
 
-                    MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                    WithReleasedLeftButton(() =>
                     {
-                        RoutedEvent = UIElement.LostMouseCaptureEvent,
-                    };
-                    input.RaiseEvent(lostCapture);
+                        MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                        {
+                            RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                        };
+                        RecordCapture("before press");
+                        input.RaiseEvent(pressed);
+                        RecordCapture("after press");
 
-                    Assert.Equal(true, ts.IsChecked);
+                        MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                        {
+                            RoutedEvent = UIElement.LostMouseCaptureEvent,
+                        };
+                        RecordCapture("before synthetic loss");
+                        input.RaiseEvent(lostCapture);
+                        RecordCapture("after synthetic loss");
+
+                        Assert.True(ts.IsChecked is true,
+                            "A released click must commit the checked state. " + string.Join(" | ", captureTrace));
+                    });
 
                     TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
                     Assert.True(await WaitUntilAsync(w.Dispatcher, 1000,
@@ -349,27 +375,50 @@ namespace Fluence.Wpf.Tests.Control
 
                     Thumb input = Assert.IsType<Thumb>(FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput"), exactMatch: false);
                     TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
-
-                    DragStartedEventArgs started = new(0, 0)
+                    List<string> captureTrace = [];
+                    void RecordCapture(string stage, MouseEventArgs? args = null)
                     {
-                        RoutedEvent = Thumb.DragStartedEvent,
-                    };
-                    input.RaiseEvent(started);
+                        string captured = ReferenceEquals(Mouse.Captured, input)
+                            ? "input"
+                            : Mouse.Captured?.GetType().Name ?? "none";
+                        captureTrace.Add(string.Format(CultureInfo.InvariantCulture,
+                            "{0}: left={1}, captured={2}, checked={3}, eventHandled={4}",
+                            stage, Mouse.LeftButton, captured, ts.IsChecked,
+                            args?.Handled.ToString() ?? "n/a"));
+                    }
+                    input.AddHandler(UIElement.LostMouseCaptureEvent,
+                        new MouseEventHandler((_, args) => RecordCapture("observed LostMouseCapture", args)),
+                        handledEventsToo: true);
 
-                    DragDeltaEventArgs delta = new(20, 0)
+                    WithReleasedLeftButton(() =>
                     {
-                        RoutedEvent = Thumb.DragDeltaEvent,
-                    };
-                    input.RaiseEvent(delta);
-                    Assert.Equal(20.0, tx.X, 0.5);
+                        DragStartedEventArgs started = new(0, 0)
+                        {
+                            RoutedEvent = Thumb.DragStartedEvent,
+                        };
+                        RecordCapture("before drag start");
+                        input.RaiseEvent(started);
+                        RecordCapture("after drag start");
 
-                    MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
-                    {
-                        RoutedEvent = UIElement.LostMouseCaptureEvent,
-                    };
-                    input.RaiseEvent(lostCapture);
+                        DragDeltaEventArgs delta = new(20, 0)
+                        {
+                            RoutedEvent = Thumb.DragDeltaEvent,
+                        };
+                        input.RaiseEvent(delta);
+                        Assert.Equal(20.0, tx.X, 0.5);
+                        RecordCapture("after drag delta");
 
-                    Assert.Equal(true, ts.IsChecked);
+                        MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                        {
+                            RoutedEvent = UIElement.LostMouseCaptureEvent,
+                        };
+                        RecordCapture("before synthetic loss");
+                        input.RaiseEvent(lostCapture);
+                        RecordCapture("after synthetic loss");
+
+                        Assert.True(ts.IsChecked is true,
+                            "A released drag must commit the nearest state. " + string.Join(" | ", captureTrace));
+                    });
 
                     await WaitForAnimationAndDrainAsync(w.Dispatcher, 250).ConfigureAwait(true);
                     Assert.Equal(20.0, tx.X, 0.5);
@@ -412,6 +461,74 @@ namespace Fluence.Wpf.Tests.Control
                     window.Close();
                 }
             });
+        }
+
+        private const int VirtualKeyLeftButton = 0x01;
+
+        // WPF's Win32MouseDevice reads GetKeyState(VK_LBUTTON). Keep the synthetic
+        // release gesture on the STA's synchronous input-state table only.
+        private static void WithReleasedLeftButton(Action action)
+        {
+            byte[] keyboardState = new byte[256];
+            if (!NativeMethods.GetKeyboardState(keyboardState))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            byte originalLeftButtonState = keyboardState[VirtualKeyLeftButton];
+            keyboardState[VirtualKeyLeftButton] &= 0x7F;
+            if (!NativeMethods.SetKeyboardState(keyboardState))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            try
+            {
+                Assert.Equal(MouseButtonState.Released, Mouse.LeftButton);
+                action();
+            }
+            finally
+            {
+                RestoreLeftButtonState(keyboardState, originalLeftButtonState);
+            }
+        }
+
+        private static void RestoreLeftButtonState(byte[] keyboardState, byte originalLeftButtonState)
+        {
+            // Read again so any other key states changed during the gesture survive.
+            if (!NativeMethods.GetKeyboardState(keyboardState))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            keyboardState[VirtualKeyLeftButton] = (byte)((keyboardState[VirtualKeyLeftButton] & 0x7F)
+                | (originalLeftButtonState & 0x80));
+            if (!NativeMethods.SetKeyboardState(keyboardState))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            if (!NativeMethods.GetKeyboardState(keyboardState))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            Assert.Equal(originalLeftButtonState & 0x80, keyboardState[VirtualKeyLeftButton] & 0x80);
+        }
+
+        private static class NativeMethods
+        {
+            // Source-generated marshalling requires unsafe blocks that this test project disallows.
+            // This narrow legacy interop supports both target frameworks.
+#pragma warning disable SYSLIB1054
+            [DllImport("user32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetKeyboardState([Out] byte[] keyboardState);
+
+            [DllImport("user32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SetKeyboardState([In] byte[] keyboardState);
+#pragma warning restore SYSLIB1054
         }
 
         private static ScaleTransform GetToggleSwitchThumbScale(ToggleSwitch toggleSwitch)

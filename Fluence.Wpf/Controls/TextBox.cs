@@ -272,6 +272,19 @@ namespace Fluence.Wpf.Controls
             {
                 UpdateCharacterCounter();
             }
+            else if (e.Property == StyleProperty)
+            {
+                // A style applied after validation began may now supply HelpText. Release
+                // only our local fallback so the new style can take precedence.
+                ClearValidationHelpText();
+                // Style setters can finish applying after this notification. Recheck once
+                // they have settled so a style without HelpText regains the fallback.
+                _ = Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, new System.Action(() =>
+                {
+                    ClearValidationHelpText();
+                    UpdateHelperText();
+                }));
+            }
         }
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -342,6 +355,18 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateHelperText()
         {
+            // Automation HelpText does not depend on the visual helper template. A
+            // consumer style may temporarily replace that template during application.
+            if (ValidationState is ValidationState.Warning or ValidationState.Error)
+            {
+                string automationMessage = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
+                SetValidationHelpText(automationMessage);
+            }
+            else
+            {
+                ClearValidationHelpText();
+            }
+
             System.Windows.Controls.TextBlock? icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
             if (GetTemplateChild(PART_HelperText) is not System.Windows.Controls.TextBlock helper)
             {
@@ -385,11 +410,9 @@ namespace Fluence.Wpf.Controls
                         // message is identical to the one announced before this success.
                         _lastAnnouncedState = ValidationState.None;
                         _lastAnnouncedMessage = string.Empty;
-                        AutomationProperties.SetHelpText(this, string.Empty);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorSuccessBrush");
                         break;
                     case ValidationState.Warning:
-                        AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCautionBrush");
                         if (ShouldAnnounce(ValidationState.Warning, message))
                         {
@@ -397,7 +420,6 @@ namespace Fluence.Wpf.Controls
                         }
                         break;
                     case ValidationState.Error:
-                        AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
                         if (ShouldAnnounce(ValidationState.Error, message))
                         {
@@ -415,11 +437,64 @@ namespace Fluence.Wpf.Controls
             // transition back to Warning/Error fires a fresh announcement.
             _lastAnnouncedState = ValidationState.None;
             _lastAnnouncedMessage = string.Empty;
-            AutomationProperties.SetHelpText(this, string.Empty);
             _ = icon?.Visibility = Visibility.Collapsed;
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;
             helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+        }
+
+        // A consumer's local value, binding, dynamic resource, or style is authoritative.
+        // Validation writes a local fallback only when HelpText has no supplied value.
+        private bool _ownsValidationHelpText;
+        private string _validationHelpText = string.Empty;
+
+        private bool HasOwnedValidationHelpText()
+        {
+            if (!_ownsValidationHelpText)
+            {
+                return false;
+            }
+
+            ValueSource source = DependencyPropertyHelper.GetValueSource(this, AutomationProperties.HelpTextProperty);
+            bool ownsCurrentValue =
+                source.BaseValueSource is BaseValueSource.Local &&
+                !source.IsExpression &&
+                ReadLocalValue(AutomationProperties.HelpTextProperty) is string current &&
+                string.Equals(current, _validationHelpText, System.StringComparison.Ordinal);
+            if (!ownsCurrentValue)
+            {
+                _ownsValidationHelpText = false;
+            }
+
+            return ownsCurrentValue;
+        }
+
+        private void SetValidationHelpText(string message)
+        {
+            if (!HasOwnedValidationHelpText())
+            {
+                ValueSource source = DependencyPropertyHelper.GetValueSource(this, AutomationProperties.HelpTextProperty);
+                if (source.BaseValueSource is not BaseValueSource.Default ||
+                    ReadLocalValue(AutomationProperties.HelpTextProperty) != DependencyProperty.UnsetValue)
+                {
+                    return;
+                }
+            }
+
+            AutomationProperties.SetHelpText(this, message);
+            _validationHelpText = message;
+            _ownsValidationHelpText = true;
+        }
+
+        private void ClearValidationHelpText()
+        {
+            if (HasOwnedValidationHelpText())
+            {
+                ClearValue(AutomationProperties.HelpTextProperty);
+            }
+
+            _ownsValidationHelpText = false;
+            _validationHelpText = string.Empty;
         }
 
         /// <summary>

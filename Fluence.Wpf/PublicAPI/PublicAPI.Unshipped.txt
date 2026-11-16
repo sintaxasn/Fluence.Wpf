@@ -3,8 +3,11 @@ static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Window
 static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color lightThemeAccent, System.Windows.Media.Color darkThemeAccent, bool exact = false) -> void
 override Fluence.Wpf.Controls.RadioButton.OnApplyTemplate() -> void
 override Fluence.Wpf.Controls.RadioButton.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void
+override Fluence.Wpf.Controls.BreadcrumbBar.OnApplyTemplate() -> void
+override Fluence.Wpf.Controls.BreadcrumbBarItem.OnCreateAutomationPeer() -> System.Windows.Automation.Peers.AutomationPeer!
 override Fluence.Wpf.Controls.CheckBox.OnApplyTemplate() -> void
 override Fluence.Wpf.Controls.CheckBox.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void
+override Fluence.Wpf.Controls.TextBlock.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs e) -> void
 Fluence.Wpf.Controls.DataGrid
 Fluence.Wpf.Controls.DataGrid.CollapseAllGroups() -> void
 Fluence.Wpf.Controls.DataGrid.CornerRadius.get -> System.Windows.CornerRadius

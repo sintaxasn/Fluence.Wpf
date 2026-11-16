@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Data;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -313,6 +314,160 @@ namespace Fluence.Wpf.Tests.Control
                     AutomationProperties.GetHelpText(tb), StringComparer.Ordinal);
 
                 w.Close();
+            });
+        }
+
+        [Fact]
+        public Task TextBox_ConsumerHelpText_SurvivesLoadAndValidationAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new() { Width = 240, ValidationMessage = "Invalid" };
+                AutomationProperties.SetHelpText(tb, "Enter an account name");
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Enter an account name", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationState = ValidationState.Warning;
+                    Assert.Equal("Enter an account name", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationState = ValidationState.Error;
+                    tb.ValidationMessage = "Still invalid";
+                    tb.Text = "a";
+                    _ = tb.ApplyTemplate();
+                    Assert.Equal("Enter an account name", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationState = ValidationState.Success;
+                    tb.ValidationState = ValidationState.None;
+                    Assert.Equal("Enter an account name", AutomationProperties.GetHelpText(tb));
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_ConsumerHelpTextBinding_PreservesExpressionAndUpdatesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new() { Width = 240, ValidationMessage = "Invalid", ValidationState = ValidationState.Error };
+                TextBlock source = new() { Text = "Initial guidance" };
+                _ = BindingOperations.SetBinding(tb, AutomationProperties.HelpTextProperty,
+                    new Binding(nameof(TextBlock.Text)) { Source = source });
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.NotNull(BindingOperations.GetBindingExpression(tb, AutomationProperties.HelpTextProperty));
+                    Assert.Equal("Initial guidance", AutomationProperties.GetHelpText(tb));
+                    source.Text = string.Empty;
+                    tb.ValidationState = ValidationState.Warning;
+                    Assert.Equal(string.Empty, AutomationProperties.GetHelpText(tb));
+                    Assert.NotNull(BindingOperations.GetBindingExpression(tb, AutomationProperties.HelpTextProperty));
+                    source.Text = "Updated guidance";
+                    tb.ValidationState = ValidationState.None;
+                    Assert.Equal("Updated guidance", AutomationProperties.GetHelpText(tb));
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_StyleAndDynamicResourceHelpText_SurviveValidationAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Style style = new(typeof(Controls.TextBox));
+                style.Setters.Add(new Setter(AutomationProperties.HelpTextProperty, "Style guidance"));
+                Controls.TextBox styled = new() { Style = style, ValidationMessage = "Invalid", ValidationState = ValidationState.Error };
+                Controls.TextBox dynamic = new() { ValidationMessage = "Invalid", ValidationState = ValidationState.Error };
+                dynamic.SetResourceReference(AutomationProperties.HelpTextProperty, "HelpTextForTest");
+                StackPanel panel = new();
+                _ = panel.Children.Add(styled);
+                _ = panel.Children.Add(dynamic);
+                Window w = new() { Content = panel, Width = 320, Height = 180 };
+                w.Resources["HelpTextForTest"] = "Resource guidance";
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Style guidance", AutomationProperties.GetHelpText(styled));
+                    Assert.Equal("Resource guidance", AutomationProperties.GetHelpText(dynamic));
+                    w.Resources["HelpTextForTest"] = "Changed resource";
+                    styled.ValidationState = ValidationState.Success;
+                    dynamic.ValidationState = ValidationState.None;
+                    Assert.Equal("Style guidance", AutomationProperties.GetHelpText(styled));
+                    Assert.Equal("Changed resource", AutomationProperties.GetHelpText(dynamic));
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_ControlOwnedValidationHelpText_DoesNotClearConsumerReplacementAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new() { ValidationMessage = "Invalid", ValidationState = ValidationState.Error };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Invalid", AutomationProperties.GetHelpText(tb));
+                    AutomationProperties.SetHelpText(tb, "Consumer replacement");
+                    tb.ValidationMessage = "New validation error";
+                    tb.ValidationState = ValidationState.None;
+                    Assert.Equal("Consumer replacement", AutomationProperties.GetHelpText(tb));
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [Fact]
+        public Task TextBox_StyleAppliedAfterValidationFallback_TakesPrecedenceAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.TextBox tb = new() { ValidationMessage = "Invalid", ValidationState = ValidationState.Error };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                try
+                {
+                    w.Show();
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Invalid", AutomationProperties.GetHelpText(tb));
+                    Style style = new(typeof(Controls.TextBox));
+                    style.Setters.Add(new Setter(AutomationProperties.HelpTextProperty, "Late style guidance"));
+                    tb.Style = style;
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Late style guidance", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationMessage = "Another error";
+                    tb.ValidationState = ValidationState.None;
+                    Assert.Equal("Late style guidance", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationState = ValidationState.Error;
+                    tb.Style = new Style(typeof(Controls.TextBox));
+                    WpfTestSta.DrainDispatcher(w.Dispatcher);
+                    Assert.Equal("Another error", AutomationProperties.GetHelpText(tb));
+                    tb.ValidationState = ValidationState.None;
+                    Assert.Equal(string.Empty, AutomationProperties.GetHelpText(tb));
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

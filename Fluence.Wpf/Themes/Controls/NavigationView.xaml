@@ -304,7 +304,8 @@
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource NavigationViewItemPointerOverBackgroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavigationViewItemPointerOverForegroundBrush}" />
                         </MultiTrigger>
                         <!--  Hover + selected  -->
                         <MultiTrigger>
@@ -320,8 +321,8 @@
                                 <Condition Property="IsPressed" Value="True" />
                                 <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource NavigationViewItemPressedBackgroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavigationViewItemPressedForegroundBrush}" />
                         </MultiTrigger>
                         <!--  Pressed + selected  -->
                         <MultiTrigger>

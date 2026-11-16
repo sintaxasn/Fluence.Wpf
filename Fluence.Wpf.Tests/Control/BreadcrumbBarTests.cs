@@ -29,10 +29,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -80,6 +84,19 @@ namespace Fluence.Wpf.Tests.Control
                     Source = this,
                 };
                 OnMouseLeftButtonUp(args);
+            }
+        }
+
+        private sealed class CrumbModel(string label)
+        {
+            public string Label { get; } = label;
+        }
+
+        private sealed class CrumbTemplateSelector(DataTemplate template) : DataTemplateSelector
+        {
+            public override DataTemplate SelectTemplate(object item, DependencyObject container)
+            {
+                return template;
             }
         }
 
@@ -335,6 +352,257 @@ namespace Fluence.Wpf.Tests.Control
                 finally
                 {
                     window.Close();
+                }
+            });
+        }
+
+        [Theory]
+        [InlineData(FlowDirection.LeftToRight)]
+        [InlineData(FlowDirection.RightToLeft)]
+        public Task BreadcrumbBar_NarrowWidth_KeepsCurrentReachableAndRestoresTrailOnResizeAsync(FlowDirection direction)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.BreadcrumbBar bar = new()
+                {
+                    Width = 150,
+                    FlowDirection = direction,
+                    ItemsSource = (string[])["Root", "Documents", "Projects", "Design", "Current page"],
+                };
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Button overflow = Assert.IsType<Button>(bar.Template.FindName("PART_OverflowButton", bar));
+                    ScrollViewer viewer = Assert.IsType<ScrollViewer>(bar.Template.FindName("PART_ItemsScrollViewer", bar));
+                    Assert.True(overflow.Visibility is Visibility.Visible,
+                        string.Format(CultureInfo.InvariantCulture,
+                            "Overflow button must be visible. Extent={0}, viewport={1}, viewer width={2}, bar width={3}, state={4}.",
+                            viewer.ExtentWidth, viewer.ViewportWidth, viewer.ActualWidth, bar.ActualWidth, overflow.Visibility));
+                    Assert.True(overflow.IsEnabled);
+                    AutomationPeer overflowPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(overflow), exactMatch: false);
+                    Assert.False(string.IsNullOrWhiteSpace(overflowPeer.GetName()));
+                    Assert.Equal(AutomationControlType.Button, overflowPeer.GetAutomationControlType());
+                    Assert.NotNull(overflowPeer.GetPattern(PatternInterface.Invoke));
+
+                    Controls.BreadcrumbBarItem current = Assert.IsType<Controls.BreadcrumbBarItem>(bar.ItemContainerGenerator.ContainerFromIndex(4));
+                    Assert.True(current.IsLastItem);
+                    Rect currentBounds = current.TransformToAncestor(bar).TransformBounds(new Rect(current.RenderSize));
+                    Rect viewportBounds = viewer.TransformToAncestor(bar).TransformBounds(new Rect(viewer.RenderSize));
+                    Assert.True(currentBounds.Left >= viewportBounds.Left && currentBounds.Right <= viewportBounds.Right + 1,
+                        "The current location must remain inside the constrained viewport.");
+                    Assert.True(current.Focus(), "The current crumb must be reachable by keyboard focus.");
+                    AutomationPeer currentPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(current), exactMatch: false);
+                    Assert.False(currentPeer.IsOffscreen());
+                    Assert.Equal("Current page", currentPeer.GetName(), StringComparer.Ordinal);
+
+                    object? clickedItem = null;
+                    int clickedIndex = -1;
+                    bool invokeReturned = false;
+                    bool handlerObservedInvokeReturn = false;
+                    bar.ItemClicked += (_, args) =>
+                    {
+                        clickedItem = args.Item;
+                        clickedIndex = args.Index;
+                        handlerObservedInvokeReturn = invokeReturned;
+                    };
+                    IInvokeProvider currentInvoke = Assert.IsAssignableFrom<IInvokeProvider>(currentPeer.GetPattern(PatternInterface.Invoke));
+                    currentInvoke.Invoke();
+                    invokeReturned = true;
+                    Assert.Null(clickedItem);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("Current page", clickedItem);
+                    Assert.Equal(4, clickedIndex);
+                    Assert.True(handlerObservedInvokeReturn, "UIA Invoke must return before the navigation handler runs.");
+                    ContextMenu menu = Assert.IsType<ContextMenu>(overflow.ContextMenu, exactMatch: false);
+                    menu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    MenuItem documents = Assert.Single(menu.Items.OfType<MenuItem>(), static item => Equals(item.Header, "Documents"));
+                    documents.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent, documents));
+                    Assert.Equal("Documents", clickedItem);
+                    Assert.Equal(1, clickedIndex);
+                    menu.IsOpen = false;
+
+                    bar.Width = 500;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal(Visibility.Collapsed, overflow.Visibility);
+                    for (int index = 0; index < bar.Items.Count; index++)
+                    {
+                        Controls.BreadcrumbBarItem crumb = Assert.IsType<Controls.BreadcrumbBarItem>(bar.ItemContainerGenerator.ContainerFromIndex(index));
+                        Rect bounds = crumb.TransformToAncestor(bar).TransformBounds(new Rect(crumb.RenderSize));
+                        Assert.True(bounds.Width > 0 && bounds.Left >= 0 && bounds.Right <= bar.ActualWidth + 1,
+                            string.Format(CultureInfo.InvariantCulture, "Crumb {0} must return to the visible trail when the width is restored.", index));
+                    }
+
+                    bar.Width = 150;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Equal(Visibility.Visible, overflow.Visibility);
+                    currentBounds = current.TransformToAncestor(bar).TransformBounds(new Rect(current.RenderSize));
+                    viewportBounds = viewer.TransformToAncestor(bar).TransformBounds(new Rect(viewer.RenderSize));
+                    Assert.True(currentBounds.Left >= viewportBounds.Left && currentBounds.Right <= viewportBounds.Right + 1,
+                        "The current location must remain reachable after shrinking the bar again.");
+
+                    Controls.BreadcrumbBarItem root = Assert.IsType<Controls.BreadcrumbBarItem>(bar.ItemContainerGenerator.ContainerFromIndex(0));
+                    Assert.True(root.Focus());
+                    root.BringIntoView();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    bar.Width = 140;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Rect rootBounds = root.TransformToAncestor(bar).TransformBounds(new Rect(root.RenderSize));
+                    viewportBounds = viewer.TransformToAncestor(bar).TransformBounds(new Rect(viewer.RenderSize));
+                    Assert.True(rootBounds.Width > 0 && rootBounds.Left >= viewportBounds.Left && rootBounds.Right <= viewportBounds.Right + 1,
+                        "Resizing must keep a focused ancestor within the viewport.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task BreadcrumbBar_ReplacingTemplate_ReleasesPreviousOverflowMenuAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.BreadcrumbBar bar = new()
+                {
+                    Width = 150,
+                    ItemsSource = (string[])["Root", "Documents", "Current page"],
+                };
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Button originalButton = Assert.IsType<Button>(bar.Template.FindName("PART_OverflowButton", bar));
+                    ContextMenu originalMenu = Assert.IsType<ContextMenu>(originalButton.ContextMenu, exactMatch: false);
+                    bar.Template = new ControlTemplate(typeof(Controls.BreadcrumbBar))
+                    {
+                        VisualTree = new FrameworkElementFactory(typeof(Border)),
+                    };
+                    window.UpdateLayout();
+
+                    Assert.Null(originalButton.ContextMenu);
+                    Assert.Null(originalMenu.PlacementTarget);
+                    Assert.False(originalMenu.IsOpen);
+                    Assert.Empty(originalMenu.Items);
+
+                    bar.ClearValue(System.Windows.Controls.Control.TemplateProperty);
+                    window.UpdateLayout();
+                    Button restoredButton = Assert.IsType<Button>(bar.Template.FindName("PART_OverflowButton", bar));
+                    Assert.NotSame(originalButton, restoredButton);
+                    Assert.NotNull(restoredButton.ContextMenu);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task BreadcrumbBar_OverflowMenu_UsesModelTemplateAndReadableNameAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                FrameworkElementFactory text = new(typeof(System.Windows.Controls.TextBlock));
+                text.SetBinding(System.Windows.Controls.TextBlock.TextProperty, new Binding(nameof(CrumbModel.Label)));
+                DataTemplate template = new(typeof(CrumbModel)) { VisualTree = text };
+                CrumbTemplateSelector selector = new(template);
+                CrumbModel[] crumbs = [new("Root"), new("Documents"), new("Current page")];
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.BreadcrumbBar bar = new()
+                {
+                    Width = 150,
+                    ItemsSource = crumbs,
+                    ItemTemplateSelector = selector,
+                };
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Button overflow = Assert.IsType<Button>(bar.Template.FindName("PART_OverflowButton", bar));
+                    Assert.Equal(Visibility.Visible, overflow.Visibility);
+                    ContextMenu menu = Assert.IsType<ContextMenu>(overflow.ContextMenu, exactMatch: false);
+                    menu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    MenuItem documents = Assert.Single(menu.Items.OfType<MenuItem>(),
+                        static item => item.Header is CrumbModel model && string.Equals(model.Label, "Documents", StringComparison.Ordinal));
+                    AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(documents), exactMatch: false);
+                    Assert.Equal("Documents", peer.GetName(), StringComparer.Ordinal);
+
+                    object? clickedItem = null;
+                    int clickedIndex = -1;
+                    bar.ItemClicked += (_, args) => { clickedItem = args.Item; clickedIndex = args.Index; };
+                    documents.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent, documents));
+                    Assert.Same(crumbs[1], clickedItem);
+                    Assert.Equal(1, clickedIndex);
+                    menu.IsOpen = false;
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task BreadcrumbBar_NamedIconContent_ProvidesReadableCrumbAndMenuNamesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Controls.FontIcon icon = new() { Glyph = "\uE10F" };
+                AutomationProperties.SetName(icon, "Reports");
+                Border content = new() { Child = icon };
+                Controls.BreadcrumbBarItem reports = new() { Content = content };
+                Controls.BreadcrumbBar bar = new() { Width = 150 };
+                _ = bar.Items.Add("Root");
+                _ = bar.Items.Add(reports);
+                _ = bar.Items.Add("Current page");
+                Window window = new() { Width = 500, Height = 200 };
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    AutomationPeer crumbPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(reports), exactMatch: false);
+                    Assert.Equal("Reports", crumbPeer.GetName(), StringComparer.Ordinal);
+
+                    Button overflow = Assert.IsType<Button>(bar.Template.FindName("PART_OverflowButton", bar));
+                    Assert.Equal(Visibility.Visible, overflow.Visibility);
+                    ContextMenu menu = Assert.IsType<ContextMenu>(overflow.ContextMenu, exactMatch: false);
+                    menu.IsOpen = true;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    MenuItem reportEntry = Assert.IsType<MenuItem>(menu.Items[1], exactMatch: false);
+                    Assert.Equal("Reports", reportEntry.Header);
+                    AutomationPeer menuPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(reportEntry), exactMatch: false);
+                    Assert.Equal("Reports", menuPeer.GetName(), StringComparer.Ordinal);
+                    menu.IsOpen = false;
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
                 }
             });
         }

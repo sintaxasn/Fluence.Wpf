@@ -182,6 +182,10 @@ LayerOnMicaBaseAltFillColorTransparent|#00000000|#00000000
 LayerOnMicaBaseAltFillColorTransparentBrush|#00000000|#00000000
 NavigationViewContentBackground|#80FFFFFF|#00000000
 NavigationViewContentBackgroundBrush|#00000000|#80FFFFFF
+NavigationViewItemPointerOverBackgroundBrush|#00000000|#09000000
+NavigationViewItemPointerOverForegroundBrush|#00000000|#E4000000
+NavigationViewItemPressedBackgroundBrush|#00000000|#06000000
+NavigationViewItemPressedForegroundBrush|#00000000|#9E000000
 NavigationViewSelectionIndicatorForeground|#00000000|#FF0062AD
 PersonPictureBadgeForegroundBrush|#00000000|#FFFFFFFF
 PickerSelectedForegroundBrush|#00000000|#FFFFFFFF

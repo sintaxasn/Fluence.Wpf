@@ -29,6 +29,8 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -658,6 +660,194 @@ namespace Fluence.Wpf.Tests.Control
                     CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        [Fact]
+        public Task NavigationView_TopMode_ReplacingHiddenContentRecoversItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 360,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One", Width = 80 });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two", Width = 80 });
+                    NavigationViewItem last = new()
+                    {
+                        Content = new System.Windows.Controls.TextBlock { Text = "A very long navigation destination that cannot fit in the top strip" },
+                    };
+                    _ = nav.Items.Add(last);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Collapsed, last.Visibility);
+                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PART_TopOverflowButton), exactMatch: false);
+                    System.Windows.Controls.ContextMenu menu = Assert.IsType<System.Windows.Controls.ContextMenu>(overflowButton.ContextMenu, exactMatch: false);
+                    Controls.MenuItem entry = Assert.IsType<Controls.MenuItem>(Assert.Single(menu.Items));
+                    Assert.Equal("A very long navigation destination that cannot fit in the top strip", entry.Header);
+
+                    last.Content = new System.Windows.Controls.TextBlock { Text = "X" };
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, last.Visibility);
+                    Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopMode_ChangingHiddenChildTextRecoversItemAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 360,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                    };
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One", Width = 80 });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two", Width = 80 });
+                    System.Windows.Controls.TextBlock label = new() { Text = "A very long navigation destination that cannot fit in the top strip" };
+                    NavigationViewItem last = new() { Content = label };
+                    _ = nav.Items.Add(last);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Collapsed, last.Visibility);
+                    label.Text = "X";
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.Equal(Visibility.Visible, last.Visibility);
+                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PART_TopOverflowButton), exactMatch: false);
+                    Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task NavigationView_TopMode_TemplatedModelKeepsOverflowPresentationAndNameAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                Window window = new();
+                try
+                {
+                    DataTemplate template = new()
+                    {
+                        VisualTree = new FrameworkElementFactory(typeof(System.Windows.Controls.TextBlock)),
+                    };
+                    template.VisualTree.SetBinding(System.Windows.Controls.TextBlock.TextProperty,
+                        new System.Windows.Data.Binding(nameof(TopModeDestination.Label)));
+                    template.Seal();
+
+                    NavigationView nav = new()
+                    {
+                        Width = 300,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                        ItemTemplate = template,
+                    };
+                    _ = nav.Items.Add(new TopModeDestination { Label = "One" });
+                    _ = nav.Items.Add(new TopModeDestination { Label = "Two" });
+                    TopModeDestination destination = new() { Label = "A very long templated destination that cannot fit in the top strip" };
+                    _ = nav.Items.Add(destination);
+
+                    window.Content = nav;
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    NavigationViewItem last = Assert.IsType<NavigationViewItem>(nav.ItemContainerGenerator.ContainerFromItem(destination));
+                    Assert.Same(template, last.ContentTemplate);
+                    Assert.Equal(Visibility.Collapsed, last.Visibility);
+
+                    // A generated item receives the parent's ItemTemplate as its ContentTemplate.
+                    // The overflow entry must present the same model through that template and
+                    // retain the source item's explicit accessible name.
+                    DataTemplateSelector selector = new DestinationTemplateSelector(template);
+                    last.ContentTemplateSelector = selector;
+                    last.ContentStringFormat = "Go to {0}";
+                    AutomationProperties.SetName(last, "Long destination");
+                    nav.Width++;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Controls.Button overflowButton = Assert.IsType<Controls.Button>(FindVisualChildByName<Controls.Button>(nav, NavigationView.PART_TopOverflowButton), exactMatch: false);
+                    System.Windows.Controls.ContextMenu menu = Assert.IsType<System.Windows.Controls.ContextMenu>(overflowButton.ContextMenu, exactMatch: false);
+                    Controls.MenuItem entry = Assert.IsType<Controls.MenuItem>(Assert.Single(menu.Items));
+                    Assert.Same(destination, entry.Header);
+                    Assert.Same(template, entry.HeaderTemplate);
+                    Assert.Same(selector, entry.HeaderTemplateSelector);
+                    Assert.Equal("Go to {0}", entry.HeaderStringFormat);
+                    Assert.Equal("Long destination", UIElementAutomationPeer.CreatePeerForElement(entry).GetName());
+
+                    nav.Width = 800;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, last.Visibility);
+                    Assert.Equal(Visibility.Collapsed, overflowButton.Visibility);
+
+                    nav.Width = 300;
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Collapsed, last.Visibility);
+                    menu = Assert.IsType<System.Windows.Controls.ContextMenu>(overflowButton.ContextMenu, exactMatch: false);
+                    entry = Assert.IsType<Controls.MenuItem>(Assert.Single(menu.Items));
+                    Assert.Same(destination, entry.Header);
+                    Assert.Same(template, entry.HeaderTemplate);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        private sealed class TopModeDestination
+        {
+            public string Label { get; set; } = string.Empty;
+        }
+
+        private sealed class DestinationTemplateSelector(DataTemplate template) : DataTemplateSelector
+        {
+            public override DataTemplate SelectTemplate(object item, DependencyObject container)
+            {
+                return template;
+            }
         }
 
         [Fact]

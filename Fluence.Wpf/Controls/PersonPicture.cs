@@ -78,6 +78,7 @@ namespace Fluence.Wpf.Controls
         private const string GlyphContact = "\uE77B";
         private const string GlyphPeople = "\uE716";
         private static readonly char[] InitialsSeparators = [' ', '\t'];
+        private static readonly FontFamily SymbolFontFamily = new("Segoe Fluent Icons, Segoe MDL2 Assets");
 
         /// <summary>
         /// Initializes static members of the PersonPicture class and overrides the default style key to associate the
@@ -264,7 +265,7 @@ namespace Fluence.Wpf.Controls
                 if (_initialsText is not null)
                 {
                     _initialsText.Text = GlyphPeople;
-                    _initialsText.SetResourceReference(System.Windows.Controls.TextBlock.FontFamilyProperty, "FluentFontFamily");
+                    _initialsText.FontFamily = SymbolFontFamily;
                 }
                 _ = VisualStateManager.GoToState(this, StateGroup, useTransitions);
                 return;
@@ -293,7 +294,7 @@ namespace Fluence.Wpf.Controls
             if (_initialsText is not null)
             {
                 _initialsText.Text = GlyphContact;
-                _initialsText.FontFamily = new FontFamily("Segoe Fluent Icons");
+                _initialsText.FontFamily = SymbolFontFamily;
             }
             _ = VisualStateManager.GoToState(this, StateNoPhotoOrInitials, useTransitions);
         }

@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Input;
@@ -39,6 +41,11 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WinUI3's NavigationView.</remarks>
     public class NavigationViewItem : ListBoxItem
     {
+        private static readonly DependencyPropertyDescriptor TextPropertyDescriptor =
+            DependencyPropertyDescriptor.FromProperty(System.Windows.Controls.TextBlock.TextProperty, typeof(System.Windows.Controls.TextBlock));
+
+        private System.Windows.Controls.TextBlock? _observedHiddenText;
+
         /// <summary>
         /// Identifies the read-only IsPressed dependency property key for the NavigationViewItem control.
         /// </summary>
@@ -174,19 +181,77 @@ namespace Fluence.Wpf.Controls
 
         /// <inheritdoc />
         /// <remarks>
-        /// Evicts the parent <see cref="NavigationView"/>'s cached Top-overflow natural width when a
-        /// measure-affecting property changes while a width is cached. An item sitting collapsed in
-        /// the overflow menu is never measured, so it never raises the <c language="csharp">SizeChanged</c> that is
-        /// the ordinary eviction path; a content or font change while overflowed would otherwise
-        /// keep the stale width forever. <see cref="UIElement.VisibilityProperty"/> is excluded
-        /// because the overflow pass itself toggles it, and that toggle carries no width change.
+        /// Evicts the parent <see cref="NavigationView"/>'s cached Top-overflow natural width when
+        /// content is replaced or an item property affecting measure changes. An item collapsed in
+        /// the overflow menu is never measured, so it cannot raise the ordinary size-change signal.
+        /// A hidden WPF <see cref="System.Windows.Controls.TextBlock"/> is watched separately for
+        /// text changes. <see cref="UIElement.VisibilityProperty"/> is excluded from width eviction
+        /// because the overflow pass itself toggles it without changing the content width.
         /// </remarks>
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.Property != VisibilityProperty
-                && NavigationView.HasCachedTopItemWidth(this)
+            if (e.Property == VisibilityProperty)
+            {
+                if (Visibility is Visibility.Collapsed && NavigationView.HasCachedTopItemWidth(this))
+                {
+                    ObserveHiddenText();
+                }
+                else
+                {
+                    StopObservingHiddenText();
+                }
+
+                return;
+            }
+
+            if (e.Property == ContentProperty)
+            {
+                StopObservingHiddenText();
+                if (NavigationView.HasCachedTopItemWidth(this))
+                {
+                    NavigationView.InvalidateTopItemWidth(this);
+                }
+
+                return;
+            }
+
+            if (NavigationView.HasCachedTopItemWidth(this)
                 && e.Property.GetMetadata(this) is FrameworkPropertyMetadata { AffectsMeasure: true })
+            {
+                NavigationView.InvalidateTopItemWidth(this);
+            }
+        }
+
+        /// <summary>
+        /// Releases the watcher when this container leaves a navigation view, even if it was
+        /// removed while collapsed and therefore never had a visible-state transition.
+        /// </summary>
+        internal void StopObservingHiddenText()
+        {
+            if (_observedHiddenText is not null)
+            {
+                TextPropertyDescriptor.RemoveValueChanged(_observedHiddenText, OnHiddenTextChanged);
+                _observedHiddenText = null;
+            }
+        }
+
+        private void ObserveHiddenText()
+        {
+            if (Content is not System.Windows.Controls.TextBlock textBlock || ReferenceEquals(_observedHiddenText, textBlock))
+            {
+                return;
+            }
+
+            StopObservingHiddenText();
+            TextPropertyDescriptor.AddValueChanged(textBlock, OnHiddenTextChanged);
+            _observedHiddenText = textBlock;
+        }
+
+        private void OnHiddenTextChanged(object? sender, EventArgs e)
+        {
+            StopObservingHiddenText();
+            if (NavigationView.HasCachedTopItemWidth(this))
             {
                 NavigationView.InvalidateTopItemWidth(this);
             }

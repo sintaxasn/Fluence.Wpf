@@ -26,8 +26,8 @@
         BreadcrumbBarChevronLeftToRight glyph (E974) in TextFillColorPrimaryBrush
         (BreadcrumbBarNormalForegroundBrush), hit-test invisible so only the content plate is
         the click target.
-        WinUI's ellipsis overflow collapse is a deliberate v1 omission (see BreadcrumbBar.cs);
-        the strip extends to its natural width and clips when constrained.
+        At constrained widths, a measured overflow button offers the full trail while the
+        scroll viewport keeps the current location in view.
     -->
 
     <Style TargetType="{x:Type controls:BreadcrumbBarItem}">
@@ -203,7 +203,32 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
-                        <ItemsPresenter />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                x:Name="PART_OverflowButton"
+                                Grid.Column="0"
+                                Width="32"
+                                Height="32"
+                                Padding="0"
+                                AutomationProperties.Name="More locations"
+                                Visibility="Collapsed">
+                                <controls:FontIcon Glyph="&#xE712;" IconFontSize="12" />
+                            </Button>
+                            <ScrollViewer
+                                x:Name="PART_ItemsScrollViewer"
+                                Grid.Column="1"
+                                CanContentScroll="False"
+                                Focusable="False"
+                                HorizontalScrollBarVisibility="Hidden"
+                                IsTabStop="False"
+                                VerticalScrollBarVisibility="Disabled">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

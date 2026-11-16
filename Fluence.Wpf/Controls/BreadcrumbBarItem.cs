@@ -26,9 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -40,6 +46,47 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class BreadcrumbBarItem : System.Windows.Controls.ContentControl
     {
+        private sealed class BreadcrumbBarItemAutomationPeer(BreadcrumbBarItem owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider
+        {
+            protected override string GetClassNameCore()
+            {
+                return nameof(BreadcrumbBarItem);
+            }
+
+            protected override AutomationControlType GetAutomationControlTypeCore()
+            {
+                return AutomationControlType.Button;
+            }
+
+            protected override string GetNameCore()
+            {
+                return owner.GetAccessibleText();
+            }
+
+            public override object? GetPattern(PatternInterface patternInterface)
+            {
+                return patternInterface is PatternInterface.Invoke ? this : base.GetPattern(patternInterface);
+            }
+
+            public void Invoke()
+            {
+                if (!IsEnabled())
+                {
+                    throw new ElementNotEnabledException();
+                }
+
+                // Match WPF ButtonAutomationPeer: a navigation handler may open a dialog,
+                // so UIA Invoke must return before the click is dispatched.
+                _ = owner.Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
+                {
+                    if (owner.IsEnabled)
+                    {
+                        owner.RaiseEvent(new RoutedEventArgs(ClickEvent, owner));
+                    }
+                }));
+            }
+        }
+
         /// <summary>
         /// Initializes static members of the BreadcrumbBarItem class and overrides the default
         /// style metadata so the control picks up its themed template from Generic.xaml.
@@ -118,6 +165,72 @@ namespace Fluence.Wpf.Controls
         {
             add => AddHandler(ClickEvent, value);
             remove => RemoveHandler(ClickEvent, value);
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new BreadcrumbBarItemAutomationPeer(this);
+        }
+
+        internal string GetAccessibleText()
+        {
+            string explicitName = AutomationProperties.GetName(this);
+            if (!string.IsNullOrWhiteSpace(explicitName))
+            {
+                return explicitName;
+            }
+
+            string namedContent = FindExplicitName(this);
+            if (!string.IsNullOrWhiteSpace(namedContent))
+            {
+                return namedContent;
+            }
+
+            string renderedText = FindRenderedText(this);
+            return !string.IsNullOrWhiteSpace(renderedText)
+                ? renderedText
+                : Content?.ToString() ?? string.Empty;
+        }
+
+        private static string FindExplicitName(DependencyObject element)
+        {
+            string name = AutomationProperties.GetName(element);
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                return name;
+            }
+
+            for (int index = 0; index < VisualTreeHelper.GetChildrenCount(element); index++)
+            {
+                string childName = FindExplicitName(VisualTreeHelper.GetChild(element, index));
+                if (!string.IsNullOrWhiteSpace(childName))
+                {
+                    return childName;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string FindRenderedText(DependencyObject element)
+        {
+            if (element is System.Windows.Controls.TextBlock textBlock &&
+                !string.IsNullOrWhiteSpace(textBlock.Text))
+            {
+                return textBlock.Text;
+            }
+
+            for (int index = 0; index < VisualTreeHelper.GetChildrenCount(element); index++)
+            {
+                string childText = FindRenderedText(VisualTreeHelper.GetChild(element, index));
+                if (!string.IsNullOrWhiteSpace(childText))
+                {
+                    return childText;
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <inheritdoc />
