@@ -83,7 +83,15 @@ if ($result.Connect)
 }
 ```
 
-The [examples catalogue](examples/README.md) has six complete scripts. The [result object reference](https://fluencewpf.com/docs/powershell/reference/result-objects) describes the properties returned by each command.
+The [examples catalogue](examples/README.md) has six complete scripts, including [06-ControlsTour.ps1](examples/06-ControlsTour.ps1), a runnable tour of the public controls and common variations. To run it from the repository root, first [build and stage the module](#use-the-module-from-a-source-checkout), then use either supported PowerShell edition:
+
+```powershell
+pwsh -NoProfile -File .\Fluence.Wpf.PowerShell.Module\examples\06-ControlsTour.ps1
+# Windows PowerShell 5.1:
+powershell.exe -NoProfile -STA -File .\Fluence.Wpf.PowerShell.Module\examples\06-ControlsTour.ps1
+```
+
+The tour opens on Inputs. Select a labeled category in the left rail to explore Color, Selection, Commands, Data, Navigation, Status, Surfaces, or Layout. The [result object reference](https://fluencewpf.com/docs/powershell/reference/result-objects) describes the properties returned by each command.
 
 Every window-opening command supports title-bar customization: `-Title` (also `-TitleBarText`) sets its text, and `-TitleBarIcon` accepts a local path, `file:` URI, or `pack:` URI. Only `Show-FluenceWindow` supports `-ShowIcon:$false` to hide the built-in host icon. For dialogs, `-Icon` remains the body severity/question glyph and `-Image` remains a body image; neither sets the title-bar icon. See the [dialog guide](https://fluencewpf.com/docs/powershell/how-to/dialogs) and [hosted-window guide](https://fluencewpf.com/docs/powershell/how-to/windows-from-xaml).
 
