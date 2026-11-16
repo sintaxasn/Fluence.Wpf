@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Controls
 
             UIElement? label = AutomationProperties.GetLabeledBy(this);
             if (label is not null &&
-                UIElementAutomationPeer.CreatePeerForElement(label)?.GetName() is string labelName &&
+                GetPeerName(UIElementAutomationPeer.CreatePeerForElement(label)) is string labelName &&
                 !string.IsNullOrWhiteSpace(labelName))
             {
                 return labelName;
@@ -199,6 +199,12 @@ namespace Fluence.Wpf.Controls
             return !string.IsNullOrWhiteSpace(renderedText)
                 ? renderedText
                 : Content?.ToString() ?? string.Empty;
+        }
+
+        private static string? GetPeerName(AutomationPeer? peer)
+        {
+            // WPF can return no peer when the label does not implement one.
+            return peer?.GetName();
         }
 
         private static string FindExplicitName(DependencyObject element)
