@@ -599,6 +599,15 @@ namespace Fluence.Wpf.Tests.Control
                     AutomationPeer menuPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(reportEntry), exactMatch: false);
                     Assert.Equal("Reports", menuPeer.GetName(), StringComparer.Ordinal);
                     menu.IsOpen = false;
+
+                    TextBlock label = new() { Text = "Labelled reports" };
+                    AutomationProperties.SetLabeledBy(reports, label);
+                    Assert.Equal("Labelled reports", reports.GetAccessibleText(), StringComparer.Ordinal);
+                    AutomationProperties.SetName(reports, "Explicit name");
+                    Assert.Equal("Explicit name", reports.GetAccessibleText(), StringComparer.Ordinal);
+                    AutomationProperties.SetName(reports, string.Empty);
+                    AutomationProperties.SetLabeledBy(reports, new UIElement());
+                    Assert.Equal("Reports", reports.GetAccessibleText(), StringComparer.Ordinal);
                 }
                 finally
                 {
