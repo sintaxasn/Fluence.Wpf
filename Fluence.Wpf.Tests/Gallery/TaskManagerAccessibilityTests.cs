@@ -92,6 +92,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
                     Controls.TextBox input = Assert.Single(collection: FindVisualChildren<Controls.TextBox>(window));
+                    CreateLabeledByPeer(input, "New task");
                     AutomationPeer inputPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(input), exactMatch: false);
                     AutomationPeer inputLabel = Assert.IsType<AutomationPeer>(inputPeer.GetLabeledBy(), exactMatch: false);
                     Assert.Equal("New task", inputLabel.GetName());
@@ -102,6 +103,7 @@ namespace Fluence.Wpf.Tests.Gallery
                         FindVisualChildren<Controls.CheckBox>(window),
                         static control => control.DataContext is TaskItemViewModel item && string.Equals(item.Title, TaskTitle, StringComparison.Ordinal));
                     TaskItemViewModel taskItem = Assert.IsType<TaskItemViewModel>(completion.DataContext, exactMatch: true);
+                    CreateLabeledByPeer(completion, TaskTitle);
                     AutomationPeer completionPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(completion), exactMatch: false);
                     Assert.Equal("Complete " + TaskTitle, completionPeer.GetName());
                     Assert.Equal(TaskTitle, Assert.IsType<AutomationPeer>(completionPeer.GetLabeledBy(), exactMatch: false).GetName());
@@ -154,6 +156,7 @@ namespace Fluence.Wpf.Tests.Gallery
                     for (int i = 0; i < switches.Length; i++)
                     {
                         Controls.ToggleSwitch toggleSwitch = switches[i];
+                        CreateLabeledByPeer(toggleSwitch, expectedLabels[i]);
                         AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(toggleSwitch), exactMatch: false);
                         Assert.Equal(expectedLabels[i], peer.GetName());
                         AutomationPeer label = Assert.IsType<AutomationPeer>(peer.GetLabeledBy(), exactMatch: false);
@@ -172,6 +175,14 @@ namespace Fluence.Wpf.Tests.Gallery
                     CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        private static void CreateLabeledByPeer(UIElement control, string expectedLabel)
+        {
+            TextBlock label = Assert.IsType<TextBlock>(AutomationProperties.GetLabeledBy(control));
+            Assert.Equal(expectedLabel, label.Text);
+            // WPF resolves GetLabeledBy through the label's existing peer, which a headless host may not create.
+            _ = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(label), exactMatch: false);
         }
     }
 }
