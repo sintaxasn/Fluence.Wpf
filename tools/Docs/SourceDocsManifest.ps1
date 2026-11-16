@@ -68,6 +68,66 @@ function Get-DocsSha256 {
     return [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($Bytes)).ToLowerInvariant()
 }
 
+function Assert-DocsGalleryReceiptProvenance {
+    param([Parameter(Mandatory)]$Receipt,
+        [Parameter(Mandatory)][string]$RepositoryRoot,
+        [Parameter(Mandatory)][string]$MapPath)
+
+    $canonicalMap = Get-DocsContainedPath $RepositoryRoot 'tools/Docs/VisualCaptureMap.psd1'
+    if ([IO.Path]::GetFullPath($MapPath) -cne $canonicalMap) { throw 'Gallery receipt map is not the repository capture map.' }
+    $map = Import-PowerShellDataFile -LiteralPath $canonicalMap -SkipLimitCheck
+    if ($map.SchemaVersion -ne 1) { throw 'Gallery receipt map schema is unsupported.' }
+    $sourcePaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($path in @('tools/Docs/VisualCaptureMap.psd1',
+            'Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs',
+            'Fluence.Wpf.Demo/DemoNavigationCatalog.cs')) { [void]$sourcePaths.Add($path) }
+    foreach ($spec in @($map.Captures | Where-Object { [string]$_.Id -clike 'gallery/*' })) {
+        foreach ($path in @($spec.Inputs)) { [void]$sourcePaths.Add((Assert-DocsRelativePath ([string]$path))) }
+    }
+    $recordedSource = $Receipt.sourceInputRawSha256
+    if ($null -eq $recordedSource -or @($recordedSource.PSObject.Properties).Count -ne $sourcePaths.Count) {
+        throw 'Gallery receipt source hash inventory is incomplete.'
+    }
+    foreach ($path in $sourcePaths) {
+        $property = $recordedSource.PSObject.Properties[$path]
+        $source = Get-DocsContainedPath $RepositoryRoot $path
+        if ($null -eq $property -or -not [IO.File]::Exists($source) -or
+            [string]$property.Value -cne (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()) {
+            throw "Gallery receipt source hash differs from current bytes: $path"
+        }
+    }
+
+    $binaryHashes = $Receipt.producerBinarySha256
+    if ($null -eq $binaryHashes -or @($binaryHashes.PSObject.Properties).Count -ne 3) {
+        throw 'Gallery receipt producer identity is incomplete.'
+    }
+    $names = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $directories = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($property in $binaryHashes.PSObject.Properties) {
+        $binaryPath = [string]$property.Name
+        $relative = [IO.Path]::GetRelativePath($RepositoryRoot,$binaryPath).Replace('\','/')
+        $binary = Get-DocsContainedPath $RepositoryRoot (Assert-DocsRelativePath $relative)
+        [void]$names.Add([IO.Path]::GetFileNameWithoutExtension($binary))
+        [void]$directories.Add([IO.Path]::GetDirectoryName($binary))
+        if (-not [IO.File]::Exists($binary) -or
+            [string]$property.Value -cne (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash.ToLowerInvariant()) {
+            throw "Gallery receipt producer hash differs from current bytes: $binaryPath"
+        }
+    }
+    if ($directories.Count -ne 1 -or $names.Count -ne 3 -or
+        -not $names.Contains('Fluence.Wpf.Tests') -or
+        -not $names.Contains('Fluence.Wpf.Demo') -or -not $names.Contains('Fluence.Wpf')) {
+        throw 'Gallery receipt producer identities do not match the capture build.'
+    }
+}
+
+function Test-DocsNewCapturePath {
+    param([Parameter(Mandatory)][string]$Path)
+    return $Path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal) -or
+        $Path -cmatch '^docs/screenshots/powershell-(?:color|selection|commands|data|navigation|status|surfaces|layout)-(?:light|dark)\.png$' -or
+        $Path -cmatch '^docs/screenshots/gallery/(?:data-grid(?:-sample-0[1-3])?|selection-sample-06)-(?:light|dark)\.png$'
+}
+
 function Assert-SourceDocsManifest {
     param([Parameter(Mandatory)]$Manifest, [string[]]$CapturePaths = @())
     if ($Manifest.schemaVersion -ne 1 -or $null -eq $Manifest.files) { throw 'Unsupported source docs manifest schema.' }
@@ -93,8 +153,8 @@ function Assert-SourceDocsManifest {
         }
         if ($record.kind -eq 'capture') {
             if (-not $image) { throw "Capture is absent from the explicit map: $path" }
-            if ($record.decision -eq 'new-capture' -and -not $path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal)) {
-                throw "New captures are supported only for controls: $path"
+            if ($record.decision -eq 'new-capture' -and -not (Test-DocsNewCapturePath $path)) {
+                throw "New capture path is unsupported: $path"
             }
             if ($record.sha256 -notmatch '^[a-f0-9]{64}$' -or $record.pngSha256 -cne $record.sha256 -or
                 $record.inputs.Count -eq 0 -or [string]::IsNullOrWhiteSpace([string]$record.theme) -or

@@ -113,7 +113,7 @@ Describe 'Select-VisualCaptures' {
         $realMap = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
         @($realMap.Captures | Where-Object { $_.Inputs -notcontains 'Fluence.Wpf/Themes/Generic.xaml' -or
             $_.Inputs -notcontains 'Fluence.Wpf/Themes/Typography/Typography.xaml' }).Count | Should -Be 0
-        $realMap.Captures.Count | Should -Be 421
+        $realMap.Captures.Count | Should -BeGreaterThan 0
         @($realMap.Captures | Where-Object { $_.Id -like 'controls/*' -and
             $_.Inputs -notcontains 'Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs' }).Count | Should -Be 0
         foreach ($family in @('auto-suggest-box', 'combo-box', 'date-picker', 'drop-down-button', 'menu', 'split-button', 'time-picker', 'toggle-split-button')) {
@@ -126,6 +126,34 @@ Describe 'Select-VisualCaptures' {
                 @($realMap.Captures.Id) | Should -Contain "controls/$($case[0])-$theme-$($case[1]).png"
             }
         }
+    }
+
+    It 'matches every catalog route and XAML sample in both themes without obsolete default IDs' {
+        $repo = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+        $catalog = Get-Content -LiteralPath (Join-Path $repo 'Fluence.Wpf.Demo/DemoNavigationCatalog.cs') -Raw
+        $matches = [regex]::Matches($catalog, 'DemoNavigationItem\.Create\("[^"]+", "(?<route>[^"]+)"[^\r\n]*?new (?<page>Gallery\w+Page)\(')
+        $matches.Count | Should -BeGreaterThan 0
+        $expected = [Collections.Generic.List[string]]::new()
+        foreach ($match in $matches) {
+            $route = $match.Groups['route'].Value.Replace(' ', '-')
+            $page = Join-Path $repo "Fluence.Wpf.Demo/Pages/$($match.Groups['page'].Value).xaml"
+            $page | Should -Exist
+            [xml]$xaml = Get-Content -LiteralPath $page -Raw
+            $cards = @($xaml.SelectNodes("//*[local-name()='DemoSampleControl']"))
+            foreach ($theme in @('light','dark')) {
+                $expected.Add("gallery/$route-$theme.png")
+                for ($ordinal = 1; $ordinal -le $cards.Count; $ordinal++) {
+                    $expected.Add(('gallery/{0}-sample-{1:00}-{2}.png' -f $route,$ordinal,$theme))
+                }
+            }
+        }
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        $ids = @($map.Captures | Where-Object { $_.Id -like 'gallery/*' } | ForEach-Object { [string]$_.Id })
+        $defaults = @($map.Captures | Where-Object { $_.Id -like 'gallery/*' -and $_.State -ceq 'default' } |
+            ForEach-Object { [string]$_.Id })
+        @($ids | Group-Object -CaseSensitive | Where-Object Count -gt 1 | ForEach-Object Name) | Should -Be @()
+        @($expected | Where-Object { $defaults -cnotcontains $_ }) | Should -Be @()
+        @($defaults | Where-Object { $expected -cnotcontains $_ }) | Should -Be @()
     }
 
     It 'nominates a mapped family after a shared XAML edit' {

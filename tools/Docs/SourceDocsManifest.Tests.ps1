@@ -79,6 +79,30 @@ Describe 'Source docs manifest' {
             { ConvertTo-SourceDocsManifestByteArray $manifest @($image) } | Should -Throw
         }
     }
+    It 'permits only the mapped PowerShell tour and reviewed Gallery additions for new captures' {
+        foreach ($path in @('docs/screenshots/controls/new.png',
+            'docs/screenshots/powershell-color-light.png',
+            'docs/screenshots/powershell-layout-dark.png',
+            'docs/screenshots/gallery/data-grid-light.png',
+            'docs/screenshots/gallery/data-grid-sample-03-dark.png',
+            'docs/screenshots/gallery/selection-sample-06-light.png')) {
+            $record = [pscustomobject]@{ path=$path; kind='capture'; sha256=$hash; pngSha256=$hash;
+                provenance='reviewed'; theme='light'; state='default'; mode='WpfRender'; inputs=@('page.xaml');
+                checkedVisualInputSha256=$hash; decision='new-capture' }
+            { ConvertTo-SourceDocsManifestByteArray ([pscustomobject]@{schemaVersion=1;files=@($record)}) @($path) } | Should -Not -Throw
+        }
+        foreach ($path in @('docs/screenshots/gallery/button.png',
+            'docs/screenshots/gallery/data-grid-sample-04-light.png',
+            'docs/screenshots/gallery/selection-sample-07-light.png',
+            'docs/screenshots/powershell-light.png',
+            'docs/screenshots/powershell-other-light.png',
+            'docs/powershell/images/new.png')) {
+            $record = [pscustomobject]@{ path=$path; kind='capture'; sha256=$hash; pngSha256=$hash;
+                provenance='reviewed'; theme='light'; state='default'; mode='WpfRender'; inputs=@('page.xaml');
+                checkedVisualInputSha256=$hash; decision='new-capture' }
+            { ConvertTo-SourceDocsManifestByteArray ([pscustomobject]@{schemaVersion=1;files=@($record)}) @($path) } | Should -Throw '*New capture path is unsupported*'
+        }
+    }
     It 'rejects reparse points when supported' {
         $root = Join-Path $TestDrive 'root'
         $outside = Join-Path $TestDrive 'outside'
