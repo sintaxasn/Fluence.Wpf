@@ -411,7 +411,7 @@ namespace Fluence.Wpf.Tests.Control
                         clickedIndex = args.Index;
                         handlerObservedInvokeReturn = invokeReturned;
                     };
-                    IInvokeProvider currentInvoke = Assert.IsAssignableFrom<IInvokeProvider>(currentPeer.GetPattern(PatternInterface.Invoke));
+                    IInvokeProvider currentInvoke = Assert.IsType<IInvokeProvider>(currentPeer.GetPattern(PatternInterface.Invoke), exactMatch: false);
                     currentInvoke.Invoke();
                     invokeReturned = true;
                     Assert.Null(clickedItem);
@@ -518,8 +518,8 @@ namespace Fluence.Wpf.Tests.Control
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
-                FrameworkElementFactory text = new(typeof(System.Windows.Controls.TextBlock));
-                text.SetBinding(System.Windows.Controls.TextBlock.TextProperty, new Binding(nameof(CrumbModel.Label)));
+                FrameworkElementFactory text = new(typeof(TextBlock));
+                text.SetBinding(TextBlock.TextProperty, new Binding(nameof(CrumbModel.Label)));
                 DataTemplate template = new(typeof(CrumbModel)) { VisualTree = text };
                 CrumbTemplateSelector selector = new(template);
                 CrumbModel[] crumbs = [new("Root"), new("Documents"), new("Current page")];

@@ -91,22 +91,22 @@ namespace Fluence.Wpf.Tests.Gallery
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Fluence.Wpf.Controls.TextBox input = Assert.Single(collection: FindVisualChildren<Fluence.Wpf.Controls.TextBox>(window));
-                    AutomationPeer inputPeer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(input));
-                    AutomationPeer inputLabel = Assert.IsAssignableFrom<AutomationPeer>(inputPeer.GetLabeledBy());
+                    Controls.TextBox input = Assert.Single(collection: FindVisualChildren<Controls.TextBox>(window));
+                    AutomationPeer inputPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(input), exactMatch: false);
+                    AutomationPeer inputLabel = Assert.IsType<AutomationPeer>(inputPeer.GetLabeledBy(), exactMatch: false);
                     Assert.Equal("New task", inputLabel.GetName());
                     Assert.Equal("New task", inputPeer.GetName());
                     Assert.Equal(AutomationControlType.Edit, inputPeer.GetAutomationControlType());
 
-                    Fluence.Wpf.Controls.CheckBox completion = Assert.Single(
-                        FindVisualChildren<Fluence.Wpf.Controls.CheckBox>(window),
+                    Controls.CheckBox completion = Assert.Single(
+                        FindVisualChildren<Controls.CheckBox>(window),
                         static control => control.DataContext is TaskItemViewModel item && string.Equals(item.Title, TaskTitle, StringComparison.Ordinal));
                     TaskItemViewModel taskItem = Assert.IsType<TaskItemViewModel>(completion.DataContext, exactMatch: true);
-                    AutomationPeer completionPeer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(completion));
+                    AutomationPeer completionPeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(completion), exactMatch: false);
                     Assert.Equal("Complete " + TaskTitle, completionPeer.GetName());
-                    Assert.Equal(TaskTitle, Assert.IsAssignableFrom<AutomationPeer>(completionPeer.GetLabeledBy()).GetName());
+                    Assert.Equal(TaskTitle, Assert.IsType<AutomationPeer>(completionPeer.GetLabeledBy(), exactMatch: false).GetName());
                     Assert.Equal(AutomationControlType.CheckBox, completionPeer.GetAutomationControlType());
-                    IToggleProvider toggleProvider = Assert.IsAssignableFrom<IToggleProvider>(completionPeer.GetPattern(PatternInterface.Toggle));
+                    IToggleProvider toggleProvider = Assert.IsType<IToggleProvider>(completionPeer.GetPattern(PatternInterface.Toggle), exactMatch: false);
                     Assert.Equal(ToggleState.Off, toggleProvider.ToggleState);
                     toggleProvider.Toggle();
                     Assert.Equal(ToggleState.On, toggleProvider.ToggleState);
@@ -115,13 +115,13 @@ namespace Fluence.Wpf.Tests.Gallery
                     window.UpdateLayout();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
 
-                    Fluence.Wpf.Controls.Button delete = Assert.Single(
-                        FindVisualChildren<Fluence.Wpf.Controls.Button>(window),
+                    Controls.Button delete = Assert.Single(
+                        FindVisualChildren<Controls.Button>(window),
                         static control => control.DataContext is TaskItemViewModel item && string.Equals(item.Title, TaskTitle, StringComparison.Ordinal));
-                    AutomationPeer deletePeer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(delete));
+                    AutomationPeer deletePeer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(delete), exactMatch: false);
                     Assert.Equal("Delete " + TaskTitle, deletePeer.GetName());
                     Assert.Equal(AutomationControlType.Button, deletePeer.GetAutomationControlType());
-                    IInvokeProvider invokeProvider = Assert.IsAssignableFrom<IInvokeProvider>(deletePeer.GetPattern(PatternInterface.Invoke));
+                    IInvokeProvider invokeProvider = Assert.IsType<IInvokeProvider>(deletePeer.GetPattern(PatternInterface.Invoke), exactMatch: false);
                     invokeProvider.Invoke();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.DoesNotContain(viewModel.DisplayedTasks, static item => string.Equals(item.Title, TaskTitle, StringComparison.Ordinal));
@@ -148,19 +148,19 @@ namespace Fluence.Wpf.Tests.Gallery
                 Window window = DemoTestHost.CreateHostWindow(settingsView);
                 try
                 {
-                    Fluence.Wpf.Controls.ToggleSwitch[] switches = [.. FindVisualChildren<Fluence.Wpf.Controls.ToggleSwitch>(settingsView)];
+                    Controls.ToggleSwitch[] switches = [.. FindVisualChildren<Controls.ToggleSwitch>(settingsView)];
                     Assert.Equal(2, switches.Length);
                     string[] expectedLabels = ["Helpful tips preference", "Compact navigation preference"];
                     for (int i = 0; i < switches.Length; i++)
                     {
-                        Fluence.Wpf.Controls.ToggleSwitch toggleSwitch = switches[i];
-                        AutomationPeer peer = Assert.IsAssignableFrom<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(toggleSwitch));
+                        Controls.ToggleSwitch toggleSwitch = switches[i];
+                        AutomationPeer peer = Assert.IsType<AutomationPeer>(UIElementAutomationPeer.CreatePeerForElement(toggleSwitch), exactMatch: false);
                         Assert.Equal(expectedLabels[i], peer.GetName());
-                        AutomationPeer label = Assert.IsAssignableFrom<AutomationPeer>(peer.GetLabeledBy());
+                        AutomationPeer label = Assert.IsType<AutomationPeer>(peer.GetLabeledBy(), exactMatch: false);
                         Assert.Equal(expectedLabels[i], label.GetName());
                         Assert.Equal(AutomationControlType.Button, peer.GetAutomationControlType());
 
-                        IToggleProvider toggleProvider = Assert.IsAssignableFrom<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle));
+                        IToggleProvider toggleProvider = Assert.IsType<IToggleProvider>(peer.GetPattern(PatternInterface.Toggle), exactMatch: false);
                         Assert.Equal(ToggleState.Off, toggleProvider.ToggleState);
                         toggleProvider.Toggle();
                         Assert.Equal(ToggleState.On, toggleProvider.ToggleState);

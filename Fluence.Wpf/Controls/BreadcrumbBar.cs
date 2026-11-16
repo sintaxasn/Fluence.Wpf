@@ -46,10 +46,10 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Items come from <see cref="System.Windows.Controls.ItemsControl.ItemsSource"/> (or the
+    /// Items come from <see cref="ItemsControl.ItemsSource"/> (or the
     /// inline items collection) and render through the normal ItemsControl mechanics, so
-    /// <see cref="System.Windows.Controls.ItemsControl.DisplayMemberPath"/> and
-    /// <see cref="System.Windows.Controls.ItemsControl.ItemTemplate"/> are respected. Subscribe
+    /// <see cref="ItemsControl.DisplayMemberPath"/> and
+    /// <see cref="ItemsControl.ItemTemplate"/> are respected. Subscribe
     /// to <see cref="ItemClicked"/> to navigate; the event is raised for every crumb including
     /// the last one, matching WinUI.
     /// </para>
@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Controls
     /// </remarks>
     [TemplatePart(Name = PART_OverflowButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PART_ItemsScrollViewer, Type = typeof(ScrollViewer))]
-    public class BreadcrumbBar : System.Windows.Controls.ItemsControl
+    public class BreadcrumbBar : ItemsControl
     {
         private const string PART_OverflowButton = "PART_OverflowButton";
         private const string PART_ItemsScrollViewer = "PART_ItemsScrollViewer";

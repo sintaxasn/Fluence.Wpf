@@ -110,6 +110,17 @@ namespace Fluence.Wpf.Tests.Theming
             "TextOnAccentFillColorDisabledBrush",
         };
 
+        private static readonly string[] HighContrastNavigationPointerOverAndPressedBackgroundKeys =
+        [
+            "NavigationViewItemPointerOverBackgroundBrush",
+            "NavigationViewItemPressedBackgroundBrush",
+        ];
+
+        private static readonly string[] HighContrastNavigationPointerOverAndPressedForegroundKeys =
+        [
+            "NavigationViewItemPointerOverForegroundBrush",
+            "NavigationViewItemPressedForegroundBrush",
+        ];
         private static readonly string[] HighContrastControlStatePrefixes =
         [
             "AccentButton", "ToggleButton", "SplitButton", "CheckBoxCheck", "RadioButtonOuterEllipseChecked",
@@ -123,13 +134,13 @@ namespace Fluence.Wpf.Tests.Theming
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 Application application = TestApp.EnsureLibraryTheme(ApplicationTheme.HighContrast);
-                foreach (string key in new[] { "NavigationViewItemPointerOverBackgroundBrush", "NavigationViewItemPressedBackgroundBrush" })
+                foreach (string key in HighContrastNavigationPointerOverAndPressedBackgroundKeys)
                 {
                     SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(key));
                     Assert.Equal(SystemColors.HighlightColor, brush.Color);
                 }
 
-                foreach (string key in new[] { "NavigationViewItemPointerOverForegroundBrush", "NavigationViewItemPressedForegroundBrush" })
+                foreach (string key in HighContrastNavigationPointerOverAndPressedForegroundKeys)
                 {
                     SolidColorBrush brush = Assert.IsType<SolidColorBrush>(application.TryFindResource(key));
                     Assert.Equal(SystemColors.HighlightTextColor, brush.Color);
