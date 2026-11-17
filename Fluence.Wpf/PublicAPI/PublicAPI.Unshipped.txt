@@ -1,4 +1,40 @@
 ﻿#nullable enable
+Fluence.Wpf.AcrylicBrushExtension
+Fluence.Wpf.AcrylicBrushExtension.AcrylicBrushExtension() -> void
+Fluence.Wpf.AcrylicBrushExtension.AcrylicBrushExtension(string! backdropSourceName) -> void
+Fluence.Wpf.AcrylicBrushExtension.BackdropSourceName.get -> string!
+Fluence.Wpf.AcrylicBrushExtension.BackdropSourceName.set -> void
+Fluence.Wpf.AcrylicBrushExtension.Recipe.get -> Fluence.Wpf.AcrylicMaterialRecipe?
+Fluence.Wpf.AcrylicBrushExtension.Recipe.set -> void
+override Fluence.Wpf.AcrylicBrushExtension.ProvideValue(System.IServiceProvider! serviceProvider) -> object!
+Fluence.Wpf.Controls.AcrylicElement
+Fluence.Wpf.Controls.AcrylicElement.AcrylicElement() -> void
+Fluence.Wpf.Controls.AcrylicElement.BackdropSource.get -> System.Windows.FrameworkElement?
+Fluence.Wpf.Controls.AcrylicElement.BackdropSource.set -> void
+static readonly Fluence.Wpf.Controls.AcrylicElement.BackdropSourceProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.Controls.AcrylicElement.IsUsingFallback.get -> bool
+static readonly Fluence.Wpf.Controls.AcrylicElement.IsUsingFallbackProperty -> System.Windows.DependencyProperty!
+override Fluence.Wpf.Controls.AcrylicElement.OnApplyTemplate() -> void
+Fluence.Wpf.Controls.AcrylicElement.Recipe.get -> Fluence.Wpf.AcrylicMaterialRecipe?
+Fluence.Wpf.Controls.AcrylicElement.Recipe.set -> void
+static readonly Fluence.Wpf.Controls.AcrylicElement.RecipeProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.AcrylicMaterialRecipe
+Fluence.Wpf.AcrylicMaterialRecipe.AcrylicMaterialRecipe() -> void
+Fluence.Wpf.AcrylicMaterialRecipe.AlwaysUseFallback.get -> bool
+Fluence.Wpf.AcrylicMaterialRecipe.AlwaysUseFallback.set -> void
+static readonly Fluence.Wpf.AcrylicMaterialRecipe.AlwaysUseFallbackProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.AcrylicMaterialRecipe.FallbackColor.get -> System.Windows.Media.Color
+Fluence.Wpf.AcrylicMaterialRecipe.FallbackColor.set -> void
+static readonly Fluence.Wpf.AcrylicMaterialRecipe.FallbackColorProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.AcrylicMaterialRecipe.TintColor.get -> System.Windows.Media.Color
+Fluence.Wpf.AcrylicMaterialRecipe.TintColor.set -> void
+static readonly Fluence.Wpf.AcrylicMaterialRecipe.TintColorProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.AcrylicMaterialRecipe.TintLuminosityOpacity.get -> double?
+Fluence.Wpf.AcrylicMaterialRecipe.TintLuminosityOpacity.set -> void
+static readonly Fluence.Wpf.AcrylicMaterialRecipe.TintLuminosityOpacityProperty -> System.Windows.DependencyProperty!
+Fluence.Wpf.AcrylicMaterialRecipe.TintOpacity.get -> double
+Fluence.Wpf.AcrylicMaterialRecipe.TintOpacity.set -> void
+static readonly Fluence.Wpf.AcrylicMaterialRecipe.TintOpacityProperty -> System.Windows.DependencyProperty!
 static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color color, bool exact = false) -> void
 static Fluence.Wpf.ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color lightThemeAccent, System.Windows.Media.Color darkThemeAccent, bool exact = false) -> void
 override Fluence.Wpf.Controls.RadioButton.OnApplyTemplate() -> void

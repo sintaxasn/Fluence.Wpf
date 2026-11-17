@@ -213,6 +213,7 @@ namespace Fluence.Wpf.Theming
         {
             ResourceDictionary computed = BrushFactory.Build(colors);
             SpecialBrushes.Add(computed, colors, theme);
+            AcrylicRecipeFactory.Add(computed, colors, theme);
             computed["AcrylicNoiseBrush"] = AcrylicNoiseHelper.GetNoiseBrush(); // preserve existing token
             computed[ComputedDictionaryMarker] = true;
             return computed;
@@ -246,6 +247,7 @@ namespace Fluence.Wpf.Theming
             Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: true);
             ResourceDictionary computed = BrushFactory.Build(colors);
             SpecialBrushes.Add(computed, colors, theme);
+            AcrylicRecipeFactory.Add(computed, colors, theme);
             return computed;
         }
 

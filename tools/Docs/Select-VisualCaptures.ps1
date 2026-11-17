@@ -51,6 +51,12 @@ function Get-VisualInputContent
 {
     param([Parameter(Mandatory)][string]$LiteralPath)
     $bytes = [System.IO.File]::ReadAllBytes($LiteralPath)
+    if ([System.IO.Path]::GetExtension($LiteralPath) -in @('.png', '.ps'))
+    {
+        # Shader bytecode and noise images are visual inputs but are not UTF-8 text.
+        return 'binary-sha256:' + [System.Convert]::ToHexString(
+            [System.Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+    }
     $decoder = [System.Text.UTF8Encoding]::new($false, $true)
     $content = $decoder.GetString($bytes).TrimStart([char]0xFEFF).Replace("`r`n", "`n").Replace("`r", "`n")
     if (-not $LiteralPath.EndsWith('.xaml', [System.StringComparison]::OrdinalIgnoreCase))

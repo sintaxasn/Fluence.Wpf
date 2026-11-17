@@ -145,6 +145,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
         private static void RaiseSearchKey(UIElement target, Window window, Key key)
         {
+            using IDisposable keyModifiers = WpfTestSta.UseSyntheticKeyModifiers(ModifierKeys.None);
             target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(window), 0, key)
             {
                 RoutedEvent = UIElement.PreviewKeyDownEvent,

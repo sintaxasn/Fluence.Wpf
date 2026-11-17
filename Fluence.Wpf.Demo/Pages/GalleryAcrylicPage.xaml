@@ -1,0 +1,115 @@
+﻿<Page
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryAcrylicPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="http://schemas.fluencewpf.com"
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="900"
+    d:DesignWidth="900"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFallbackRecipe"
+                                       TintColor="DimGray"
+                                       FallbackColor="DimGray"
+                                       AlwaysUseFallback="True" />
+        <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFixedRecipe"
+                                       TintColor="White"
+                                       TintOpacity="0.5"
+                                       FallbackColor="White" />
+    </Page.Resources>
+    <Grid x:Name="PageRoot" Style="{StaticResource GalleryPageRootStyle}">
+        <Grid x:Name="PageContent" Style="{StaticResource GalleryPageContentGridStyle}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <local:GalleryPageHeader DocsAnchor="acrylic-materials" Title="Acrylic" />
+            <TextBlock Grid.Row="1" Style="{StaticResource SectionDescriptionStyle}"
+                       Text="In-app acrylic composites a same-window visual source behind sharp content. This WPF material is an approximation; it does not sample the desktop. Use Settings to compare Light, Dark, and accent themes." />
+            <fluence:SmoothScrollViewer Grid.Row="2"
+                                        Margin="{DynamicResource DemoPageScrollHostMargin}"
+                                        Style="{StaticResource GalleryPageScrollViewerStyle}">
+                <StackPanel Margin="{DynamicResource DemoPageScrollContentMargin}">
+                    <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
+                        <Grid MinHeight="240">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid x:Name="BackdropSource" Grid.ColumnSpan="3" ClipToBounds="True">
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="Purple" />
+                                        <GradientStop Offset="0.5" Color="Teal" />
+                                        <GradientStop Offset="1" Color="IndianRed" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                                <Ellipse x:Name="MovingColorOne" Width="110" Height="110" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="Gold">
+                                    <Ellipse.RenderTransform><TranslateTransform x:Name="MovingTransformOne" /></Ellipse.RenderTransform>
+                                </Ellipse>
+                                <Ellipse x:Name="MovingColorTwo" Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Bottom" Fill="Aquamarine">
+                                    <Ellipse.RenderTransform><TranslateTransform x:Name="MovingTransformTwo" /></Ellipse.RenderTransform>
+                                </Ellipse>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="Moving source" />
+                            </Grid>
+                            <Border x:Name="DirectAcrylicBorder" Grid.Column="1" Background="{fluence:AcrylicBrush BackdropSourceName=BackdropSource, Recipe={StaticResource GalleryAcrylicFixedRecipe}}">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#1F1F1F" Text="Fixed direct brush" />
+                            </Border>
+                            <controls:AcrylicElement x:Name="DynamicAcrylicHost" Grid.Column="2"
+                                                     BackdropSource="{Binding ElementName=BackdropSource}"
+                                                     Recipe="{DynamicResource AcrylicInAppDefaultRecipe}">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Dynamic theme recipe" />
+                            </controls:AcrylicElement>
+                        </Grid>
+                    </ContentControl>
+                    <ContentControl x:Name="DemoSampleSlot01RightRailContentHost" Visibility="Collapsed">
+                        <StackPanel MaxWidth="260">
+                            <TextBlock Text="Source and outputs are sibling elements in this window. The source never contains an acrylic output." TextWrapping="Wrap" />
+                            <ComboBox x:Name="RecipeSelector" Margin="{DynamicResource DemoTextTopGapMargin}" SelectionChanged="RecipeSelector_SelectionChanged" SelectedIndex="0">
+                                <ComboBoxItem Content="Default recipe" Tag="AcrylicInAppDefaultRecipe" />
+                                <ComboBoxItem Content="Base recipe" Tag="AcrylicInAppBaseRecipe" />
+                            </ComboBox>
+                            <CheckBox x:Name="FallbackCheckBox" Margin="{DynamicResource DemoTextTopGapMargin}" Content="Force solid fallback" Checked="FallbackCheckBox_Changed" Unchecked="FallbackCheckBox_Changed" />
+                            <TextBlock Margin="{DynamicResource DemoTextTopGapMargin}" Text="Host fallback reason:" />
+                            <TextBlock x:Name="FallbackReasonText" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Waiting for the host." />
+                        </StackPanel>
+                    </ContentControl>
+                    <local:DemoSampleControl SampleDescription="Compare a direct Border.Background brush with a bindable AcrylicElement host. The class-fixed direct recipe stays fixed; the host follows Default or Base theme resources. Text remains sharp above each material." />
+
+                    <ContentControl x:Name="DemoSampleSlot02DemoContentHost" Visibility="Collapsed">
+                        <Grid MinHeight="180">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid x:Name="PopupBackdropSource" ClipToBounds="True">
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="DodgerBlue" />
+                                        <GradientStop Offset="0.5" Color="MediumPurple" />
+                                        <GradientStop Offset="1" Color="HotPink" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                                <Ellipse x:Name="PopupMovingColor" Width="100" Height="100" HorizontalAlignment="Left" Fill="LightYellow">
+                                    <Ellipse.RenderTransform><TranslateTransform x:Name="PopupMovingTransform" /></Ellipse.RenderTransform>
+                                </Ellipse>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="Main window source" />
+                            </Grid>
+                            <fluence:Button x:Name="OpenPopupButton" Grid.Column="1" Margin="{DynamicResource DemoControlGroupItemMargin}" VerticalAlignment="Center" Click="OpenPopup_Click" Content="Open separate popup" />
+                        </Grid>
+                    </ContentControl>
+                    <ContentControl x:Name="DemoSampleSlot02OutputContentHost" Visibility="Collapsed">
+                        <TextBlock x:Name="PopupFallbackReasonText" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Popup not open." />
+                    </ContentControl>
+                    <local:DemoSampleControl SampleDescription="A WPF Popup has a separate HWND. Its AcrylicElement uses the main-window visual as an explicit source and displays the actual solid fallback reason instead of sampling across windows." />
+                </StackPanel>
+            </fluence:SmoothScrollViewer>
+        </Grid>
+    </Grid>
+</Page>

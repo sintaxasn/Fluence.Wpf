@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
@@ -241,24 +242,66 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    SetHoverStateForTest(radio, value: false);
+                    Assert.False(radio.IsMouseOver);
                     Ellipse dot = Assert.IsType<Ellipse>(radio.Template.FindName("PART_CheckGlyph", radio));
+                    System.Windows.Controls.Border pressedGlyph = Assert.IsType<System.Windows.Controls.Border>(
+                        radio.Template.FindName("PART_PressedCheckGlyph", radio));
                     FieldInfo generationField = Assert.IsType<FieldInfo>(typeof(RadioButton).GetField(
                         "_checkGlyphAnimationGeneration", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+                    Assert.Equal(12, dot.Width);
                     radio.SetPressed(value: true);
                     Assert.True(dot.HasAnimatedProperties);
                     int initialGeneration = Assert.IsType<int>(generationField.GetValue(radio));
 
+                    // Hold the production-created clocks before pumping so a delayed tick cannot
+                    // complete their short active interval before both hover edges are exercised.
+                    AnimationClock[] clocks =
+                    [
+                        GetAttachedClock(dot, FrameworkElement.WidthProperty),
+                        GetAttachedClock(dot, FrameworkElement.HeightProperty),
+                        GetAttachedClock(pressedGlyph, FrameworkElement.WidthProperty),
+                        GetAttachedClock(pressedGlyph, FrameworkElement.HeightProperty),
+                    ];
+                    foreach (AnimationClock clock in clocks)
+                    {
+                        Assert.IsType<ClockController>(clock.Controller).Pause();
+                    }
+
                     Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
-                        () => dot.HasAnimatedProperties && dot.Width < 11.99).ConfigureAwait(true),
+                        () => Array.TrueForAll(clocks, static clock => clock.IsPaused)).ConfigureAwait(true),
+                        "The original press clocks must acknowledge Pause before seeking.");
+                    foreach (AnimationClock clock in clocks)
+                    {
+                        Assert.IsType<ClockController>(clock.Controller).SeekAlignedToLastTick(
+                            TimeSpan.FromMilliseconds(80), TimeSeekOrigin.BeginTime);
+                        Assert.True(clock.IsPaused);
+                        Assert.Equal(ClockState.Active, clock.CurrentState);
+                    }
+
+                    Assert.True(dot.HasAnimatedProperties && dot.Width < 11.99,
                         "The initial press clock must advance before hover changes.");
                     SetHoverStateForTest(radio, value: true);
                     Assert.True(radio.IsMouseOver);
                     Assert.Equal(initialGeneration, Assert.IsType<int>(generationField.GetValue(radio)));
+                    Assert.Same(clocks[0], GetAttachedClock(dot, FrameworkElement.WidthProperty));
+                    Assert.Same(clocks[1], GetAttachedClock(dot, FrameworkElement.HeightProperty));
+                    Assert.Same(clocks[2], GetAttachedClock(pressedGlyph, FrameworkElement.WidthProperty));
+                    Assert.Same(clocks[3], GetAttachedClock(pressedGlyph, FrameworkElement.HeightProperty));
 
                     Assert.True(dot.HasAnimatedProperties);
                     SetHoverStateForTest(radio, value: false);
                     Assert.False(radio.IsMouseOver);
                     Assert.Equal(initialGeneration, Assert.IsType<int>(generationField.GetValue(radio)));
+                    Assert.Same(clocks[0], GetAttachedClock(dot, FrameworkElement.WidthProperty));
+                    Assert.Same(clocks[1], GetAttachedClock(dot, FrameworkElement.HeightProperty));
+                    Assert.Same(clocks[2], GetAttachedClock(pressedGlyph, FrameworkElement.WidthProperty));
+                    Assert.Same(clocks[3], GetAttachedClock(pressedGlyph, FrameworkElement.HeightProperty));
+
+                    foreach (AnimationClock clock in clocks)
+                    {
+                        Assert.IsType<ClockController>(clock.Controller).Resume();
+                    }
 
                     Assert.True(await DispatcherWaits.WaitUntilAsync(window.Dispatcher, 1000,
                         () => !dot.HasAnimatedProperties && Math.Abs(dot.Width - 10.0) < 0.005).ConfigureAwait(true),
@@ -271,6 +314,28 @@ namespace Fluence.Wpf.Tests.Control
                     CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        private static AnimationClock GetAttachedClock(DependencyObject target, DependencyProperty property)
+        {
+            // WPF exposes no public lookup for clocks created by BeginAnimation. Keep this
+            // test-only reflection bounded to the single local clock on each glyph property.
+            Type storageType = Assert.IsType<Type>(typeof(AnimationClock).Assembly.GetType(
+                "System.Windows.Media.Animation.AnimationStorage"), exactMatch: false);
+            MethodInfo getStorage = Assert.IsType<MethodInfo>(storageType.GetMethod(
+                "GetStorage", BindingFlags.Static | BindingFlags.NonPublic), exactMatch: false);
+            object? storage = getStorage.Invoke(null, [target, property]);
+            Assert.NotNull(storage);
+            FieldInfo clocksField = Assert.IsType<FieldInfo>(storageType.GetField(
+                "_animationClocks", BindingFlags.Instance | BindingFlags.NonPublic), exactMatch: false);
+            object? clocks = clocksField.GetValue(storage);
+            Assert.NotNull(clocks);
+            PropertyInfo count = Assert.IsType<PropertyInfo>(clocks.GetType().GetProperty("Count"), exactMatch: false);
+            Assert.Equal(1, Assert.IsType<int>(count.GetValue(clocks)));
+            PropertyInfo item = Assert.IsType<PropertyInfo>(clocks.GetType().GetProperty("Item"), exactMatch: false);
+            AnimationClock clock = Assert.IsType<AnimationClock>(item.GetValue(clocks, [0]));
+            _ = Assert.IsType<DoubleAnimationUsingKeyFrames>(clock.Timeline);
+            return clock;
         }
 
         private static void SetHoverStateForTest(UIElement element, bool value)

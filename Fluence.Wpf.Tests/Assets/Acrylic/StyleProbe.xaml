@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:flu="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+  <Style x:Key="ProbeStyle" TargetType="{x:Type Border}">
+    <Setter Property="Background" Value="{flu:AcrylicBrush BackdropSourceName=BackdropRoot}" />
+  </Style>
+</ResourceDictionary>

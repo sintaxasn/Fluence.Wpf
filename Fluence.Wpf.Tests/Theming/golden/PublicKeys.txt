@@ -43,6 +43,8 @@ AcrylicBackgroundFillColorBase
 AcrylicBackgroundFillColorBaseBrush
 AcrylicBackgroundFillColorDefault
 AcrylicBackgroundFillColorDefaultBrush
+AcrylicInAppBaseRecipe
+AcrylicInAppDefaultRecipe
 AcrylicNoiseBrush
 ApplicationBackgroundBrush
 ApplicationBackgroundColor

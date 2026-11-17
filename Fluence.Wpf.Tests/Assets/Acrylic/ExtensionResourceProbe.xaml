@@ -1,0 +1,6 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:flu="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+  <flu:AcrylicBrush x:Key="SharedExtension" BackdropSourceName="BackdropRoot" />
+  <Border x:Key="SharedConsumer" Background="{StaticResource SharedExtension}" />
+</ResourceDictionary>

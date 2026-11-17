@@ -1,0 +1,14 @@
+{
+  "algorithm": "xorshift32-low-byte-v1",
+  "seed": "0xA53C9E17",
+  "width": 128,
+  "height": 128,
+  "pixelFormat": "RGBA8",
+  "rgb": "grayscale, one xorshift32 low byte per pixel",
+  "alpha": "255 at every pixel",
+  "nodeOpacity": 0.02,
+  "meanGray": 127.762939453125,
+  "minGray": 0,
+  "maxGray": 255,
+  "sha256": "C2B17637D85A66FDCCD18BA71EC46F429A228E1D6B92059087E0D0CDE15C11C2"
+}

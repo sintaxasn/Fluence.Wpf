@@ -1691,3 +1691,187 @@
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_ControlOwnedValidationHelpText_DoesNotClearConsumerReplacementAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_StyleAndDynamicResourceHelpText_SurviveValidationAsync
   Fluence.Wpf.Tests.Control.TextBoxTests.TextBox_StyleAppliedAfterValidationFallback_TakesPrecedenceAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.MalformedPowerPayloads_AreRejectedWithoutReadingVariableData
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.InitialQuery_OneRegistrationForTwoSubscribers_AndLastDetachOnceAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.SeparateHwndSources_KeepIndependentPowerStateAndRegistrationsAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.FailedQueryResumeAndClose_StayConservative_AndDropPendingDeliveryAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.RegistrationFailure_RetriesOnLaterAttachAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.IdleGraphicsModeFlip_NotifiesOnlyOnChangeAndRecoversSameHwndAsync
+  Fluence.Wpf.Tests.Windowing.AcrylicEnvironmentMonitorTests.PartialStartQueryFailure_UnregistersAndAllowsFreshSubscribeAsync
+  Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CaptureAcrylicNativeScenesAsync
+  Fluence.Wpf.Tests.Tools.GalleryScreenshotHarness.CaptureAcrylicFallbackScenesAsync
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0, value: 0, expectedAlpha: 173)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 1, value: 0.5, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 1, value: 0.125, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 1, value: 0, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.5, value: 1, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.5, value: 0.96499999999999997, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.5, value: 0.5, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.5, value: 0.125, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.5, value: 0, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.25, value: 1, expectedAlpha: 138)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.25, value: 0.96499999999999997, expectedAlpha: 141)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.25, value: 0.5, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.25, value: 0.125, expectedAlpha: 180)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0.25, value: 0, expectedAlpha: 179)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0, value: 1, expectedAlpha: 92)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0, value: 0.96499999999999997, expectedAlpha: 98)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0, value: 0.5, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 0, value: 0.125, expectedAlpha: 176)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 1, value: 0.96499999999999997, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintAlpha_MatchesPinnedSourceGolden(saturation: 1, value: 1, expectedAlpha: 184)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticLuminosityRgb_ClampsValueAtBlackAndWhiteEndpoints(red: 255, green: 255, blue: 255, expectedRed: 246, expectedGreen: 246, expectedBlue: 246)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticLuminosityRgb_ClampsValueAtBlackAndWhiteEndpoints(red: 0, green: 0, blue: 0, expectedRed: 32, expectedGreen: 32, expectedBlue: 32)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticLuminosityRgb_ClampsValueAtBlackAndWhiteEndpoints(red: 255, green: 0, blue: 0, expectedRed: 246, expectedGreen: 0, expectedBlue: 0)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 0, value: 1, expected: 0.45000000000000001)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 0, value: 0, expected: 0.84999999999999998)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 0, value: 0.5, expected: 0.90000000000000002)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 0.25, value: 1, expected: 0.67500000000000004)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 0.5, value: 1, expected: 0.90000000000000002)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintOpacityModifier_MatchesPiecewiseSourceFormula(saturation: 1, value: 0, expected: 0.90000000000000002)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.AutomaticTintScalesAlphaAndPreservesOriginalRgb
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.ExplicitLuminosityBypassesModifierAndPreservesTintRgb
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.ExplicitLuminosityClampsToUnitInterval(opacity: -0.25, expectedAlpha: 0)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.ExplicitLuminosityClampsToUnitInterval(opacity: 1.25, expectedAlpha: 255)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteUsesHalfAwayFromZero(value: 2.5, expected: 3)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteUsesHalfAwayFromZero(value: 3.5, expected: 4)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteUsesHalfAwayFromZero(value: 10.5, expected: 11)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteRejectsNonFiniteInput(value: NaN)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteRejectsNonFiniteInput(value: ∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.RoundByteRejectsNonFiniteInput(value: -∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintMathRejectsNonFiniteUnitInputs(value: NaN)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintMathRejectsNonFiniteUnitInputs(value: ∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TintMathRejectsNonFiniteUnitInputs(value: -∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.TransparentTintProducesZeroEffectiveTintAlpha
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialMathTests.OpaqueTintShortcutCanBeDetectedFromEffectiveAlpha
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.NormalState_UsesMaterial_AndKeepsWindowActivationOutOfPolicy
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.EitherHighContrastSignal_UsesLiveOpaqueSystemWindowColor(os: True, app: False)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.EitherHighContrastSignal_UsesLiveOpaqueSystemWindowColor(os: False, app: True)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.EitherHighContrastSignal_UsesLiveOpaqueSystemWindowColor(os: True, app: True)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 7)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 8)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 9)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 10)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 11)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.SourceFailure_ReturnsItsExactReason_AndOpaqueRecipeRgb(reasonValue: 12)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.IndependentFallbackBranches_ReturnNamedReasons_AndOpaqueRecipeRgb
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialPolicyTests.Precedence_IsDesignThenAlwaysThenTransparencyThenPowerThenSourceThenGraphics
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.DefaultsMatchContract
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.OpacityCoercesFiniteRange(input: -1, expected: 0)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.OpacityCoercesFiniteRange(input: 0, expected: 0)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.OpacityCoercesFiniteRange(input: 0.40000000000000002, expected: 0.40000000000000002)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.OpacityCoercesFiniteRange(input: 1, expected: 1)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.OpacityCoercesFiniteRange(input: 2, expected: 1)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.RejectsNaNInfinity(input: NaN)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.RejectsNaNInfinity(input: ∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.RejectsNaNInfinity(input: -∞)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.NullableLuminosityCoercesFiniteRange(input: -0.25, expected: 0)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.NullableLuminosityCoercesFiniteRange(input: 1.25, expected: 1)
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.CloneAndFreezeContainOnlyValues
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.FallbackInputColorIsPreserved
+  Fluence.Wpf.Tests.Theming.AcrylicMaterialRecipeTests.CompiledBamlPreservesNullableLuminosityValuesAsync
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PublishesFrozenInAppRecipeWithPinnedValuesAsync(theme: Light, key: "AcrylicInAppDefaultRecipe", tintR: 252, tintG: 252, tintB: 252, opacity: 0, fallbackR: 249, fallbackG: 249, fallbackB: 249, luminosity: 0.84999999999999998)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PublishesFrozenInAppRecipeWithPinnedValuesAsync(theme: Light, key: "AcrylicInAppBaseRecipe", tintR: 243, tintG: 243, tintB: 243, opacity: 0, fallbackR: 238, fallbackG: 238, fallbackB: 238, luminosity: 0.90000000000000002)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PublishesFrozenInAppRecipeWithPinnedValuesAsync(theme: Dark, key: "AcrylicInAppDefaultRecipe", tintR: 44, tintG: 44, tintB: 44, opacity: 0.14999999999999999, fallbackR: 44, fallbackG: 44, fallbackB: 44, luminosity: 0.95999999999999996)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PublishesFrozenInAppRecipeWithPinnedValuesAsync(theme: Dark, key: "AcrylicInAppBaseRecipe", tintR: 32, tintG: 32, tintB: 32, opacity: 0.5, fallbackR: 28, fallbackG: 28, fallbackB: 28, luminosity: 0.95999999999999996)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_ChangedThemeReplacesOnlyComputedSlot_AndRepeatIsNoOpAsync
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_HighContrastRecipesUseOpaqueLiveWindowColorAndFallbackAsync
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PreservesLegacySolidAcrylicBrushesAndNoiseAsync(theme: Light, expectedDefault: 249, expectedBase: 238)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_PreservesLegacySolidAcrylicBrushesAndNoiseAsync(theme: Dark, expectedDefault: 44, expectedBase: 28)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.BuildStandalone_ContainsIndependentFrozenRecipeValuesAsync(theme: Light)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.BuildStandalone_ContainsIndependentFrozenRecipeValuesAsync(theme: Dark)
+  Fluence.Wpf.Tests.Theming.AcrylicRecipePublicationTests.Apply_UpdatesRealizedHostDynamicRecipeAsync
+  Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_Load_RecipesWithPinnedValuesAsync(fileName: "DesignTime.Light.xaml", key: "AcrylicInAppDefaultRecipe", tint: 252, opacity: 0, fallback: 249, luminosity: 0.84999999999999998)
+  Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_Load_RecipesWithPinnedValuesAsync(fileName: "DesignTime.Light.xaml", key: "AcrylicInAppBaseRecipe", tint: 243, opacity: 0, fallback: 238, luminosity: 0.90000000000000002)
+  Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_Load_RecipesWithPinnedValuesAsync(fileName: "DesignTime.Dark.xaml", key: "AcrylicInAppDefaultRecipe", tint: 44, opacity: 0.14999999999999999, fallback: 44, luminosity: 0.95999999999999996)
+  Fluence.Wpf.Tests.Theming.DesignTimeResourceTests.DesignTimeResources_Load_RecipesWithPinnedValuesAsync(fileName: "DesignTime.Dark.xaml", key: "AcrylicInAppBaseRecipe", tint: 32, opacity: 0.5, fallback: 28, luminosity: 0.95999999999999996)
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryAcrylicPageTests.DemoNavigationCatalog_RegistersAcrylicRoute
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryAcrylicPageTests.GalleryAcrylicPage_ShowsDirectAndHostSamplesWithSourceBoundaryAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryAcrylicPageTests.GalleryAcrylicPage_ShowsActualFallbackReasonsForHostAndPopupAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryAcrylicPageTests.DisplayedAcrylicSamplesHaveOneUserControlContentRootAndPublicPopupStateAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledDirectBorderRectangleAndEllipseGetDistinctLiveBrushesAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledSharedContextsRejectWithoutSharedMutableBrushAsync(file: "StyleProbe.xaml", key: "ProbeStyle")
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledSharedContextsRejectWithoutSharedMutableBrushAsync(file: "ExtensionResourceProbe.xaml", key: "SharedConsumer")
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledDeferredUsesRemainDistinctAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledTemplateCreatesOneBrushPerInstanceAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.NestedBindingIntoClrRecipeIsRejectedByCompiledXamlAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledMissingSourceRetargetsAndReloadsWithTheSameBrushAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledDirectBrushPrefersNearestNamescopeSourceAsync
+  Fluence.Wpf.Tests.Control.AcrylicBrushContractTests.CompiledPathFillRejectsUnsupportedTargetAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.TemplateKeepsContentOutsideMaterialAndUsesDistinctBrushesAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.DynamicRecipeReplacementAndReadOnlyStateAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.InternalReasonChangeFiresWhileFallbackStaysActiveAndStopsAfterUnloadAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.DynamicResourceRecipeFromGeneratedThemeResolvesOnHostAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.LiveSourceTransformAndClipChangesUpdateReasonWithoutManualRefreshAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.LiveSourceBrushReplacementRejectsCycleAndRecoversWithoutLayoutAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.LiveNestedBrushMaskAndDrawingReferencesRejectCyclesAndRecoverAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.SoftwareRenderModeFlipUpdatesRealHostAndRecoversSameHwndAsync
+  Fluence.Wpf.Tests.Control.AcrylicElementTests.TwoWindowsKeepIndependentBrushesWithOneFrozenRecipeAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.MeasuredPaddedSurfaceAndTwoPaneAggregateAreAccepted
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.OversizedResizeReleasesTheOldReservationAndWakesWaiter
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.TwoSmallSurfacesFillTheCountBudgetAcrossOwners
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.OnePixelBeyondProcessAggregateCapIsDenied
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.InvalidPhysicalScaleFailsConservatively
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.PhysicalCeilingAndOnePixelBeyondSingleSurfaceCapAreConservative
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.WeakEntriesDoNotRootAnAbandonedParticipant
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.BudgetFallbackIsOpaqueAndHasNoMaterialOrNoiseChildrenAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.VisibleHostsCompeteAcrossWindowsAndRecoverAfterFourReleasePathsAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.VisibleHostReleasesOversizedResizeAndRecoversOnShrinkAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialBudgetTests.ForeignThreadReleaseQueuesVisibleRecoveryOnOwningDispatcherAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.SourceRetargetAndUnloadReleaseTheOldVisualAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.DirectBrushReplacementDisposesBeforeLoadAndAfterUnloadAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.TargetResizeAndReloadRetainSourceTreeBindingsAndBrushAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.DirectPropertyReplacementAllowsOwnerAndControllerCollectionAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.UnloadedOwnerAndControllerCollectWhileSourceWindowRemainsOpenAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialLifetimeTests.ReplacedSourceAndNestedBrushCollectWhileWindowRemainsOpenAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.PackagedPs30BlendBytecodeLoadsAsync
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.ColorModeBlackAndHalfWhiteIsBlack
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.PartialAlphaRetainsPremultipliedChannels
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.ZeroAlphaInputsProduceZeroRgb
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.AllIndependentBlendGoldensMatchCpuOracle
+  Fluence.Wpf.Tests.Control.AcrylicMaterialRendererTests.MaterialPolicyBuildsPerConsumerRetainedOutputAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DisjointSiblingIsAcceptedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.SelfSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.AncestorSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DescendantSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DetachedSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.OutsideSourceBoundsReturnsUnavailableSourceAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DifferentWindowSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.PopupSourceIsRejectedAsDifferentHwndAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.NestedDrawingBrushReferenceToRegisteredOutputIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.OrdinaryVisualBrushDoesNotCreateFeedbackAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.StyledBorderBrushReferenceToRegisteredOutputIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.StyledSafeSharedBorderBrushIsAcceptedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.TriggeredControlBorderBrushReferenceToOutputIsRejectedAndRecoversAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.TwoHopBrushCycleIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.LongerBrushCycleIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.SharedAcyclicVisualBrushContentIsAcceptedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.IndirectBrushReferenceToRegisteredOutputIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.IndirectBrushReferenceToRegisteredOwnerIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DrawingGroupOpacityMaskReferenceToOutputIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.DrawingImageReferenceToOutputIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.HwndHostBehindVisualBrushIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.UnregisteredBrushReferenceToOwnerOrSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.CrossOwnerGraphCycleIsRejectedWithoutVisualAncestryAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.TranslationMapsPadAndCropAtDeviceScale(scale: 1, expectedPad: 8)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.TranslationMapsPadAndCropAtDeviceScale(scale: 1.5, expectedPad: 12)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.TranslationMapsPadAndCropAtDeviceScale(scale: 2, expectedPad: 16)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ScaledSourceClampsPaddedSourceBounds
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.RectangularViewportClipChangesTargetCropAndSourceRect
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ReflectedZeroAndSkewedMatricesAreUnsupported(m11: -1, m12: 0, m21: 0, m22: 1)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ReflectedZeroAndSkewedMatricesAreUnsupported(m11: 0, m12: 0, m21: 0, m22: 1)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ReflectedZeroAndSkewedMatricesAreUnsupported(m11: 1, m12: 0.10000000000000001, m21: 0, m22: 1)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ReflectedZeroAndSkewedMatricesAreUnsupported(m11: 1, m12: 0, m21: 0.10000000000000001, m22: 1)
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.NonfiniteDeviceTransformIsUnsupported
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.NonrectangularSourceClipIsUnsupportedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.RoundedRectangleSourceClipIsUnsupportedAndRecoversAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.HwndHostBelowSourceIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ReflectedAndRotatedLiveSourcesAreRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.LiveAxisAlignedScaleMapsWithoutBoundingBoxGuessAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.NonAffineTransformMatchingOldSamplesIsRejectedAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.NestedAffineGeneralTransformGroupsComposeInOrderAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.ScrollOffsetRecomputesMappedSourceBoundsAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.SourceBehindClippedScrollViewportCannotBeSampledOutsideViewportAsync
+  Fluence.Wpf.Tests.Control.AcrylicSourceMapTests.RegistrationDoesNotRootOwnerSourceOrOutputAsync
+  Fluence.Wpf.Tests.Control.Rules.FocusVisualTests.TabHeader_SyntheticUnmodifiedTabIgnoresThreadLocalControlAsync(useTabView: False)
+  Fluence.Wpf.Tests.Control.Rules.FocusVisualTests.TabHeader_SyntheticUnmodifiedTabIgnoresThreadLocalControlAsync(useTabView: True)

@@ -62,6 +62,7 @@ namespace Fluence.Wpf.Demo
             DemoNavigationItem.Create("Forms", "forms", "signin checkout settings form text input", "\uE7C3", isDefault: false, static _ => new GalleryFormsPage()),
             DemoNavigationItem.Create("Data", "data", "card listbox listview collection empty state", "\uE8FD", isDefault: false, static _ => new GalleryDataPage()),
             DemoNavigationItem.Create("DataGrid", "data grid", "datagrid table tableview grid rows columns sort group filter edit validation", "\uE80A", isDefault: false, static _ => new GalleryDataGridPage()),
+            DemoNavigationItem.Create("Acrylic", "acrylic", "acrylic material blur backdrop visualbrush fallback", "\uE790", isDefault: false, static _ => new GalleryAcrylicPage()),
             DemoNavigationItem.Create("Data binding", "data binding", "observablecollection binding selection datatemplate", "\uE8FD", isDefault: false, static _ => new GalleryDataBindingPage()),
             DemoNavigationItem.Create("Trees", "trees", "treeview hierarchy expand collapse selection", "\uE8EB", isDefault: false, static _ => new GalleryTreesPage()),
             DemoNavigationItem.Create("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command dialog message box contentdialog teachingtip commandbar", "\uE115", isDefault: false, static _ => new GalleryMenusPage()),

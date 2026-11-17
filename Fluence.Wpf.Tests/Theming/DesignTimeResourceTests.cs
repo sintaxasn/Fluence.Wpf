@@ -44,6 +44,28 @@ namespace Fluence.Wpf.Tests.Theming
     /// </summary>
     public class DesignTimeResourceTests
     {
+        [Theory]
+        [InlineData("DesignTime.Light.xaml", "AcrylicInAppDefaultRecipe", 0xFC, 0, 0xF9, 0.85)]
+        [InlineData("DesignTime.Light.xaml", "AcrylicInAppBaseRecipe", 0xF3, 0, 0xEE, 0.9)]
+        [InlineData("DesignTime.Dark.xaml", "AcrylicInAppDefaultRecipe", 0x2C, 0.15, 0x2C, 0.96)]
+        [InlineData("DesignTime.Dark.xaml", "AcrylicInAppBaseRecipe", 0x20, 0.5, 0x1C, 0.96)]
+        public Task DesignTimeResources_Load_RecipesWithPinnedValuesAsync(
+            string fileName, string key, byte tint, double opacity, byte fallback, double luminosity)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                _ = WpfTestSta.EnsureApplication();
+                Uri uri = new("pack://application:,,,/Fluence.Wpf;component/Properties/" + fileName, UriKind.Absolute);
+                ResourceDictionary dictionary = new() { Source = uri };
+                AcrylicMaterialRecipe recipe = Assert.IsType<AcrylicMaterialRecipe>(dictionary[key]);
+                Assert.Equal(Color.FromRgb(tint, tint, tint), recipe.TintColor);
+                Assert.Equal(opacity, recipe.TintOpacity);
+                Assert.Equal(Color.FromRgb(fallback, fallback, fallback), recipe.FallbackColor);
+                Assert.Equal(luminosity, recipe.TintLuminosityOpacity);
+                Assert.False(recipe.AlwaysUseFallback);
+            });
+        }
+
         /// <summary>
         /// Drift guard. Regenerates each snapshot in memory and asserts it matches the committed
         /// file (newline-normalized). Any new or changed Color/brush key in the engine fails this

@@ -1,0 +1,9 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+    <fluence:AcrylicMaterialRecipe x:Key="Defaults" />
+    <fluence:AcrylicMaterialRecipe x:Key="NullLuminosity" TintLuminosityOpacity="{x:Null}" />
+    <fluence:AcrylicMaterialRecipe x:Key="ExplicitLuminosity" TintLuminosityOpacity="0.96" TintOpacity="0.7" />
+    <fluence:AcrylicMaterialRecipe x:Key="CoercedOpacity" TintLuminosityOpacity="1.25" TintOpacity="1.5" />
+</ResourceDictionary>

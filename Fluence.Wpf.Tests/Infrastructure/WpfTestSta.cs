@@ -28,9 +28,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
@@ -46,6 +49,18 @@ namespace Fluence.Wpf.Tests.Infrastructure
     {
         private static Dispatcher? _dispatcher;
         private static readonly Lock LockObj = new();
+
+        private static class NativeMethods
+        {
+            // The test project also targets .NET Framework, where LibraryImport is unavailable.
+#pragma warning disable SYSLIB1054
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern bool GetKeyboardState([Out] byte[] keyStates);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            internal static extern bool SetKeyboardState(byte[] keyStates);
+#pragma warning restore SYSLIB1054
+        }
 
         internal static Dispatcher Dispatcher => EnsureDispatcher();
 
@@ -106,6 +121,63 @@ namespace Fluence.Wpf.Tests.Infrastructure
         internal static void DrainDispatcher(Dispatcher dispatcher)
         {
             _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
+        }
+
+        /// <summary>
+        /// Sets the shared STA thread's modifier state for a synthetic key event, then restores
+        /// its previous state when the scope ends. This does not send system-wide keyboard input.
+        /// </summary>
+        /// <param name="modifiers">The modifier combination intended for the synthetic key event.</param>
+        /// <returns>A scope that restores the calling thread's prior keyboard state.</returns>
+        /// <exception cref="Win32Exception">The calling thread's keyboard state cannot be read or set.</exception>
+        internal static IDisposable UseSyntheticKeyModifiers(ModifierKeys modifiers)
+        {
+            byte[] previous = new byte[256];
+            if (!NativeMethods.GetKeyboardState(previous))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "GetKeyboardState failed.");
+            }
+
+            byte[] desired = (byte[])previous.Clone();
+            foreach (int key in new[] { 0x10, 0x11, 0x12, 0x5B, 0x5C, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5 })
+            {
+                desired[key] &= 0x7F;
+            }
+
+            SetModifier(desired, modifiers, ModifierKeys.Shift, 0x10, 0xA0);
+            SetModifier(desired, modifiers, ModifierKeys.Control, 0x11, 0xA2);
+            SetModifier(desired, modifiers, ModifierKeys.Alt, 0x12, 0xA4);
+            SetModifier(desired, modifiers, ModifierKeys.Windows, 0x5B, 0x5B);
+            return NativeMethods.SetKeyboardState(desired)
+                ? new KeyboardStateScope(previous)
+                : throw new Win32Exception(Marshal.GetLastWin32Error(), "SetKeyboardState failed.");
+        }
+
+        private static void SetModifier(byte[] keyStates, ModifierKeys requested, ModifierKeys modifier, int generalKey, int sideKey)
+        {
+            if (requested.HasFlag(modifier))
+            {
+                keyStates[generalKey] |= 0x80;
+                keyStates[sideKey] |= 0x80;
+            }
+        }
+
+        private sealed class KeyboardStateScope : IDisposable
+        {
+            private readonly byte[] _previous;
+
+            internal KeyboardStateScope(byte[] previous)
+            {
+                _previous = previous;
+            }
+
+            public void Dispose()
+            {
+                if (!NativeMethods.SetKeyboardState(_previous))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Restore keyboard state failed.");
+                }
+            }
         }
 
         /// <summary>

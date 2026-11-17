@@ -1,0 +1,19 @@
+{
+  "authority": "Direct2D nonseparable blend equations in reviewed implementation plan; independent Task 0B native black and white observations",
+  "encoding": "unassociated sRGB byte channels at input and output; outputPremul is RGB before unassociation",
+  "toleranceRgbBytes": 2,
+  "toleranceInferredAlphaBytes": 2,
+  "cases": [
+    { "name": "color-black-half-white", "mode": "color", "background": "#FF000000", "foreground": "#80FFFFFF", "output": "#FF000000", "outputPremul": "#000000" },
+    { "name": "lum-red-on-blue", "mode": "luminosity", "background": "#FF0000FF", "foreground": "#80FF0000", "output": "#FF1B1BFF", "outputPremul": "#1B1BFF" },
+    { "name": "color-red-on-blue", "mode": "color", "background": "#FF0000FF", "foreground": "#80FF0000", "output": "#FF2F007F", "outputPremul": "#2F007F" },
+    { "name": "color-gamut-high", "mode": "color", "background": "#FFF0EBE6", "foreground": "#C0FF0000", "output": "#FFFBE6E4", "outputPremul": "#FBE6E4" },
+    { "name": "lum-gamut-low", "mode": "luminosity", "background": "#FF0000FF", "foreground": "#80000000", "output": "#FF00007F", "outputPremul": "#00007F" },
+    { "name": "zero-alpha-foreground", "mode": "color", "background": "#FF008080", "foreground": "#00FF0000", "output": "#FF008080", "outputPremul": "#008080" },
+    { "name": "zero-alpha-background", "mode": "color", "background": "#00000000", "foreground": "#80FF0000", "output": "#80FF0000", "outputPremul": "#800000" },
+    { "name": "both-half", "mode": "luminosity", "background": "#800000FF", "foreground": "#80FF0000", "output": "#C06613AA", "outputPremul": "#4D0E80" },
+    { "name": "both-zero", "mode": "luminosity", "background": "#00000000", "foreground": "#00000000", "output": "#00000000", "outputPremul": "#000000" },
+    { "name": "partial", "mode": "color", "background": "#400000FF", "foreground": "#C0FF0000", "output": "#D0C50014", "outputPremul": "#A10010" },
+    { "name": "two-pass-lum-color", "mode": "luminosity-then-color", "background": "#FF0000FF", "foreground": "#80FF0000", "secondForeground": "#B4FFFFFF", "output": "#FF2D2D70", "outputPremul": "#2D2D70" }
+  ]
+}

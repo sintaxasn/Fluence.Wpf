@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 06-ControlsTour.ps1 - Complete Fluence controls tour in category pages.
 # Use the labeled category rail to explore the public controls and common variants.
 # The switch and data-grid selection update a shared InfoBar. The grid binds
-# PowerShell objects; flyouts, dialogs, tabs, and tips show interaction patterns.
+# PowerShell objects; flyouts, dialogs, tabs, tips, and an in-app acrylic host
+# with an explicit moving source and solid fallback show interaction patterns.
 # FlyoutPresenter is shown directly; CommandBarFlyout creates its presenter.
 # Run: powershell.exe -STA -File 06-ControlsTour.ps1   OR   pwsh -File 06-ControlsTour.ps1
 
@@ -67,6 +68,7 @@ $xaml = @'
                 <fluence:ListBoxItem Content="Navigation" AutomationProperties.Name="Navigation controls" />
                 <fluence:ListBoxItem Content="Status" AutomationProperties.Name="Status controls" />
                 <fluence:ListBoxItem Content="Surfaces" AutomationProperties.Name="Surfaces controls" />
+                <fluence:ListBoxItem Content="Acrylic" AutomationProperties.Name="Acrylic material" />
                 <fluence:ListBoxItem Content="Layout" AutomationProperties.Name="Layout controls" />
             </fluence:ListBox>
         </StackPanel>
@@ -626,7 +628,7 @@ $xaml = @'
                 <fluence:Card Padding="16" Margin="0,0,0,16">
                     <fluence:StackPanel Spacing="8">
                         <TextBlock Text="Expander" fluence:TextBlockExtensions.Typography="Subtitle" Margin="0,0,0,4" />
-                        <fluence:Expander Header="Advanced options">
+                        <fluence:Expander x:Name="TourSurfacesExpander" Header="Advanced options">
                             <fluence:CheckBox Content="Include archived items" />
                         </fluence:Expander>
                     </fluence:StackPanel>
@@ -658,6 +660,51 @@ $xaml = @'
                             <TextBlock Text="FlyoutPresenter" Margin="8" />
                         </fluence:FlyoutPresenter>
                         <TextBlock Text="Open the command bar on the Commands page to see its presenter." TextWrapping="Wrap" />
+                    </fluence:StackPanel>
+                </fluence:Card>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="PageAcrylic" Grid.Row="1" Grid.Column="2" Visibility="Collapsed">
+            <Grid.Resources>
+                <fluence:AcrylicMaterialRecipe x:Key="TourFallbackRecipe" TintColor="#CCFFFFFF" TintOpacity="1" FallbackColor="{DynamicResource AcrylicBackgroundFillColorDefault}" AlwaysUseFallback="True" />
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                <fluence:Card Padding="16" Margin="0,0,0,16">
+                    <fluence:StackPanel Spacing="8">
+                        <TextBlock Text="In-app acrylic" fluence:TextBlockExtensions.Typography="Subtitle" />
+                        <TextBlock Text="The colored field and acrylic host are separate siblings in this window. Move the field to see the live source." TextWrapping="Wrap" />
+                        <fluence:Button x:Name="MoveAcrylicSource" Content="Move source colors" AutomationProperties.Name="Move acrylic source colors" />
+                        <fluence:CheckBox x:Name="ForceAcrylicFallback" Content="Use solid fallback" AutomationProperties.Name="Use acrylic solid fallback" />
+                        <TextBlock x:Name="AcrylicModeText" Text="Checking material mode..." TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                    </fluence:StackPanel>
+                </fluence:Card>
+                <fluence:Card Padding="16">
+                    <TextBlock Text="The host follows the published Default recipe in Light and Dark. High Contrast, disabled transparency, software rendering, and an unavailable source use an opaque fallback." TextWrapping="Wrap" />
+                </fluence:Card>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                <fluence:Card Padding="16">
+                    <fluence:StackPanel Spacing="8">
+                        <TextBlock Text="Same-window source and output" fluence:TextBlockExtensions.Typography="Subtitle" TextWrapping="Wrap" />
+                        <Grid Height="250" ClipToBounds="True">
+                            <Grid x:Name="AcrylicBackdropSource" Background="#FF243E76">
+                                <Rectangle Width="170" Height="250" HorizontalAlignment="Left" Fill="#FFDF534A">
+                                    <Rectangle.RenderTransform>
+                                        <TranslateTransform x:Name="AcrylicMovingBand" X="0" />
+                                    </Rectangle.RenderTransform>
+                                </Rectangle>
+                                <Rectangle Width="120" Height="250" HorizontalAlignment="Right" Fill="#FF3BB7A1" />
+                                <Ellipse Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Bottom" Fill="#FFFFC957" />
+                            </Grid>
+                            <fluence:AcrylicElement x:Name="TourAcrylicHost" Width="250" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center" Recipe="{DynamicResource AcrylicInAppDefaultRecipe}" AutomationProperties.Name="Live acrylic material">
+                                <TextBlock Text="Sharp content over acrylic" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" FontWeight="SemiBold" />
+                            </fluence:AcrylicElement>
+                        </Grid>
+                        <TextBlock Text="The colored field is the explicit backdrop source. The host is not inside that source." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     </fluence:StackPanel>
                 </fluence:Card>
             </StackPanel>
@@ -780,7 +827,7 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Initialize {
     param($Window, $Data)
     $bar = $Window.FindName('StatusBar')
     $Window.FindName('CloseButton').add_Click({ Close-FluenceWindow -Window $Window }.GetNewClosure())
-    $categories = @('Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Layout')
+    $categories = @('Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Acrylic', 'Layout')
     $purposes = @(
         'Enter text, choose values, and try date and time controls.'
         'Choose a color and inspect its live value.'
@@ -790,6 +837,7 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Initialize {
         'Compare left, top, and compact navigation.'
         'Compare progress, notifications, and status messages.'
         'Open dialogs and tips, and inspect reusable surfaces.'
+        'Move an explicit same-window source and switch its acrylic host to solid fallback.'
         'Explore layout, icons, images, scrolling, and type.'
     )
     $categoryList = $Window.FindName('CategoryList')
@@ -866,6 +914,47 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Initialize {
     $Window.FindName('SelectedColorText').Text = ('Selected #{0:X2}{1:X2}{2:X2}{3:X2}' -f $initialColor.A, $initialColor.R, $initialColor.G, $initialColor.B)
     $Window.FindName('AccentAction').add_Click({ $bar.Message = 'Accent action selected.' }.GetNewClosure())
     $Window.FindName('ClickableCard').add_Click({ $bar.Message = 'Default Card selected.' }.GetNewClosure())
+    $acrylicHost = $Window.FindName('TourAcrylicHost')
+    $acrylicHost.BackdropSource = $Window.FindName('AcrylicBackdropSource')
+    $acrylicModeText = $Window.FindName('AcrylicModeText')
+    $updateAcrylicMode = {
+        $acrylicModeText.Text = if ($acrylicHost.IsUsingFallback)
+        {
+            'Mode: opaque solid fallback.'
+        }
+        else
+        {
+            'Mode: live in-app acrylic material.'
+        }
+    }.GetNewClosure()
+    $acrylicStateProperty = [System.ComponentModel.DependencyPropertyDescriptor]::FromProperty([Fluence.Wpf.Controls.AcrylicElement]::IsUsingFallbackProperty, [Fluence.Wpf.Controls.AcrylicElement])
+    $acrylicStateProperty.AddValueChanged($acrylicHost, [System.EventHandler]$updateAcrylicMode)
+    & $updateAcrylicMode
+    $sourceOffset = 0
+    $movingBand = $Window.FindName('AcrylicMovingBand')
+    $Window.FindName('MoveAcrylicSource').add_Click({
+            $sourceOffset = if ($sourceOffset -eq 0)
+            {
+                95
+            }
+            else
+            {
+                0
+            }
+            $movingBand.X = $sourceOffset
+            $bar.Message = 'The explicit source colors moved behind the acrylic host.'
+        }.GetNewClosure())
+    $fallbackToggle = $Window.FindName('ForceAcrylicFallback')
+    $fallbackToggle.add_Checked({
+            $acrylicHost.SetResourceReference([Fluence.Wpf.Controls.AcrylicElement]::RecipeProperty, 'TourFallbackRecipe')
+            $bar.Message = 'Acrylic uses its opaque solid fallback.'
+            & $updateAcrylicMode
+        }.GetNewClosure())
+    $fallbackToggle.add_Unchecked({
+            $acrylicHost.SetResourceReference([Fluence.Wpf.Controls.AcrylicElement]::RecipeProperty, 'AcrylicInAppDefaultRecipe')
+            $bar.Message = 'Acrylic follows the live Default recipe again.'
+            & $updateAcrylicMode
+        }.GetNewClosure())
     $Window.FindName('NewDropDown').Flyout.add_Click({ $bar.Message = 'New document selected.' }.GetNewClosure())
     $Window.FindName('SaveSplit').add_Click({ $bar.Message = 'Save selected.' }.GetNewClosure())
     $Window.FindName('SaveSplit').Flyout.add_Click({ $bar.Message = 'Save as selected.' }.GetNewClosure())

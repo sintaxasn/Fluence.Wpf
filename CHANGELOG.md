@@ -8,9 +8,13 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Added
+
+- Added opt-in same-window in-app acrylic with `AcrylicMaterialRecipe`, a direct brush for concrete border and shape fills, and the bindable `AcrylicElement` host. The gallery and PowerShell Controls Tour show an explicit moving source and an opaque fallback. Light and Dark publish Default and Base recipes; High Contrast and unsupported rendering use a solid fallback. The WPF material is an approximation of WinUI acrylic. These changes add 182 ordinary test cases and two opt-in screenshot facts per full test target framework.
+
 ### Changed
 
-- Reorganized the PowerShell Controls Tour into nine labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
+- Reorganized the PowerShell Controls Tour into ten labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
 - Gallery capture coverage now follows the navigation and sample catalogs, waits for selection indicators to settle, and records source, binary, state, and image hashes. Image review and website sync validate that provenance before accepting new captures.
 
 ### Fixed

@@ -47,6 +47,14 @@
     <Resource Include="Themes\Icons\Fluence_Lockup_Horizontal_Dark.png" />
   </ItemGroup>
 
+  <ItemGroup Label="Acrylic shader">
+    <Resource Include="Shaders\AcrylicBlend.ps" />
+    <Resource Include="Shaders\AcrylicNoise.png" />
+    <None Update="Shaders\AcrylicBlend.fx" Pack="true" PackagePath="shaders/" />
+    <None Update="Shaders\AcrylicNoiseGenerator.py" Pack="true" PackagePath="shaders/" />
+    <None Update="Shaders\AcrylicNoise.json" Pack="true" PackagePath="shaders/" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Tasks.Git">
       <PrivateAssets>all</PrivateAssets>

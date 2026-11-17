@@ -6,6 +6,45 @@ This file tracks optional follow-ups and deliberate non-features. Filed bugs wit
 reproductions live on the issue tracker; this is the consolidated view for
 maintainers.
 
+## In-app acrylic source and rendering limits
+
+`AcrylicBrushExtension` and `AcrylicElement` require an explicit source in the
+same WPF `HwndSource`, in a separate subtree that contains no acrylic output.
+Translation and axis-aligned scale are the supported mappings. Rotation, skew,
+nonrectangular source clips, source cycles, detached sources, separate `Popup`
+windows, and `HwndHost` airspace use an opaque fallback. The material does not
+sample the desktop or another window. Direct brush use is limited to concrete
+`Border.Background`, `Rectangle.Fill`, and `Ellipse.Fill` properties with a
+fixed recipe; use the host for live theme recipe replacement.
+
+Automatic power-saving fallback follows Battery Saver. Windows Energy Saver
+can report a separate state, so enabling Energy Saver may leave acrylic active.
+Set `AlwaysUseFallback` to `True` on the recipe to keep the material disabled
+regardless of either setting. An actual Battery Saver-on transition remains
+unverified.
+
+The PS 3.0 blend shader requires an active hardware rendering route. WPF
+software rendering, policy restrictions, missing blend resources, and device
+failure select an opaque, noise-free fallback. Native material and blur-edge
+checks cover physical 96, 144, and 192 DPI on one local tier-2 GPU. Budget and
+recovery checks passed at 96 and 144 DPI; 192 DPI budget and recovery remain
+unverified. Separate `RenderTargetBitmap` observations are software-only and
+cannot prove material pixels. Exact WinUI acrylic pixel parity remains
+unverified. See the [material guide](docs/controls.md#acrylic-materials).
+
+The in-app material uses a conservative process-wide budget of two live
+surfaces, 2,146,176 padded physical pixels for one surface, and 2,172,672
+aggregate padded physical pixels. A larger or competing host becomes opaque
+and noise-free until capacity is released; the switch has no material
+crossfade. Six-second single-pane and two-pane native runs on the available
+tier-2 GPU recorded 17.56 ms and 17.72 ms p95 WPF rendering callback intervals.
+These are not DWM present times or a 60 Hz guarantee.
+
+Cross-monitor movement, RDP, other hardware tiers and GPUs, and actual device
+loss remain unverified. Real Windows Transparency effects and High Contrast
+changes delivered fallback events, but High Contrast fallback pixels remain
+unverified.
+
 ## Tree selection and unrealized data-bound branches
 
 Multiple-selection cascading follows existing `TreeViewItem` containers. For a
