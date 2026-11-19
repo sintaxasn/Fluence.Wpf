@@ -124,7 +124,7 @@ Apply the theme before creating the first window. Place an explicit backdrop sou
 </Grid>
 ```
 
-The direct extension creates a separate `VisualBrush` for each concrete `Border.Background`, `Rectangle.Fill`, or `Ellipse.Fill` use. Its `StaticResource` recipe is fixed for that use; a markup-extension property cannot take a live `DynamicResource`. `AcrylicElement.Recipe` is a dependency property and can follow `AcrylicInAppDefaultRecipe` or `AcrylicInAppBaseRecipe` as the theme changes. The five recipe values are `TintColor`, `TintOpacity`, `TintLuminosityOpacity` (null for automatic), `FallbackColor`, and `AlwaysUseFallback`. The host exposes read-only `IsUsingFallback` for a visible state indicator. Set `AlwaysUseFallback` on a recipe to request the solid mode. See [theme resources](theming.md#acrylic-recipes) for the published values.
+The direct extension creates a separate `VisualBrush` for each concrete `Border.Background`, `Rectangle.Fill`, or `Ellipse.Fill` use. Its `StaticResource` recipe is fixed for that use; a markup-extension property cannot take a live `DynamicResource`. Set `DynamicResource` on the host's `Recipe` property to follow theme and accent changes for the published neutral and accent recipes. The five recipe values are `TintColor`, `TintOpacity`, `TintLuminosityOpacity` (null for automatic), `FallbackColor`, and `AlwaysUseFallback`. The host exposes read-only `IsUsingFallback` for a visible state indicator. Set `AlwaysUseFallback` on a recipe to request the solid mode. See [theme resources](theming.md#acrylic-recipes) for the published values.
 
 | Source or target | Result |
 | --- | --- |

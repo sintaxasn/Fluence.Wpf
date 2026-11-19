@@ -41,14 +41,21 @@ The named families contain more keys than the examples shown. The public invento
 
 ### Acrylic recipes
 
-After `ApplicationThemeManager.Apply`, the computed dictionary publishes frozen `AcrylicInAppDefaultRecipe` and `AcrylicInAppBaseRecipe` values. Light and Dark provide distinct tint, luminosity, and opaque fallback values for each key. High Contrast publishes fallback-only recipes based on the live system window color. These recipes contain values only, not a source or a shared live brush.
+After `ApplicationThemeManager.Apply`, the computed dictionary publishes these frozen `AcrylicMaterialRecipe` values. Each host supplies its own same-window source.
+
+| Material | Default | Base |
+| --- | --- | --- |
+| Neutral | `AcrylicInAppDefaultRecipe` | `AcrylicInAppBaseRecipe` |
+| Accent | `AcrylicInAppAccentDefaultRecipe` | `AcrylicInAppAccentBaseRecipe` |
+
+Accent tint and opaque fallback use the resolved accent ramp. In Light, both recipes use Light3. In Dark, Default uses Dark1 and Base uses Dark2. All four recipes use the system Window color as their solid fallback in High Contrast.
 
 ```xml
 <fluence:AcrylicElement BackdropSource="{Binding ElementName=BackdropRoot}"
                         Recipe="{DynamicResource AcrylicInAppDefaultRecipe}" />
 ```
 
-Use `DynamicResource` on the host's `Recipe` dependency property to follow theme publication; replace `Default` with `Base` for the stronger base variant. For a direct `Border.Background` or supported shape fill, pass a fixed `StaticResource` recipe to `{fluence:AcrylicBrush ...}`. The direct markup extension cannot reevaluate a `DynamicResource` nested in its CLR property. The [rooted example and source rules](controls.md#acrylic-materials) show both patterns. Existing `AcrylicBackground*Brush` keys, `AcrylicNoiseBrush`, popup paints, and window DWM backdrops retain their own behavior.
+Use `DynamicResource` on the host's `Recipe` dependency property to follow theme and accent changes. The Colors gallery shows the accent pair under **Background > Accent Acrylic Background**. For a direct `Border.Background` or supported shape fill, pass a fixed `StaticResource` recipe to `{fluence:AcrylicBrush ...}`. The direct markup extension cannot reevaluate a `DynamicResource` nested in its CLR property. The [rooted example and source rules](controls.md#acrylic-materials) show both patterns. Existing `AcrylicBackground*Brush` keys, `AcrylicNoiseBrush`, popup paints, and window DWM backdrops retain their own behavior.
 
 Recipe, theme, and policy refreshes switch directly between acrylic material and its opaque fallback. The 167 ms `ControlFastAnimationDuration` token does not animate this material. The [material limits](controls.md#acrylic-materials) apply to direct brushes and hosts together across windows in the process.
 

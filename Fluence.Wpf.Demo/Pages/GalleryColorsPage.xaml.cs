@@ -470,7 +470,8 @@ namespace Fluence.Wpf.Demo.Pages
                         "Choose a live acrylic recipe over the image. The swatches show the solid paint tokens.",
                         QuarternarySurface,
                         foregroundKey: null,
-                        CreateAcrylicBackgroundExample,
+                        static () => CreateAcrylicBackgroundExample(
+                            "Acrylic recipe", "AcrylicInAppDefaultRecipe", "AcrylicInAppBaseRecipe"),
                         [
                             new(rows: 1,
                             [
@@ -480,10 +481,11 @@ namespace Fluence.Wpf.Demo.Pages
                         ]),
                     new(
                         "Accent Acrylic Background",
-                        "Acrylic background colors to place layers, cards, or controls on.",
+                        "Choose a live acrylic recipe tinted by the current accent. The swatches show the solid paint tokens.",
                         QuarternarySurface,
                         foregroundKey: null,
-                        static () => CreateSurface("AccentAcrylicBackgroundFillColorBaseBrush", CardStroke, OverlayRadius, SurfaceWidth, SurfaceHeight),
+                        static () => CreateAcrylicBackgroundExample(
+                            "Accent acrylic recipe", "AcrylicInAppAccentDefaultRecipe", "AcrylicInAppAccentBaseRecipe"),
                         [
                             new(rows: 1,
                             [
@@ -918,7 +920,7 @@ namespace Fluence.Wpf.Demo.Pages
             return panel;
         }
 
-        private static StackPanel CreateAcrylicBackgroundExample()
+        private static StackPanel CreateAcrylicBackgroundExample(string selectorName, string defaultRecipeKey, string baseRecipeKey)
         {
             Grid source = new() { ClipToBounds = true, IsHitTestVisible = false };
             _ = source.Children.Add(new Image { Source = ControlOnImageSample, Stretch = Stretch.UniformToFill });
@@ -938,11 +940,13 @@ namespace Fluence.Wpf.Demo.Pages
             _ = preview.Children.Add(source);
             _ = preview.Children.Add(material);
 
-            ComboBox selector = new();
-            AutomationProperties.SetName(selector, "Acrylic recipe");
+            Controls.ComboBox selector = new();
+            AutomationProperties.SetName(selector, selectorName);
             selector.SetResourceReference(MarginProperty, "DemoTextTopGapMargin");
-            _ = selector.Items.Add(new ComboBoxItem { Content = "Default", Tag = "AcrylicInAppDefaultRecipe" });
-            _ = selector.Items.Add(new ComboBoxItem { Content = "Base", Tag = "AcrylicInAppBaseRecipe" });
+            _ = selector.Items.Add(new ComboBoxItem { Content = "Default", Tag = defaultRecipeKey });
+            _ = selector.Items.Add(new ComboBoxItem { Content = "Base", Tag = baseRecipeKey });
+            selector.SelectedIndex = 0;
+            material.SetResourceReference(Controls.AcrylicElement.RecipeProperty, defaultRecipeKey);
             selector.SelectionChanged += (_, _) =>
             {
                 if (selector.SelectedItem is ComboBoxItem { Tag: string recipeKey })
@@ -950,7 +954,6 @@ namespace Fluence.Wpf.Demo.Pages
                     material.SetResourceReference(Controls.AcrylicElement.RecipeProperty, recipeKey);
                 }
             };
-            selector.SelectedIndex = 0;
 
             StackPanel panel = new();
             _ = panel.Children.Add(preview);

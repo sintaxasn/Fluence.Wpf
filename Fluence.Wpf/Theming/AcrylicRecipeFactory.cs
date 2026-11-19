@@ -39,9 +39,11 @@ namespace Fluence.Wpf.Theming
     {
         internal const string DefaultKey = "AcrylicInAppDefaultRecipe";
         internal const string BaseKey = "AcrylicInAppBaseRecipe";
+        internal const string AccentDefaultKey = "AcrylicInAppAccentDefaultRecipe";
+        internal const string AccentBaseKey = "AcrylicInAppAccentBaseRecipe";
 
         /// <summary>
-        /// Adds the two frozen in-app recipes to a computed theme dictionary.
+        /// Adds the frozen neutral and accent in-app recipes to a computed theme dictionary.
         /// </summary>
         /// <param name="dictionary">The dictionary receiving the recipes.</param>
         /// <param name="colors">The already resolved and fingerprinted color map.</param>
@@ -55,6 +57,8 @@ namespace Fluence.Wpf.Theming
                 Color window = Opaque(colors["AccentAcrylicBackgroundFillColorDefault"]);
                 dictionary[DefaultKey] = Create(window, 0d, window, luminosity: null, alwaysFallback: true);
                 dictionary[BaseKey] = Create(window, 0d, window, luminosity: null, alwaysFallback: true);
+                dictionary[AccentDefaultKey] = Create(window, 0d, window, luminosity: null, alwaysFallback: true);
+                dictionary[AccentBaseKey] = Create(window, 0d, window, luminosity: null, alwaysFallback: true);
                 return;
             }
 
@@ -71,6 +75,13 @@ namespace Fluence.Wpf.Theming
                 Opaque(colors["AcrylicBackgroundFillColorBase"]),
                 dark ? 0.96d : 0.9d,
                 alwaysFallback: false);
+
+            // WinUI uses the same resolved accent shade for tint and solid fallback.
+            Color accentDefault = Opaque(colors["AccentAcrylicBackgroundFillColorDefault"]);
+            Color accentBase = Opaque(colors["AccentAcrylicBackgroundFillColorBase"]);
+            double accentLuminosity = dark ? 0.8d : 0.9d;
+            dictionary[AccentDefaultKey] = Create(accentDefault, 0.8d, accentDefault, accentLuminosity, alwaysFallback: false);
+            dictionary[AccentBaseKey] = Create(accentBase, 0.8d, accentBase, accentLuminosity, alwaysFallback: false);
         }
 
         private static AcrylicMaterialRecipe Create(Color tint, double opacity, Color fallback, double? luminosity, bool alwaysFallback)

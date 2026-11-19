@@ -405,6 +405,8 @@
     <SolidColorBrush x:Key="WindowCloseButtonForegroundPointerOverBrush" Color="#FFFFFFFF" />
 
     <!--  Acrylic material recipes  -->
+    <fluence:AcrylicMaterialRecipe x:Key="AcrylicInAppAccentBaseRecipe" TintColor="#FF8FCFFF" TintOpacity="0.8" TintLuminosityOpacity="0.9" FallbackColor="#FF8FCFFF" AlwaysUseFallback="False" />
+    <fluence:AcrylicMaterialRecipe x:Key="AcrylicInAppAccentDefaultRecipe" TintColor="#FF8FCFFF" TintOpacity="0.8" TintLuminosityOpacity="0.9" FallbackColor="#FF8FCFFF" AlwaysUseFallback="False" />
     <fluence:AcrylicMaterialRecipe x:Key="AcrylicInAppBaseRecipe" TintColor="#FFF3F3F3" TintOpacity="0" TintLuminosityOpacity="0.9" FallbackColor="#FFEEEEEE" AlwaysUseFallback="False" />
     <fluence:AcrylicMaterialRecipe x:Key="AcrylicInAppDefaultRecipe" TintColor="#FFFCFCFC" TintOpacity="0" TintLuminosityOpacity="0.85" FallbackColor="#FFF9F9F9" AlwaysUseFallback="False" />
 

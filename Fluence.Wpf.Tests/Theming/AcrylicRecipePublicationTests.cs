@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,6 +40,17 @@ namespace Fluence.Wpf.Tests.Theming
 {
     public sealed class AcrylicRecipePublicationTests : IAsyncLifetime
     {
+        private const string AccentDefaultRecipeKey = "AcrylicInAppAccentDefaultRecipe";
+        private const string AccentBaseRecipeKey = "AcrylicInAppAccentBaseRecipe";
+
+        private static readonly string[] RecipeKeys =
+        [
+            "AcrylicInAppDefaultRecipe",
+            "AcrylicInAppBaseRecipe",
+            AccentDefaultRecipeKey,
+            AccentBaseRecipeKey,
+        ];
+
         [Theory]
         [InlineData(ApplicationTheme.Light, "AcrylicInAppDefaultRecipe", 0xFC, 0xFC, 0xFC, 0, 0xF9, 0xF9, 0xF9, 0.85)]
         [InlineData(ApplicationTheme.Light, "AcrylicInAppBaseRecipe", 0xF3, 0xF3, 0xF3, 0, 0xEE, 0xEE, 0xEE, 0.9)]
@@ -59,6 +71,15 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.Equal(Color.FromRgb(fallbackR, fallbackG, fallbackB), recipe.FallbackColor);
                 Assert.Equal(luminosity, recipe.TintLuminosityOpacity);
                 Assert.False(recipe.AlwaysUseFallback);
+
+                bool dark = theme is ApplicationTheme.Dark;
+                bool isDefault = string.Equals(key, "AcrylicInAppDefaultRecipe", StringComparison.Ordinal);
+                string darkRampKey = isDefault ? "SystemAccentColorDark1" : "SystemAccentColorDark2";
+                _ = AssertAccentRecipe(
+                    slotZero,
+                    isDefault ? AccentDefaultRecipeKey : AccentBaseRecipeKey,
+                    dark ? darkRampKey : "SystemAccentColorLight3",
+                    dark ? 0.8d : 0.9d);
             });
         }
 
@@ -104,7 +125,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ResourceDictionary computed = Application.Current.Resources.MergedDictionaries[0];
                 Color window = SystemColors.WindowColor;
                 Color opaqueWindow = Color.FromRgb(window.R, window.G, window.B);
-                foreach (string key in new[] { "AcrylicInAppDefaultRecipe", "AcrylicInAppBaseRecipe" })
+                foreach (string key in RecipeKeys)
                 {
                     AcrylicMaterialRecipe recipe = Assert.IsType<AcrylicMaterialRecipe>(computed[key]);
                     Assert.True(recipe.IsFrozen);
@@ -132,6 +153,13 @@ namespace Fluence.Wpf.Tests.Theming
                 Assert.True(baseBrush.IsFrozen);
                 Assert.Equal(Color.FromRgb(expectedDefault, expectedDefault, expectedDefault), defaultBrush.Color);
                 Assert.Equal(Color.FromRgb(expectedBase, expectedBase, expectedBase), baseBrush.Color);
+
+                SolidColorBrush accentDefault = Assert.IsType<SolidColorBrush>(computed["AccentAcrylicBackgroundFillColorDefaultBrush"]);
+                SolidColorBrush accentBase = Assert.IsType<SolidColorBrush>(computed["AccentAcrylicBackgroundFillColorBaseBrush"]);
+                Assert.True(accentDefault.IsFrozen);
+                Assert.True(accentBase.IsFrozen);
+                Assert.Equal(Assert.IsType<Color>(computed["AccentAcrylicBackgroundFillColorDefault"]), accentDefault.Color);
+                Assert.Equal(Assert.IsType<Color>(computed["AccentAcrylicBackgroundFillColorBase"]), accentBase.Color);
                 _ = Assert.IsType<ImageBrush>(computed["AcrylicNoiseBrush"]);
             });
         }
@@ -145,7 +173,7 @@ namespace Fluence.Wpf.Tests.Theming
             {
                 ResourceDictionary first = FluenceThemeEngine.BuildStandalone(theme);
                 ResourceDictionary second = FluenceThemeEngine.BuildStandalone(theme);
-                foreach (string key in new[] { "AcrylicInAppDefaultRecipe", "AcrylicInAppBaseRecipe" })
+                foreach (string key in RecipeKeys)
                 {
                     AcrylicMaterialRecipe a = Assert.IsType<AcrylicMaterialRecipe>(first[key]);
                     AcrylicMaterialRecipe b = Assert.IsType<AcrylicMaterialRecipe>(second[key]);
@@ -154,6 +182,14 @@ namespace Fluence.Wpf.Tests.Theming
                     Assert.NotSame(a, b);
                 }
                 Assert.NotSame(first["AcrylicInAppDefaultRecipe"], first["AcrylicInAppBaseRecipe"]);
+
+                bool dark = theme is ApplicationTheme.Dark;
+                double accentLuminosity = dark ? 0.8d : 0.9d;
+                AcrylicMaterialRecipe accentDefault = AssertAccentRecipe(
+                    first, AccentDefaultRecipeKey, dark ? "SystemAccentColorDark1" : "SystemAccentColorLight3", accentLuminosity);
+                AcrylicMaterialRecipe accentBase = AssertAccentRecipe(
+                    first, AccentBaseRecipeKey, dark ? "SystemAccentColorDark2" : "SystemAccentColorLight3", accentLuminosity);
+                Assert.NotSame(accentDefault, accentBase);
                 Assert.False(first.Contains("AcrylicNoiseBrush"));
             });
         }
@@ -180,12 +216,68 @@ namespace Fluence.Wpf.Tests.Theming
                     Assert.NotSame(light, dark);
                     Assert.Equal(Color.FromRgb(0x2C, 0x2C, 0x2C), dark.TintColor);
                     Assert.True(host.IsUsingFallback);
+                    AssertAccentRecipeUpdates(host);
                 }
                 finally
                 {
                     VisualTree.CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        private static void AssertAccentRecipeUpdates(AcrylicElement host)
+        {
+            Application app = Application.Current;
+            host.SetResourceReference(AcrylicElement.RecipeProperty, AccentDefaultRecipeKey);
+            WpfTestSta.DrainDispatcher(host.Dispatcher);
+
+            ResourceDictionary computed = app.Resources.MergedDictionaries[0];
+            AcrylicMaterialRecipe systemDefault = AssertAccentRecipe(computed, AccentDefaultRecipeKey, "SystemAccentColorDark1", 0.8d);
+            Assert.Same(systemDefault, host.Recipe);
+
+            Color systemAccent = Assert.IsType<Color>(computed["SystemAccentColor"]);
+            Color darkAccent = systemAccent == Colors.Crimson ? Colors.RoyalBlue : Colors.Crimson;
+            AcrylicMaterialRecipe customBase;
+            try
+            {
+                ApplicationAccentColorManager.ApplyCustomAccent(Colors.DarkOrange, darkAccent, exact: true);
+                WpfTestSta.DrainDispatcher(host.Dispatcher);
+
+                computed = app.Resources.MergedDictionaries[0];
+                AcrylicMaterialRecipe customDefault = AssertAccentRecipe(computed, AccentDefaultRecipeKey, "SystemAccentColorDark1", 0.8d);
+                Assert.NotSame(systemDefault, customDefault);
+                Assert.Same(customDefault, host.Recipe);
+
+                host.SetResourceReference(AcrylicElement.RecipeProperty, AccentBaseRecipeKey);
+                WpfTestSta.DrainDispatcher(host.Dispatcher);
+                customBase = AssertAccentRecipe(computed, AccentBaseRecipeKey, "SystemAccentColorDark2", 0.8d);
+                Assert.Same(customBase, host.Recipe);
+            }
+            finally
+            {
+                ApplicationAccentColorManager.ApplySystemAccent();
+            }
+
+            WpfTestSta.DrainDispatcher(host.Dispatcher);
+            computed = app.Resources.MergedDictionaries[0];
+            AcrylicMaterialRecipe systemBase = AssertAccentRecipe(computed, AccentBaseRecipeKey, "SystemAccentColorDark2", 0.8d);
+            Assert.NotSame(customBase, systemBase);
+            Assert.Same(systemBase, host.Recipe);
+        }
+
+        private static AcrylicMaterialRecipe AssertAccentRecipe(
+            ResourceDictionary dictionary, string recipeKey, string rampKey, double luminosity)
+        {
+            Color shade = Assert.IsType<Color>(dictionary[rampKey]);
+            Color opaqueShade = Color.FromRgb(shade.R, shade.G, shade.B);
+            AcrylicMaterialRecipe recipe = Assert.IsType<AcrylicMaterialRecipe>(dictionary[recipeKey]);
+            Assert.True(recipe.IsFrozen);
+            Assert.Equal(opaqueShade, recipe.TintColor);
+            Assert.Equal(0.8d, recipe.TintOpacity);
+            Assert.Equal(luminosity, recipe.TintLuminosityOpacity);
+            Assert.Equal(opaqueShade, recipe.FallbackColor);
+            Assert.False(recipe.AlwaysUseFallback);
+            return recipe;
         }
 
         public ValueTask InitializeAsync()

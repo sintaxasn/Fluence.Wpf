@@ -12,18 +12,6 @@ Start with the matching issue in [Known issues](../../KNOWN_ISSUES.md). In-app a
 
 **Done when.** The supported configuration recovers on load, valid retargeting, and viewport changes. Invalid scenarios return their specific fallback reasons without sampling their own output. Establish this baseline before changing rendering policy, recipes, or budgets.
 
-<a id="acrylic-brush-resource-keys-paint-a-solid-color"></a>
-
-## Accent acrylic requires a custom live recipe
-
-**Context and cause.** The theme engine publishes two live neutral recipes. The legacy neutral and accent brush keys supply shared solid paint in style setters, swatches, and popup fallbacks. A live acrylic surface needs a source, target bounds, and a lifetime. [AcrylicBrushExtension](../../Fluence.Wpf/AcrylicBrushExtension.cs#L78) creates a per-target brush for a supported concrete property and captures a fixed recipe reference. [AcrylicElement](../../Fluence.Wpf/Controls/AcrylicElement.cs#L66) gives a host an explicit source and a recipe dependency property that can follow a theme resource.
-
-**Previous work.** [AcrylicRecipeFactory](../../Fluence.Wpf/Theming/AcrylicRecipeFactory.cs#L40) already publishes frozen neutral Default and Base recipes. [Recipe publication tests](../../Fluence.Wpf.Tests/Theming/AcrylicRecipePublicationTests.cs) cover Light, Dark, High Contrast, and the compatibility solids. The [Colors gallery](../../Fluence.Wpf.Demo/Pages/GalleryColorsPage.xaml.cs#L469) uses one live host in Background > Acrylic Background. The Default/Base selector changes the dynamic recipe reference over a sibling image source. The legacy tiles still provide their brush keys for copying. The [Colors gallery tests](../../Fluence.Wpf.Tests/Gallery/Pages/GalleryColorsPageTests.cs) cover source mapping, selection on the same host, theme publication, unload, and the two swatch keys.
-
-**Investigate.** Reuse the Colors gallery's sibling source and confirm that it maps before comparing recipes. Trace the accent roles in the [color map](../../Fluence.Wpf/Theming/ColorMap.cs) through [theme publication](../../Fluence.Wpf/Theming/FluenceThemeEngine.cs). Try separate live accent Default and Base recipes through the existing factory and inspect a host's dynamic recipe before and after changing the theme and selected accent. Compare each recipe against the same patterned source. Check both themed output and the High Contrast and policy fallback paths. For consumers using the direct extension, verify property targets and namescopes with the [brush contract tests](../../Fluence.Wpf.Tests/Control/AcrylicBrushContractTests.cs).
-
-**Done when.** Eligible same-window hosts can select published accent Default and Base recipes that update with theme and accent changes. Record separate Light and Dark results, verify the opaque fallback and release on unload, and keep the neutral gallery selection and solid brush type and copy-key tests passing.
-
 ## In-app acrylic can become opaque under rendering restrictions
 
 **Context and cause.** The [material policy](../../Fluence.Wpf/Helpers/AcrylicMaterialPolicy.cs#L36) evaluates High Contrast first, then design mode, the forced-fallback recipe, transparency, power, source validity, and graphics or blend capability. The [renderer](../../Fluence.Wpf/Helpers/AcrylicMaterialRenderer.cs#L155) also requires tier 2, pixel shader 3 support, and hardware at process and window level. High Contrast fallback uses the live system Window color.

@@ -113,8 +113,9 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Rectangle colorPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(material.Fill).Visual);
                     Assert.True(colorPass.Effect is Fluence.Wpf.Helpers.AcrylicBlendEffect);
                     Rectangle luminosityPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(colorPass.Fill).Visual);
-                    Canvas paddedSource = Assert.IsType<Canvas>(Assert.IsType<VisualBrush>(luminosityPass.Fill).Visual);
-                    Assert.True(paddedSource.Effect is BlurEffect);
+                    UIElement blurredSource = Assert.IsAssignableFrom<UIElement>(Assert.IsType<VisualBrush>(luminosityPass.Fill).Visual);
+                    BlurEffect blur = Assert.IsType<BlurEffect>(blurredSource.Effect);
+                    Assert.Equal(KernelType.Gaussian, blur.KernelType);
                     Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.None,
                         Fluence.Wpf.Helpers.AcrylicSourceMap.Evaluate(host, source,
                             new Size(host.ActualWidth, host.ActualHeight), 8).Reason);

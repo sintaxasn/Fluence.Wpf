@@ -154,7 +154,7 @@ Status: Investigating.
 
 Workaround: Place the source and `AcrylicElement` in separate subtrees of the same WPF window. Use a solid fill for a separate popup. See the [in-app acrylic examples](docs/controls.md#acrylic-materials).
 
-Verification prerequisite: establish source ownership and overlap before diagnosing [Accent acrylic requires a custom live recipe](#accent-acrylic-requires-a-custom-live-recipe), [Large or competing acrylic surfaces can become opaque](#large-or-competing-acrylic-surfaces-can-become-opaque), or [Acrylic blur can look sharper at higher display scales](#acrylic-blur-can-look-sharper-at-higher-display-scales).
+Verification prerequisite: establish source ownership and overlap before diagnosing [Large or competing acrylic surfaces can become opaque](#large-or-competing-acrylic-surfaces-can-become-opaque) or [Acrylic blur can look sharper at higher display scales](#acrylic-blur-can-look-sharper-at-higher-display-scales).
 
 [Technical brief](docs/known-issues/material-and-windowing.md#acrylic-uses-a-solid-fill-with-an-unsupported-source)
 
@@ -223,24 +223,6 @@ Status: Investigating.
 Workaround: Use the solid fallback where a consistent appearance matters across display scales.
 
 [Technical brief](docs/known-issues/material-and-windowing.md#acrylic-blur-can-look-sharper-at-higher-display-scales)
-
-Last updated: 2026-11-19.
-
-<a id="acrylic-brush-resource-keys-paint-a-solid-color"></a>
-
-## Accent acrylic requires a custom live recipe
-
-Priority: P2.
-
-Summary: The built-in live Default and Base recipes are neutral. The Colors gallery demonstrates both in Background > Acrylic Background. A live accent surface needs a custom recipe.
-
-Affects: In-app surfaces that need accent-tinted blur over a supported source in the same WPF window.
-
-Status: Investigating.
-
-Workaround: Clone a neutral Light or Dark `AcrylicMaterialRecipe`. Set `TintColor` to the intended accent and set a nonzero `TintOpacity`. Tune `TintLuminosityOpacity` and choose an opaque `FallbackColor` for your theme. Assign it to an `AcrylicElement` with an explicit sibling source. Refresh the custom recipe when the theme or accent changes. Use the shared accent brush keys for solid paint. See the [in-app acrylic examples](docs/controls.md#acrylic-materials).
-
-[Technical brief](docs/known-issues/material-and-windowing.md#accent-acrylic-requires-a-custom-live-recipe)
 
 Last updated: 2026-11-19.
 
