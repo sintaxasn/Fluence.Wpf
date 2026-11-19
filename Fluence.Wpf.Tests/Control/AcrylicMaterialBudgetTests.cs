@@ -286,7 +286,6 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 BudgetParticipant otherWindow = new();
-                Assert.True(AcrylicMaterialBudget.TryReserve(otherWindow, Map(1296, 736, 1.5)));
                 (Window window, Grid root, Canvas source) = NewWindow();
                 Fluence.Wpf.Controls.AcrylicElement host = AddHost(root, source);
                 host.Width = 50;
@@ -302,6 +301,15 @@ namespace Fluence.Wpf.Tests.Control
                     }
 
                     Assert.Equal(AcrylicFallbackReason.None, host.FallbackReason);
+
+                    Size smallSize = new(host.ActualWidth, host.ActualHeight);
+                    AcrylicSourceMapResult smallMap = AcrylicSourceMap.Evaluate(host, source, smallSize,
+                        AcrylicMaterialRenderer.BlurRadiusDip);
+                    Assert.True(AcrylicMaterialBudget.TryCountPaddedPixels(smallMap, out long smallPixels));
+                    long competingPixels = Math.Min(AcrylicMaterialBudget.MaxSurfacePaddedPixels,
+                        AcrylicMaterialBudget.MaxAggregatePaddedPixels - smallPixels);
+                    Assert.True(AcrylicMaterialBudget.TryReserve(otherWindow, Map(competingPixels, 1)));
+
                     host.Width = 400;
                     window.UpdateLayout();
                     Drain();
@@ -367,6 +375,7 @@ namespace Fluence.Wpf.Tests.Control
                 Height = 240,
                 Content = root,
                 WindowStyle = WindowStyle.None,
+                ShowActivated = false,
                 ShowInTaskbar = false,
             };
             return (window, root, source);

@@ -19,6 +19,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- In-app acrylic uses a wider Gaussian blur to bring its backdrop colors closer to WinUI. It combines two smaller blur stages at display scales where WPF would cap a single pass.
 - `TextBox` preserves consumer-supplied automation HelpText through loading, templates, and validation, including bindings, dynamic resources, and styles applied after validation begins. Validation messages provide fallback HelpText only when none was supplied. Five regression cases were added on each full test target framework.
 - `BreadcrumbBar` keeps the current location in view at narrow widths. An overflow menu lists the full trail and reports the selected original item and index through `ItemClicked`.
 - `NavigationView` Top overflow remeasures an item when its content is replaced or the `Text` of a hidden `TextBlock` changes. Overflow entries keep data-item templates and use readable text or an automation name for content.

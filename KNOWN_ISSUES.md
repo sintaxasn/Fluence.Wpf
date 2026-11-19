@@ -25,20 +25,25 @@ unverified.
 
 The PS 3.0 blend shader requires an active hardware rendering route. WPF
 software rendering, policy restrictions, missing blend resources, and device
-failure select an opaque, noise-free fallback. Native material and blur-edge
-checks cover physical 96, 144, and 192 DPI on one local tier-2 GPU. Budget and
-recovery checks passed at 96 and 144 DPI; 192 DPI budget and recovery remain
-unverified. Separate `RenderTargetBitmap` observations are software-only and
-cannot prove material pixels. Exact WinUI acrylic pixel parity remains
-unverified. See the [material guide](docs/controls.md#acrylic-materials).
+failure select an opaque, noise-free fallback. The default Light material met
+the color and cyan blur edge tolerances in a fresh native comparison with
+WinUI Gallery at 144 DPI. WPF combines two Gaussian blur stages when the desired
+radius exceeds the 100-physical-pixel limit for one stage. Both stages can still
+reach that limit at higher display scales. Earlier native material and blur
+checks used the smaller blur at 96, 144, and 192 DPI on one tier-2 GPU.
+Separate `RenderTargetBitmap` observations are software-only. See the
+[material guide](docs/controls.md#acrylic-materials).
 
 The in-app material uses a conservative process-wide budget of two live
 surfaces, 2,146,176 padded physical pixels for one surface, and 2,172,672
-aggregate padded physical pixels. A larger or competing host becomes opaque
-and noise-free until capacity is released; the switch has no material
-crossfade. Six-second single-pane and two-pane native runs on the available
-tier-2 GPU recorded 17.56 ms and 17.72 ms p95 WPF rendering callback intervals.
-These are not DWM present times or a 60 Hz guarantee.
+aggregate padded physical pixels. The wider blur increases the sampling area,
+so a full 1920 by 1080 pixel pane can exceed the budget. A host that exceeds a
+limit becomes opaque and noise-free until capacity is released. The switch is
+immediate. With the earlier blur radius, budget recovery passed at 96 and 144
+DPI. Six-second single-pane and two-pane runs recorded 17.56 ms and 17.72 ms p95
+WPF rendering callback intervals on one tier-2 GPU. Budget recovery and
+rendering timing with the wider blur still need
+multi-scale native qualification.
 
 Cross-monitor movement, RDP, other hardware tiers and GPUs, and actual device
 loss remain unverified. Real Windows Transparency effects and High Contrast

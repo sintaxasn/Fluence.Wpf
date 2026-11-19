@@ -41,7 +41,12 @@ namespace Fluence.Wpf.Helpers
 {
     internal sealed class AcrylicMaterialRenderer : IDisposable
     {
-        internal const double BlurRadiusDip = 8.0;
+        // WinUI uses a Gaussian standard deviation of 30 DIPs. WPF's radius is three times
+        // the standard deviation.
+        internal const double BlurRadiusDip = 90.0;
+        private const double WpfMaxBlurRadiusPx = 100.0;
+        // Gaussian variances add. Round 90 / sqrt(2) to 64 because WPF uses an integer radius.
+        private const double SplitBlurRadiusDip = 64.0;
         private const int NoiseSize = 128;
         private const double NoiseNodeOpacity = 0.02;
 
@@ -180,15 +185,8 @@ namespace Fluence.Wpf.Helpers
             else
             {
                 VerifyBlendResource();
-                Canvas paddedSource = BuildPaddedSource(source, map, fallback);
-                paddedSource.Effect = new BlurEffect
-                {
-                    Radius = BlurRadiusDip,
-                    KernelType = KernelType.Gaussian,
-                    RenderingBias = RenderingBias.Quality,
-                };
                 Size paddedSize = map.PaddedTargetRect.Size;
-                ArrangeFinite(paddedSource, paddedSize);
+                Visual blurredSource = BuildBlurredSource(source, map, fallback);
 
                 Color luminosity = AcrylicMaterialMath.GetEffectiveLuminosityColor(
                     recipe.TintColor, recipe.TintOpacity, recipe.TintLuminosityOpacity);
@@ -196,7 +194,7 @@ namespace Fluence.Wpf.Helpers
                 {
                     Width = paddedSize.Width,
                     Height = paddedSize.Height,
-                    Fill = ForVisual(paddedSource, new Rect(paddedSize)),
+                    Fill = ForVisual(blurredSource, new Rect(paddedSize)),
                     Effect = new AcrylicBlendEffect(CreateColorSampler(luminosity), 0.0),
                 };
                 ArrangeFinite(luminosityPass, paddedSize);
@@ -232,6 +230,41 @@ namespace Fluence.Wpf.Helpers
             Canvas.SetTop(noise, map.TargetCrop.Y);
             _ = _outputVisual.Children.Add(noise);
             ArrangeFinite(_outputVisual, map.TargetRect.Size);
+        }
+
+        private static Visual BuildBlurredSource(FrameworkElement source, AcrylicSourceMapResult map, Color fallback)
+        {
+            Size paddedSize = map.PaddedTargetRect.Size;
+            // WPF scales its blur radius by the smaller axis before applying its device-pixel cap.
+            bool splitBlur = BlurRadiusDip * Math.Min(map.DeviceScaleX, map.DeviceScaleY) > WpfMaxBlurRadiusPx;
+            Canvas paddedSource = BuildPaddedSource(source, map, fallback);
+            paddedSource.Effect = CreateGaussianBlur(splitBlur ? SplitBlurRadiusDip : BlurRadiusDip);
+            ArrangeFinite(paddedSource, paddedSize);
+            if (!splitBlur)
+            {
+                return paddedSource;
+            }
+
+            // Limit this to two passes to bound rendering work. At higher scales each pass can still hit the cap.
+            Rectangle secondPass = new()
+            {
+                Width = paddedSize.Width,
+                Height = paddedSize.Height,
+                Fill = ForVisual(paddedSource, new Rect(paddedSize)),
+                Effect = CreateGaussianBlur(SplitBlurRadiusDip),
+            };
+            ArrangeFinite(secondPass, paddedSize);
+            return secondPass;
+        }
+
+        private static BlurEffect CreateGaussianBlur(double radiusDip)
+        {
+            return new BlurEffect
+            {
+                Radius = radiusDip,
+                KernelType = KernelType.Gaussian,
+                RenderingBias = RenderingBias.Quality,
+            };
         }
 
         private static Canvas BuildPaddedSource(FrameworkElement source,

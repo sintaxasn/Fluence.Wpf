@@ -35,6 +35,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
+using System.Windows.Shapes;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
@@ -181,7 +183,7 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                Window window = new() { Width = 320, Height = 220, ShowInTaskbar = false };
+                Window window = new() { Width = 320, Height = 220, ShowInTaskbar = false, ShowActivated = false };
                 Grid root = new();
                 Border source = new()
                 {
@@ -203,26 +205,30 @@ namespace Fluence.Wpf.Tests.Control
                     window.Content = root;
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    AcrylicSourceMapResult map = new(AcrylicFallbackReason.None,
-                        Matrix.Identity, Matrix.Identity, new Rect(0, 0, 80, 80),
-                        new Rect(-8, -8, 96, 96), new Rect(0, 0, 88, 88),
-                        new Rect(0, 0, 80, 80), 1.5, 1.5, 12, 12);
                     AcrylicRecipeSnapshot recipe = AcrylicRecipeSnapshot.Create(new AcrylicMaterialRecipe());
                     AcrylicPolicyResult policy = new(AcrylicFallbackReason.None, Colors.Black);
                     using AcrylicMaterialRenderer renderer = new(owner);
-                    renderer.Update(source, map, recipe, policy);
-                    Assert.Same(renderer.OutputVisual, renderer.Output.Visual);
-                    if (RenderCapability.IsPixelShaderVersionSupported(3, 0)
-                        && (RenderCapability.Tier >> 16) >= 2
-                        && RenderOptions.ProcessRenderMode is not System.Windows.Interop.RenderMode.SoftwareOnly)
+                    (double Scale, double RadiusDip, bool SplitBlur)[] cases = [(1.0, 90.0, false), (1.5, 64.0, true)];
+                    foreach ((double scale, double radiusDip, bool splitBlur) in cases)
                     {
-                        Assert.Equal(AcrylicFallbackReason.None, renderer.Reason);
-                        Assert.False(renderer.IsUsingFallback);
-                    }
-                    else
-                    {
-                        Assert.Equal(AcrylicFallbackReason.UnsupportedGraphics, renderer.Reason);
-                        Assert.True(renderer.IsUsingFallback);
+                        AcrylicSourceMapResult map = AcrylicSourceMap.CalculateGeometry(
+                            Matrix.Identity, new Rect(source.RenderSize), owner.RenderSize,
+                            AcrylicMaterialRenderer.BlurRadiusDip, new Matrix(scale, 0, 0, scale, 0, 0));
+                        renderer.Update(source, map, recipe, policy);
+                        Assert.Same(renderer.OutputVisual, renderer.Output.Visual);
+                        if (RenderCapability.IsPixelShaderVersionSupported(3, 0)
+                            && (RenderCapability.Tier >> 16) >= 2
+                            && RenderOptions.ProcessRenderMode is not System.Windows.Interop.RenderMode.SoftwareOnly)
+                        {
+                            Assert.Equal(AcrylicFallbackReason.None, renderer.Reason);
+                            Assert.False(renderer.IsUsingFallback);
+                            AssertBlurPasses(renderer.OutputVisual, radiusDip, splitBlur);
+                        }
+                        else
+                        {
+                            Assert.Equal(AcrylicFallbackReason.UnsupportedGraphics, renderer.Reason);
+                            Assert.True(renderer.IsUsingFallback);
+                        }
                     }
                 }
                 finally
@@ -230,6 +236,31 @@ namespace Fluence.Wpf.Tests.Control
                     VisualTree.CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        private static void AssertBlurPasses(FrameworkElement outputVisual, double radiusDip, bool splitBlur)
+        {
+            Canvas output = Assert.IsType<Canvas>(outputVisual);
+            Rectangle material = Assert.IsType<Rectangle>(output.Children[0]);
+            Rectangle colorPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(material.Fill).Visual);
+            Rectangle luminosityPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(colorPass.Fill).Visual);
+            Visual? blurredSource = Assert.IsType<VisualBrush>(luminosityPass.Fill).Visual;
+            if (splitBlur)
+            {
+                Rectangle secondPass = Assert.IsType<Rectangle>(blurredSource);
+                AssertGaussianBlur(secondPass, radiusDip);
+                blurredSource = Assert.IsType<VisualBrush>(secondPass.Fill).Visual;
+            }
+
+            Canvas paddedSource = Assert.IsType<Canvas>(blurredSource);
+            AssertGaussianBlur(paddedSource, radiusDip);
+        }
+
+        private static void AssertGaussianBlur(UIElement element, double radiusDip)
+        {
+            BlurEffect blur = Assert.IsType<BlurEffect>(element.Effect);
+            Assert.Equal(radiusDip, blur.Radius);
+            Assert.Equal(KernelType.Gaussian, blur.KernelType);
         }
     }
 }
