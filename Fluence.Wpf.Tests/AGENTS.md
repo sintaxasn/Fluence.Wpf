@@ -26,4 +26,4 @@ The shared infrastructure and folder examples are in Fluence.Wpf.Tests/README.md
 
 Screenshot tests are opt-in with FLUENCE_CAPTURE_SCREENSHOTS=1 and carry Category=Screenshots. They write candidates under ignored artifacts/docs/screenshots/. RenderTargetBitmap does not capture native DWM pixels. Keep ordinary test runs from creating candidates; publish website images only after separate visual review.
 
-Read KNOWN_ISSUES.md before interpreting the known net472 whole-assembly abort, TimePicker flyout flake, or PowerShell dispatcher boundaries. A successful run requires passing assertions and a successful process exit. Do not add to the known failure count.
+A successful run requires passing assertions and a successful process exit. Use the split-lane guidance above for the .NET Framework suite.

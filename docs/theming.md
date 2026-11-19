@@ -50,7 +50,7 @@ After `ApplicationThemeManager.Apply`, the computed dictionary publishes frozen 
 
 Use `DynamicResource` on the host's `Recipe` dependency property to follow theme publication; replace `Default` with `Base` for the stronger base variant. For a direct `Border.Background` or supported shape fill, pass a fixed `StaticResource` recipe to `{fluence:AcrylicBrush ...}`. The direct markup extension cannot reevaluate a `DynamicResource` nested in its CLR property. The [rooted example and source rules](controls.md#acrylic-materials) show both patterns. Existing `AcrylicBackground*Brush` keys, `AcrylicNoiseBrush`, popup paints, and window DWM backdrops retain their own behavior.
 
-Recipe, theme, and policy changes switch acrylic material and its opaque fallback immediately. The 167 ms `ControlFastAnimationDuration` token does not animate this material. The [material limits](controls.md#acrylic-materials) apply to direct brushes and hosts together across windows in the process.
+Recipe, theme, and policy refreshes switch directly between acrylic material and its opaque fallback. The 167 ms `ControlFastAnimationDuration` token does not animate this material. The [material limits](controls.md#acrylic-materials) apply to direct brushes and hosts together across windows in the process.
 
 When a `TitleBar` is hosted by `FluenceWindow`, it follows the window's active state. Built-in title text uses the tertiary text role while inactive, and its title-area content slots use 0.5 opacity.
 

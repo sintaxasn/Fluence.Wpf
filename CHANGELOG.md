@@ -14,6 +14,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- The Colors gallery's Acrylic Background example switches between the live Default and Base recipes over a shared backdrop.
 - Reorganized the PowerShell Controls Tour into ten labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
 - Gallery capture coverage now follows the navigation and sample catalogs, waits for selection indicators to settle, and records source, binary, state, and image hashes. Image review and website sync validate that provenance before accepting new captures.
 
