@@ -36,6 +36,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -223,6 +224,7 @@ namespace Fluence.Wpf.Tests.Control
                             Assert.Equal(AcrylicFallbackReason.None, renderer.Reason);
                             Assert.False(renderer.IsUsingFallback);
                             AssertBlurPasses(renderer.OutputVisual, radiusDip, splitBlur);
+                            AssertNoiseTile(renderer.OutputVisual);
                         }
                         else
                         {
@@ -254,6 +256,21 @@ namespace Fluence.Wpf.Tests.Control
 
             Canvas paddedSource = Assert.IsType<Canvas>(blurredSource);
             AssertGaussianBlur(paddedSource, radiusDip);
+        }
+
+        private static void AssertNoiseTile(FrameworkElement outputVisual)
+        {
+            Canvas output = Assert.IsType<Canvas>(outputVisual);
+            Rectangle noise = Assert.IsType<Rectangle>(output.Children[1]);
+            Assert.Equal(0.02, noise.Opacity);
+            Assert.Equal(BitmapScalingMode.Linear, RenderOptions.GetBitmapScalingMode(noise));
+            ImageBrush brush = Assert.IsType<ImageBrush>(noise.Fill);
+            Assert.Equal(TileMode.Tile, brush.TileMode);
+            Assert.Equal(BrushMappingMode.Absolute, brush.ViewportUnits);
+            Assert.Equal(new Rect(0, 0, 256, 256), brush.Viewport);
+            BitmapSource texture = Assert.IsAssignableFrom<BitmapSource>(brush.ImageSource);
+            Assert.Equal(256, texture.PixelWidth);
+            Assert.Equal(256, texture.PixelHeight);
         }
 
         private static void AssertGaussianBlur(UIElement element, double radiusDip)

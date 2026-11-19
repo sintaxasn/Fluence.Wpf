@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Helpers
         private const double WpfMaxBlurRadiusPx = 100.0;
         // Gaussian variances add. Round 90 / sqrt(2) to 64 because WPF uses an integer radius.
         private const double SplitBlurRadiusDip = 64.0;
-        private const int NoiseSize = 128;
+        private const int NoiseTileSizeDip = 256;
         private const double NoiseNodeOpacity = 0.02;
 
         private readonly FrameworkElement _owner;
@@ -222,10 +222,11 @@ namespace Fluence.Wpf.Helpers
             {
                 Width = map.TargetCrop.Width,
                 Height = map.TargetCrop.Height,
-                Fill = CreateNoiseBrush(map),
+                Fill = CreateNoiseBrush(),
                 Opacity = NoiseNodeOpacity,
             };
-            RenderOptions.SetBitmapScalingMode(noise, BitmapScalingMode.NearestNeighbor);
+            // Match the linear sampling of the desktop WinUI grain as its tile scales.
+            RenderOptions.SetBitmapScalingMode(noise, BitmapScalingMode.Linear);
             Canvas.SetLeft(noise, map.TargetCrop.X);
             Canvas.SetTop(noise, map.TargetCrop.Y);
             _ = _outputVisual.Children.Add(noise);
@@ -334,7 +335,7 @@ namespace Fluence.Wpf.Helpers
             };
         }
 
-        private static ImageBrush CreateNoiseBrush(AcrylicSourceMapResult map)
+        private static ImageBrush CreateNoiseBrush()
         {
             Uri uri = new($"pack://application:,,,/{typeof(AcrylicMaterialRenderer).Assembly.GetName().Name};component/Shaders/AcrylicNoise.png");
             BitmapImage bitmap = new();
@@ -347,7 +348,7 @@ namespace Fluence.Wpf.Helpers
             {
                 TileMode = TileMode.Tile,
                 ViewportUnits = BrushMappingMode.Absolute,
-                Viewport = new Rect(0, 0, NoiseSize / map.DeviceScaleX, NoiseSize / map.DeviceScaleY),
+                Viewport = new Rect(0, 0, NoiseTileSizeDip, NoiseTileSizeDip),
                 Stretch = Stretch.Fill,
                 AlignmentX = AlignmentX.Left,
                 AlignmentY = AlignmentY.Top,

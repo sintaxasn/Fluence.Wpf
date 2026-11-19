@@ -1,14 +1,15 @@
 {
-  "algorithm": "xorshift32-low-byte-v1",
+  "algorithm": "xorshift32-soft-grayscale-v1",
   "seed": "0xA53C9E17",
-  "width": 128,
-  "height": 128,
+  "width": 256,
+  "height": 256,
   "pixelFormat": "RGBA8",
-  "rgb": "grayscale, one xorshift32 low byte per pixel",
+  "rgb": "grayscale, rounded byte average with seven-eighths contrast around 128",
   "alpha": "255 at every pixel",
   "nodeOpacity": 0.02,
-  "meanGray": 127.762939453125,
-  "minGray": 0,
-  "maxGray": 255,
-  "sha256": "C2B17637D85A66FDCCD18BA71EC46F429A228E1D6B92059087E0D0CDE15C11C2"
+  "meanGray": 127.92582702636719,
+  "standardDeviationGray": 45.683025502353644,
+  "minGray": 17,
+  "maxGray": 239,
+  "sha256": "165DF3279DF9B5ACC910522A5EEF67F7A9667C8F1637C5175A8EC60AC63DF2BB"
 }
