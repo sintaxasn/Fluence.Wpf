@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
-            base.PrepareContainerForItemOverride(element, item);
+            TreeViewItem.PrepareGeneratedContainer(element, item, base.PrepareContainerForItemOverride);
 
             if (element is TreeViewItem treeViewItem)
             {

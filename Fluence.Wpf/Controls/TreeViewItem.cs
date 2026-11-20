@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -145,10 +146,42 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            PrepareGeneratedContainer(element, item, base.PrepareContainerForItemOverride);
+        }
+
+        internal static void PrepareGeneratedContainer(DependencyObject element, object item, Action<DependencyObject, object> prepare)
+        {
+            if (element is not TreeViewItem container || ReferenceEquals(element, item))
+            {
+                prepare(element, item);
+                return;
+            }
+
+            bool wasPreparing = container._isPreparingGeneratedContainer;
+            container._isPreparingGeneratedContainer = true;
+            try
+            {
+                prepare(element, item);
+            }
+            finally
+            {
+                container._isPreparingGeneratedContainer = wasPreparing;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
-            FindOwningTreeView()?.ReconcileSelectionAfterItemsChanged(this, e);
+
+            // The hierarchical template attaches the child source during preparation.
+            // Its initial reset has no prior child selection to reconcile.
+            if (!_isPreparingGeneratedContainer || e.Action is not NotifyCollectionChangedAction.Reset)
+            {
+                FindOwningTreeView()?.ReconcileSelectionAfterItemsChanged(this, e);
+            }
         }
 
         /// <inheritdoc />
@@ -309,6 +342,7 @@ namespace Fluence.Wpf.Controls
                 : null;
         }
 
+        private bool _isPreparingGeneratedContainer;
         private bool _isKeyboardSelectionToggle;
     }
 }

@@ -1,15 +1,5 @@
 ﻿# Control behavior issue briefs
 
-## TreeView check state can be written back during template replacement
-
-**Context and cause.** In `Multiple` mode, generated `TreeViewItem` containers hold `IsSelectionChecked`. During full template replacement, an automatic two-way binding can write the retiring container's default state to the model. Identify the write before changing selection callbacks. A later binding refresh cannot recover a model value that has already been overwritten. [TreeView.cs](../../Fluence.Wpf/Controls/TreeView.cs) · [TreeViewItem.cs](../../Fluence.Wpf/Controls/TreeViewItem.cs)
-
-**Previous work.** `OnContainerStatusChanged` schedules `RefreshBoundSelection` after the generator reports `ContainersGenerated`. The refresh calls `UpdateTarget` on generated root bindings and rebuilds the existing `SelectedItems` list. `TreeView_ModeSwitch_ReconcilesFallbackWithoutSelectionLossAsync` uses explicit source updates and checks the regenerated checkbox, selection list identity, and removal behavior. Its explicit update trigger bypasses the write-back described here. [TreeViewTests.cs](../../Fluence.Wpf.Tests/Control/TreeViewTests.cs)
-
-**Investigate.** Start with the mode-switch fixture. Change the checked-state binding to an automatic source trigger, check an item, then clear and reapply the template. Record model property writes, old and new container identity, and generator status throughout the transition. Set `NotifyOnSourceUpdated=True` and enable `PresentationTraceSources.TraceLevel=High` on the binding to distinguish a source write from a regenerated target display. Protect legitimate user writes and model updates if introducing a teardown guard.
-
-**Done when.** The affected binding preserves its model value, the new container reflects that value, and the same live `SelectedItems` list has the correct entries after regeneration. A subsequent user toggle still updates the model, and removing a checked item removes it from the list.
-
 ## Checking a collapsed TreeView branch can skip its children
 
 **Context and cause.** `UpdateSelectionFromItem` calls `ApplySelectionStateToDescendants` for definite check values. The descent and `AddCheckedItems` resolve generated containers, or use explicitly supplied `TreeViewItem` objects. An unrealized data item has neither a usable container nor stored selection intent in that traversal. `GetChildSelectionState` preserves a nonempty parent's current value when no child container exists, and clears it when the data collection becomes empty. [TreeView.cs](../../Fluence.Wpf/Controls/TreeView.cs)

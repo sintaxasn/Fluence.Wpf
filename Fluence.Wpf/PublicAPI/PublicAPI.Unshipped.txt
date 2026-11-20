@@ -60,3 +60,4 @@ static readonly Fluence.Wpf.Controls.DataGrid.CornerRadiusProperty -> System.Win
 static readonly Fluence.Wpf.Controls.DataGrid.EmptyContentProperty -> System.Windows.DependencyProperty!
 static readonly Fluence.Wpf.Controls.DataGrid.IsItemSelectableProperty -> System.Windows.DependencyProperty!
 override Fluence.Wpf.Controls.FluenceWindow.OnContentRendered(System.EventArgs! e) -> void
+override Fluence.Wpf.Controls.TreeViewItem.PrepareContainerForItemOverride(System.Windows.DependencyObject! element, object! item) -> void

@@ -1638,6 +1638,8 @@
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_SingleRecycling_PreservesBoundSelectionAndExpansionAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleOptIn_UsesPhysicalFallbackAndPreservesSelectionAsync
   Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_ModeSwitch_ReconcilesFallbackWithoutSelectionLossAsync
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_TemplateReplacementPreservesBoundChecksAsync(usePropertyChanged: False)
+  Fluence.Wpf.Tests.Control.TreeViewTests.TreeView_MultipleSelection_TemplateReplacementPreservesBoundChecksAsync(usePropertyChanged: True)
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_OverflowScrollButtons_VisibilityAndClickFollowOffsetAsync(flow: LeftToRight)
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_OverflowScrollButtons_VisibilityAndClickFollowOffsetAsync(flow: RightToLeft)
   Fluence.Wpf.Tests.Control.TabViewTests.TabView_NoAvailableHeader_TabReachesAddAndEnterRequestsOnceAsync(flow: LeftToRight, state: "empty")

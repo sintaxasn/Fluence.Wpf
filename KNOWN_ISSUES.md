@@ -42,24 +42,6 @@ Unblocks: [TreeView multiple selection can realize every root item](#treeview-mu
 
 Last updated: 2026-11-19.
 
-## TreeView check state can be written back during template replacement
-
-Priority: P1.
-
-Summary: Automatic TwoWay binding can write a detached container's default checked state into the model when the template is replaced.
-
-Affects: `TreeView` in `Multiple` mode with automatically updated checked-state bindings.
-
-Status: Investigating.
-
-Workaround: Own the state in the data model and set `UpdateSourceTrigger=Explicit` for checked-state bindings. Update the source on application-owned selection changes.
-
-Unblocks: [TreeView multiple selection can realize every root item](#treeview-multiple-selection-can-realize-every-root-item) needs a stable binding contract when containers are recreated or recycled.
-
-[Technical brief](docs/known-issues/control-behavior.md#treeview-check-state-can-be-written-back-during-template-replacement)
-
-Last updated: 2026-11-19.
-
 ## DataGrid can briefly report a rejected selection in native collections
 
 Priority: P1.
@@ -272,7 +254,7 @@ Status: Investigating.
 
 Workaround: Use `Single` or `None` with `VirtualizingPanel.IsVirtualizing=True` when virtualization is needed. Limit the loaded branches when multiple selection is needed.
 
-Depends on: [Checking a collapsed TreeView branch can skip its children](#checking-a-collapsed-treeview-branch-can-skip-its-children) and [TreeView check state can be written back during template replacement](#treeview-check-state-can-be-written-back-during-template-replacement) before enabling virtualization for Multiple selection.
+Depends on: [Checking a collapsed TreeView branch can skip its children](#checking-a-collapsed-treeview-branch-can-skip-its-children) before enabling virtualization for Multiple selection.
 
 [Technical brief](docs/known-issues/control-behavior.md#treeview-multiple-selection-can-realize-every-root-item)
 

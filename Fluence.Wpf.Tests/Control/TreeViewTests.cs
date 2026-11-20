@@ -176,6 +176,84 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public Task TreeView_MultipleSelection_TemplateReplacementPreservesBoundChecksAsync(bool usePropertyChanged)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                TreeState root = new() { Checked = false };
+                TreeState branch = new() { Checked = false, Expanded = true };
+                TreeState leaf = new() { Checked = false };
+                branch.Children.Add(leaf);
+                Style itemStyle = new(typeof(Controls.TreeViewItem));
+                itemStyle.Setters.Add(new Setter(TreeViewItem.IsExpandedProperty, new Binding(nameof(TreeState.Expanded))));
+                itemStyle.Setters.Add(new Setter(Controls.TreeViewItem.IsSelectionCheckedProperty,
+                    new Binding(nameof(TreeState.Checked))
+                    {
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = usePropertyChanged ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default,
+                    }));
+                Controls.TreeView tree = new()
+                {
+                    SelectionMode = TreeViewSelectionMode.Multiple,
+                    ItemsSource = new[] { root, branch },
+                    ItemContainerStyle = itemStyle,
+                    ItemTemplate = new HierarchicalDataTemplate { ItemsSource = new Binding(nameof(TreeState.Children)), ItemContainerStyle = itemStyle },
+                };
+                Window window = new() { Content = tree, Width = 300, Height = 240, ShowActivated = false };
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(tree.Dispatcher);
+                    Controls.TreeViewItem oldRoot = GetRoot(tree, 0);
+                    Controls.TreeViewItem oldLeaf = Assert.IsType<Controls.TreeViewItem>(GetRoot(tree, 1).ItemContainerGenerator.ContainerFromIndex(0));
+                    oldRoot.SetCurrentValue(Controls.TreeViewItem.IsSelectionCheckedProperty, value: true);
+                    oldLeaf.SetCurrentValue(Controls.TreeViewItem.IsSelectionCheckedProperty, value: true);
+                    WpfTestSta.DrainDispatcher(tree.Dispatcher);
+                    Assert.True(root.Checked);
+                    Assert.True(leaf.Checked);
+                    IList selection = tree.SelectedItems;
+                    Assert.Contains(root, selection.Cast<object>());
+                    Assert.Contains(leaf, selection.Cast<object>());
+
+                    tree.Template = null;
+                    tree.ClearValue(System.Windows.Controls.Control.TemplateProperty);
+                    WpfTestSta.DrainDispatcher(tree.Dispatcher);
+                    Controls.TreeViewItem restoredRoot = GetRoot(tree, 0);
+                    Controls.TreeViewItem restoredBranch = GetRoot(tree, 1);
+                    Controls.TreeViewItem restoredLeaf = Assert.IsType<Controls.TreeViewItem>(restoredBranch.ItemContainerGenerator.ContainerFromIndex(0));
+                    Assert.NotSame(oldRoot, restoredRoot);
+                    Assert.NotSame(oldLeaf, restoredLeaf);
+                    Assert.True(root.Checked);
+                    Assert.True(restoredRoot.IsSelectionChecked);
+                    Assert.True(leaf.Checked);
+                    Assert.True(restoredLeaf.IsSelectionChecked);
+                    Assert.Same(selection, tree.SelectedItems);
+                    Assert.Contains(root, selection.Cast<object>());
+                    Assert.Contains(leaf, selection.Cast<object>());
+
+                    ToggleButton checkBox = Assert.IsAssignableFrom<ToggleButton>(restoredRoot.Template.FindName("SelectionCheckBox", restoredRoot));
+                    checkBox.SetCurrentValue(ToggleButton.IsCheckedProperty, value: false);
+                    WpfTestSta.DrainDispatcher(tree.Dispatcher);
+                    Assert.False(root.Checked);
+                    Assert.DoesNotContain(root, selection.Cast<object>());
+                    Assert.True(branch.Checked);
+
+                    branch.Children.Clear();
+                    WpfTestSta.DrainDispatcher(tree.Dispatcher);
+                    Assert.False(branch.Checked);
+                    Assert.False(restoredBranch.IsSelectionChecked);
+                    Assert.Empty(selection);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
         private static Task RunLargeTreeAsync(TreeViewSelectionMode mode, bool optIn, Action<Controls.TreeView, ScrollViewer, ObservableCollection<TreeState>, Window> scenario)
         {
             return WpfTestSta.RunOnStaAsync(() =>
@@ -186,8 +264,7 @@ namespace Fluence.Wpf.Tests.Control
                 Style itemStyle = new(typeof(Controls.TreeViewItem));
                 itemStyle.Setters.Add(new Setter(TreeViewItem.IsSelectedProperty, new Binding(nameof(TreeState.Selected)) { Mode = BindingMode.TwoWay }));
                 itemStyle.Setters.Add(new Setter(TreeViewItem.IsExpandedProperty, new Binding(nameof(TreeState.Expanded)) { Mode = BindingMode.TwoWay }));
-                // The model owns checked state across full template replacement. Explicit updates
-                // prevent the old container's teardown default from overwriting that model.
+                // These fixtures commit checked-state changes explicitly.
                 itemStyle.Setters.Add(new Setter(Controls.TreeViewItem.IsSelectionCheckedProperty, new Binding(nameof(TreeState.Checked)) { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.Explicit }));
                 Controls.TreeView tree = new()
                 {
