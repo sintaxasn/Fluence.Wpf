@@ -1087,6 +1087,7 @@
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_PeekOverlay_IsInertAndClearedWhenHiddenAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_Unloaded_StopsCapsLockPollingTimerAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_StrengthMeter_ScoresAndOptsInAsync
+  Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_MaskedStrength_PreservesCharacterAndLengthRulesAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_DefaultChrome_UsesWinUiReferenceValuesAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_FocusState_UsesRoundedFocusedBorderWithoutMovingSecureEditorAsync
   Fluence.Wpf.Tests.Control.PasswordBoxTests.PasswordBox_SecureStore_StaysAuthoritativeAsync

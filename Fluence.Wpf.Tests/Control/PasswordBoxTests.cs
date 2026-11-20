@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -270,6 +271,20 @@ namespace Fluence.Wpf.Tests.Control
 
                     Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box),
                         "A second invocation of PART_RevealButton must hide the password again.");
+
+                    TextBox retiredOverlay = Assert.IsType<TextBox>(box.Template.FindName("PART_RevealDisplay", box));
+                    invoke.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal("secret", retiredOverlay.Text, StringComparer.Ordinal);
+
+                    box.Template = null;
+                    window.UpdateLayout();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    Assert.False(retiredOverlay.IsLoaded);
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(Visibility.Collapsed, retiredOverlay.Visibility);
+                    Assert.Equal(string.Empty, retiredOverlay.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -347,6 +362,7 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.False(overlay.Focusable, "The peek overlay must never take focus away from the password box.");
                     Assert.False(overlay.IsTabStop, "The peek overlay must never be a tab stop.");
                     Assert.True(overlay.IsReadOnly, "The peek overlay must not be editable.");
+                    Assert.False(overlay.IsUndoEnabled);
                     Assert.Equal(Visibility.Collapsed, overlay.Visibility);
                     Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
 
@@ -364,6 +380,58 @@ namespace Fluence.Wpf.Tests.Control
 
                     Assert.Equal(Visibility.Collapsed, overlay.Visibility);
                     Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
+                    Assert.False(overlay.CanUndo);
+
+                    invoke.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, overlay.Visibility);
+
+                    Controls.PasswordBoxExtensions.SetRevealButtonEnabled(box, value: false);
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(Visibility.Collapsed, overlay.Visibility);
+                    Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
+
+                    invoke.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+
+                    Controls.PasswordBoxExtensions.SetRevealButtonEnabled(box, value: true);
+                    invoke.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, overlay.Visibility);
+
+                    Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: false);
+
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(Visibility.Collapsed, overlay.Visibility);
+                    Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
+
+                    Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: true);
+                    invoke.Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.True(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+
+                    DependencyPropertyDescriptor revealed = DependencyPropertyDescriptor.FromProperty(
+                        Controls.PasswordBoxExtensions.IsPasswordRevealedProperty, typeof(PasswordBox));
+                    void RestoreDecoration(object? sender, EventArgs args)
+                    {
+                        Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: true);
+                    }
+
+                    revealed.AddValueChanged(box, RestoreDecoration);
+                    try
+                    {
+                        Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: false);
+                    }
+                    finally
+                    {
+                        revealed.RemoveValueChanged(box, RestoreDecoration);
+                    }
+
+                    Assert.True(Controls.PasswordBoxExtensions.GetIsFluentDecorated(box));
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
+                    _ = GetPasswordBoxBehavior(box);
                 }
                 finally
                 {
@@ -381,7 +449,12 @@ namespace Fluence.Wpf.Tests.Control
 
                 try
                 {
-                    PasswordBox box = ShowPasswordBox(window);
+                    PasswordBox box = ShowPasswordBox(window, "secret");
+                    TextBox overlay = Assert.IsType<TextBox>(box.Template.FindName("PART_RevealDisplay", box));
+                    GetInvokeProvider(FindRevealButton(box)).Invoke();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Visibility.Visible, overlay.Visibility);
+
                     object behavior = GetPasswordBoxBehavior(box);
 
                     MethodInfo startCapsPoll = Assert.IsType<MethodInfo>(
@@ -398,6 +471,9 @@ namespace Fluence.Wpf.Tests.Control
 
                     Assert.Null(capsPollTimer.GetValue(behavior));
                     Assert.False(timer.IsEnabled, "Unloading the box must stop the Caps Lock poll timer.");
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(Visibility.Collapsed, overlay.Visibility);
+                    Assert.Equal(string.Empty, overlay.Text, StringComparer.Ordinal);
                 }
                 finally
                 {
@@ -441,6 +517,73 @@ namespace Fluence.Wpf.Tests.Control
                 finally
                 {
                     ClosePasswordBoxTest(window);
+                }
+            });
+        }
+
+        [Fact]
+        public Task PasswordBox_MaskedStrength_PreservesCharacterAndLengthRulesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                PasswordBox box = new();
+                Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: false);
+                try
+                {
+                    box.Password = "a";
+                    DependencyPropertyDescriptor hasPassword = DependencyPropertyDescriptor.FromProperty(
+                        Controls.PasswordBoxExtensions.HasPasswordProperty, typeof(PasswordBox));
+                    // A presence observer can synchronously replace the prefilled password during attachment.
+                    void ReplacePrefilledPassword(object? sender, EventArgs args)
+                    {
+                        box.Password = "Aa1!aaaaaa";
+                    }
+
+                    hasPassword.AddValueChanged(box, ReplacePrefilledPassword);
+                    try
+                    {
+                        Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: true);
+                    }
+                    finally
+                    {
+                        hasPassword.RemoveValueChanged(box, ReplacePrefilledPassword);
+                    }
+
+                    Assert.True(Controls.PasswordBoxExtensions.GetHasPassword(box));
+                    Assert.False(Controls.PasswordBoxExtensions.GetShowPasswordStrength(box));
+                    Assert.False(Controls.PasswordBoxExtensions.GetIsPasswordRevealed(box));
+                    Assert.Equal(4, Controls.PasswordBoxExtensions.GetPasswordStrength(box));
+
+                    (string Value, int ExpectedScore)[] cases =
+                    [
+                        ("AAAAA", 0),
+                        ("aaaaa", 0),
+                        ("aaaaaa", 1),
+                        ("aaaaaaaaa", 1),
+                        ("aaaaaaaaaa", 2),
+                        ("aA", 1),
+                        ("1\u0661", 2), // The non-ASCII digit contributes the symbol point.
+                        ("A\u00E9!", 1),
+                        ("a\u00C9!", 1),
+                        ("aaaa\U0001F600", 2), // The surrogate pair counts as two UTF-16 code units.
+                        ("aaaaaaaa\U0001F600", 3),
+                        ("Aa1!aaaaaa", 4),
+                        ("a\0A1", 3),
+                    ];
+                    foreach ((string value, int expectedScore) in cases)
+                    {
+                        box.Password = value;
+                        Assert.Equal(expectedScore, Controls.PasswordBoxExtensions.GetPasswordStrength(box));
+                    }
+
+                    box.Clear();
+                    Assert.False(Controls.PasswordBoxExtensions.GetHasPassword(box));
+                    Assert.Equal(0, Controls.PasswordBoxExtensions.GetPasswordStrength(box));
+                }
+                finally
+                {
+                    Controls.PasswordBoxExtensions.SetIsFluentDecorated(box, value: false);
+                    box.Clear();
                 }
             });
         }

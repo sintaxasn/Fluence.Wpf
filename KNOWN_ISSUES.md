@@ -8,22 +8,6 @@ Start with [AGENTS.md](AGENTS.md) and the nearest guidance for files you change.
 
 Start at the top of the list when choosing work. **P1** covers credential handling, host stability, state correctness, and accessibility. **P2** covers shared rendering and layout work and prerequisites for reliable verification. **P3** covers targeted visual and interaction differences. Dependency links identify the work that must come first.
 
-## Fluent password fields can put plaintext in managed memory
-
-Priority: P1.
-
-Summary: Routine Fluent decoration can read the plaintext password even when the reveal button and strength display are hidden.
-
-Affects: Native WPF `PasswordBox` with Fluent decoration enabled.
-
-Status: Investigating.
-
-Workaround: Use a native WPF password field that opts out of Fluence decoration with `PasswordBoxExtensions.IsFluentDecorated="False"` before entry. Read `SecurePassword` instead of `Password`. See [Microsoft's password-handling guidance](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.securepassword).
-
-[Technical brief](docs/known-issues/reliability-and-accessibility.md#fluent-password-fields-can-put-plaintext-in-managed-memory)
-
-Last updated: 2026-11-19.
-
 ## An embedded PowerShell UI host can fail during shutdown
 
 Priority: P1.

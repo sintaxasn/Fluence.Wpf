@@ -28,7 +28,8 @@
 
 using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Input;
@@ -440,6 +441,11 @@ namespace Fluence.Wpf.Controls
             if (d.GetValue(BehaviorProperty) is PasswordBoxBehavior existing)
             {
                 existing.Detach();
+                if (!ReferenceEquals(d.GetValue(BehaviorProperty), existing))
+                {
+                    // Concealing can notify an observer that installs a replacement behavior.
+                    return;
+                }
                 d.ClearValue(BehaviorProperty);
             }
 
@@ -499,14 +505,16 @@ namespace Fluence.Wpf.Controls
             /// </summary>
             internal void Detach()
             {
+                _passwordStateRevision = unchecked(_passwordStateRevision + 1);
                 _owner.Loaded -= OnLoaded;
                 _owner.Unloaded -= OnUnloaded;
                 _owner.PasswordChanged -= OnPasswordChanged;
                 _owner.GotKeyboardFocus -= OnKeyboardFocusChanged;
                 _owner.LostKeyboardFocus -= OnKeyboardFocusChanged;
                 _owner.PreviewKeyDown -= OnPreviewKeyDown;
-                UnhookRevealButton();
+                UnhookRevealParts();
                 StopCapsPoll();
+                ConcealPassword();
             }
 
             /// <summary>
@@ -515,8 +523,7 @@ namespace Fluence.Wpf.Controls
             internal void Refresh()
             {
                 EnsureParts();
-                UpdateHasPassword();
-                UpdateStrengthScore();
+                UpdatePasswordState();
                 UpdateChromeCore();
                 UpdateRevealDisplay();
                 UpdateRevealButtonAccessibleName();
@@ -557,17 +564,17 @@ namespace Fluence.Wpf.Controls
                     return;
                 }
                 _placeholder.Text = _owner.GetPlaceholderText();
-                _placeholder.Visibility = _owner.Password.Length > 0 ? Visibility.Collapsed : Visibility.Visible;
+                _placeholder.Visibility = _owner.GetHasPassword() ? Visibility.Collapsed : Visibility.Visible;
             }
 
             private void UpdateRevealButtonVisibility()
             {
-                if (_revealButton is null)
+                bool show = _owner.GetRevealButtonEnabled() && _owner.GetHasPassword();
+                _ = _revealButton?.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+                if (!show)
                 {
-                    return;
+                    ConcealPassword();
                 }
-                bool show = _owner.GetRevealButtonEnabled() && _owner.Password.Length > 0;
-                _revealButton.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             }
 
             /// <summary>
@@ -579,37 +586,65 @@ namespace Fluence.Wpf.Controls
                 UpdateRevealButtonAccessibleName();
             }
 
-            // Precompiled regexes for password strength evaluation.
-            private static readonly Regex LowercasePasswordRegex = new("[a-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-            private static readonly Regex UppercasePasswordRegex = new("[A-Z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-            private static readonly Regex DigitPasswordRegex = new("[0-9]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-            private static readonly Regex SymbolPasswordRegex = new("[^a-zA-Z0-9]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
-            private static int ComputePasswordStrength(string password)
+            private static int ComputePasswordStrength(SecureString password)
             {
-                if (password.Length is 0)
+                int length = password.Length;
+                if (length is 0)
                 {
                     return 0;
                 }
 
+                bool hasLowercase = false;
+                bool hasUppercase = false;
+                bool hasDigit = false;
+                bool hasSymbol = false;
+
+                // A length-prefixed BSTR allows embedded nulls to be scored and the full buffer to be cleared.
+                IntPtr buffer = Marshal.SecureStringToBSTR(password);
+                try
+                {
+                    for (int index = 0; index < length; index++)
+                    {
+                        switch (unchecked((char)Marshal.ReadInt16(buffer, index * sizeof(char))))
+                        {
+                            case >= 'a' and <= 'z':
+                                hasLowercase = true;
+                                break;
+                            case >= 'A' and <= 'Z':
+                                hasUppercase = true;
+                                break;
+                            case >= '0' and <= '9':
+                                hasDigit = true;
+                                break;
+                            default:
+                                hasSymbol = true;
+                                break;
+                        }
+                    }
+                }
+                finally
+                {
+                    Marshal.ZeroFreeBSTR(buffer);
+                }
+
                 int score = 0;
-                if (password.Length >= 6)
+                if (length >= 6)
                 {
                     score++;
                 }
-                if (password.Length >= 10)
+                if (length >= 10)
                 {
                     score++;
                 }
-                if (LowercasePasswordRegex.IsMatch(password) && UppercasePasswordRegex.IsMatch(password))
+                if (hasLowercase && hasUppercase)
                 {
                     score++;
                 }
-                if (DigitPasswordRegex.IsMatch(password))
+                if (hasDigit)
                 {
                     score++;
                 }
-                if (SymbolPasswordRegex.IsMatch(password))
+                if (hasSymbol)
                 {
                     score++;
                 }
@@ -623,14 +658,19 @@ namespace Fluence.Wpf.Controls
 
             private void OnUnloaded(object sender, RoutedEventArgs e)
             {
+                ConcealPassword();
                 StopCapsPoll();
+            }
+
+            private void OnRevealDisplayUnloaded(object sender, RoutedEventArgs e)
+            {
+                ConcealPassword();
             }
 
             private void OnPasswordChanged(object sender, RoutedEventArgs e)
             {
                 EnsureParts();
-                UpdateHasPassword();
-                UpdateStrengthScore();
+                UpdatePasswordState();
                 UpdateChromeCore();
                 UpdateRevealDisplay();
             }
@@ -704,7 +744,7 @@ namespace Fluence.Wpf.Controls
                     return;
                 }
 
-                UnhookRevealButton();
+                UnhookRevealParts();
                 _resolvedTemplate = _owner.Template;
                 _mainBorder = _owner.Template.FindName(PartMainBorder, _owner) as System.Windows.Controls.Border;
                 _placeholder = _owner.Template.FindName(PartPlaceholder, _owner) as System.Windows.Controls.TextBlock;
@@ -719,11 +759,18 @@ namespace Fluence.Wpf.Controls
                         PART_StrengthSegment + i.ToString(CultureInfo.InvariantCulture),
                         _owner) as System.Windows.Controls.Border;
                 }
-                HookRevealButton();
+                HookRevealParts();
+                ConcealPassword();
             }
 
-            private void HookRevealButton()
+            private void HookRevealParts()
             {
+                if (_revealDisplay is not null)
+                {
+                    _revealDisplay.IsUndoEnabled = false;
+                    _revealDisplay.Unloaded += OnRevealDisplayUnloaded;
+                }
+
                 if (_revealButton is null)
                 {
                     return;
@@ -737,16 +784,18 @@ namespace Fluence.Wpf.Controls
                 UpdateRevealButtonAccessibleName();
             }
 
-            private void UnhookRevealButton()
+            private void UnhookRevealParts()
             {
-                if (_revealButton is null)
+                if (_revealButton is not null)
                 {
-                    return;
+                    _revealButton.PreviewMouseLeftButtonDown -= OnRevealButtonDown;
+                    _revealButton.PreviewMouseLeftButtonUp -= OnRevealButtonUp;
+                    _revealButton.MouseLeave -= OnRevealButtonLeave;
+                    _revealButton.Click -= OnRevealButtonClick;
                 }
-                _revealButton.PreviewMouseLeftButtonDown -= OnRevealButtonDown;
-                _revealButton.PreviewMouseLeftButtonUp -= OnRevealButtonUp;
-                _revealButton.MouseLeave -= OnRevealButtonLeave;
-                _revealButton.Click -= OnRevealButtonClick;
+
+                _revealDisplay?.Unloaded -= OnRevealDisplayUnloaded;
+                ClearRevealDisplay();
             }
 
             private void OnRevealButtonDown(object sender, MouseButtonEventArgs e)
@@ -765,8 +814,7 @@ namespace Fluence.Wpf.Controls
 
             private void OnRevealButtonLeave(object sender, MouseEventArgs e)
             {
-                _isMouseRevealActive = false;
-                SetRevealed(revealed: false);
+                ConcealPassword();
             }
 
             private void OnRevealButtonClick(object sender, RoutedEventArgs e)
@@ -786,50 +834,74 @@ namespace Fluence.Wpf.Controls
 
             private void SetRevealed(bool revealed)
             {
-                _owner.SetValue(IsPasswordRevealedPropertyKey, revealed);
+                _owner.SetValue(
+                    IsPasswordRevealedPropertyKey, revealed && _owner.GetRevealButtonEnabled() && _owner.GetHasPassword());
             }
 
-            private void UpdateHasPassword()
+            private void ConcealPassword()
             {
-                _owner.SetValue(HasPasswordPropertyKey, _owner.Password.Length > 0);
+                _isMouseRevealActive = false;
+                if (_owner.GetIsPasswordRevealed())
+                {
+                    SetRevealed(revealed: false);
+                }
             }
 
-            private void UpdateStrengthScore()
+            private void UpdatePasswordState()
             {
-                _owner.SetPasswordStrength(ComputePasswordStrength(_owner.Password));
+                int revision = unchecked(++_passwordStateRevision);
+                bool hasPassword;
+                int strength;
+                using (SecureString password = _owner.SecurePassword)
+                {
+                    hasPassword = password.Length > 0;
+                    strength = ComputePasswordStrength(password);
+                }
+
+                _owner.SetValue(HasPasswordPropertyKey, hasPassword);
+                // A presence observer can change the password and publish a newer score synchronously.
+                if (revision == _passwordStateRevision)
+                {
+                    _owner.SetPasswordStrength(strength);
+                }
             }
 
             /// <summary>
-            /// Fills or clears the peek overlay. The plaintext only exists in the visual tree while the
-            /// password is actually revealed; hiding it wipes the overlay immediately.
+            /// Updates the resolved peek overlay and clears its text immediately on conceal.
             /// </summary>
             private void UpdateRevealDisplay()
             {
-                EnsureParts();
-                bool revealed = _owner.GetIsPasswordRevealed();
+                if (!_owner.GetIsPasswordRevealed())
+                {
+                    ClearRevealDisplay();
+                    return;
+                }
 
                 // Fade the secure text view instead of collapsing it: the caret, the selection, and hit
                 // testing stay live behind the overlay, so typing continues into the real control.
-                _ = _contentHost?.Opacity = revealed ? 0.0 : 1.0;
-                _ = _revealDisplay?.Visibility = revealed ? Visibility.Visible : Visibility.Collapsed;
-
+                _ = _contentHost?.Opacity = 0.0;
                 if (_revealDisplay is null)
                 {
                     return;
                 }
-                if (revealed)
+
+                _revealDisplay.Visibility = Visibility.Visible;
+                _revealDisplay.Text = _owner.Password;
+                if (_contentHost is not null)
                 {
-                    _revealDisplay.Text = _owner.Password;
-                    if (_contentHost is not null)
-                    {
-                        // Keep the revealed text aligned with the scrolled position of the masked text so a
-                        // password longer than the field does not jump when it is peeked at.
-                        _revealDisplay.ScrollToHorizontalOffset(_contentHost.HorizontalOffset);
-                    }
+                    // Keep the revealed text aligned with the scrolled position of the masked text so a
+                    // password longer than the field does not jump when it is peeked at.
+                    _revealDisplay.ScrollToHorizontalOffset(_contentHost.HorizontalOffset);
                 }
-                else if (_revealDisplay.Text.Length > 0)
+            }
+
+            private void ClearRevealDisplay()
+            {
+                _ = _contentHost?.Opacity = 1.0;
+                _ = _revealDisplay?.Visibility = Visibility.Collapsed;
+                if (_revealDisplay is { Text.Length: > 0 } display)
                 {
-                    _revealDisplay.Clear();
+                    display.Clear();
                 }
             }
 
@@ -887,6 +959,11 @@ namespace Fluence.Wpf.Controls
             /// The decorated password box.
             /// </summary>
             private readonly System.Windows.Controls.PasswordBox _owner;
+
+            /// <summary>
+            /// Invalidates a password snapshot when an observer triggers another update or detaches the behavior.
+            /// </summary>
+            private int _passwordStateRevision;
 
             /// <summary>
             /// The strength meter segments, indexed by score threshold.

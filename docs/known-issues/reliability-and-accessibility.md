@@ -2,20 +2,6 @@
 
 Read the matching issue in [Known issues](../../KNOWN_ISSUES.md) for impact, status, and the interim workaround.
 
-## Fluent password fields can put plaintext in managed memory
-
-**Context and cause.** The implicit Fluent PasswordBox style attaches the decoration in [PasswordBox.xaml](../../Fluence.Wpf/Themes/Controls/PasswordBox.xaml). The decoration reads WPF's Password getter during normal changes to derive presence and strength, and also reads it for the placeholder and reveal-button visibility. The getter creates a managed plaintext string. Active reveal separately populates an overlay and clears it on conceal. [PasswordBoxExtensions.cs](../../Fluence.Wpf/Controls/PasswordBoxExtensions.cs) · [Microsoft's SecurePassword guidance](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.securepassword)
-
-**Previous work.** The visible meter and reveal switches control presentation. The existing hidden-meter test expects the attached strength score to keep updating even with the meter collapsed. Turning decoration off detaches its handlers. The audit traced the getter calls in source and corrected the earlier flags-only workaround. [PasswordBoxTests.cs](../../Fluence.Wpf.Tests/Control/PasswordBoxTests.cs)
-
-**Investigate.**
-
-1. Use synthetic input in a decorated native box with reveal and strength display disabled. Trace OnPasswordChanged, UpdateHasPassword, UpdateStrengthScore, UpdateChromeCore, and UpdateRevealDisplay. Repeat while attaching the decoration or reapplying the template.
-2. Separate presence, scoring, and deliberate reveal. Check the lifetime of any SecurePassword copy or temporary scoring buffer. Preserve the strength score expected by the hidden-meter contract. Record getter access and disposal behavior with synthetic input.
-3. Run the PasswordBox tests for masked editing, reveal and conceal, visibility, scoring, and detachment. Use shape-of-call or instrumentation evidence for plaintext materialization. Passing UI assertions alone only verify behavior.
-
-**Done when.** The masked path avoids materializing an immutable plaintext string, deliberate reveal clears its overlay on conceal, and the tested presence, scoring, and lifecycle behavior still works.
-
 ## An embedded PowerShell UI host can fail during shutdown
 
 **Context and cause.** WPF's Application belongs to its original dispatcher and may be reused across imports. Runspace disposal while an owned WPF dispatcher is active can produce a terminal shutdown assertion. Register-FluenceRunspaceExit only retires the secondary UI dispatcher on orderly exit of the primary, unpushed ConsoleHost session. A child or custom host owns its own cleanup. [Exit hook](../../Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Private/Register-FluenceRunspaceExit.ps1) · [Runspace cleanup](../../Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell/Private/Close-FluenceUiRunspace.ps1)

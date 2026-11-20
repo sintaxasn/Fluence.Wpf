@@ -20,6 +20,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- Fluent `PasswordBox` avoids creating a plaintext string during masked editing and clears revealed text when reveal is disabled or the overlay is retired. Added one regression case on each full test target framework.
 - In-app acrylic uses a lower-contrast noise tile with linear sampling for grain closer to WinUI.
 - In-app acrylic uses a wider Gaussian blur to bring its backdrop colors closer to WinUI. It combines two smaller blur stages at display scales where WPF would cap a single pass.
 - `TextBox` preserves consumer-supplied automation HelpText through loading, templates, and validation, including bindings, dynamic resources, and styles applied after validation begins. Validation messages provide fallback HelpText only when none was supplied. Five regression cases were added on each full test target framework.
