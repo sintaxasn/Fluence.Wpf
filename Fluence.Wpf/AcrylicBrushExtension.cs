@@ -71,7 +71,7 @@ namespace Fluence.Wpf
         /// Creates a distinct visual brush for a concrete Border or supported Shape fill.
         /// </summary>
         /// <param name="serviceProvider">The XAML service provider for this use.</param>
-        /// <returns>A per-use <see cref="System.Windows.Media.VisualBrush"/>.</returns>
+        /// <returns>A per-use <see cref="VisualBrush"/>.</returns>
         /// <exception cref="ArgumentNullException">The XAML service provider is missing.</exception>
         /// <exception cref="InvalidOperationException">The backdrop source name is empty.</exception>
         /// <exception cref="NotSupportedException">The XAML target does not have a concrete supported brush property.</exception>

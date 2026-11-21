@@ -182,10 +182,7 @@ namespace Fluence.Wpf.Helpers
             internal Subscription Attach(Action changed)
             {
                 Source.Dispatcher.VerifyAccess();
-                if (_closed)
-                {
-                    throw new ObjectDisposedException(nameof(AcrylicEnvironmentMonitor));
-                }
+                ObjectDisposedException.ThrowIf(_closed, typeof(AcrylicEnvironmentMonitor));
 
                 Subscription subscription = new(this, changed);
                 _subscriptions.Add(subscription);

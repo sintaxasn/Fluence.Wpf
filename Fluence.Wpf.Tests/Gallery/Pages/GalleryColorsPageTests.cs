@@ -311,7 +311,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         {
             Application application = WpfTestSta.EnsureApplication();
             Controls.AcrylicElement acrylic = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(example));
-            FrameworkElement source = Assert.IsAssignableFrom<FrameworkElement>(acrylic.BackdropSource);
+            FrameworkElement source = Assert.IsType<FrameworkElement>(acrylic.BackdropSource, exactMatch: false);
             Assert.Same(VisualTreeHelper.GetParent(acrylic), VisualTreeHelper.GetParent(source));
 
             acrylic.BringIntoView();

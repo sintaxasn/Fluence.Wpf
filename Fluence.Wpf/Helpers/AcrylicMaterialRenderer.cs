@@ -88,10 +88,7 @@ namespace Fluence.Wpf.Helpers
         internal void Update(FrameworkElement? source, AcrylicSourceMapResult map,
             AcrylicRecipeSnapshot recipe, AcrylicPolicyResult policy)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(AcrylicMaterialRenderer));
-            }
+            ObjectDisposedException.ThrowIf(_disposed, typeof(AcrylicMaterialRenderer));
 
             ArgumentNullException.ThrowIfNull(map);
             ArgumentNullException.ThrowIfNull(policy);

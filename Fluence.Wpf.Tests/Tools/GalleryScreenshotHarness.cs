@@ -492,7 +492,7 @@ namespace Fluence.Wpf.Tests.Tools
             _ = json.Append("  \"partial\": ").Append(filtered || failure is not null ? "true" : "false").Append(",\n");
             _ = json.Append("  \"capturedUtc\": ").Append(JsonString(DateTimeOffset.UtcNow.ToString("O"))).Append(",\n");
             _ = json.Append("  \"environment\": {\"os\": ").Append(JsonString(Environment.OSVersion.VersionString))
-                .Append(", \"runtime\": ").Append(JsonString(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription))
+                .Append(", \"runtime\": ").Append(JsonString(RuntimeInformation.FrameworkDescription))
                 .Append(", \"is64BitProcess\": ").Append(Environment.Is64BitProcess ? "true" : "false")
                 .Append(", \"captureDpi\": ").Append(Invariant("{0}", BaseDpi)).Append("},\n");
             _ = json.Append("  \"requestedIds\": ");
@@ -2104,7 +2104,7 @@ namespace Fluence.Wpf.Tests.Tools
 
                         fallbackCheckBox.IsChecked = true;
                         await SettleGalleryAsync(window).ConfigureAwait(true);
-                        if (!host.IsUsingFallback || host.FallbackReason is not Fluence.Wpf.Helpers.AcrylicFallbackReason.Always)
+                        if (!host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.Always)
                         {
                             throw new InvalidOperationException("Acrylic host did not enter the forced solid fallback scene.");
                         }
@@ -2309,10 +2309,10 @@ namespace Fluence.Wpf.Tests.Tools
             Border direct, Controls.AcrylicElement host)
         {
             if (page.FindName("BackdropSource") is not Grid source ||
-                typeof(Fluence.Wpf.Helpers.AcrylicMaterialController).GetField(
+                typeof(Helpers.AcrylicMaterialController).GetField(
                     "DirectControllerProperty", BindingFlags.Static | BindingFlags.NonPublic)?.GetValue(null)
                     is not DependencyProperty controllerProperty ||
-                direct.GetValue(controllerProperty) is not Fluence.Wpf.Helpers.AcrylicMaterialController directController)
+                direct.GetValue(controllerProperty) is not Helpers.AcrylicMaterialController directController)
             {
                 throw new InvalidOperationException("Native acrylic scene lacks the direct material controller or source.");
             }
@@ -2320,12 +2320,12 @@ namespace Fluence.Wpf.Tests.Tools
             bool retainedMaterialGraph = direct.Background is VisualBrush { Visual: Canvas directVisual }
                 && directVisual.Children.Count is 2
                 && directVisual.Children[0] is System.Windows.Shapes.Rectangle { Fill: VisualBrush { Visual: System.Windows.Shapes.Rectangle colorPass } }
-                && colorPass.Effect is Fluence.Wpf.Helpers.AcrylicBlendEffect
+                && colorPass.Effect is Helpers.AcrylicBlendEffect
                 && colorPass.Fill is VisualBrush { Visual: System.Windows.Shapes.Rectangle luminosityPass }
                 && luminosityPass.Fill is VisualBrush { Visual: Canvas paddedSource }
                 && paddedSource.Effect is BlurEffect;
-            if (host.IsUsingFallback || host.FallbackReason is not Fluence.Wpf.Helpers.AcrylicFallbackReason.None ||
-                directController.IsUsingFallback || directController.Reason is not Fluence.Wpf.Helpers.AcrylicFallbackReason.None ||
+            if (host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.None ||
+                directController.IsUsingFallback || directController.Reason is not Helpers.AcrylicFallbackReason.None ||
                 !ReferenceEquals(directController.CurrentSource, source) || !retainedMaterialGraph)
             {
                 throw new InvalidOperationException(Invariant(
@@ -2378,7 +2378,7 @@ namespace Fluence.Wpf.Tests.Tools
 
                 forceFallback.IsChecked = true;
                 await SettleGalleryAsync(fallbackWindow).ConfigureAwait(true);
-                if (!host.IsUsingFallback || host.FallbackReason is not Fluence.Wpf.Helpers.AcrylicFallbackReason.Always)
+                if (!host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.Always)
                 {
                     throw new InvalidOperationException("Acrylic fallback scene did not select its forced opaque recipe.");
                 }

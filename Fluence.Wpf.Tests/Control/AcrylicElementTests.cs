@@ -46,8 +46,8 @@ namespace Fluence.Wpf.Tests.Control
             return WpfTestSta.RunOnStaAsync(static () =>
             {
                 _ = WpfTestSta.EnsureApplication();
-                Fluence.Wpf.Controls.AcrylicElement first = new() { Width = 90, Height = 65, Content = new TextBlock { Text = "Sharp" } };
-                Fluence.Wpf.Controls.AcrylicElement second = new() { Width = 90, Height = 65, Content = new TextBlock { Text = "Sharp" } };
+                Controls.AcrylicElement first = new() { Width = 90, Height = 65, Content = new TextBlock { Text = "Sharp" } };
+                Controls.AcrylicElement second = new() { Width = 90, Height = 65, Content = new TextBlock { Text = "Sharp" } };
                 StackPanel panel = new();
                 _ = panel.Children.Add(first);
                 _ = panel.Children.Add(second);
@@ -97,8 +97,8 @@ namespace Fluence.Wpf.Tests.Control
                 AcrylicMaterialRecipe secondRecipe = new() { AlwaysUseFallback = true, FallbackColor = Colors.DarkSlateBlue };
                 Grid root = new();
                 root.Resources["LiveRecipe"] = firstRecipe;
-                Fluence.Wpf.Controls.AcrylicElement host = new() { Width = 90, Height = 65 };
-                host.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, "LiveRecipe");
+                Controls.AcrylicElement host = new() { Width = 90, Height = 65 };
+                host.SetResourceReference(Controls.AcrylicElement.RecipeProperty, "LiveRecipe");
                 _ = root.Children.Add(host);
                 Window window = new() { Content = root, Width = 220, Height = 180, ShowInTaskbar = false };
                 try
@@ -111,7 +111,7 @@ namespace Fluence.Wpf.Tests.Control
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     Assert.Same(secondRecipe, host.Recipe);
                     Assert.True(host.IsUsingFallback);
-                    _ = Assert.Throws<InvalidOperationException>(() => host.SetValue(Fluence.Wpf.Controls.AcrylicElement.IsUsingFallbackProperty, value: false));
+                    _ = Assert.Throws<InvalidOperationException>(() => host.SetValue(Controls.AcrylicElement.IsUsingFallbackProperty, value: false));
                 }
                 finally
                 {
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 AcrylicMaterialRecipe recipe = new() { AlwaysUseFallback = true };
-                Fluence.Wpf.Controls.AcrylicElement host = new() { Recipe = recipe, Width = 80, Height = 50 };
+                Controls.AcrylicElement host = new() { Recipe = recipe, Width = 80, Height = 50 };
                 Grid root = new();
                 _ = root.Children.Add(host);
                 Window window = new() { Width = 210, Height = 160, Content = root, ShowInTaskbar = false };
@@ -137,10 +137,10 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.Always, host.FallbackReason);
+                    Assert.Equal(Helpers.AcrylicFallbackReason.Always, host.FallbackReason);
                     changes = 0;
                     recipe.AlwaysUseFallback = false;
-                    Assert.NotEqual(Fluence.Wpf.Helpers.AcrylicFallbackReason.Always, host.FallbackReason);
+                    Assert.NotEqual(Helpers.AcrylicFallbackReason.Always, host.FallbackReason);
                     Assert.True(host.IsUsingFallback);
                     Assert.Equal(1, changes);
 
@@ -164,8 +164,8 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light);
-                Fluence.Wpf.Controls.AcrylicElement host = new() { Width = 90, Height = 60 };
-                host.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, "AcrylicInAppDefaultRecipe");
+                Controls.AcrylicElement host = new() { Width = 90, Height = 60 };
+                host.SetResourceReference(Controls.AcrylicElement.RecipeProperty, "AcrylicInAppDefaultRecipe");
                 Window window = new() { Content = host, Width = 220, Height = 160, ShowInTaskbar = false };
                 try
                 {
@@ -194,7 +194,7 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 Border source = new() { Width = 180, Height = 130, Background = Brushes.CadetBlue };
-                Fluence.Wpf.Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
+                Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
                 Grid root = new();
                 _ = root.Children.Add(source);
                 _ = root.Children.Add(host);
@@ -203,23 +203,23 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                     RotateTransform rotation = new();
                     source.RenderTransform = rotation;
                     rotation.Angle = 15;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.UnsupportedTransform);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.UnsupportedTransform);
                     rotation.Angle = 0;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
 
                     source.Clip = new EllipseGeometry(new Rect(0, 0, 100, 80));
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.UnsupportedClip);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.UnsupportedClip);
                     RectangleGeometry rectangle = new(new Rect(0, 0, 100, 80));
                     source.Clip = rectangle;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                     rectangle.RadiusX = 5;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.UnsupportedClip);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.UnsupportedClip);
                     rectangle.RadiusX = 0;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                 }
                 finally
                 {
@@ -235,7 +235,7 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 Border source = new() { Width = 180, Height = 130, Background = Brushes.CadetBlue };
-                Fluence.Wpf.Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
+                Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
                 Grid root = new();
                 _ = root.Children.Add(source);
                 _ = root.Children.Add(host);
@@ -244,15 +244,15 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
 
                     source.Background = new VisualBrush(host);
-                    Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.CyclicSource, host.FallbackReason);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.CyclicSource);
+                    Assert.Equal(Helpers.AcrylicFallbackReason.CyclicSource, host.FallbackReason);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.CyclicSource);
                     AssertOpaqueNoiseFreeFallback(host);
 
                     source.Background = Brushes.CadetBlue;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                 }
                 finally
                 {
@@ -270,7 +270,7 @@ namespace Fluence.Wpf.Tests.Control
                 Border safe = new() { Background = Brushes.CadetBlue };
                 VisualBrush nested = new(safe);
                 Border source = new() { Width = 180, Height = 130, Background = nested };
-                Fluence.Wpf.Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
+                Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
                 Grid root = new();
                 _ = root.Children.Add(source);
                 _ = root.Children.Add(host);
@@ -279,29 +279,29 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
 
                     nested.Visual = host;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.CyclicSource);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.CyclicSource);
                     AssertOpaqueNoiseFreeFallback(host);
                     nested.Visual = safe;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
 
                     source.OpacityMask = new VisualBrush(host);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.CyclicSource);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.CyclicSource);
                     AssertOpaqueNoiseFreeFallback(host);
                     source.OpacityMask = null;
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
 
                     GeometryDrawing drawing = new(new VisualBrush(safe), pen: null,
                         geometry: new RectangleGeometry(new Rect(0, 0, 20, 20)));
                     source.Background = new DrawingBrush(drawing);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                     drawing.Brush = new VisualBrush(host);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.CyclicSource);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.CyclicSource);
                     AssertOpaqueNoiseFreeFallback(host);
                     drawing.Brush = new VisualBrush(safe);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                 }
                 finally
                 {
@@ -317,7 +317,7 @@ namespace Fluence.Wpf.Tests.Control
             {
                 _ = WpfTestSta.EnsureApplication();
                 Border source = new() { Width = 180, Height = 130, Background = Brushes.CadetBlue };
-                Fluence.Wpf.Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
+                Controls.AcrylicElement host = new() { BackdropSource = source, Width = 80, Height = 60 };
                 Grid root = new();
                 _ = root.Children.Add(source);
                 _ = root.Children.Add(host);
@@ -327,7 +327,7 @@ namespace Fluence.Wpf.Tests.Control
                 {
                     window.Show();
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                     HwndSource hwnd = Assert.IsType<HwndSource>(PresentationSource.FromVisual(host));
                     HwndTarget target = Assert.IsType<HwndTarget>(hwnd.CompositionTarget);
                     RenderMode targetMode = target.RenderMode;
@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests.Control
                     {
                         RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
                         target.RenderMode = RenderMode.SoftwareOnly;
-                        WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.UnsupportedGraphics);
+                        WaitForReason(host, Helpers.AcrylicFallbackReason.UnsupportedGraphics);
                         Assert.True(host.IsUsingFallback);
                         Border backdrop = Assert.IsType<Border>(host.Template.FindName("PART_Backdrop", host));
                         VisualBrush brush = Assert.IsType<VisualBrush>(backdrop.Background);
@@ -350,7 +350,7 @@ namespace Fluence.Wpf.Tests.Control
                         target.RenderMode = targetMode;
                     }
 
-                    WaitForReason(host, Fluence.Wpf.Helpers.AcrylicFallbackReason.None);
+                    WaitForReason(host, Helpers.AcrylicFallbackReason.None);
                     Assert.Same(hwnd, PresentationSource.FromVisual(host));
                 }
                 finally
@@ -371,8 +371,8 @@ namespace Fluence.Wpf.Tests.Control
                 recipe.Freeze();
                 Border firstSource = new() { Width = 160, Height = 120, Background = Brushes.DarkBlue };
                 Border secondSource = new() { Width = 160, Height = 120, Background = Brushes.DarkOrange };
-                Fluence.Wpf.Controls.AcrylicElement first = new() { BackdropSource = firstSource, Recipe = recipe, Width = 80, Height = 60 };
-                Fluence.Wpf.Controls.AcrylicElement second = new() { BackdropSource = secondSource, Recipe = recipe, Width = 80, Height = 60 };
+                Controls.AcrylicElement first = new() { BackdropSource = firstSource, Recipe = recipe, Width = 80, Height = 60 };
+                Controls.AcrylicElement second = new() { BackdropSource = secondSource, Recipe = recipe, Width = 80, Height = 60 };
                 Grid firstRoot = new();
                 Grid secondRoot = new();
                 _ = firstRoot.Children.Add(firstSource);
@@ -400,7 +400,7 @@ namespace Fluence.Wpf.Tests.Control
                     firstClosed = true;
                     Assert.Same(secondBrush, secondBackdrop.Background);
                     Assert.NotNull(secondBrush.Visual);
-                    Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.Always, second.FallbackReason);
+                    Assert.Equal(Helpers.AcrylicFallbackReason.Always, second.FallbackReason);
                 }
                 finally
                 {
@@ -414,7 +414,7 @@ namespace Fluence.Wpf.Tests.Control
             });
         }
 
-        private static void WaitForReason(Fluence.Wpf.Controls.AcrylicElement host, Fluence.Wpf.Helpers.AcrylicFallbackReason expected)
+        private static void WaitForReason(Controls.AcrylicElement host, Helpers.AcrylicFallbackReason expected)
         {
             DateTime deadline = DateTime.UtcNow.AddSeconds(2);
             while (host.FallbackReason != expected && DateTime.UtcNow < deadline)
@@ -430,7 +430,7 @@ namespace Fluence.Wpf.Tests.Control
             Assert.Equal(expected, host.FallbackReason);
         }
 
-        private static void AssertOpaqueNoiseFreeFallback(Fluence.Wpf.Controls.AcrylicElement host)
+        private static void AssertOpaqueNoiseFreeFallback(Controls.AcrylicElement host)
         {
             Assert.True(host.IsUsingFallback);
             Border backdrop = Assert.IsType<Border>(host.Template.FindName("PART_Backdrop", host));

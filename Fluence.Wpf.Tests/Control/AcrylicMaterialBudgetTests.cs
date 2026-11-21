@@ -220,9 +220,9 @@ namespace Fluence.Wpf.Tests.Control
                 _ = WpfTestSta.EnsureApplication();
                 (Window firstWindow, Grid firstRoot, Canvas firstSource) = NewWindow();
                 (Window secondWindow, Grid secondRoot, Canvas secondSource) = NewWindow();
-                Fluence.Wpf.Controls.AcrylicElement first = AddHost(firstRoot, firstSource);
-                Fluence.Wpf.Controls.AcrylicElement second = AddHost(secondRoot, secondSource);
-                Fluence.Wpf.Controls.AcrylicElement waiting = AddHost(secondRoot, secondSource);
+                Controls.AcrylicElement first = AddHost(firstRoot, firstSource);
+                Controls.AcrylicElement second = AddHost(secondRoot, secondSource);
+                Controls.AcrylicElement waiting = AddHost(secondRoot, secondSource);
                 bool firstClosed = false;
                 try
                 {
@@ -244,7 +244,7 @@ namespace Fluence.Wpf.Tests.Control
                     Drain();
                     Assert.Equal(AcrylicFallbackReason.None, waiting.FallbackReason);
 
-                    Fluence.Wpf.Controls.AcrylicElement afterPolicy = AddHost(secondRoot, secondSource);
+                    Controls.AcrylicElement afterPolicy = AddHost(secondRoot, secondSource);
                     Drain();
                     AssertBudgetFallback(afterPolicy);
                     second.Recipe = new AcrylicMaterialRecipe { AlwaysUseFallback = true };
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(AcrylicFallbackReason.Always, second.FallbackReason);
                     Assert.Equal(AcrylicFallbackReason.None, afterPolicy.FallbackReason);
 
-                    Fluence.Wpf.Controls.AcrylicElement afterSource = AddHost(secondRoot, secondSource);
+                    Controls.AcrylicElement afterSource = AddHost(secondRoot, secondSource);
                     Drain();
                     AssertBudgetFallback(afterSource);
                     waiting.BackdropSource = null;
@@ -260,7 +260,7 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Equal(AcrylicFallbackReason.UnavailableSource, waiting.FallbackReason);
                     Assert.Equal(AcrylicFallbackReason.None, afterSource.FallbackReason);
 
-                    Fluence.Wpf.Controls.AcrylicElement afterUnload = AddHost(secondRoot, secondSource);
+                    Controls.AcrylicElement afterUnload = AddHost(secondRoot, secondSource);
                     Drain();
                     AssertBudgetFallback(afterUnload);
                     secondRoot.Children.Remove(afterPolicy);
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests.Control
                 _ = WpfTestSta.EnsureApplication();
                 BudgetParticipant otherWindow = new();
                 (Window window, Grid root, Canvas source) = NewWindow();
-                Fluence.Wpf.Controls.AcrylicElement host = AddHost(root, source);
+                Controls.AcrylicElement host = AddHost(root, source);
                 host.Width = 50;
                 host.Height = 40;
                 try
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.True(AcrylicMaterialBudget.TryReserve(firstWindow, Map(10, 10)));
                 Assert.True(AcrylicMaterialBudget.TryReserve(secondWindow, Map(10, 10)));
                 (Window window, Grid root, Canvas source) = NewWindow();
-                Fluence.Wpf.Controls.AcrylicElement waiting = AddHost(root, source);
+                Controls.AcrylicElement waiting = AddHost(root, source);
                 try
                 {
                     window.Show();
@@ -381,9 +381,9 @@ namespace Fluence.Wpf.Tests.Control
             return (window, root, source);
         }
 
-        private static Fluence.Wpf.Controls.AcrylicElement AddHost(Grid root, Canvas source)
+        private static Controls.AcrylicElement AddHost(Grid root, Canvas source)
         {
-            Fluence.Wpf.Controls.AcrylicElement host = new()
+            Controls.AcrylicElement host = new()
             {
                 BackdropSource = source,
                 Width = 120,
@@ -417,7 +417,7 @@ namespace Fluence.Wpf.Tests.Control
             return gated;
         }
 
-        private static void AssertBudgetFallback(Fluence.Wpf.Controls.AcrylicElement host)
+        private static void AssertBudgetFallback(Controls.AcrylicElement host)
         {
             Assert.Equal(AcrylicFallbackReason.BudgetExceeded, host.FallbackReason);
             Assert.True(host.IsUsingFallback);

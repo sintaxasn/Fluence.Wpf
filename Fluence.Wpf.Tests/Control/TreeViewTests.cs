@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Tests.Control
                     Assert.Contains(root, selection.Cast<object>());
                     Assert.Contains(leaf, selection.Cast<object>());
 
-                    ToggleButton checkBox = Assert.IsAssignableFrom<ToggleButton>(restoredRoot.Template.FindName("SelectionCheckBox", restoredRoot));
+                    ToggleButton checkBox = Assert.IsType<ToggleButton>(restoredRoot.Template.FindName("SelectionCheckBox", restoredRoot), exactMatch: false);
                     checkBox.SetCurrentValue(ToggleButton.IsCheckedProperty, value: false);
                     WpfTestSta.DrainDispatcher(tree.Dispatcher);
                     Assert.False(root.Checked);

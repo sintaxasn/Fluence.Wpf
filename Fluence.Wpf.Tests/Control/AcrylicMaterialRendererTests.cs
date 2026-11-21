@@ -268,7 +268,7 @@ namespace Fluence.Wpf.Tests.Control
             Assert.Equal(TileMode.Tile, brush.TileMode);
             Assert.Equal(BrushMappingMode.Absolute, brush.ViewportUnits);
             Assert.Equal(new Rect(0, 0, 256, 256), brush.Viewport);
-            BitmapSource texture = Assert.IsAssignableFrom<BitmapSource>(brush.ImageSource);
+            BitmapSource texture = Assert.IsType<BitmapSource>(brush.ImageSource, exactMatch: false);
             Assert.Equal(256, texture.PixelWidth);
             Assert.Equal(256, texture.PixelHeight);
         }

@@ -95,6 +95,15 @@
     <AdditionalFiles Include="PublicAPI\PublicAPI.Unshipped.txt" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <MeziantouPolyfill_IncludedPolyfills>
+      $(MeziantouPolyfill_IncludedPolyfills)
+      M:System.ObjectDisposedException.ThrowIf(System.Boolean,System.Type)|
+      T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute|
+      T:System.Diagnostics.StackTraceHiddenAttribute|
+    </MeziantouPolyfill_IncludedPolyfills>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Meziantou.Polyfill">
       <PrivateAssets>all</PrivateAssets>

@@ -160,10 +160,10 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            DynamicAcrylicHost.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, key);
+            DynamicAcrylicHost.SetResourceReference(Controls.AcrylicElement.RecipeProperty, key);
             if (FallbackCheckBox?.IsChecked is true)
             {
-                DynamicAcrylicHost.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, FallbackRecipeKey);
+                DynamicAcrylicHost.SetResourceReference(Controls.AcrylicElement.RecipeProperty, FallbackRecipeKey);
             }
         }
 
@@ -177,7 +177,7 @@ namespace Fluence.Wpf.Demo.Pages
             string key = FallbackCheckBox.IsChecked is true
                 ? FallbackRecipeKey
                 : (RecipeSelector.SelectedItem as ComboBoxItem)?.Tag as string ?? DefaultRecipeKey;
-            DynamicAcrylicHost.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, key);
+            DynamicAcrylicHost.SetResourceReference(Controls.AcrylicElement.RecipeProperty, key);
         }
 
         private void Host_FallbackReasonChanged(object? sender, EventArgs e)
@@ -207,7 +207,7 @@ namespace Fluence.Wpf.Demo.Pages
         private void OpenPopup_Click(object sender, RoutedEventArgs e)
         {
             ClosePopup();
-            Fluence.Wpf.Controls.AcrylicElement popupHost = new()
+            Controls.AcrylicElement popupHost = new()
             {
                 Width = 320,
                 Height = 100,
@@ -220,7 +220,7 @@ namespace Fluence.Wpf.Demo.Pages
                 },
             };
             string recipeKey = (RecipeSelector.SelectedItem as ComboBoxItem)?.Tag as string ?? DefaultRecipeKey;
-            popupHost.SetResourceReference(Fluence.Wpf.Controls.AcrylicElement.RecipeProperty, recipeKey);
+            popupHost.SetResourceReference(Controls.AcrylicElement.RecipeProperty, recipeKey);
             popupHost.FallbackReasonChanged += PopupHost_FallbackReasonChanged;
             _popup = new Popup
             {
@@ -236,7 +236,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void Popup_Opened(object? sender, EventArgs e)
         {
-            if (_popup?.Child is Fluence.Wpf.Controls.AcrylicElement host)
+            if (_popup?.Child is Controls.AcrylicElement host)
             {
                 PopupFallbackReasonText.Text = host.FallbackReason.ToString();
             }
@@ -244,7 +244,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void PopupHost_FallbackReasonChanged(object? sender, EventArgs e)
         {
-            if (sender is Fluence.Wpf.Controls.AcrylicElement host)
+            if (sender is Controls.AcrylicElement host)
             {
                 PopupFallbackReasonText.Text = host.FallbackReason.ToString();
             }
@@ -252,7 +252,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void ClosePopup()
         {
-            if (_popup?.Child is Fluence.Wpf.Controls.AcrylicElement host)
+            if (_popup?.Child is Controls.AcrylicElement host)
             {
                 host.FallbackReasonChanged -= PopupHost_FallbackReasonChanged;
             }

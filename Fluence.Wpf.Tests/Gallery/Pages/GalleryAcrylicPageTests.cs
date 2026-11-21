@@ -93,31 +93,31 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                     Grid source = Assert.IsType<Grid>(page.FindName("BackdropSource"), exactMatch: false);
                     Border direct = Assert.IsType<Border>(page.FindName("DirectAcrylicBorder"), exactMatch: false);
-                    Fluence.Wpf.Controls.AcrylicElement host = Assert.Single(DemoTestHost.FindVisualChildren<Fluence.Wpf.Controls.AcrylicElement>(page));
+                    Controls.AcrylicElement host = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(page));
                     Assert.Same(source.Parent, direct.Parent);
                     Assert.Same(source.Parent, host.Parent);
                     Assert.Equal(3, Grid.GetColumnSpan(source));
                     Assert.Same(source, host.BackdropSource);
-                    FieldInfo controllerField = Assert.IsType<FieldInfo>(typeof(Fluence.Wpf.Helpers.AcrylicMaterialController)
+                    FieldInfo controllerField = Assert.IsType<FieldInfo>(typeof(Helpers.AcrylicMaterialController)
                         .GetField("DirectControllerProperty", BindingFlags.Static | BindingFlags.NonPublic), exactMatch: false);
                     DependencyProperty attached = Assert.IsType<DependencyProperty>(controllerField.GetValue(obj: null));
-                    Fluence.Wpf.Helpers.AcrylicMaterialController directController =
-                        Assert.IsType<Fluence.Wpf.Helpers.AcrylicMaterialController>(direct.GetValue(attached));
+                    Helpers.AcrylicMaterialController directController =
+                        Assert.IsType<Helpers.AcrylicMaterialController>(direct.GetValue(attached));
                     Assert.Same(source, directController.CurrentSource);
-                    Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.None, directController.Reason);
+                    Assert.Equal(Helpers.AcrylicFallbackReason.None, directController.Reason);
                     TextBlock directLabel = Assert.IsType<TextBlock>(direct.Child);
                     Assert.Equal(Color.FromRgb(0x1F, 0x1F, 0x1F), Assert.IsType<SolidColorBrush>(directLabel.Foreground).Color);
                     Canvas directVisual = Assert.IsType<Canvas>(Assert.IsType<VisualBrush>(direct.Background).Visual);
                     Assert.Equal(2, directVisual.Children.Count);
                     Rectangle material = Assert.IsType<Rectangle>(directVisual.Children[0]);
                     Rectangle colorPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(material.Fill).Visual);
-                    Assert.True(colorPass.Effect is Fluence.Wpf.Helpers.AcrylicBlendEffect);
+                    Assert.True(colorPass.Effect is Helpers.AcrylicBlendEffect);
                     Rectangle luminosityPass = Assert.IsType<Rectangle>(Assert.IsType<VisualBrush>(colorPass.Fill).Visual);
-                    UIElement blurredSource = Assert.IsAssignableFrom<UIElement>(Assert.IsType<VisualBrush>(luminosityPass.Fill).Visual);
+                    UIElement blurredSource = Assert.IsType<UIElement>(Assert.IsType<VisualBrush>(luminosityPass.Fill).Visual, exactMatch: false);
                     BlurEffect blur = Assert.IsType<BlurEffect>(blurredSource.Effect);
                     Assert.Equal(KernelType.Gaussian, blur.KernelType);
-                    Assert.Equal(Fluence.Wpf.Helpers.AcrylicFallbackReason.None,
-                        Fluence.Wpf.Helpers.AcrylicSourceMap.Evaluate(host, source,
+                    Assert.Equal(Helpers.AcrylicFallbackReason.None,
+                        Helpers.AcrylicSourceMap.Evaluate(host, source,
                             new Size(host.ActualWidth, host.ActualHeight), 8).Reason);
                     Assert.Equal(260, Assert.IsType<StackPanel>(samples[0].RightRailContent).MaxWidth);
                     Assert.Equal(0.5, Assert.IsType<AcrylicMaterialRecipe>(page.Resources["GalleryAcrylicFixedRecipe"]).TintOpacity);
@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 try
                 {
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Fluence.Wpf.Controls.AcrylicElement host = Assert.Single(DemoTestHost.FindVisualChildren<Fluence.Wpf.Controls.AcrylicElement>(page));
+                    Controls.AcrylicElement host = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(page));
                     CheckBox forceFallback = Assert.IsType<CheckBox>(page.FindName("FallbackCheckBox"), exactMatch: false);
                     TextBlock hostReason = Assert.IsType<TextBlock>(page.FindName("FallbackReasonText"), exactMatch: false);
 
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     Assert.Equal("Always", host.FallbackReason.ToString());
                     Assert.Equal(host.FallbackReason.ToString(), hostReason.Text);
 
-                    ButtonBase openPopup = Assert.IsType<Fluence.Wpf.Controls.Button>(page.FindName("OpenPopupButton"), exactMatch: false);
+                    ButtonBase openPopup = Assert.IsType<Controls.Button>(page.FindName("OpenPopupButton"), exactMatch: false);
                     openPopup.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     WpfTestSta.DrainDispatcher(window.Dispatcher);
                     TextBlock popupReason = Assert.IsType<TextBlock>(page.FindName("PopupFallbackReasonText"), exactMatch: false);
