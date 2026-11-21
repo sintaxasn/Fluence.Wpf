@@ -172,6 +172,55 @@ Describe 'Select-VisualCaptures' {
         }
     }
 
+    It 'maps the Controls Tour categories and both themes from the real sidebar' {
+        $repo = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+        $tourPath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module/examples/06-ControlsTour.ps1'
+        $tour = [System.Management.Automation.Language.Parser]::ParseFile($tourPath, [ref]$null, [ref]$null)
+        $xamlAssignment = $tour.Find({
+            param($node)
+            $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -ceq '$xaml'
+        }, $true)
+        [xml]$xaml = $xamlAssignment.Right.Expression.Value
+        $categories = @($xaml.SelectNodes("//*[local-name()='ListBox' and @*[local-name()='Name']='CategoryList']/*[local-name()='ListBoxItem']") |
+            ForEach-Object { [string]$_.Content })
+        $categories.Count | Should -Be 10
+        ($categories[-2..-1] -join ',') | Should -BeExactly 'Acrylic,Layout'
+
+        $capturePath = Join-Path $repo 'Fluence.Wpf.PowerShell.Module/build/Capture-ControlsTour.ps1'
+        $capture = [System.Management.Automation.Language.Parser]::ParseFile($capturePath, [ref]$null, [ref]$null)
+        $category = $capture.ParamBlock.Parameters | Where-Object { $_.Name.VariablePath.UserPath -ceq 'Category' }
+        $validateSet = $category.Attributes | Where-Object { $_.TypeName.FullName -ceq 'ValidateSet' }
+        ($validateSet.PositionalArguments.Value -join ',') | Should -BeExactly ('All,' + ($categories -join ','))
+
+        $harness = Get-Content -LiteralPath (Join-Path $repo 'Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs') -Raw
+        $harnessList = [regex]::Match($harness, 'string\[\] categories = \[(?<names>[^\]]+)\];')
+        $harnessCategories = [regex]::Matches($harnessList.Groups['names'].Value, '"(?<name>\w+)"') |
+            ForEach-Object { $_.Groups['name'].Value }
+        ($harnessCategories -join ',') | Should -BeExactly ($categories -join ',')
+
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        $tourEntries = @($map.Captures | Where-Object Family -CEQ 'powershell')
+        $tourEntries.Count | Should -Be ($categories.Count * 2)
+        foreach ($theme in @('light', 'dark')) {
+            foreach ($name in $categories) {
+                $id = if ($name -ceq 'Inputs') { "powershell-$theme.png" } else { "powershell-$($name.ToLowerInvariant())-$theme.png" }
+                $entry = @($tourEntries | Where-Object Id -CEQ $id)
+                $entry.Count | Should -Be 1
+                $entry[0].Theme | Should -BeExactly $theme
+                $entry[0].Inputs | Should -Contain 'Fluence.Wpf.PowerShell.Module/examples/06-ControlsTour.ps1'
+            }
+        }
+    }
+
+    It 'tracks the Gallery Colors code that creates the live acrylic tiles' {
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        $colors = @($map.Captures | Where-Object Family -CEQ 'gallery/colors')
+        $colors.Count | Should -Be 2
+        foreach ($entry in $colors) {
+            $entry.Inputs | Should -Contain 'Fluence.Wpf.Demo/Pages/GalleryColorsPage.xaml.cs'
+        }
+    }
+
     It 'tracks the material controller, source map, budget, policy, and recipe inputs in every Acrylic scene' {
         $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
         $acrylic = @($map.Captures | Where-Object { $_.Id -like 'controls/acrylic-*' -or $_.Id -like 'gallery/acrylic-*' })
@@ -201,6 +250,7 @@ Describe 'Select-VisualCaptures' {
             'Fluence.Wpf/Helpers/AcrylicNoiseHelper.cs',
             'Fluence.Wpf/Helpers/AcrylicMaterialMath.cs',
             'Fluence.Wpf/Helpers/AcrylicSourceReferenceWatcher.cs',
+            'Fluence.Wpf/Helpers/FreezableChangedEventManager.cs',
             'Fluence.Wpf/Helpers/AcrylicSourceRegistration.cs',
             'Fluence.Wpf/Native/NativeMethods.cs',
             'Fluence.Wpf/NativeMethods.txt',

@@ -74,6 +74,7 @@ namespace Fluence.Wpf.Tests.Tools
         private const string IncludeEnvironmentVariable = "FLUENCE_CAPTURE_INCLUDE";
         private const string NativeAcrylicEnvironmentVariable = "FLUENCE_CAPTURE_NATIVE_ACRYLIC";
         private const int GalleryCaptureWidth = 1280;
+        private const int GalleryTopCaptureWidth = 2200;
         private const int GalleryCaptureHeight = 900;
         private const double CardCaptureScale = 0.8;
         private const int PowerShellCaptureWidth = 1120;
@@ -989,7 +990,9 @@ namespace Fluence.Wpf.Tests.Tools
             try
             {
                 window = new Demo.MainWindow();
-                PrepareCaptureWindow(window, GalleryCaptureWidth, GalleryCaptureHeight);
+                // Status must remain in the primary Top strip for the route and indicator checks.
+                int width = paneMode is NavigationViewPaneDisplayMode.Top ? GalleryTopCaptureWidth : GalleryCaptureWidth;
+                PrepareCaptureWindow(window, width, GalleryCaptureHeight);
                 window.Show();
                 WpfTestSta.DrainDispatcher(window.Dispatcher);
 
@@ -2322,8 +2325,9 @@ namespace Fluence.Wpf.Tests.Tools
                 && directVisual.Children[0] is System.Windows.Shapes.Rectangle { Fill: VisualBrush { Visual: System.Windows.Shapes.Rectangle colorPass } }
                 && colorPass.Effect is Helpers.AcrylicBlendEffect
                 && colorPass.Fill is VisualBrush { Visual: System.Windows.Shapes.Rectangle luminosityPass }
-                && luminosityPass.Fill is VisualBrush { Visual: Canvas paddedSource }
-                && paddedSource.Effect is BlurEffect;
+                && luminosityPass.Effect is Helpers.AcrylicBlendEffect
+                && luminosityPass.Fill is VisualBrush blurBrush
+                && HasGaussianAcrylicBlur(blurBrush.Visual);
             if (host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.None ||
                 directController.IsUsingFallback || directController.Reason is not Helpers.AcrylicFallbackReason.None ||
                 !ReferenceEquals(directController.CurrentSource, source) || !retainedMaterialGraph)
@@ -2333,6 +2337,20 @@ namespace Fluence.Wpf.Tests.Tools
                     host.IsUsingFallback, host.FallbackReason, directController.IsUsingFallback, directController.Reason,
                     ReferenceEquals(directController.CurrentSource, source), retainedMaterialGraph));
             }
+        }
+
+        private static bool HasGaussianAcrylicBlur(Visual? visual)
+        {
+            if (visual is not UIElement { Effect: BlurEffect { KernelType: KernelType.Gaussian } })
+            {
+                return false;
+            }
+
+            // High-DPI scenes use an extra blurred rectangle to stay within WPF's per-effect radius cap.
+            return visual is Canvas or System.Windows.Shapes.Rectangle
+            {
+                Fill: VisualBrush { Visual: Canvas { Effect: BlurEffect { KernelType: KernelType.Gaussian } } },
+            };
         }
 
         private static async Task WaitForNativeForegroundAsync(Window window)
@@ -2395,43 +2413,66 @@ namespace Fluence.Wpf.Tests.Tools
             }
         }
 
-        private static async Task CaptureNativeElementPngAsync(Window window, FrameworkElement element, string path)
+        private static async Task CaptureNativeElementPngAsync(Demo.MainWindow window, FrameworkElement element, string path)
         {
             IntPtr hwnd = new WindowInteropHelper(window).Handle;
-            if (hwnd == IntPtr.Zero || NativeMethods.GetForegroundWindow() != hwnd)
+            IntPtr foreground = NativeMethods.GetForegroundWindow();
+            if (hwnd == IntPtr.Zero || foreground != hwnd)
             {
-                throw new InvalidOperationException("Acrylic native capture requires the Gallery to own the foreground HWND.");
+                throw NativeCaptureFailure(path, Invariant(
+                    "Acrylic native capture requires the Gallery to own the foreground HWND: expected=0x{0:X}, foreground=0x{1:X}.",
+                    hwnd.ToInt64(), foreground.ToInt64()));
             }
 
-            Point topLeft = element.PointToScreen(new Point());
-            Point bottomRight = element.PointToScreen(new Point(element.ActualWidth, element.ActualHeight));
-            int left = (int)Math.Ceiling(topLeft.X);
-            int top = (int)Math.Ceiling(topLeft.Y);
-            int right = (int)Math.Floor(bottomRight.X);
-            int bottom = (int)Math.Floor(bottomRight.Y);
-            int width = right - left;
-            int height = bottom - top;
-            if (width < 8 || height < 8)
+            NativePoint clientOrigin = default;
+            if (!NativeMethods.GetClientRect(hwnd, out NativeRect clientRect) ||
+                !NativeMethods.ClientToScreen(hwnd, ref clientOrigin))
             {
-                throw new InvalidOperationException("Acrylic native capture target has no visible pixel area.");
+                throw NativeCaptureFailure(path, Invariant("Cannot resolve the client viewport for Gallery HWND 0x{0:X}.", hwnd.ToInt64()));
             }
 
-            foreach (NativePoint point in new[]
+            // Keep the capture on the monitor that owns most of this window, above the taskbar.
+            IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, flags: 2);
+            NativeMonitorInfo monitorInfo = new((uint)Marshal.SizeOf<NativeMonitorInfo>());
+            if (monitor == IntPtr.Zero || !NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
             {
-                new NativePoint(left + 4, top + 4),
-                new NativePoint(right - 4, top + 4),
-                new NativePoint(left + (width / 2), top + (height / 2)),
-                new NativePoint(left + 4, bottom - 4),
-                new NativePoint(right - 4, bottom - 4),
-            })
+                throw NativeCaptureFailure(path, Invariant("Cannot resolve the monitor work area for Gallery HWND 0x{0:X}.", hwnd.ToInt64()));
+            }
+
+            Rect requested = GetNativeScreenBounds(element, new Rect(element.RenderSize));
+            Rect frame = GetNativeScreenBounds(window.PageFrame, new Rect(window.PageFrame.RenderSize));
+            Rect client = new(clientOrigin.X, clientOrigin.Y, clientRect.Right, clientRect.Bottom);
+            NativeRect workArea = monitorInfo.WorkArea;
+            Rect work = new(new Point(workArea.Left, workArea.Top), new Point(workArea.Right, workArea.Bottom));
+            Rect crop = Rect.Intersect(requested, frame);
+            crop.Intersect(client);
+            crop.Intersect(work);
+            for (Visual? visual = element; visual is not null; visual = VisualTreeHelper.GetParent(visual) as Visual)
             {
-                IntPtr hit = NativeMethods.WindowFromPoint(point);
-                if (hit == IntPtr.Zero || NativeMethods.GetAncestor(hit, 2) != hwnd)
+                if (VisualTreeHelper.GetClip(visual) is Geometry clip)
                 {
-                    throw new InvalidOperationException("Acrylic native capture pixels are obscured or belong to another HWND.");
+                    crop.Intersect(GetNativeScreenBounds(visual, clip.Bounds));
                 }
             }
 
+            Int32Rect pixels = GetInwardCapturePixels(crop);
+            string geometry = Invariant(
+                "Requested={0}; frame={1}; client={2}; work area={3}; pixel rect [left, top, width, height]={4}.",
+                requested, frame, client, work, pixels);
+            if (pixels.Width < 8 || pixels.Height < 8)
+            {
+                throw NativeCaptureFailure(path, "Acrylic native capture target has no visible pixel area. " + geometry);
+            }
+            if (!ReferenceEquals(element, window.PageFrame.Content) && pixels != GetInwardCapturePixels(requested))
+            {
+                throw NativeCaptureFailure(path, "The direct brush or host is partially outside the visible viewport. " + geometry);
+            }
+
+            RequireNativePixelOwnership(path, hwnd, pixels, geometry);
+            int left = pixels.X;
+            int top = pixels.Y;
+            int width = pixels.Width;
+            int height = pixels.Height;
             IntPtr screen = NativeMethods.GetDC(IntPtr.Zero);
             if (screen == IntPtr.Zero) { throw new InvalidOperationException("Cannot read the desktop DC."); }
             IntPtr memory = IntPtr.Zero;
@@ -2456,6 +2497,7 @@ namespace Fluence.Wpf.Tests.Tools
                 {
                     throw new InvalidOperationException("Acrylic native desktop BitBlt failed.");
                 }
+                RequireNativePixelOwnership(path, hwnd, pixels, geometry);
 
                 BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(bitmap, IntPtr.Zero,
                     Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
@@ -2479,6 +2521,51 @@ namespace Fluence.Wpf.Tests.Tools
                 if (memory != IntPtr.Zero) { _ = NativeMethods.DeleteDC(memory); }
                 _ = NativeMethods.ReleaseDC(IntPtr.Zero, screen);
             }
+        }
+
+        private static Rect GetNativeScreenBounds(Visual visual, Rect bounds)
+        {
+            return bounds.IsEmpty
+                ? Rect.Empty
+                : new Rect(visual.PointToScreen(bounds.TopLeft), visual.PointToScreen(bounds.BottomRight));
+        }
+
+        private static Int32Rect GetInwardCapturePixels(Rect bounds)
+        {
+            if (bounds.IsEmpty)
+            {
+                return Int32Rect.Empty;
+            }
+
+            int left = (int)Math.Ceiling(bounds.Left);
+            int top = (int)Math.Ceiling(bounds.Top);
+            return new Int32Rect(left, top, Math.Max(0, (int)Math.Floor(bounds.Right) - left),
+                Math.Max(0, (int)Math.Floor(bounds.Bottom) - top));
+        }
+
+        private static void RequireNativePixelOwnership(string path, IntPtr hwnd, Int32Rect pixels, string geometry)
+        {
+            int[] xs = [pixels.X + 4, pixels.X + (pixels.Width / 2), pixels.X + pixels.Width - 4];
+            foreach (int y in (int[])[pixels.Y + 4, pixels.Y + (pixels.Height / 2), pixels.Y + pixels.Height - 4])
+            {
+                foreach (int x in xs)
+                {
+                    IntPtr hit = NativeMethods.WindowFromPoint(new NativePoint(x, y));
+                    IntPtr root = hit == IntPtr.Zero ? IntPtr.Zero : NativeMethods.GetAncestor(hit, 2);
+                    IntPtr foreground = NativeMethods.GetForegroundWindow();
+                    if (root != hwnd || foreground != hwnd)
+                    {
+                        throw NativeCaptureFailure(path, Invariant(
+                            "Acrylic native capture pixels are obscured or belong to another HWND. {0} Point=({1},{2}); hit=0x{3:X}; hit root=0x{4:X}; expected=0x{5:X}; foreground=0x{6:X}.",
+                            geometry, x, y, hit.ToInt64(), root.ToInt64(), hwnd.ToInt64(), foreground.ToInt64()));
+                    }
+                }
+            }
+        }
+
+        private static InvalidOperationException NativeCaptureFailure(string path, string message)
+        {
+            return new InvalidOperationException(Path.GetFileName(path) + ": " + message);
         }
 
         private static async Task WriteAcrylicCaptureManifestAsync(string directory, IList<CaptureEntry> entries)
@@ -2528,6 +2615,24 @@ namespace Fluence.Wpf.Tests.Tools
             public readonly int Y = y;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct NativeRect(int left, int top, int right, int bottom)
+        {
+            public readonly int Left = left;
+            public readonly int Top = top;
+            public readonly int Right = right;
+            public readonly int Bottom = bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct NativeMonitorInfo(uint size)
+        {
+            public readonly uint Size = size;
+            public readonly NativeRect MonitorArea = default;
+            public readonly NativeRect WorkArea = default;
+            public readonly uint Flags = default;
+        }
+
         // The screenshot harness targets both .NET Framework and .NET 10; this private interop
         // is confined to opt-in test tooling and has no library or consumer API surface.
 #pragma warning disable SYSLIB1054
@@ -2539,6 +2644,17 @@ namespace Fluence.Wpf.Tests.Tools
             internal static extern IntPtr WindowFromPoint(NativePoint point);
             [DllImport("user32.dll")]
             internal static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+            [DllImport("user32.dll")]
+            internal static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+            [DllImport("user32.dll", EntryPoint = "GetMonitorInfoW", ExactSpelling = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetMonitorInfo(IntPtr monitor, ref NativeMonitorInfo info);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool GetClientRect(IntPtr hwnd, out NativeRect rect);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool ClientToScreen(IntPtr hwnd, ref NativePoint point);
             [DllImport("user32.dll")]
             internal static extern IntPtr GetDC(IntPtr hwnd);
             [DllImport("user32.dll")]
@@ -2806,7 +2922,7 @@ namespace Fluence.Wpf.Tests.Tools
             return !HasSelectedPrefix("powershell-") ? Task.CompletedTask : WpfTestSta.RunOnStaAsync(async static () =>
             {
                 string output = EnsureOutputDirectory();
-                string[] categories = ["Inputs", "Color", "Selection", "Commands", "Data", "Navigation", "Status", "Surfaces", "Layout"];
+                string[] categories = ["Inputs", "Color", "Selection", "Commands", "Data", "Navigation", "Status", "Surfaces", "Acrylic", "Layout"];
                 foreach ((ApplicationTheme _, string themeSlug) in DocumentationThemes)
                 {
                     foreach (string category in categories)

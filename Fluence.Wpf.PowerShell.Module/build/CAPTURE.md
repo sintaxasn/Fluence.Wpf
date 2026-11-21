@@ -26,7 +26,7 @@ direct comparison. The file name identifies the scene and theme.
 
 ## Controls Tour
 
-`Capture-ControlsTour.ps1` is the source for the nine-page Controls Tour screenshots. It opens
+`Capture-ControlsTour.ps1` is the source for the ten-page Controls Tour screenshots. It opens
 the actual `examples/06-ControlsTour.ps1` window and runs its `-Initialize` block, so the data
 grid contains the example's five PowerShell objects and category switching uses the script's
 own handlers. Run it after staging the module:
@@ -35,9 +35,9 @@ own handlers. Run it after staging the module:
 powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File Fluence.Wpf.PowerShell.Module/build/Capture-ControlsTour.ps1
 ```
 
-The default run creates 18 Light and Dark PNGs in ignored `artifacts/docs/screenshots/`.
+The default run creates 20 Light and Dark PNGs in ignored `artifacts/docs/screenshots/`.
 `powershell-light.png` and `powershell-dark.png` show Inputs. The other categories use
-`powershell-{color|selection|commands|data|navigation|status|surfaces|layout}-{light|dark}.png`.
+`powershell-{color|selection|commands|data|navigation|status|surfaces|acrylic|layout}-{light|dark}.png`.
 For a focused capture, pass `-Theme Dark -Category Color`; `-OutputDirectory` chooses another
 candidate location. A fresh STA process is used for each theme, and each PNG replaces its
 previous candidate atomically. The companion `powershell-controls-tour-*.json` files record

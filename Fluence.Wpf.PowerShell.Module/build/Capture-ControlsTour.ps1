@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <#
 .SYNOPSIS
-    Captures all nine Controls Tour categories in Light and Dark themes.
+    Captures all ten Controls Tour categories in Light and Dark themes.
 .DESCRIPTION
     Opens the actual 06-ControlsTour.ps1 XAML and initializer, selects each category,
     waits for WPF layout, and writes opaque WPF RenderTargetBitmap PNGs. Each theme
@@ -54,7 +54,7 @@ param(
     [ValidateSet('Both', 'Light', 'Dark')]
     [string]$Theme = 'Both',
 
-    [ValidateSet('All', 'Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Layout')]
+    [ValidateSet('All', 'Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Acrylic', 'Layout')]
     [string]$Category = 'All',
 
     [string]$OutputDirectory,
@@ -158,14 +158,11 @@ if ($initializeIndex -lt 0)
     throw 'The tour initializer could not be found.'
 }
 $initializeText = $showCall.CommandElements[$initializeIndex].ScriptBlock.GetScriptBlock().ToString()
-$allCategories = @('Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Layout')
-$categories = if ($Category -eq 'All') { $allCategories } else { @($Category) }
 $state = [hashtable]::Synchronized(@{
         InitializeText = $initializeText
         OutputDirectory = $OutputDirectory
         Theme = $Theme.ToLowerInvariant()
-        Categories = @($categories)
-        AllCategories = @($allCategories)
+        Category = $Category
         WindowWidth = $WindowWidth
         WindowHeight = $WindowHeight
         Index = 0
@@ -187,6 +184,12 @@ try
 
         # The original initializer supplies real PowerShell objects and interaction handlers.
         & ([scriptblock]::Create($Data.InitializeText)) $Window $Data
+        $Data.AllCategories = @($Window.FindName('CategoryList').Items | ForEach-Object { [string]$_.Content })
+        $Data.Categories = @(if ($Data.Category -eq 'All') { $Data.AllCategories } else { $Data.AllCategories -eq $Data.Category })
+        if ($Data.Categories.Count -eq 0)
+        {
+            throw "The Controls Tour does not contain the requested category '$($Data.Category)'."
+        }
         $Window.Width = $Data.WindowWidth
         $Window.Height = $Data.WindowHeight
         $Window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::Manual
@@ -434,9 +437,9 @@ if ($state.Failure)
 {
     throw "Controls Tour capture failed: $($state.Failure)"
 }
-if ($state.Captures.Count -ne $categories.Count)
+if ($state.Captures.Count -ne $state.Categories.Count)
 {
-    throw "Captured $($state.Captures.Count) categories; expected $($categories.Count)."
+    throw "Captured $($state.Captures.Count) categories; expected $($state.Categories.Count)."
 }
 foreach ($captureEntry in $state.Captures)
 {

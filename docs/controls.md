@@ -68,6 +68,7 @@ Give each editor a visible label and connect it with `AutomationProperties.Label
 | --- | --- | --- |
 | [InfoBar](controls/info-bar.md), [InfoBadge](controls/info-badge.md) | Inline message or compact status | Severity/style and open or close behavior |
 | [ProgressBar](controls/progress-bar.md), [ProgressRing](controls/progress-ring.md) | Determinate or indeterminate progress | Progress value or ring state |
+| [AcrylicElement](controls/acrylic-element.md) | In-app translucent content surface | Blurs an explicit same-window visual behind sharp content and uses a solid fallback when needed |
 | [Card](controls/card.md) | Passive or clickable content panel | `IsClickable` enables its `Click` event |
 | [Border](controls/border.md), [StackPanel](controls/stack-panel.md), [DockPanel](controls/dock-panel.md), [Separator](controls/separator.md), [Expander](controls/expander.md) | Layout and grouped content | WPF layout patterns with Fluent defaults |
 | [SmoothScrollViewer](controls/smooth-scroll-viewer.md), [ScrollBarExtensions](controls/smooth-scroll-viewer.md#scroll-bar-extensions) | Scrolling and native scroll bar behavior | Smooth scrolling and attached extensions |
@@ -88,12 +89,13 @@ The `Fluence.Wpf` namespace also contains theme managers, enums, and typed event
 
 ## Acrylic materials
 
-Apply the theme before creating the first window. Place an explicit backdrop source and every acrylic output in the same WPF window, with the source in a separate sibling subtree. This example uses a fixed recipe for a direct `Border.Background` brush and a published Light/Dark recipe for a host whose content stays sharp:
+Apply the theme before creating the first window. Place an explicit backdrop source and every acrylic output in the same WPF window, with the source in a separate sibling subtree. This example uses a fixed recipe for the decorative `Border.Background` surface on the left and a published Light/Dark recipe for the content host on the right.
 
 ```xml
 <Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:fluence="http://schemas.fluencewpf.com">
+      xmlns:fluence="http://schemas.fluencewpf.com"
+      MinHeight="160">
   <Grid.Resources>
     <fluence:AcrylicMaterialRecipe x:Key="FixedAcrylic"
                                    TintColor="#CCFFFFFF"
@@ -111,14 +113,12 @@ Apply the theme before creating the first window. Place an explicit backdrop sou
       <ColumnDefinition Width="*" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
-    <Border Grid.Column="0" Margin="8" Padding="20"
-            Background="{fluence:AcrylicBrush BackdropSourceName=BackdropRoot, Recipe={StaticResource FixedAcrylic}}">
-      <TextBlock Text="Fixed direct brush" />
-    </Border>
-    <fluence:AcrylicElement Grid.Column="1" Margin="8"
+    <Border Grid.Column="0" Margin="8"
+            Background="{fluence:AcrylicBrush BackdropSourceName=BackdropRoot, Recipe={StaticResource FixedAcrylic}}" />
+    <fluence:AcrylicElement Grid.Column="1" Margin="8" Padding="20"
                             BackdropSource="{Binding ElementName=BackdropRoot}"
                             Recipe="{DynamicResource AcrylicInAppDefaultRecipe}">
-      <TextBlock Text="Theme-aware host" />
+      <TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Theme-aware host" />
     </fluence:AcrylicElement>
   </Grid>
 </Grid>

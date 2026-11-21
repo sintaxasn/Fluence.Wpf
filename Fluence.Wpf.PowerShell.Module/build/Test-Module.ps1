@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          PSScriptAnalyzerSettings.psd1, plus a second pass for PSPlaceOpenBrace (a formatting rule,
          which the default rule set leaves out) so the Allman brace style is enforced rather than
          merely documented. Any Error or Warning finding from either pass fails the run.
-      2. The Pester 5.8.0 suite under tests/. By default the UI-tagged cases (real windows) are
+      2. The Pester 6.2.0 suite under tests/. By default the UI-tagged cases (real windows) are
          excluded; -IncludeUi sets FLUENCE_PS_UI=1 and runs them too.
 
     The Fluence.Wpf assemblies must already be staged under src/Fluence.Wpf.PowerShell/lib (see
@@ -85,11 +85,9 @@ $ErrorActionPreference = 'Stop'
 $moduleRoot = Split-Path $PSScriptRoot -Parent
 $failed = $false
 
-# Pester 5.8.0 is imported before the analyzer runs, even for an analyzer-only run. PSScriptAnalyzer
-# resolves the commands it sees through Get-Command, and Get-Command on Describe or It autoloads the
-# newest installed Pester (6.x on a machine that has it). Pester 5 then fails to import because an
-# assembly with the same name is already loaded. Importing 5.8.0 first pins the resolution.
-Import-Module Pester -RequiredVersion 5.8.0 -ErrorAction Stop
+# Pin Pester before PSScriptAnalyzer resolves Describe and It during analysis.
+# Otherwise command auto-loading can load a different installed Pester assembly into the process.
+Import-Module Pester -RequiredVersion 6.2.0 -ErrorAction Stop
 
 if (-not $SkipAnalyzer)
 {

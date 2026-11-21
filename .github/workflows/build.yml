@@ -246,7 +246,7 @@ jobs:
             ~/Documents/WindowsPowerShell/Modules
             ~/Documents/PowerShell/Modules
             ~/AppData/Local/PackageManagement/ProviderAssemblies
-          key: ${{ runner.os }}-psmodules-nuget2.8.5.208-psscriptanalyzer1.25.0-pester5.8.0-alt3docusaurus2.0.1
+          key: ${{ runner.os }}-psmodules-nuget2.8.5.208-psscriptanalyzer1.25.0-pester6.2.0-alt3docusaurus2.0.1
 
       # Network setup is explicit and isolated from local package creation. Windows PowerShell
       # needs the external NuGet provider; PowerShell 7 uses its bundled provider.
@@ -260,7 +260,7 @@ jobs:
                 Install-PackageProvider -Name NuGet -RequiredVersion 2.8.5.208 -Scope CurrentUser -Force -ErrorAction Stop
               }
               $needAnalyzer = -not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })
-              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })
+              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'6.2.0' })
               if (($needAnalyzer -or $needPester) -and -not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
                 Register-PSRepository -Default -ErrorAction Stop
               }
@@ -268,7 +268,7 @@ jobs:
                 Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
               }
               if ($needPester) {
-                Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
+                Install-Module Pester -RequiredVersion 6.2.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
               }
               break
             } catch {
@@ -284,7 +284,7 @@ jobs:
           for ($attempt = 1; $attempt -le 3; $attempt++) {
             try {
               $needAnalyzer = -not (Get-Module -ListAvailable PSScriptAnalyzer | Where-Object { $_.Version -eq [version]'1.25.0' })
-              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'5.8.0' })
+              $needPester = -not (Get-Module -ListAvailable Pester | Where-Object { $_.Version -eq [version]'6.2.0' })
               $needDocs = -not (Get-Module -ListAvailable Alt3.Docusaurus.Powershell | Where-Object { $_.Version -eq [version]'2.0.1' })
               if (($needAnalyzer -or $needPester -or $needDocs) -and -not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
                 Register-PSRepository -Default -ErrorAction Stop
@@ -293,7 +293,7 @@ jobs:
                 Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
               }
               if ($needPester) {
-                Install-Module Pester -RequiredVersion 5.8.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
+                Install-Module Pester -RequiredVersion 6.2.0 -Repository PSGallery -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
               }
               if ($needDocs) {
                 Install-Module Alt3.Docusaurus.Powershell -RequiredVersion 2.0.1 -Repository PSGallery -Scope CurrentUser -Force -ErrorAction Stop
@@ -318,7 +318,7 @@ jobs:
       - name: Test documentation tooling (PowerShell 7)
         shell: pwsh
         run: |
-          Import-Module Pester -RequiredVersion 5.8.0 -ErrorAction Stop
+          Import-Module Pester -RequiredVersion 6.2.0 -ErrorAction Stop
           $testPaths = @(
             'tools/ApiDocs/Generate-ApiDocs.Tests.ps1',
             'Fluence.Wpf.PowerShell.Module/tests/Generate-PowerShellReference.Tests.ps1',

@@ -12,9 +12,15 @@ Use `-f net472` to run the .NET Framework build. In `App.xaml.cs`, `OnStartup` a
 
 For the setup behind the example, see the [first WPF application tutorial](https://fluencewpf.com/docs/tutorials/first-wpf-app). Browse the [control catalog](https://fluencewpf.com/docs/controls), [theming guide](https://fluencewpf.com/docs/theming), or full [documentation index](https://fluencewpf.com/docs) for consumer guidance.
 
+## Acrylic examples
+
+Open **Acrylic** to compare a fixed brush and a theme-aware host. Use the recipe selector and fallback switch to see how the material responds. The popup sample shows the solid fallback when a source lives in a separate window.
+
+Under **Colors > Background**, use the selectors in **Acrylic Background** and **Accent Acrylic Background** to compare the Default and Base recipes. The accent pair follows the accent you select in **Settings**.
+
 ## Visual examples
 
-The captures show the gallery home, button samples, and status controls in both available themes.
+The captures show the gallery home, button samples, and status controls in Light and Dark. The home page uses acrylic in its featured row above the solid control catalog.
 
 | Gallery home | Buttons | Status controls |
 | --- | --- | --- |

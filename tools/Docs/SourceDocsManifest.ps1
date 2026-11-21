@@ -124,8 +124,8 @@ function Assert-DocsGalleryReceiptProvenance {
 function Test-DocsNewCapturePath {
     param([Parameter(Mandatory)][string]$Path)
     return $Path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal) -or
-        $Path -cmatch '^docs/screenshots/powershell-(?:color|selection|commands|data|navigation|status|surfaces|layout)-(?:light|dark)\.png$' -or
-        $Path -cmatch '^docs/screenshots/gallery/(?:data-grid(?:-sample-0[1-3])?|selection-sample-06)-(?:light|dark)\.png$'
+        $Path -cmatch '^docs/screenshots/powershell-(?:(?:color|selection|commands|data|navigation|status|surfaces|acrylic|layout)-)?(?:light|dark)\.png$' -or
+        $Path -cmatch '^docs/screenshots/gallery/(?:acrylic(?:-sample-0[12])?|data-grid(?:-sample-0[1-3])?|selection-sample-06)-(?:light|dark)\.png$'
 }
 
 function Assert-SourceDocsManifest {

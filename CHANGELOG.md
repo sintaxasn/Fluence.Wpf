@@ -8,6 +8,8 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+## [0.9.7] - 2026-11-21
+
 ### Added
 
 - Added opt-in same-window in-app acrylic with `AcrylicMaterialRecipe`, a direct brush for concrete border and shape fills, and the bindable `AcrylicElement` host. The gallery and PowerShell Controls Tour show an explicit moving source and an opaque fallback. Light and Dark publish neutral and accent Default and Base recipes; High Contrast and unsupported rendering use a solid fallback. The WPF material is an approximation of WinUI acrylic. These changes add 182 ordinary test cases and two opt-in screenshot facts per full test target framework.
@@ -836,7 +838,8 @@ This is the last preview before 1.0 and it carries the whole 1.0 readiness pass,
 
 - Initial release.
 
-[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.6...main
+[Unreleased]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.7...main
+[0.9.7]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/sintaxasn/Fluence.Wpf/compare/v0.9.3...v0.9.4

@@ -67,7 +67,7 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
 
         Should -Invoke Install-Module -Times $ModuleCount -Exactly
         Should -Invoke Install-Module -Times 1 -Exactly -ParameterFilter {
-            $Name -eq 'Pester' -and $RequiredVersion -eq '5.8.0' -and
+            $Name -eq 'Pester' -and $RequiredVersion -eq '6.2.0' -and
             $Repository -eq 'PSGallery' -and $Scope -eq 'CurrentUser' -and
             $SkipPublisherCheck -and $Force -and $ErrorAction -eq 'Stop'
         }
@@ -168,7 +168,7 @@ Describe 'Pinned build-tool installation (<HostName>)' -ForEach @(
     It 'skips already installed pinned versions' {
         Mock Get-Module {
             [pscustomobject]@{ Version = [version]'1.25.0' }
-            [pscustomobject]@{ Version = [version]'5.8.0' }
+            [pscustomobject]@{ Version = [version]'6.2.0' }
             [pscustomobject]@{ Version = [version]'2.0.1' }
         }
 

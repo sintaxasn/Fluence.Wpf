@@ -91,7 +91,7 @@ pwsh -NoProfile -File .\Fluence.Wpf.PowerShell.Module\examples\06-ControlsTour.p
 powershell.exe -NoProfile -STA -File .\Fluence.Wpf.PowerShell.Module\examples\06-ControlsTour.ps1
 ```
 
-The tour opens on Inputs. Select a labeled category in the left rail to explore Color, Selection, Commands, Data, Navigation, Status, Surfaces, or Layout. The [result object reference](https://fluencewpf.com/docs/powershell/reference/result-objects) describes the properties returned by each command.
+The tour opens on Inputs. Select a labeled category in the left rail to explore Color, Selection, Commands, Data, Navigation, Status, Surfaces, Acrylic, or Layout. On Acrylic, use **Move source colors** and **Use solid fallback** to compare the available material states. The [result object reference](https://fluencewpf.com/docs/powershell/reference/result-objects) describes the properties returned by each command.
 
 Every window-opening command supports title-bar customization: `-Title` (also `-TitleBarText`) sets its text, and `-TitleBarIcon` accepts a local path, `file:` URI, or `pack:` URI. Only `Show-FluenceWindow` supports `-ShowIcon:$false` to hide the built-in host icon. For dialogs, `-Icon` remains the body severity/question glyph and `-Image` remains a body image; neither sets the title-bar icon. See the [dialog guide](https://fluencewpf.com/docs/powershell/how-to/dialogs) and [hosted-window guide](https://fluencewpf.com/docs/powershell/how-to/windows-from-xaml).
 
@@ -118,7 +118,7 @@ Both package files are staged and checked before either final file is replaced. 
 
 ## Run the module gate
 
-The test runner uses PSScriptAnalyzer 1.25.0 and Pester 5.8.0 by exact version. Install these in each PowerShell edition in which you run the gate. Windows PowerShell 5.1 may also need a NuGet provider and TLS 1.2 during that separate installation step.
+The test runner uses PSScriptAnalyzer 1.25.0 and Pester 6.2.0 by exact version. Install these in each PowerShell edition in which you run the gate. Windows PowerShell 5.1 may also need a NuGet provider and TLS 1.2 during that separate installation step.
 
 ```powershell
 pwsh -NoProfile -File .\Fluence.Wpf.PowerShell.Module\build\Test-Module.ps1
