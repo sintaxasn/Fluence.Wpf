@@ -99,37 +99,6 @@ function Get-WebsiteStatus([string]$root, [string]$path) {
     if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect website Git status.' }
     return ($lines -join "`n")
 }
-function Get-CheckedVisualInputHash([string]$root, [string[]]$inputs) {
-    if ($inputs.Count -eq 0) { throw 'Capture inputs are empty.' }
-    $parts = [Collections.Generic.List[string]]::new()
-    foreach ($inputPath in @($inputs | Sort-Object -CaseSensitive -Unique)) {
-        $source = Get-DocsContainedPath $root $inputPath
-        if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Visual input is missing: $inputPath" }
-        $utf8 = [Text.UTF8Encoding]::new($false,$true)
-        $content = $utf8.GetString([IO.File]::ReadAllBytes($source)).TrimStart([char]0xFEFF)
-        $content = $content.Replace("`r`n","`n").Replace("`r","`n")
-        if ($inputPath.EndsWith('.xaml',[StringComparison]::OrdinalIgnoreCase)) {
-            try {
-                $xml = [Xml.XmlDocument]::new()
-                $xml.PreserveWhitespace = $true
-                $xml.XmlResolver = $null
-                $settings = [Xml.XmlReaderSettings]::new()
-                $settings.DtdProcessing = [Xml.DtdProcessing]::Prohibit
-                $settings.XmlResolver = $null
-                $settings.IgnoreWhitespace = $false
-                $reader = [Xml.XmlReader]::Create([IO.StringReader]::new($content),$settings)
-                try { $xml.Load($reader) } finally { $reader.Dispose() }
-                foreach ($comment in @($xml.SelectNodes('//comment()'))) { [void]$comment.ParentNode.RemoveChild($comment) }
-                $content = $xml.OuterXml.Replace("`r`n","`n").Replace("`r","`n")
-        } catch {
-                # An uncertain parse retains the normalized source content.
-            Write-Verbose "Visual input XML could not be normalized: $inputPath"
-            }
-        }
-        $parts.Add("$inputPath`0$content")
-    }
-    return Get-DocsSha256 ([Text.Encoding]::UTF8.GetBytes(($parts -join "`0")))
-}
 function Resolve-ApiInventoryLink([string]$apiRoot, [string]$indexPath, [string]$link) {
     $path = ($link -split '[?#]',2)[0]
     $path = [regex]::Replace($path, '\\([^\w\s])', '$1')
@@ -446,7 +415,7 @@ if ($ApprovedCaptureManifest) {
             [string]::IsNullOrWhiteSpace([string]$capture.provenance)) {
             throw "Incomplete approved capture: $path"
         }
-        if ((Get-CheckedVisualInputHash $repository ([string[]]@($spec.Inputs))) -cne $capture.checkedVisualInputSha256) {
+        if ((Get-DocsVisualInputHash -Root $repository -Inputs $spec.Inputs) -cne $capture.checkedVisualInputSha256) {
             throw "Approved visual input hash differs from current source: $path"
         }
         $target = Get-DocsContainedPath $siteRoot $path

@@ -207,6 +207,8 @@ Describe 'Select-VisualCaptures' {
                 $entry = @($tourEntries | Where-Object Id -CEQ $id)
                 $entry.Count | Should -Be 1
                 $entry[0].Theme | Should -BeExactly $theme
+                $expectedMode = if ($name -ceq 'Acrylic') { 'WpfRenderFallback' } else { 'WpfRender' }
+                $entry[0].Mode | Should -BeExactly $expectedMode
                 $entry[0].Inputs | Should -Contain 'Fluence.Wpf.PowerShell.Module/examples/06-ControlsTour.ps1'
             }
         }

@@ -53,5 +53,9 @@ native DWM Mica, caption pixels, or the desktop shadow. Review the candidates vi
 copying them to the website. The opt-in `GalleryScreenshotHarness` delegates its Controls
 Tour IDs to this same capture script, so it cannot produce an XAML-only replacement.
 
+The Acrylic pair selects **Use solid fallback** and verifies the host has entered its opaque
+fallback before capture. Its receipt records `WpfRenderFallback` because WPF software bitmap
+rendering skips Shader Model 3 effects.
+
 `Capture-Documentation.ps1` remains the producer for the separate PowerShell command scenes
 described above; it does not capture the Controls Tour categories.

@@ -805,6 +805,40 @@ Describe 'Website documentation sync' {
         $capture.checkedVisualInputSha256 | Should -Be ([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes("Fluence.Wpf.Demo/Pages/Button.xaml`0<Button />"))).ToLowerInvariant())
         $capture.decision | Should -Be 'visually-unchanged'
     }
+    It 'accepts selection hashes for binary Acrylic inputs and rejects changed bytes' {
+        Write-CaptureFixture $repo $siteDocs
+        $inputs = @('Fluence.Wpf.Demo/Pages/Button.xaml','AcrylicBlend.ps','AcrylicNoise.png')
+        $map = Join-Path $repo 'tools/Docs/VisualCaptureMap.psd1'
+        Write-Fixture $map ("@{ SchemaVersion=1; Captures=@(@{ Id='gallery/button.png'; Path='docs/screenshots/gallery/button.png'; SourceRelativePath='screenshots/gallery/button.png'; Family='gallery/button'; Inputs=@('$($inputs -join "','")'); Theme='light'; State='default'; Mode='WpfRender' }) }")
+        $binaries = @{
+            'AcrylicBlend.ps' = [byte[]]@(0,3,255,255)
+            'AcrylicNoise.png' = [byte[]]@(137,80,78,71)
+        }
+        foreach ($inputPath in $binaries.Keys) {
+            [IO.File]::WriteAllBytes((Join-Path $repo $inputPath), $binaries[$inputPath])
+        }
+        & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs
+
+        $selection = & (Join-Path $PSScriptRoot 'Select-VisualCaptures.ps1') -RepositoryRoot $repo -MapPath $map
+        $approval = Join-Path $caseRoot 'approval.json'
+        Write-Approval $approval $repo $siteDocs 'visually-unchanged'
+        $data = Get-Content -Raw -LiteralPath $approval | ConvertFrom-Json
+        $data.captures[0].inputs = $selection.candidates[0].inputs
+        $data.captures[0].checkedVisualInputSha256 = $selection.candidates[0].checkedVisualInputSha256
+        Write-Fixture $approval ($data | ConvertTo-Json -Depth 10)
+
+        $siteRoot = Split-Path -Parent $siteDocs
+        $before = Get-TreeState $siteRoot
+        { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approval -DryRun } | Should -Not -Throw
+        foreach ($inputPath in $binaries.Keys) {
+            $file = Join-Path $repo $inputPath
+            [IO.File]::WriteAllBytes($file, [byte[]]@(128,255))
+            { & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs -ApprovedCaptureManifest $approval -DryRun } |
+                Should -Throw '*Approved visual input hash differs from current source*'
+            [IO.File]::WriteAllBytes($file, $binaries[$inputPath])
+        }
+        (Get-TreeState $siteRoot) | Should -BeExactly $before
+    }
     It 'rejects a partial approval before touching any website bytes' {
         Write-CaptureFixture $repo $siteDocs
         & $sync -RepositoryRoot $repo -WebsiteDocsPath $siteDocs
