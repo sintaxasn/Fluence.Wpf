@@ -518,7 +518,7 @@
   Fluence.Wpf.Tests.Gallery.Pages.GalleryDataGridPageTests.GalleryDataGridPage_RendersThreePopulatedGridsAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryDataGridPageTests.GalleryDataGridPage_EditingGrid_FitsColumnsWithOutputInOptionsRailAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryDataGridPageTests.DemoNavigationCatalog_ListsDataGridAfterData
-  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroSwapsSvgDerivedBannerWithThemeAsync
+  Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_HeroUsesThemeAcrylicWithHighContrastFallbackAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.GalleryHomePage_UsesProminentAccessibleBrandAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeActions_NavigateToTheirControlPagesAsync
   Fluence.Wpf.Tests.Gallery.Pages.GalleryHomePageTests.HomeLayout_ReflowsWithoutHorizontalOverflowAsync

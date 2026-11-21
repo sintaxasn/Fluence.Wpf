@@ -365,14 +365,46 @@
     <Thickness x:Key="DemoColorSectionContentMargin">0,0,44,48</Thickness>
     <Thickness x:Key="DemoNoMargin">0</Thickness>
 
-    <!--  Home: the theme-aware SVG-derived banner leads a compact native control catalog.  -->
-    <Thickness x:Key="HomeHeroMargin">0,16,0,36</Thickness>
-    <Thickness x:Key="HomeSectionDescriptionMargin">0,6,0,20</Thickness>
+    <!--  Home hero and catalog alignment.  -->
+    <Thickness x:Key="HomeHeroContentMargin">0,36,0,28</Thickness>
+    <sys:Double x:Key="HomeHeroTextMaxWidth">660</sys:Double>
+    <Thickness x:Key="HomeSectionHeadingMargin">0,40,0,16</Thickness>
+    <Thickness x:Key="HomeFoundationHeadingMargin">0,12,0,16</Thickness>
     <Thickness x:Key="HomeCatalogGridMargin">-6,0,-6,0</Thickness>
 
-    <Style x:Key="HomeSecondaryTextStyle" BasedOn="{StaticResource BodyTextBlockStyle}" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        <Setter Property="TextWrapping" Value="Wrap" />
+    <Style x:Key="HomeHeroMarkStyle" TargetType="{x:Type Rectangle}">
+        <Setter Property="Width" Value="116" />
+        <Setter Property="Margin" Value="0,0,16,0" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Columns, ElementName=FeaturedControlsGrid}" Value="1">
+                <Setter Property="Width" Value="92" />
+                <Setter Property="Margin" Value="0,0,12,0" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="HomeHeroTitleStyle"
+        BasedOn="{StaticResource TitleLargeTextBlockStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Columns, ElementName=FeaturedControlsGrid}" Value="1">
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="LineHeight" Value="36" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="HomeHeroSubtitleStyle"
+        BasedOn="{StaticResource BodyLargeTextBlockStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Columns, ElementName=FeaturedControlsGrid}" Value="1">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="LineHeight" Value="20" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="HomeCatalogCardStyle" TargetType="{x:Type fluence:Card}">
@@ -383,9 +415,12 @@
         <Setter Property="VerticalContentAlignment" Value="Top" />
     </Style>
 
+    <Style x:Key="HomeFeaturedCardStyle" BasedOn="{StaticResource HomeCatalogCardStyle}" TargetType="{x:Type fluence:Card}">
+        <Setter Property="MinHeight" Value="124" />
+    </Style>
+
     <Style x:Key="HomeFoundationCardStyle" BasedOn="{StaticResource HomeCatalogCardStyle}" TargetType="{x:Type fluence:Card}">
         <Setter Property="MinHeight" Value="88" />
-        <Setter Property="Variant" Value="Outlined" />
     </Style>
 
     <Style x:Key="HomeCatalogImageStyle" TargetType="{x:Type Image}">
@@ -396,7 +431,7 @@
     </Style>
 
     <Style x:Key="HomeCardDescriptionStyle" BasedOn="{StaticResource CaptionTextBlockStyle}" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 </ResourceDictionary>

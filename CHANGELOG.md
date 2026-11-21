@@ -14,6 +14,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Changed
 
+- Gallery Home uses a full-width crop of the Fluence fan behind the title and a raised row of live Default in-app acrylic cards. A separate solid card catalog begins below the artwork. High Contrast uses solid card surfaces and hides the decorative mark.
 - The Colors gallery's Acrylic Background and Accent Acrylic Background examples switch between their live Default and Base recipes. Accent Acrylic follows the selected application accent.
 - Reorganized the PowerShell Controls Tour into ten labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
 - Gallery capture coverage now follows the navigation and sample catalogs, waits for selection indicators to settle, and records source, binary, state, and image hashes. Image review and website sync validate that provenance before accepting new captures.
