@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,6 +48,8 @@ namespace Fluence.Wpf.Controls
     public class TreeView : System.Windows.Controls.TreeView
     {
         private readonly ArrayList _selectedItems = [];
+        private readonly HashSet<TreeViewItem> _parentsWithGeneratedChildren = [];
+        private DispatcherOperation? _pendingChildSelectionRefresh;
         private bool _updatingSelectionChecks;
         private DispatcherOperation? _pendingSelectionRefresh;
 
@@ -123,6 +126,17 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            if (element is TreeViewItem container)
+            {
+                container.ClearPendingChildChecksInSubtree();
+            }
+
+            base.ClearContainerForItemOverride(element, item);
+        }
+
+        /// <inheritdoc />
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
@@ -137,8 +151,19 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The collection change to reconcile.</param>
         internal void ReconcileSelectionAfterItemsChanged(TreeViewItem? parent, NotifyCollectionChangedEventArgs e)
         {
-            if (SelectionMode is not TreeViewSelectionMode.Multiple || _updatingSelectionChecks)
+            if (SelectionMode is not TreeViewSelectionMode.Multiple)
             {
+                return;
+            }
+
+            if (_updatingSelectionChecks)
+            {
+                if (parent is not null)
+                {
+                    parent.NeedsDeferredChildReconciliation = true;
+                    QueueChildSelectionRefresh(parent);
+                }
+
                 return;
             }
 
@@ -164,7 +189,7 @@ namespace Fluence.Wpf.Controls
             }
             finally
             {
-                _updatingSelectionChecks = false;
+                EndSelectionUpdate();
             }
         }
 
@@ -240,16 +265,26 @@ namespace Fluence.Wpf.Controls
                 }
 
                 UpdateAncestorSelectionStates(item);
-                RebuildMultipleSelectedItems();
+                if (SelectionMode is TreeViewSelectionMode.Multiple)
+                {
+                    RebuildMultipleSelectedItems();
+                }
             }
             finally
             {
-                _updatingSelectionChecks = false;
+                EndSelectionUpdate();
             }
         }
 
         internal void ApplySelectionModeToItems()
         {
+            if (SelectionMode is not TreeViewSelectionMode.Multiple)
+            {
+                _ = _pendingChildSelectionRefresh?.Abort();
+                _pendingChildSelectionRefresh = null;
+                _parentsWithGeneratedChildren.Clear();
+            }
+
             if (SelectionMode is TreeViewSelectionMode.None)
             {
                 _selectedItems.Clear();
@@ -264,6 +299,106 @@ namespace Fluence.Wpf.Controls
             }
 
             ApplySelectionModeToContainers(this);
+        }
+
+        internal void QueueChildSelectionRefresh(TreeViewItem parent)
+        {
+            if (SelectionMode is TreeViewSelectionMode.Multiple)
+            {
+                _ = _parentsWithGeneratedChildren.Add(parent);
+                ScheduleChildSelectionRefresh();
+            }
+        }
+
+        private void ScheduleChildSelectionRefresh()
+        {
+            if (!_updatingSelectionChecks && _parentsWithGeneratedChildren.Count > 0)
+            {
+                _pendingChildSelectionRefresh ??= Dispatcher.BeginInvoke(
+                    DispatcherPriority.Loaded, new Action(RefreshGeneratedChildSelections));
+            }
+        }
+
+        private void EndSelectionUpdate()
+        {
+            _updatingSelectionChecks = false;
+            ScheduleChildSelectionRefresh();
+        }
+
+        private void RefreshGeneratedChildSelections()
+        {
+            _pendingChildSelectionRefresh = null;
+            if (_updatingSelectionChecks)
+            {
+                return;
+            }
+
+            TreeViewItem[] parents = [.. _parentsWithGeneratedChildren];
+            _parentsWithGeneratedChildren.Clear();
+            if (SelectionMode is not TreeViewSelectionMode.Multiple)
+            {
+                return;
+            }
+
+            bool replayed = false;
+            _updatingSelectionChecks = true;
+            try
+            {
+                foreach (TreeViewItem parent in parents)
+                {
+                    if (SelectionMode is not TreeViewSelectionMode.Multiple)
+                    {
+                        return;
+                    }
+
+                    if (!parent.NeedsDeferredChildReconciliation || !ReferenceEquals(FindOwningTreeView(parent), this))
+                    {
+                        continue;
+                    }
+
+                    replayed = true;
+                    ReplayPendingChildChecks(parent);
+                    if (SelectionMode is TreeViewSelectionMode.Multiple && ReferenceEquals(FindOwningTreeView(parent), this))
+                    {
+                        parent.NeedsDeferredChildReconciliation = parent.PendingChildChecks is not null
+                            || HasUnrealizedChildren(parent);
+                        parent.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, GetChildSelectionState(parent));
+                        if (SelectionMode is TreeViewSelectionMode.Multiple)
+                        {
+                            UpdateAncestorSelectionStates(parent);
+                        }
+                    }
+                }
+
+                if (replayed && SelectionMode is TreeViewSelectionMode.Multiple)
+                {
+                    RebuildMultipleSelectedItems();
+                }
+            }
+            finally
+            {
+                EndSelectionUpdate();
+            }
+        }
+
+        private void ReplayPendingChildChecks(TreeViewItem parent)
+        {
+            for (int index = 0;
+                SelectionMode is TreeViewSelectionMode.Multiple && parent.PendingChildChecks is { } pending
+                    && index < pending.Count && index < parent.Items.Count;
+                index++)
+            {
+                if (pending[index] is bool isChecked && GetChildContainer(parent, index) is TreeViewItem child)
+                {
+                    pending[index] = null;
+                    ApplySelectionToChild(parent, child, GetSelectedItemValue(child), isChecked);
+                }
+            }
+
+            if (parent.PendingChildChecks is { } remaining && !remaining.Exists(static value => value is not null))
+            {
+                parent.PendingChildChecks = null;
+            }
         }
 
         private void OnContainerStatusChanged(object? sender, EventArgs e)
@@ -301,7 +436,7 @@ namespace Fluence.Wpf.Controls
             }
             finally
             {
-                _updatingSelectionChecks = false;
+                EndSelectionUpdate();
             }
         }
 
@@ -368,6 +503,8 @@ namespace Fluence.Wpf.Controls
                 TreeView? treeView = FindOwningTreeView(container);
                 if (treeView is not null && treeView.SelectionMode is not TreeViewSelectionMode.Multiple)
                 {
+                    container.PendingChildChecks = null;
+                    container.NeedsDeferredChildReconciliation = false;
                     container.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, value: false);
                 }
 
@@ -388,27 +525,79 @@ namespace Fluence.Wpf.Controls
             return owner as TreeView;
         }
 
-        private static void ApplySelectionStateToDescendants(TreeViewItem item, bool isSelected)
+        private static TreeViewItem? GetChildContainer(ItemsControl parent, int index)
         {
-            foreach (object child in item.Items)
+            return parent.ItemContainerGenerator.ContainerFromIndex(index) as TreeViewItem
+                ?? parent.Items[index] as TreeViewItem;
+        }
+
+        private static bool HasUnrealizedChildren(TreeViewItem parent)
+        {
+            for (int index = 0; index < parent.Items.Count; index++)
             {
-                TreeViewItem? container = item.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
-                container ??= child as TreeViewItem;
-
-                if (container is null)
+                if (GetChildContainer(parent, index) is null)
                 {
-                    continue;
+                    return true;
                 }
+            }
 
-                container.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, isSelected);
-                ApplySelectionStateToDescendants(container, isSelected);
+            return false;
+        }
+
+        private void ApplySelectionStateToDescendants(TreeViewItem item, bool isSelected)
+        {
+            List<(TreeViewItem Container, object Item)>? realized = null;
+            List<bool?>? pending = null;
+            for (int index = 0; index < item.Items.Count; index++)
+            {
+                if (GetChildContainer(item, index) is TreeViewItem container)
+                {
+                    realized ??= [];
+                    realized.Add((container, GetSelectedItemValue(container)));
+                }
+                else
+                {
+                    pending ??= [.. new bool?[item.Items.Count]];
+                    pending[index] = isSelected;
+                }
+            }
+
+            // Register by occurrence before updating TwoWay bindings, which can change Items.
+            item.PendingChildChecks = pending;
+            item.NeedsDeferredChildReconciliation = pending is not null;
+            if (realized is not null)
+            {
+                foreach ((TreeViewItem child, object dataItem) in realized)
+                {
+                    ApplySelectionToChild(item, child, dataItem, isSelected);
+                }
             }
         }
 
-        private static void UpdateAncestorSelectionStates(TreeViewItem item)
+        private void ApplySelectionToChild(TreeViewItem parent, TreeViewItem child, object dataItem, bool isChecked)
+        {
+            if (SelectionMode is TreeViewSelectionMode.Multiple && IsCurrentChild(parent, child, dataItem))
+            {
+                child.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, isChecked);
+                if (SelectionMode is TreeViewSelectionMode.Multiple && IsCurrentChild(parent, child, dataItem))
+                {
+                    ApplySelectionStateToDescendants(child, isChecked);
+                }
+            }
+        }
+
+        private static bool IsCurrentChild(TreeViewItem parent, TreeViewItem child, object dataItem)
+        {
+            // A binding setter may remove or replace a sibling, reusing its container.
+            return ReferenceEquals(GetSelectedItemValue(child), dataItem)
+                && (ReferenceEquals(ItemsControlFromItemContainer(child), parent)
+                    || (ReferenceEquals(child, dataItem) && parent.Items.Contains(child)));
+        }
+
+        private void UpdateAncestorSelectionStates(TreeViewItem item)
         {
             ItemsControl? owner = ItemsControlFromItemContainer(item);
-            while (owner is TreeViewItem parent)
+            while (SelectionMode is TreeViewSelectionMode.Multiple && owner is TreeViewItem parent)
             {
                 parent.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, GetChildSelectionState(parent));
                 owner = ItemsControlFromItemContainer(parent);
@@ -421,22 +610,23 @@ namespace Fluence.Wpf.Controls
             int checkedCount = 0;
             bool hasPartialChild = false;
 
-            foreach (object child in parent.Items)
+            for (int index = 0; index < parent.Items.Count; index++)
             {
-                TreeViewItem? container = parent.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
-                container ??= child as TreeViewItem;
-
-                if (container is null)
+                bool? pending = parent.PendingChildChecks is { } checks && index < checks.Count
+                    ? checks[index] : null;
+                TreeViewItem? container = GetChildContainer(parent, index);
+                if (pending is null && container is null)
                 {
                     continue;
                 }
 
                 childCount++;
-                if (container.IsSelectionChecked is true)
+                bool? state = pending ?? container?.IsSelectionChecked;
+                if (state is true)
                 {
                     checkedCount++;
                 }
-                else if (container.IsSelectionChecked is null)
+                else if (state is null)
                 {
                     hasPartialChild = true;
                 }

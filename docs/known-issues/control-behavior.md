@@ -1,14 +1,20 @@
 ﻿# Control behavior issue briefs
 
-## Checking a collapsed TreeView branch can skip its children
+## TreeView selection can omit unrealized descendants
 
-**Context and cause.** `UpdateSelectionFromItem` calls `ApplySelectionStateToDescendants` for definite check values. The descent and `AddCheckedItems` resolve generated containers, or use explicitly supplied `TreeViewItem` objects. An unrealized data item has neither a usable container nor stored selection intent in that traversal. `GetChildSelectionState` preserves a nonempty parent's current value when no child container exists, and clears it when the data collection becomes empty. [TreeView.cs](../../Fluence.Wpf/Controls/TreeView.cs)
+**Context and cause.** In Multiple mode, a definite check or uncheck on a collapsed branch records the intended state for each unrealized child occurrence. When WPF generates that child, the tree applies the pending state through the usual checked-state binding and continues the cascade into its descendants. The cascade leaves collapsed branches closed and reconciles the existing `SelectedItems` list as containers become available. WPF evaluates deeper hierarchical bindings when their containers are prepared, so pending intent alone cannot write every descendant's model value or include it in `SelectedItems`. [TreeView.cs](../../Fluence.Wpf/Controls/TreeView.cs) · [TreeViewItem.cs](../../Fluence.Wpf/Controls/TreeViewItem.cs)
 
-**Previous work.** Collection reconciliation now removes detached selections, retains a checked collapsed parent through changes to nonempty child data, and clears it after the final child goes away. `TreeView_MultipleSelection_CollapsedBoundChildrenPreserveParentUntilEmptyAsync` asserts that the child containers remain absent during those changes. The existing cascade test exercises generated containers. [TreeViewTests.cs](../../Fluence.Wpf.Tests/Control/TreeViewTests.cs)
+**Collection and container lifetime.** A move carries pending intent with the same occurrence. Removal, replacement, or reset discards the affected pending entries. New occurrences keep their own initial checked value, including when an application removes and reinserts the same data item. Pending entries belong to the branch container and expire when it retires or the tree leaves Multiple mode.
 
-**Investigate.** Bind a parent to an observable collection through a `HierarchicalDataTemplate`. Verify `ContainerFromIndex(0)` is null before checking the parent. Capture `IsSelectionChecked` and `SelectedItems` before and after expansion, then repeat with remove, replace, and reset. Use a data-bound branch because explicit `TreeViewItem` children participate even while collapsed. Define item identity, tri-state aggregation, and how inherited check intent applies to later additions before choosing a container-independent model.
+**Previous reproduction.** Before deferred replay, a hidden STA probe on .NET Framework 4.7.2 and .NET 10 checked a collapsed parent with a `TwoWay` binding. Its `SelectedItems` list contained only the parent. The child and grandchild remained unchecked after expansion, and the converter supplying the grandchild first ran during child-container preparation. A fresh parent toggle after expansion cascaded to all four items.
 
-**Done when.** Checked intent reaches the affected data items without forcing realization, freshly generated descendants display it, and removals and resets reconcile the live selection. Container-independent state is a prerequisite for enabling virtualization in Multiple mode.
+**Binding timing.** In a second offscreen probe on both full test frameworks, nested `TwoWay` bindings using `Default` or `PropertyChanged` were already active after base container preparation. `SetCurrentValue` updated the expected child model exactly once there and at `DispatcherPriority.Loaded`. Deferred replay gives collection and generator changes time to settle before matching pending child occurrences.
+
+**Regression coverage.** The collapsed-cascade tests exercise nested expansion, the latest check or uncheck, collection moves, removed and replaced occurrences, reset, and the identity of the live selection list. [TreeViewTests.cs](../../Fluence.Wpf.Tests/Control/TreeViewTests.cs)
+
+**Investigate.** Define how the tree can walk the full data hierarchy and identify each occurrence without relying on item containers. Verify model values and `SelectedItems` before expansion, then check partial ancestors, collection changes, and replacement of a parent container.
+
+**Done when.** The tree can report every checked descendant and update the corresponding bound model state before WPF realizes the branch. Checked state can survive container retirement while moves, removals, replacements, and resets retain their documented semantics.
 
 ## TreeView multiple selection can realize every root item
 
@@ -16,7 +22,7 @@
 
 **Previous work.** `TreeView_OptIn_BoundsRealizedRootContainersAsync` covers Single and None. `TreeView_MultipleOptIn_UsesPhysicalFallbackAndPreservesSelectionAsync` deliberately requests logical scrolling and a virtualizing panel, then checks that all 1,000 roots are realized and that selection stays consistent. The mode-switch test also exercises explicit checked-state binding through retemplating. [TreeViewTests.cs](../../Fluence.Wpf.Tests/Control/TreeViewTests.cs)
 
-**Investigate.** First resolve the state dependency described in [collapsed branch selection](#checking-a-collapsed-treeview-branch-can-skip-its-children). Measure realized root containers in a height-constrained large tree using the existing fixture. Check and scroll items out of view, recycle containers, expand and collapse descendants, change the collection, and switch selection modes. Track selection identity independently from container lifetime.
+**Investigate.** First resolve the state dependency described in [selection of unrealized descendants](#treeview-selection-can-omit-unrealized-descendants). Measure realized root containers in a height-constrained large tree using the existing fixture. Check and scroll items out of view, recycle containers, expand and collapse descendants, change the collection, and switch selection modes. Track selection identity independently from container lifetime.
 
 **Done when.** Multiple mode with virtualization enabled realizes a bounded set of roots while preserving checks, partial ancestors, realized state after recycling, and the live `SelectedItems` list. The Single and None opt-in cases still pass.
 

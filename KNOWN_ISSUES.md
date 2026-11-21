@@ -24,23 +24,23 @@ Workaround: Finish UI work and close owned windows. Shut down the dispatcher on 
 
 Last updated: 2026-11-19.
 
-## Checking a collapsed TreeView branch can skip its children
+## TreeView selection can omit unrealized descendants
 
 Priority: P1.
 
-Summary: Multiple-selection cascading reaches existing containers, so unchecked descendants can appear when a collapsed data-bound branch expands.
+Summary: Checking or unchecking a collapsed branch takes effect as WPF generates its data-bound descendants. Until then, their bound model values and membership in `SelectedItems` can remain unchanged.
 
 Affects: Data-bound `TreeView` in `Multiple` selection mode.
 
 Status: Investigating.
 
-Workaround: Keep hierarchy-wide checked state in the data model. Bind the state of each item when its container is created.
+Workaround: Keep hierarchy-wide checked state in the data model when a command needs to act on the entire selection before branches expand.
 
 Unblocks: [TreeView multiple selection can realize every root item](#treeview-multiple-selection-can-realize-every-root-item) needs selection state that can outlive a generated container.
 
-[Technical brief](docs/known-issues/control-behavior.md#checking-a-collapsed-treeview-branch-can-skip-its-children)
+[Technical brief](docs/known-issues/control-behavior.md#treeview-selection-can-omit-unrealized-descendants)
 
-Last updated: 2026-11-19.
+Last updated: 2026-11-20.
 
 ## DataGrid can briefly report a rejected selection in native collections
 
@@ -254,7 +254,7 @@ Status: Investigating.
 
 Workaround: Use `Single` or `None` with `VirtualizingPanel.IsVirtualizing=True` when virtualization is needed. Limit the loaded branches when multiple selection is needed.
 
-Depends on: [Checking a collapsed TreeView branch can skip its children](#checking-a-collapsed-treeview-branch-can-skip-its-children) before enabling virtualization for Multiple selection.
+Depends on: [TreeView selection can omit unrealized descendants](#treeview-selection-can-omit-unrealized-descendants) before enabling virtualization for Multiple selection.
 
 [Technical brief](docs/known-issues/control-behavior.md#treeview-multiple-selection-can-realize-every-root-item)
 
