@@ -21,6 +21,7 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ### Fixed
 
+- In-app acrylic safely releases sources that freeze after observation starts. Added one regression case on each full test target framework.
 - In Multiple mode, TreeView preserves bound checked state when root and nested item containers are recreated. Added two regression cases on each full test target framework.
 - In Multiple mode, `TreeView` applies a collapsed branch's pending check or uncheck as WPF generates its existing descendants. Checking the branch leaves it closed, and `SelectedItems` updates in place. Added eight regression cases on each full test target framework.
 - Fluent `PasswordBox` avoids creating a plaintext string during masked editing and clears revealed text when reveal is disabled or the overlay is retired. Added one regression case on each full test target framework.

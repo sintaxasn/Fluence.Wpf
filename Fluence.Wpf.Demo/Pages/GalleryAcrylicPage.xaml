@@ -12,14 +12,38 @@
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
     <Page.Resources>
-        <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFallbackRecipe"
-                                       TintColor="DimGray"
-                                       FallbackColor="{DynamicResource AcrylicBackgroundFillColorDefault}"
-                                       AlwaysUseFallback="True" />
-        <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFixedRecipe"
-                                       TintColor="White"
-                                       TintOpacity="0.5"
-                                       FallbackColor="White" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <fluence:ThemeDictionary>
+                    <fluence:ThemeDictionary.ThemeDictionaries>
+                        <fluence:ThemeResourceDictionary ThemeKey="Default">
+                            <Style x:Key="GalleryAcrylicFixedLabelStyle" TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="#1F1F1F" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=(SystemParameters.HighContrast)}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                        <fluence:ThemeResourceDictionary ThemeKey="HighContrast">
+                            <Style x:Key="GalleryAcrylicFixedLabelStyle" TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+                            </Style>
+                        </fluence:ThemeResourceDictionary>
+                    </fluence:ThemeDictionary.ThemeDictionaries>
+                </fluence:ThemeDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
+            <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFallbackRecipe"
+                                           TintColor="DimGray"
+                                           FallbackColor="{DynamicResource AcrylicBackgroundFillColorDefault}"
+                                           AlwaysUseFallback="True" />
+            <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFixedRecipe"
+                                           TintColor="White"
+                                           TintOpacity="0.5"
+                                           FallbackColor="White" />
+        </ResourceDictionary>
     </Page.Resources>
     <Grid x:Name="PageRoot" Style="{StaticResource GalleryPageRootStyle}">
         <Grid x:Name="PageContent" Style="{StaticResource GalleryPageContentGridStyle}">
@@ -59,7 +83,7 @@
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="Moving source" />
                             </Grid>
                             <Border x:Name="DirectAcrylicBorder" Grid.Column="1" Background="{fluence:AcrylicBrush BackdropSourceName=BackdropSource, Recipe={StaticResource GalleryAcrylicFixedRecipe}}">
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#1F1F1F" Text="Fixed direct brush" />
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource GalleryAcrylicFixedLabelStyle}" Text="Fixed direct brush" />
                             </Border>
                             <controls:AcrylicElement x:Name="DynamicAcrylicHost" Grid.Column="2"
                                                      BackdropSource="{Binding ElementName=BackdropSource}"

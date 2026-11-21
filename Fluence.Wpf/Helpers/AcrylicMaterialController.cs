@@ -495,7 +495,7 @@ namespace Fluence.Wpf.Helpers
             _owner.Dispatcher.VerifyAccess();
             if (!_recipeAttached && _owner.IsLoaded && _recipe?.IsFrozen is false)
             {
-                _recipe.Changed += OnRecipeChanged;
+                FreezableChangedEventManager.AddHandler(_recipe, OnRecipeChanged);
                 _recipeAttached = true;
             }
         }
@@ -505,7 +505,7 @@ namespace Fluence.Wpf.Helpers
             _owner.Dispatcher.VerifyAccess();
             if (_recipeAttached && _recipe is not null)
             {
-                _recipe.Changed -= OnRecipeChanged;
+                FreezableChangedEventManager.RemoveHandler(_recipe, OnRecipeChanged);
                 _recipeAttached = false;
             }
         }
@@ -652,13 +652,13 @@ namespace Fluence.Wpf.Helpers
                 {
                     if (_transform is not null)
                     {
-                        WeakEventManager<Freezable, EventArgs>.RemoveHandler(_transform, nameof(Freezable.Changed), OnFreezableChanged);
+                        FreezableChangedEventManager.RemoveHandler(_transform, OnFreezableChanged);
                     }
 
                     _transform = nextTransform;
                     if (!nextTransform.IsFrozen)
                     {
-                        WeakEventManager<Freezable, EventArgs>.AddHandler(nextTransform, nameof(Freezable.Changed), OnFreezableChanged);
+                        FreezableChangedEventManager.AddHandler(nextTransform, OnFreezableChanged);
                     }
                 }
 
@@ -667,13 +667,13 @@ namespace Fluence.Wpf.Helpers
                 {
                     if (_clip is not null)
                     {
-                        WeakEventManager<Freezable, EventArgs>.RemoveHandler(_clip, nameof(Freezable.Changed), OnFreezableChanged);
+                        FreezableChangedEventManager.RemoveHandler(_clip, OnFreezableChanged);
                     }
 
                     _clip = nextClip;
                     if (nextClip?.IsFrozen is false)
                     {
-                        WeakEventManager<Freezable, EventArgs>.AddHandler(nextClip, nameof(Freezable.Changed), OnFreezableChanged);
+                        FreezableChangedEventManager.AddHandler(nextClip, OnFreezableChanged);
                     }
                 }
             }
@@ -701,12 +701,12 @@ namespace Fluence.Wpf.Helpers
                 _clipObserver.Clear();
                 if (_transform is not null)
                 {
-                    WeakEventManager<Freezable, EventArgs>.RemoveHandler(_transform, nameof(Freezable.Changed), OnFreezableChanged);
+                    FreezableChangedEventManager.RemoveHandler(_transform, OnFreezableChanged);
                 }
 
                 if (_clip is not null)
                 {
-                    WeakEventManager<Freezable, EventArgs>.RemoveHandler(_clip, nameof(Freezable.Changed), OnFreezableChanged);
+                    FreezableChangedEventManager.RemoveHandler(_clip, OnFreezableChanged);
                 }
             }
         }

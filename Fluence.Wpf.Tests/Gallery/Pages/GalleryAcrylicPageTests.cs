@@ -121,10 +121,24 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                             new Size(host.ActualWidth, host.ActualHeight), 8).Reason);
                     Assert.Equal(260, Assert.IsType<StackPanel>(samples[0].RightRailContent).MaxWidth);
                     Assert.Equal(0.5, Assert.IsType<AcrylicMaterialRecipe>(page.Resources["GalleryAcrylicFixedRecipe"]).TintOpacity);
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Color.FromRgb(0x1F, 0x1F, 0x1F), Assert.IsType<SolidColorBrush>(directLabel.Foreground).Color);
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Helpers.AcrylicFallbackReason.HighContrast, directController.Reason);
+                    Assert.Equal(SystemColors.WindowTextColor, Assert.IsType<SolidColorBrush>(directLabel.Foreground).Color);
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Equal(Color.FromRgb(0x1F, 0x1F, 0x1F), Assert.IsType<SolidColorBrush>(directLabel.Foreground).Color);
                 }
                 finally
                 {
                     DemoTestHost.CloseWindow(window);
+                    _ = TestApp.EnsureDemoTheme();
                 }
             });
         }

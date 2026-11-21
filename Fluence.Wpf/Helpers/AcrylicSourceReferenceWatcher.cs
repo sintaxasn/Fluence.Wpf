@@ -73,8 +73,7 @@ namespace Fluence.Wpf.Helpers
 
                 if (node is Freezable freezable && !freezable.IsFrozen)
                 {
-                    WeakEventManager<Freezable, EventArgs>.AddHandler(freezable,
-                        nameof(Freezable.Changed), OnFreezableChanged);
+                    FreezableChangedEventManager.AddHandler(freezable, OnFreezableChanged);
                     _freezables.Add(freezable);
                 }
             }
@@ -118,8 +117,7 @@ namespace Fluence.Wpf.Helpers
             _properties.Clear();
             foreach (Freezable freezable in _freezables)
             {
-                WeakEventManager<Freezable, EventArgs>.RemoveHandler(freezable,
-                    nameof(Freezable.Changed), OnFreezableChanged);
+                FreezableChangedEventManager.RemoveHandler(freezable, OnFreezableChanged);
             }
 
             _freezables.Clear();

@@ -67,7 +67,34 @@ namespace Fluence.Wpf.Demo.Pages
         private static string DirectAndHostXamlSource => DemoSampleXaml.UserControl(
             "Fluence.Wpf.Demo.Pages.Acrylic.InApp",
             "    <UserControl.Resources>\n" +
-            "        <fluence:AcrylicMaterialRecipe x:Key=\"GalleryAcrylicFixedRecipe\" TintColor=\"White\" TintOpacity=\"0.5\" FallbackColor=\"White\" />\n" +
+            "        <ResourceDictionary>\n" +
+            "            <ResourceDictionary.MergedDictionaries>\n" +
+            "                <fluence:ThemeDictionary>\n" +
+            "                    <fluence:ThemeDictionary.ThemeDictionaries>\n" +
+            "                        <fluence:ThemeResourceDictionary ThemeKey=\"Default\">\n" +
+            "                            <Style x:Key=\"GalleryAcrylicFixedLabelStyle\" TargetType=\"{x:Type TextBlock}\">\n" +
+            "                                <Setter Property=\"Foreground\" Value=\"#1F1F1F\" />\n" +
+            "                                <Style.Triggers>\n" +
+            "                                    <DataTrigger Binding=\"{Binding Path=(SystemParameters.HighContrast)}\" Value=\"True\">\n" +
+            "                                        <Setter Property=\"Foreground\" Value=\"{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}\" />\n" +
+            "                                    </DataTrigger>\n" +
+            "                                </Style.Triggers>\n" +
+            "                            </Style>\n" +
+            "                        </fluence:ThemeResourceDictionary>\n" +
+            "                        <fluence:ThemeResourceDictionary ThemeKey=\"HighContrast\">\n" +
+            "                            <Style x:Key=\"GalleryAcrylicFixedLabelStyle\" TargetType=\"{x:Type TextBlock}\">\n" +
+            "                                <Setter Property=\"Foreground\" Value=\"{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}\" />\n" +
+            "                            </Style>\n" +
+            "                        </fluence:ThemeResourceDictionary>\n" +
+            "                    </fluence:ThemeDictionary.ThemeDictionaries>\n" +
+            "                </fluence:ThemeDictionary>\n" +
+            "            </ResourceDictionary.MergedDictionaries>\n" +
+            "\n" +
+            "            <fluence:AcrylicMaterialRecipe x:Key=\"GalleryAcrylicFixedRecipe\"\n" +
+            "                                           TintColor=\"White\"\n" +
+            "                                           TintOpacity=\"0.5\"\n" +
+            "                                           FallbackColor=\"White\" />\n" +
+            "        </ResourceDictionary>\n" +
             "    </UserControl.Resources>\n" +
             "    <Grid>\n" +
             "        <Grid.ColumnDefinitions>\n" +
@@ -80,7 +107,7 @@ namespace Fluence.Wpf.Demo.Pages
             "        </Grid>\n" +
             "        <!-- Direct Border.Background uses its fixed recipe. -->\n" +
             "        <Border Grid.Column=\"1\" Background=\"{fluence:AcrylicBrush BackdropSourceName=BackdropSource, Recipe={StaticResource GalleryAcrylicFixedRecipe}}\">\n" +
-            "            <TextBlock Foreground=\"#1F1F1F\" Text=\"Sharp text\" />\n" +
+            "            <TextBlock Style=\"{DynamicResource GalleryAcrylicFixedLabelStyle}\" Text=\"Sharp text\" />\n" +
             "        </Border>\n" +
             "        <fluence:AcrylicElement Grid.Column=\"2\" BackdropSource=\"{Binding ElementName=BackdropSource}\"\n" +
             "                                 Recipe=\"{DynamicResource AcrylicInAppDefaultRecipe}\">\n" +

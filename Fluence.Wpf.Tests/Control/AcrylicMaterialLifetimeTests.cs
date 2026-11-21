@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -90,6 +91,33 @@ namespace Fluence.Wpf.Tests.Control
                 Assert.Null(controller.CurrentSource);
                 Assert.NotNull(controller.Output.Visual);
                 controller.Release();
+            });
+        }
+
+        [Fact]
+        public Task ReferenceWatcherDisposesAfterAcrylicSourceFreezesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(static () =>
+            {
+                SolidColorBrush drawingBrush = new(Colors.DarkBlue);
+                GeometryDrawing drawing = new(drawingBrush, pen: null, Geometry.Empty);
+                SolidColorBrush mutableBrush = new(Colors.Black);
+                HashSet<DependencyObject> references = [drawing, drawingBrush, mutableBrush];
+                int changes = 0;
+                using AcrylicSourceReferenceWatcher watcher =
+                    AcrylicSourceReferenceWatcher.Observe(references, () => changes++);
+
+                mutableBrush.Color = Colors.White;
+                Assert.Equal(1, changes);
+
+                drawing.Freeze();
+                Assert.True(drawingBrush.IsFrozen);
+                watcher.Dispose();
+                Assert.Empty(references);
+
+                int changesAtDisposal = changes;
+                mutableBrush.Color = Colors.Gray;
+                Assert.Equal(changesAtDisposal, changes);
             });
         }
 
