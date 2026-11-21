@@ -928,7 +928,11 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Initialize {
         }
     }.GetNewClosure()
     $acrylicStateProperty = [System.ComponentModel.DependencyPropertyDescriptor]::FromProperty([Fluence.Wpf.Controls.AcrylicElement]::IsUsingFallbackProperty, [Fluence.Wpf.Controls.AcrylicElement])
-    $acrylicStateProperty.AddValueChanged($acrylicHost, [System.EventHandler]$updateAcrylicMode)
+    $acrylicStateHandler = [System.EventHandler]$updateAcrylicMode
+    $acrylicStateProperty.AddValueChanged($acrylicHost, $acrylicStateHandler)
+    $Window.add_Closed({
+            $acrylicStateProperty.RemoveValueChanged($acrylicHost, $acrylicStateHandler)
+        }.GetNewClosure())
     & $updateAcrylicMode
     $sourceOffset = 0
     $movingBand = $Window.FindName('AcrylicMovingBand')
