@@ -4,7 +4,7 @@ Fluence.Wpf welcomes bug fixes and focused control work. Read the [developer han
 
 ## Build
 
-Use Windows with the .NET SDKs needed by the target frameworks. From the repository root:
+Build on Windows with the .NET 10 SDK. The repository selects the newest installed stable .NET 10 SDK through `global.json`. Run these commands from the repository root.
 
 ```powershell
 dotnet restore Fluence.Wpf.sln
