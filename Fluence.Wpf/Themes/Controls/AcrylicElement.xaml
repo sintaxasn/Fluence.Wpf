@@ -7,7 +7,8 @@
                 <ControlTemplate TargetType="{x:Type controls:AcrylicElement}">
                     <Grid>
                         <Border x:Name="PART_Backdrop" />
-                        <ContentPresenter Content="{TemplateBinding Content}"
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
