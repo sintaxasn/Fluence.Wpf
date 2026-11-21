@@ -937,7 +937,7 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Initialize {
     $sourceOffset = 0
     $movingBand = $Window.FindName('AcrylicMovingBand')
     $Window.FindName('MoveAcrylicSource').add_Click({
-            $sourceOffset = if ($sourceOffset -eq 0)
+            $sourceOffset = if ($movingBand.X -eq 0)
             {
                 95
             }
