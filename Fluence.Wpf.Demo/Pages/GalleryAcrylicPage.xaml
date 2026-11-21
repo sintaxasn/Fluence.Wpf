@@ -14,7 +14,7 @@
     <Page.Resources>
         <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFallbackRecipe"
                                        TintColor="DimGray"
-                                       FallbackColor="DimGray"
+                                       FallbackColor="{DynamicResource AcrylicBackgroundFillColorDefault}"
                                        AlwaysUseFallback="True" />
         <fluence:AcrylicMaterialRecipe x:Key="GalleryAcrylicFixedRecipe"
                                        TintColor="White"
