@@ -68,6 +68,64 @@ function Get-DocsSha256 {
     return [Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($Bytes)).ToLowerInvariant()
 }
 
+function Get-DocsVisualInputContent
+{
+    param([Parameter(Mandatory)][string]$LiteralPath)
+    $bytes = [System.IO.File]::ReadAllBytes($LiteralPath)
+    if ([System.IO.Path]::GetExtension($LiteralPath) -in @('.png', '.ps'))
+    {
+        # Shader bytecode and noise images are visual inputs but are not UTF-8 text.
+        return 'binary-sha256:' + [System.Convert]::ToHexString(
+            [System.Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+    }
+    $decoder = [System.Text.UTF8Encoding]::new($false, $true)
+    $content = $decoder.GetString($bytes).TrimStart([char]0xFEFF).Replace("`r`n", "`n").Replace("`r", "`n")
+    if (-not $LiteralPath.EndsWith('.xaml', [System.StringComparison]::OrdinalIgnoreCase))
+    {
+        return $content
+    }
+
+    try
+    {
+        $settings = [System.Xml.XmlReaderSettings]::new()
+        $settings.DtdProcessing = [System.Xml.DtdProcessing]::Prohibit
+        $settings.XmlResolver = $null
+        $settings.IgnoreWhitespace = $false
+        $document = [System.Xml.XmlDocument]::new()
+        $document.PreserveWhitespace = $true
+        $document.XmlResolver = $null
+        $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($content), $settings)
+        try { $document.Load($reader) }
+        finally { $reader.Dispose() }
+        $comments = @($document.SelectNodes('//comment()'))
+        foreach ($comment in $comments)
+        {
+            $null = $comment.ParentNode.RemoveChild($comment)
+        }
+        return $document.OuterXml.Replace("`r`n", "`n").Replace("`r", "`n")
+    }
+    catch
+    {
+        # An uncertain parse is deliberately compared byte-for-byte after line-ending normalization.
+        return $content
+    }
+}
+
+function Get-DocsVisualInputHash {
+    param([Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][AllowEmptyCollection()][string[]]$Inputs)
+
+    if ($Inputs.Count -eq 0) { throw 'Capture inputs are empty.' }
+    $parts = [Collections.Generic.List[string]]::new()
+    foreach ($relativePath in @($Inputs | Sort-Object -CaseSensitive -Unique)) {
+        $fullPath = Get-DocsContainedPath -Root $Root -RelativePath $relativePath
+        if (-not [IO.File]::Exists($fullPath)) { throw "Visual input is missing: $relativePath" }
+        $content = Get-DocsVisualInputContent -LiteralPath $fullPath
+        $parts.Add("$relativePath`0$content")
+    }
+    return Get-DocsSha256 ([Text.Encoding]::UTF8.GetBytes(($parts -join "`0")))
+}
+
 function Assert-DocsGalleryReceiptProvenance {
     param([Parameter(Mandatory)]$Receipt,
         [Parameter(Mandatory)][string]$RepositoryRoot,
@@ -124,8 +182,8 @@ function Assert-DocsGalleryReceiptProvenance {
 function Test-DocsNewCapturePath {
     param([Parameter(Mandatory)][string]$Path)
     return $Path.StartsWith('docs/screenshots/controls/', [StringComparison]::Ordinal) -or
-        $Path -cmatch '^docs/screenshots/powershell-(?:color|selection|commands|data|navigation|status|surfaces|layout)-(?:light|dark)\.png$' -or
-        $Path -cmatch '^docs/screenshots/gallery/(?:data-grid(?:-sample-0[1-3])?|selection-sample-06)-(?:light|dark)\.png$'
+        $Path -cmatch '^docs/screenshots/powershell-(?:(?:color|selection|commands|data|navigation|status|surfaces|acrylic|layout)-)?(?:light|dark)\.png$' -or
+        $Path -cmatch '^docs/screenshots/gallery/(?:acrylic(?:-sample-0[12])?|data-grid(?:-sample-0[1-3])?|selection-sample-06)-(?:light|dark)\.png$'
 }
 
 function Assert-SourceDocsManifest {

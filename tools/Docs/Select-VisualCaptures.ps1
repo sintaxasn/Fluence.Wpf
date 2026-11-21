@@ -39,57 +39,6 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'SourceDocsManifest.ps1')
 
-function Get-Sha256Utf8
-{
-    param([AllowEmptyString()][string]$Content)
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($Content)
-    $hash = [System.Security.Cryptography.SHA256]::HashData($bytes)
-    return [System.Convert]::ToHexString($hash).ToLowerInvariant()
-}
-
-function Get-VisualInputContent
-{
-    param([Parameter(Mandatory)][string]$LiteralPath)
-    $bytes = [System.IO.File]::ReadAllBytes($LiteralPath)
-    if ([System.IO.Path]::GetExtension($LiteralPath) -in @('.png', '.ps'))
-    {
-        # Shader bytecode and noise images are visual inputs but are not UTF-8 text.
-        return 'binary-sha256:' + [System.Convert]::ToHexString(
-            [System.Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
-    }
-    $decoder = [System.Text.UTF8Encoding]::new($false, $true)
-    $content = $decoder.GetString($bytes).TrimStart([char]0xFEFF).Replace("`r`n", "`n").Replace("`r", "`n")
-    if (-not $LiteralPath.EndsWith('.xaml', [System.StringComparison]::OrdinalIgnoreCase))
-    {
-        return $content
-    }
-
-    try
-    {
-        $settings = [System.Xml.XmlReaderSettings]::new()
-        $settings.DtdProcessing = [System.Xml.DtdProcessing]::Prohibit
-        $settings.XmlResolver = $null
-        $settings.IgnoreWhitespace = $false
-        $document = [System.Xml.XmlDocument]::new()
-        $document.PreserveWhitespace = $true
-        $document.XmlResolver = $null
-        $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($content), $settings)
-        try { $document.Load($reader) }
-        finally { $reader.Dispose() }
-        $comments = @($document.SelectNodes('//comment()'))
-        foreach ($comment in $comments)
-        {
-            $null = $comment.ParentNode.RemoveChild($comment)
-        }
-        return $document.OuterXml.Replace("`r`n", "`n").Replace("`r", "`n")
-    }
-    catch
-    {
-        # An uncertain parse is deliberately compared byte-for-byte after line-ending normalization.
-        return $content
-    }
-}
-
 $map = Import-PowerShellDataFile -LiteralPath $MapPath -SkipLimitCheck
 if ($map.SchemaVersion -ne 1) { throw 'Unsupported visual capture map schema.' }
 $known = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
@@ -131,14 +80,7 @@ $changedFamilies = [System.Collections.Generic.HashSet[string]]::new([System.Str
 foreach ($capture in $map.Captures)
 {
     if ($CaptureId -and -not $requestedFamilies.Contains([string]$capture.Family)) { continue }
-    $parts = [System.Collections.Generic.List[string]]::new()
-    foreach ($path in @($capture.Inputs | Sort-Object -CaseSensitive -Unique))
-    {
-        $full = Get-DocsContainedPath -Root $RepositoryRoot -RelativePath $path
-        if (-not [System.IO.File]::Exists($full)) { throw "Capture input is missing: $path" }
-        $parts.Add("${path}`0$(Get-VisualInputContent -LiteralPath $full)")
-    }
-    $hash = Get-Sha256Utf8 ($parts -join "`0")
+    $hash = Get-DocsVisualInputHash -Root $RepositoryRoot -Inputs $capture.Inputs
     $old = $null
     if ($previous.ContainsKey($capture.Path)) { $old = $previous[$capture.Path] }
     $checked = if ($null -ne $old -and $old.PSObject.Properties['checkedVisualInputSha256']) { $old.checkedVisualInputSha256 } else { $null }

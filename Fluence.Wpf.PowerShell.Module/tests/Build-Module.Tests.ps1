@@ -151,6 +151,12 @@ if ($Build)
             [System.IO.File]::WriteAllText((Join-Path $script:repositoryPath 'Fluence.Wpf.PowerShell.0.9.0-pre.nupkg'), 'new package')
         }
         Mock Unregister-PSRepository { }
+        Mock Copy-Item {
+            & (Get-Command Copy-Item -CommandType Cmdlet) -LiteralPath $LiteralPath -Destination $Destination -Force:$Force -ErrorAction Stop
+        }
+        Mock Move-Item {
+            & (Get-Command Move-Item -CommandType Cmdlet) -LiteralPath $LiteralPath -Destination $Destination -Force:$Force -ErrorAction Stop
+        }
     }
 
     AfterEach {

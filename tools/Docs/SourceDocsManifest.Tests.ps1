@@ -80,9 +80,12 @@ Describe 'Source docs manifest' {
         }
     }
     It 'permits only the mapped PowerShell tour and reviewed Gallery additions for new captures' {
-        foreach ($path in @('docs/screenshots/controls/new.png',
-            'docs/screenshots/powershell-color-light.png',
-            'docs/screenshots/powershell-layout-dark.png',
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        $tourPaths = @($map.Captures | Where-Object Family -CEQ 'powershell' | ForEach-Object Path)
+        foreach ($path in $tourPaths + @('docs/screenshots/controls/new.png',
+            'docs/screenshots/gallery/acrylic-light.png',
+            'docs/screenshots/gallery/acrylic-sample-01-dark.png',
+            'docs/screenshots/gallery/acrylic-sample-02-light.png',
             'docs/screenshots/gallery/data-grid-light.png',
             'docs/screenshots/gallery/data-grid-sample-03-dark.png',
             'docs/screenshots/gallery/selection-sample-06-light.png')) {
@@ -92,9 +95,11 @@ Describe 'Source docs manifest' {
             { ConvertTo-SourceDocsManifestByteArray ([pscustomobject]@{schemaVersion=1;files=@($record)}) @($path) } | Should -Not -Throw
         }
         foreach ($path in @('docs/screenshots/gallery/button.png',
+            'docs/screenshots/gallery/acrylic-sample-03-light.png',
+            'docs/screenshots/gallery/acrylic-sample-02-highcontrast.png',
             'docs/screenshots/gallery/data-grid-sample-04-light.png',
             'docs/screenshots/gallery/selection-sample-07-light.png',
-            'docs/screenshots/powershell-light.png',
+            'docs/screenshots/powershell-inputs-light.png',
             'docs/screenshots/powershell-other-light.png',
             'docs/powershell/images/new.png')) {
             $record = [pscustomobject]@{ path=$path; kind='capture'; sha256=$hash; pngSha256=$hash;

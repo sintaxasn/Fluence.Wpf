@@ -50,10 +50,10 @@ pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot ar
 pwsh -NoProfile -File tools/Docs/Generate-PowerShellReference.ps1 -OutputRoot artifacts/docs/powershell/reference -Check
 ```
 
-Run the documentation tooling tests with the repository's pinned Pester 5.8.0:
+Run the documentation tooling tests with the repository's pinned Pester 6.2.0:
 
 ```powershell
-Import-Module Pester -RequiredVersion 5.8.0
+Import-Module Pester -RequiredVersion 6.2.0
 $testPaths = @('tools/ApiDocs/Generate-ApiDocs.Tests.ps1', 'Fluence.Wpf.PowerShell.Module/tests/Generate-PowerShellReference.Tests.ps1', 'tools/Docs/SourceDocsManifest.Tests.ps1', 'tools/Docs/Sync-WebsiteDocs.Tests.ps1', 'tools/Docs/Select-VisualCaptures.Tests.ps1', 'tools/Docs/Review-VisualCaptures.Tests.ps1')
 $result = Invoke-Pester -Path $testPaths -PassThru
 if ($result.Result -ne 'Passed') { throw "Documentation tooling tests ended with $($result.Result); $($result.FailedCount) assertion(s) failed." }

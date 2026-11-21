@@ -65,13 +65,13 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
 
         /// <summary>
         /// Text the user types for a new task. Two-way bound to the TextBox.
-        /// The <c>OnNewTaskTextChanged</c> callback re-evaluates <see cref="AddCommand"/>.
+        /// The <c language="csharp">OnNewTaskTextChanged</c> callback re-evaluates <see cref="AddCommand"/>.
         /// </summary>
         [ObservableProperty]
         public partial string NewTaskText { get; set; } = string.Empty;
 
         /// <summary>
-        /// Current filter selection. Changing it triggers <c>OnActiveFilterChanged</c>
+        /// Current filter selection. Changing it triggers <c language="csharp">OnActiveFilterChanged</c>
         /// which calls <see cref="Refresh"/>. <see cref="Refresh"/> itself raises
         /// <see cref="StatusText"/> and <see cref="ProgressValue"/> notifications after
         /// rebuilding <see cref="DisplayedTasks"/>, so the data is always current when

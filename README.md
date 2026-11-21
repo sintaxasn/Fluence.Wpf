@@ -4,9 +4,9 @@
 
 Fluence.Wpf brings native Windows 11-style (Fluent) windows and controls - including automatic light / dark mode and customisable accent colors - without requiring you to rewrite your app for WinUI or upgrade to the latest .NET release. It comes as a NuGet package for C# developers, and a handy PowerShell module for administrators who need to create modern user experiences. 
 
-It uses WPF natively and targets **.NET Framework 4.7.2**, **.NET 8**, and **.NET 10** on **Windows 10 (1809+) and above**, without any additional runtime dependencies, for example, the Windows App SDK. That means an air-gapped machine with a vanilla install of Windows 10 is a supported (and highly unlikely) scenario!
+It targets **.NET Framework 4.7.2**, **.NET 8**, and **.NET 10** on **Windows 10 version 1809 and later**. It uses the WPF runtime for the target framework, with no Windows App SDK or WinUI runtime dependency.
 
-[![NuGet](https://img.shields.io/nuget/v/Fluence.Wpf.svg)](https://www.nuget.org/packages/Fluence.Wpf) [![Downloads](https://img.shields.io/nuget/dt/Fluence.Wpf.svg)](https://github.com/sintaxasn/Fluence.Wpf/releases/latest) [![Build](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml/badge.svg)](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml) [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Targets](https://img.shields.io/badge/targets-net472%20%7C%20net8.0--windows%20%7C%20net10.0--windows-informational.svg)](#requirements)
+[![NuGet](https://img.shields.io/nuget/v/Fluence.Wpf.svg)](https://www.nuget.org/packages/Fluence.Wpf) [![Downloads](https://img.shields.io/nuget/dt/Fluence.Wpf.svg)](https://github.com/sintaxasn/Fluence.Wpf/releases/latest) [![Build](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml/badge.svg)](https://github.com/sintaxasn/Fluence.Wpf/actions/workflows/build.yml) [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Targets](https://img.shields.io/badge/targets-net472%20%7C%20net8.0--windows%20%7C%20net10.0--windows-informational.svg)](https://fluencewpf.com/docs/csharp/requirements)
 
 ## Choose a starting point
 
@@ -51,7 +51,7 @@ In XAML, add `xmlns:fluence="http://schemas.fluencewpf.com"` and use a Fluence c
 <fluence:Button Content="Continue" Appearance="Accent" />
 ```
 
-The [C# basic usage guide](https://fluencewpf.com/docs/csharp/usage) builds a full window. The [control catalog](https://fluencewpf.com/docs/controls) lists the controls, and the [theming guide](https://fluencewpf.com/docs/theming) documents the shared resources.
+The [C# basic usage guide](https://fluencewpf.com/docs/csharp/usage) builds a full window. The [control catalog](https://fluencewpf.com/docs/controls) lists the controls, and the [theming guide](https://fluencewpf.com/docs/theming) documents the shared resources. Use [in-app acrylic](docs/controls.md#acrylic-materials) to blur a visual behind content inside one WPF window.
 
 `ApplyCustomAccent` uses a snapshot of the Windows accent palette when its seed matches the current Windows accent; other custom seeds use a generated ramp. When a brand color must be the visible primary fill, use `ApplicationAccentColorManager.ApplyCustomAccentExact(lightColor)` or pass both light and dark colors to `ApplyCustomAccentExact(lightColor, darkColor)`. See the [accent guide](docs/theming.md#accent-backdrop-and-design-time) for examples.
 

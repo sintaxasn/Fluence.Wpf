@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <#
 .SYNOPSIS
-    Captures all nine Controls Tour categories in Light and Dark themes.
+    Captures all ten Controls Tour categories in Light and Dark themes.
 .DESCRIPTION
     Opens the actual 06-ControlsTour.ps1 XAML and initializer, selects each category,
     waits for WPF layout, and writes opaque WPF RenderTargetBitmap PNGs. Each theme
@@ -54,7 +54,7 @@ param(
     [ValidateSet('Both', 'Light', 'Dark')]
     [string]$Theme = 'Both',
 
-    [ValidateSet('All', 'Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Layout')]
+    [ValidateSet('All', 'Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Acrylic', 'Layout')]
     [string]$Category = 'All',
 
     [string]$OutputDirectory,
@@ -158,14 +158,11 @@ if ($initializeIndex -lt 0)
     throw 'The tour initializer could not be found.'
 }
 $initializeText = $showCall.CommandElements[$initializeIndex].ScriptBlock.GetScriptBlock().ToString()
-$allCategories = @('Inputs', 'Color', 'Selection', 'Commands', 'Data', 'Navigation', 'Status', 'Surfaces', 'Layout')
-$categories = if ($Category -eq 'All') { $allCategories } else { @($Category) }
 $state = [hashtable]::Synchronized(@{
         InitializeText = $initializeText
         OutputDirectory = $OutputDirectory
         Theme = $Theme.ToLowerInvariant()
-        Categories = @($categories)
-        AllCategories = @($allCategories)
+        Category = $Category
         WindowWidth = $WindowWidth
         WindowHeight = $WindowHeight
         Index = 0
@@ -187,6 +184,12 @@ try
 
         # The original initializer supplies real PowerShell objects and interaction handlers.
         & ([scriptblock]::Create($Data.InitializeText)) $Window $Data
+        $Data.AllCategories = @($Window.FindName('CategoryList').Items | ForEach-Object { [string]$_.Content })
+        $Data.Categories = @(if ($Data.Category -eq 'All') { $Data.AllCategories } else { $Data.AllCategories -eq $Data.Category })
+        if ($Data.Categories.Count -eq 0)
+        {
+            throw "The Controls Tour does not contain the requested category '$($Data.Category)'."
+        }
         $Window.Width = $Data.WindowWidth
         $Window.Height = $Data.WindowHeight
         $Window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::Manual
@@ -219,6 +222,13 @@ try
                         $selectedIndex = [System.Array]::IndexOf($capture.AllCategories, $categoryName)
                         if ($selectedIndex -lt 0) { throw "Unknown category $categoryName." }
                         $capture.Window.FindName('CategoryList').SelectedIndex = $selectedIndex
+                        if ($categoryName -eq 'Acrylic')
+                        {
+                            # RenderTargetBitmap renders in software, which cannot run the Acrylic PS 3.0 shader.
+                            $fallbackToggle = $capture.Window.FindName('ForceAcrylicFallback')
+                            if ($null -eq $fallbackToggle) { throw 'The Acrylic fallback switch is missing.' }
+                            $fallbackToggle.IsChecked = $true
+                        }
                         $capture.Pending = $true
                         $capture.WaitTicks = 0
                         return
@@ -235,6 +245,18 @@ try
                     }
                     # Allow a render pass after Loaded; do not photograph a category switch in progress.
                     if ($capture.WaitTicks -lt 2) { return }
+                    $mode = 'WpfRender'
+                    if ($categoryName -eq 'Acrylic')
+                    {
+                        $acrylicHost = $capture.Window.FindName('TourAcrylicHost')
+                        if ($null -eq $acrylicHost) { throw 'The Tour acrylic host is missing.' }
+                        if (-not $acrylicHost.IsLoaded -or -not $acrylicHost.Recipe.AlwaysUseFallback -or -not $acrylicHost.IsUsingFallback)
+                        {
+                            if ($capture.WaitTicks -le 12) { return }
+                            throw 'The Tour acrylic host did not settle in its forced solid fallback.'
+                        }
+                        $mode = 'WpfRenderFallback'
+                    }
                     if ($categoryName -eq 'Color')
                     {
                         $picker = $capture.Window.FindName('TourColorPicker')
@@ -365,6 +387,7 @@ try
                             category = $categoryName
                             theme = $capture.Theme
                             file = $fileName
+                            mode = $mode
                             width = $width
                             height = $height
                             pageViewportWidth = [math]::Round($page.ActualWidth, 1)
@@ -434,9 +457,9 @@ if ($state.Failure)
 {
     throw "Controls Tour capture failed: $($state.Failure)"
 }
-if ($state.Captures.Count -ne $categories.Count)
+if ($state.Captures.Count -ne $state.Categories.Count)
 {
-    throw "Captured $($state.Captures.Count) categories; expected $($categories.Count)."
+    throw "Captured $($state.Captures.Count) categories; expected $($state.Categories.Count)."
 }
 foreach ($captureEntry in $state.Captures)
 {

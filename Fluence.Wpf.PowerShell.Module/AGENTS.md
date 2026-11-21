@@ -17,7 +17,7 @@ Use the scripts under build/ to stage, test, and package the module:
 - Test-Module.ps1 runs PSScriptAnalyzer plus Pester.
 - Package-Module.ps1 creates the zip and nupkg under artifacts/.
 
-The test suite uses Pester 5.8.0 and PSScriptAnalyzer 1.25.0. The default logic lane excludes UI-tagged rendering tests and is used by CI under PowerShell 7, PowerShell 7 MTA, and Windows PowerShell 5.1 STA. The -IncludeUi lane opens real windows and requires an interactive desktop; run it locally in one uninterrupted batch on each applicable host. A successful render lane requires passing assertions and a zero process exit code.
+The test suite uses Pester 6.2.0 and PSScriptAnalyzer 1.25.0. The default logic lane excludes UI-tagged rendering tests and is used by CI under PowerShell 7, PowerShell 7 MTA, and Windows PowerShell 5.1 STA. The -IncludeUi lane opens real windows and requires an interactive desktop; run it locally in one uninterrupted batch on each applicable host. A successful render lane requires passing assertions and a zero process exit code.
 
 Comment-based help in Public/*.ps1 is the source of the command reference. Generate and check it with tools/Docs/Generate-PowerShellReference.ps1 as shown in CONTRIBUTING.md; the output goes to the ignored artifacts/ folder and is not committed. The authored pages under docs/powershell/reference/ list the exported functions and input types by hand, so update them in the same change as a new function or input type.
 

@@ -1,6 +1,6 @@
 ﻿# Roadmap
 
-For current usage, begin at the [documentation index](index.md). This page records proposed work and release policy; the [changelog](../CHANGELOG.md) records completed changes.
+For current usage, begin at the [documentation index](https://fluencewpf.com/docs). This page records proposed work and release policy; the [changelog](../CHANGELOG.md) records completed changes.
 
 ## 1. Purpose and how to read this roadmap
 
@@ -52,7 +52,7 @@ as well as a removal.
 | Public API review | Done | Four types internalised, nine template part constants made internal, four events given typed args, two routed events retyped, three enums renamed to their WinUI or .NET WPF names, and two vestigial members removed. Frozen by `PublicApiAnalyzers`. |
 | XAML key review | Done | Fourteen unconsumed keys removed, two WinUI-named aliases published, one key renamed. Frozen by `PublicKeys.txt`. |
 | Packaging | Done | `DebugType` is `portable`, and the library packs with `Microsoft.SourceLink.GitHub`, `IncludeSymbols`, and `SymbolPackageFormat=snupkg`. `dotnet pack -c Release` emits `Fluence.Wpf.<version>.nupkg` with no PDB inside, plus a matching `.snupkg` carrying one portable PDB per target framework, each embedding a SourceLink document map. `ContinuousIntegrationBuild` is set only when `GITHUB_ACTIONS` is `true`, so a CI-built PDB carries repository-relative paths while a local build keeps absolute ones for local debugging. `VersionPrefix` and `VersionSuffix` in `Directory.Build.props` are the single source of the version; the SDK derives `PackageVersion`, `AssemblyVersion`, `FileVersion`, and `InformationalVersion` from them. The tag-gated GitHub release job (zipped per-TFM binaries, the demo, and the nupkg plus its snupkg) runs after both the .NET build and PowerShell module jobs pass. It fails closed if the tag does not match the tree version or if `CHANGELOG.md` has no matching version section, then obtains a temporary NuGet API key through `NuGet/login@v1` using the `release` environment's `NUGET_USER` and matching nuget.org trusted-publishing policy before creating the GitHub release. It pushes the nupkg and sibling snupkg to nuget.org with that temporary key, and publishes the PowerShell module to PowerShell Gallery using `PSGALLERY_API_KEY`. Creating and pushing the `v*` tag remains the owner's manual step. |
-| Documentation pass | Done | The guides are reconciled with the shipped surface. The site in section 5 stays a 1.x item. |
+| Documentation pass | Done | The documentation website covers the published library and PowerShell module. Update the relevant guides and reviewed captures when behavior changes. |
 
 ## 4. PowerShell scripting interface
 
@@ -65,21 +65,21 @@ The module provides dialogs, validated prompts, progress windows, full windows
 from XAML or a content scriptblock, and theme, accent and backdrop cmdlets.
 It handles assembly loading and STA hosting, including a module-owned UI
 runspace for an MTA caller. The module runs in-process. Its
-[existing host guide](powershell/how-to/use-in-existing-host.md) describes
+[existing host guide](https://fluencewpf.com/docs/powershell/how-to/use-in-existing-host) describes
 dispatcher ownership and supported threading modes.
 
-The [tutorial](powershell/tutorial.md) covers building or installing the module.
+The [basic walkthrough](https://fluencewpf.com/docs/powershell/usage) covers building or installing the module.
 The maintained scripting examples live in
 [`Fluence.Wpf.PowerShell.Module/examples/`](../Fluence.Wpf.PowerShell.Module/examples/),
-and the [PowerShell documentation](powershell/README.md) contains the how-to
+and the [PowerShell documentation](https://fluencewpf.com/docs/powershell/) contains the how-to
 guides, cmdlet reference and design explanation. The module's build scripts
 stage the library binaries and package a self-contained zip and nupkg.
 
 ## 5. Documentation website
 
-The project documentation is authored in Markdown and uses relative links. The [documentation index](index.md) leads to the Controls, C# Library, and PowerShell sections. These pages can be read directly on GitHub or through the Docusaurus website.
+The [documentation website](https://fluencewpf.com) provides the Controls, C# Library, and PowerShell guides. This repository maintains the control catalog, theming and parity guides, and PowerShell reference introductions. The standalone website repository maintains the remaining guides and published screenshots.
 
-The C# API reference is generated from the compiled library and its XML documentation. Website builds read the generated Markdown alongside the guides. The standalone website repository is preparing for Cloudflare Pages; deployment will wait for release approval. Versioned documentation remains a future decision. See the [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website) for the build and hosting setup.
+The C# API reference comes from the compiled library and XML documentation. The PowerShell reference comes from command help. The [documentation tooling guide](../tools/Docs/README.md) explains how to generate both references and sync them to the [website repository](https://github.com/sintaxasn/Fluence.Wpf.Website). Versioned documentation remains an open decision.
 
 ## 6. Candidate items
 
@@ -106,15 +106,13 @@ For the owner to accept or strike. Each line gives the value, then the cost.
 | `TabView` close aggregation coverage | `TabView` forwards each child `TabViewItem.CloseRequested` as one `TabCloseRequested` and then marks the child event handled, and no test pins the handled half of that contract. | One test in `Fluence.Wpf.Tests/Control/TabViewTests.cs`. |
 | `InfoBadgeAutomationPeer` name change notification | A `Value` change updates the badge text but never raises `RaisePropertyChangedEvent` for the automation name, so a screen reader hears the old value until the tree refreshes. | Additive to fix and no consumer has reported it. It belongs with the accessibility audit above. |
 | Drop the `Microsoft.SourceLink.GitHub` pin | The .NET 8 and later SDKs ship SourceLink in box, so the explicit package reference is redundant on two of the three target frameworks. | `net472` still needs the package, so removing the pin means conditioning it per target framework and regenerating three lock files. |
-| Release job partial-run recovery | A first `v*` run that fails during asset upload leaves an incomplete GitHub release that the idempotent re-run then skips. | The fix is a delete-and-recreate step guarded by a release-body marker, which trades safety on re-run for recoverability. |
 | Suite wall-clock baseline | The consolidated suite has never been timed against the pre-consolidation 3 min 29 s, so the `LightThemeFixture` win is asserted, not measured. | One timed two-lane run per target framework on a quiet machine, recorded in `KNOWN_ISSUES.md` or the test README. |
 
 ## 7. Out of scope for 1.0
 
 - Drag to reorder and tear-off tabs in `TabView`.
 - A navigation history stack inside `NavigationView`.
-- Real acrylic as an in-process material. WPF cannot render it, so the opaque
-  fallback plate stays.
+- Desktop and cross-window sampling from an in-app acrylic control. The [in-app material](controls.md#acrylic-materials) samples an explicit visual in the same WPF window. Windows owns window backdrop effects.
 - Hosted controls with their own runtimes: `WebView2`, `MapControl`,
   `MediaPlayerElement`.
 - Any target that is not WPF on Windows.
