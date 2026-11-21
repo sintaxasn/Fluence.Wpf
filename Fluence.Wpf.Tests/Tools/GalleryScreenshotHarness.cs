@@ -1133,6 +1133,7 @@ namespace Fluence.Wpf.Tests.Tools
         {
             CaptureState state = new();
             string expectedTag = route.Replace('-', ' ');
+            bool transitionSettled = false;
             for (int attempt = 0; attempt < 20; attempt++)
             {
                 await SettleGalleryAsync(window).ConfigureAwait(true);
@@ -1142,16 +1143,21 @@ namespace Fluence.Wpf.Tests.Tools
                 string tag = selected?.Tag?.ToString() ?? string.Empty;
                 bool routeSelected = string.Equals(tag, expectedTag, StringComparison.Ordinal) ||
                     tag.StartsWith(expectedTag + " ", StringComparison.Ordinal);
-                if (state.ContentLoaded && routeSelected && state.IndicatorAligned)
+                transitionSettled = window.PageFrame.Content is FrameworkElement
+                {
+                    Opacity: 1.0,
+                    RenderTransform: not TranslateTransform { Y: not 0.0 },
+                };
+                if (state.ContentLoaded && routeSelected && state.IndicatorAligned && transitionSettled)
                 {
                     return state;
                 }
             }
 
             throw new TimeoutException(Invariant(
-                "Gallery route {0} did not reach final state: loaded={1}, selected={2}, indicatorAligned={3}, indicator=({4:R},{5:R}), item=({6:R},{7:R}).",
+                "Gallery route {0} did not reach final state: loaded={1}, selected={2}, indicatorAligned={3}, indicator=({4:R},{5:R}), item=({6:R},{7:R}), transitionSettled={8}.",
                 route, state.ContentLoaded, state.SelectedItem, state.IndicatorAligned,
-                state.IndicatorCenterX, state.IndicatorCenterY, state.SelectedItemCenterX, state.SelectedItemCenterY));
+                state.IndicatorCenterX, state.IndicatorCenterY, state.SelectedItemCenterX, state.SelectedItemCenterY, transitionSettled));
         }
 
         private static async Task<CaptureState> WaitForTabStateAsync(Demo.MainWindow window,
