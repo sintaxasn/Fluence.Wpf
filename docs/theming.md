@@ -37,7 +37,27 @@ For theme resolution and transition behavior, see [Theme pipeline internals](exp
 | Theme-resolved accent | `SystemAccentColorPrimary`, `SystemAccentColorSecondary`, `SystemAccentColorTertiary`, and brush variants | Accent roles selected for the resolved theme |
 | Chrome | `TitleBarActiveColor`, `TitleBarInactiveColor`, `WindowBorderColor`, and brush variants | WPF window frame |
 
-The named families contain more keys than the examples shown. The public inventory also includes the `ControlOnImageFillColor*`, `LayerOnMicaBaseAltFillColor*`, acrylic, card, background, and InfoBadge foreground families. `AcrylicBackgroundFillColorDefaultBrush` and `AcrylicBackgroundFillColorBaseBrush` provide painted fallbacks for transient surfaces. `AccentAcrylicBackgroundFillColor*` supplies accent tinted variants. WPF does not offer WinUI's per-element backdrop blur, so these resource values describe a flat surface.
+The named families contain more keys than the examples shown. The public inventory also includes the `ControlOnImageFillColor*`, `LayerOnMicaBaseAltFillColor*`, acrylic, card, background, and InfoBadge foreground families. `AcrylicBackgroundFillColorDefaultBrush` and `AcrylicBackgroundFillColorBaseBrush` provide painted fallbacks for transient surfaces. `AccentAcrylicBackgroundFillColor*` supplies accent tinted variants. These legacy solid brush keys describe flat surfaces; they do not themselves blur an element's backdrop. For an explicit same-window source, use the separate [in-app acrylic material](controls.md#acrylic-materials).
+
+### Acrylic recipes
+
+After `ApplicationThemeManager.Apply`, the computed dictionary publishes these frozen `AcrylicMaterialRecipe` values. Each host supplies its own same-window source.
+
+| Material | Default | Base |
+| --- | --- | --- |
+| Neutral | `AcrylicInAppDefaultRecipe` | `AcrylicInAppBaseRecipe` |
+| Accent | `AcrylicInAppAccentDefaultRecipe` | `AcrylicInAppAccentBaseRecipe` |
+
+Accent tint and opaque fallback use the resolved accent ramp. In Light, both recipes use Light3. In Dark, Default uses Dark1 and Base uses Dark2. All four recipes use the system Window color as their solid fallback in High Contrast.
+
+```xml
+<fluence:AcrylicElement BackdropSource="{Binding ElementName=BackdropRoot}"
+                        Recipe="{DynamicResource AcrylicInAppDefaultRecipe}" />
+```
+
+Use `DynamicResource` on the host's `Recipe` dependency property to follow theme and accent changes. The Colors gallery shows the accent pair under **Background > Accent Acrylic Background**. For a direct `Border.Background` or supported shape fill, pass a fixed `StaticResource` recipe to `{fluence:AcrylicBrush ...}`. The direct markup extension cannot reevaluate a `DynamicResource` nested in its CLR property. The [rooted example and source rules](controls.md#acrylic-materials) show both patterns. Existing `AcrylicBackground*Brush` keys, `AcrylicNoiseBrush`, popup paints, and window DWM backdrops retain their own behavior.
+
+Recipe, theme, and policy refreshes switch directly between acrylic material and its opaque fallback. The 167 ms `ControlFastAnimationDuration` token does not animate this material. The [material limits](controls.md#acrylic-materials) apply to direct brushes and hosts together across windows in the process.
 
 When a `TitleBar` is hosted by `FluenceWindow`, it follows the window's active state. Built-in title text uses the tertiary text role while inactive, and its title-area content slots use 0.5 opacity.
 

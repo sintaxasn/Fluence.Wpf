@@ -145,6 +145,7 @@ namespace Fluence.Wpf.Tests.Gallery
 
         private static void RaiseSearchKey(UIElement target, Window window, Key key)
         {
+            using IDisposable keyModifiers = WpfTestSta.UseSyntheticKeyModifiers(ModifierKeys.None);
             target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(window), 0, key)
             {
                 RoutedEvent = UIElement.PreviewKeyDownEvent,
@@ -1463,14 +1464,14 @@ namespace Fluence.Wpf.Tests.Gallery
 
                         if (page is GalleryHomePage)
                         {
-                            // Home has no page header to lock, so it keeps the plain scroll host
-                            // over a stack panel that carries the page content margin. That margin
-                            // sits on the scrolling content here, so it keeps the trailing bottom
-                            // inset the other pages move onto DemoPageScrollContentMargin.
+                            // Home scrolls its full-width artwork with its inset content.
+                            // The content stack still owns the page margin and trailing inset.
                             Controls.SmoothScrollViewer homeScroll = Assert.IsType<Controls.SmoothScrollViewer>(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page).FirstOrDefault(), exactMatch: false);
                             Assert.Same(scrollStyle, homeScroll.Style);
 
-                            StackPanel homeContent = Assert.IsType<StackPanel>(homeScroll.Content);
+                            Grid homeLayers = Assert.IsType<Grid>(homeScroll.Content);
+                            StackPanel homeContent = Assert.Single(homeLayers.Children.OfType<StackPanel>());
+                            Assert.Equal("PageContent", homeContent.Name);
                             Assert.Same(contentStyle, homeContent.Style);
                             Assert.Equal(new Thickness(45, 24, 44, 48), homeContent.Margin);
                             Assert.Equal(HorizontalAlignment.Stretch, homeContent.HorizontalAlignment);

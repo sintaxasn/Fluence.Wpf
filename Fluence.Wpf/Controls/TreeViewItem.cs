@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -95,6 +97,11 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsSelectionCheckedProperty, value);
         }
 
+        // A nullable slot retains the last definite cascade for one child occurrence.
+        internal List<bool?>? PendingChildChecks { get; set; }
+
+        internal bool NeedsDeferredChildReconciliation { get; set; }
+
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -145,10 +152,134 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            PrepareGeneratedContainer(element, item, base.PrepareContainerForItemOverride);
+            if (NeedsDeferredChildReconciliation)
+            {
+                FindOwningTreeView()?.QueueChildSelectionRefresh(this);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            if (element is TreeViewItem container)
+            {
+                container.ClearPendingChildChecksInSubtree();
+            }
+
+            base.ClearContainerForItemOverride(element, item);
+        }
+
+        internal void ClearPendingChildChecksInSubtree()
+        {
+            PendingChildChecks = null;
+            NeedsDeferredChildReconciliation = false;
+            _preparedDataItem = null;
+            for (int index = 0; index < Items.Count; index++)
+            {
+                TreeViewItem? child = ItemContainerGenerator.ContainerFromIndex(index) as TreeViewItem ?? Items[index] as TreeViewItem;
+                child?.ClearPendingChildChecksInSubtree();
+            }
+        }
+
+        internal static void PrepareGeneratedContainer(DependencyObject element, object item, Action<DependencyObject, object> prepare)
+        {
+            if (element is not TreeViewItem container || ReferenceEquals(element, item))
+            {
+                prepare(element, item);
+                return;
+            }
+
+            // WPF can prepare an existing container for a replacement without clearing it first.
+            if (container._preparedDataItem is { } previousItem && !ReferenceEquals(previousItem, item))
+            {
+                container.ClearPendingChildChecksInSubtree();
+            }
+            container._preparedDataItem = item;
+
+            bool wasPreparing = container._isPreparingGeneratedContainer;
+            container._isPreparingGeneratedContainer = true;
+            try
+            {
+                prepare(element, item);
+            }
+            finally
+            {
+                container._isPreparingGeneratedContainer = wasPreparing;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
+            RebasePendingChildChecks(e);
             base.OnItemsChanged(e);
-            FindOwningTreeView()?.ReconcileSelectionAfterItemsChanged(this, e);
+
+            // The hierarchical template attaches the child source during preparation.
+            // Its initial reset has no prior child selection to reconcile.
+            if (!_isPreparingGeneratedContainer || e.Action is not NotifyCollectionChangedAction.Reset)
+            {
+                TreeView? owner = FindOwningTreeView();
+                owner?.ReconcileSelectionAfterItemsChanged(this, e);
+                if (PendingChildChecks is not null)
+                {
+                    owner?.QueueChildSelectionRefresh(this);
+                }
+            }
+        }
+
+        private void RebasePendingChildChecks(NotifyCollectionChangedEventArgs e)
+        {
+            if (PendingChildChecks is not { } checks)
+            {
+                return;
+            }
+
+            int oldCount = e.OldItems?.Count ?? 0;
+            int newCount = e.NewItems?.Count ?? 0;
+            int remainingCount = checks.Count - oldCount;
+            if (remainingCount < 0 || Items.Count - newCount != remainingCount)
+            {
+                PendingChildChecks = null;
+                return;
+            }
+
+            int oldIndex = e.OldStartingIndex;
+            int newIndex = e.NewStartingIndex;
+            bool hasOldIndex = oldIndex >= 0 && oldIndex <= remainingCount;
+            bool hasNewIndex = newIndex >= 0 && newIndex <= remainingCount;
+
+            if (e.Action is NotifyCollectionChangedAction.Add && hasNewIndex)
+            {
+                checks.InsertRange(newIndex, new bool?[newCount]);
+            }
+            else if (e.Action is NotifyCollectionChangedAction.Remove && hasOldIndex)
+            {
+                checks.RemoveRange(oldIndex, oldCount);
+            }
+            else if (e.Action is NotifyCollectionChangedAction.Replace && hasOldIndex && hasNewIndex)
+            {
+                checks.RemoveRange(oldIndex, oldCount);
+                checks.InsertRange(newIndex, new bool?[newCount]);
+            }
+            else if (e.Action is NotifyCollectionChangedAction.Move && hasOldIndex && hasNewIndex && oldCount == newCount)
+            {
+                List<bool?> moved = checks.GetRange(oldIndex, oldCount);
+                checks.RemoveRange(oldIndex, oldCount);
+                checks.InsertRange(newIndex, moved);
+            }
+            else
+            {
+                PendingChildChecks = null;
+                return;
+            }
+
+            if (!checks.Exists(static check => check is not null))
+            {
+                PendingChildChecks = null;
+            }
         }
 
         /// <inheritdoc />
@@ -233,7 +364,22 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            owner.UpdateSelectionFromItem(item, isChecked);
+            if (!item.IsPreparingWithPendingParentCheck())
+            {
+                owner.UpdateSelectionFromItem(item, isChecked);
+            }
+        }
+
+        private bool IsPreparingWithPendingParentCheck()
+        {
+            if (!_isPreparingGeneratedContainer
+                || ItemsControlFromItemContainer(this) is not TreeViewItem { PendingChildChecks: { } checks } parent)
+            {
+                return false;
+            }
+
+            int index = parent.ItemContainerGenerator.IndexFromContainer(this);
+            return index >= 0 && index < checks.Count && checks[index] is not null;
         }
 
         internal bool ToggleMultipleSelectionFromKeyboard()
@@ -309,6 +455,8 @@ namespace Fluence.Wpf.Controls
                 : null;
         }
 
+        private object? _preparedDataItem;
+        private bool _isPreparingGeneratedContainer;
         private bool _isKeyboardSelectionToggle;
     }
 }

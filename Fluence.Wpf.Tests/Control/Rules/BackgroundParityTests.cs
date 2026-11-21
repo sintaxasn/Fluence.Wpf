@@ -482,7 +482,7 @@ namespace Fluence.Wpf.Tests.Control.Rules
                     continue;
                 }
 
-                if (IsBackgroundLiteralAllowedValue(path, value))
+                if (IsBackgroundLiteralAllowedValue(path, attributeName, value))
                 {
                     continue;
                 }
@@ -535,8 +535,18 @@ namespace Fluence.Wpf.Tests.Control.Rules
             return fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static bool IsBackgroundLiteralAllowedValue(string path, string value)
+        private static bool IsBackgroundLiteralAllowedValue(string path, string attributeName, string value)
         {
+            string acrylicSamplePath = Path.Join(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryAcrylicPage.xaml");
+            if (attributeName.Equals("Fill", StringComparison.Ordinal) &&
+                path.Equals(acrylicSamplePath, StringComparison.OrdinalIgnoreCase))
+            {
+                // These are animated source swatches kept literal so the acrylic sample visibly moves.
+                return value.Equals("Gold", StringComparison.Ordinal) ||
+                    value.Equals("Aquamarine", StringComparison.Ordinal) ||
+                    value.Equals("LightYellow", StringComparison.Ordinal);
+            }
+
             string fileName = Path.GetFileName(path);
             if (!fileName.Equals("GallerySettingsPage.xaml", StringComparison.OrdinalIgnoreCase))
             {

@@ -42,6 +42,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
@@ -262,10 +263,14 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Application application = WpfTestSta.EnsureApplication();
                 Controls.SelectorBar selector = ColorSelector(page);
 
+                List<Controls.AcrylicElement> acrylicPreviews = [];
                 for (int i = 0; i < selector.Items.Count; i++)
                 {
                     SelectSection(selector, i, page.Dispatcher);
-                    foreach (ColorPageExample example in DemoTestHost.FindVisualChildren<ColorPageExample>(SectionPanel(page)))
+                    DependencyObject section = SectionPanel(page);
+                    Assert.Equal(string.Equals(Sections[i].Title, "Background", StringComparison.Ordinal) ? 2 : 0,
+                        DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(section).Count());
+                    foreach (ColorPageExample example in DemoTestHost.FindVisualChildren<ColorPageExample>(section))
                     {
                         // The Mica Alt example exposes the same host material as its swatches.
                         string expectedKey = example.Title switch
@@ -283,9 +288,66 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                             Assert.Same(application.TryFindResource("SolidBackgroundFillColorBaseBrush"),
                                 Assert.IsType<Controls.Border>(example.ExampleContent, exactMatch: false).Background);
                         }
+                        else if (string.Equals(example.Title, "Acrylic Background", StringComparison.Ordinal))
+                        {
+                            acrylicPreviews.Add(AssertAcrylicPreview(example, "Acrylic recipe",
+                                "AcrylicInAppDefaultRecipe", "AcrylicInAppBaseRecipe"));
+                        }
+                        else if (string.Equals(example.Title, "Accent Acrylic Background", StringComparison.Ordinal))
+                        {
+                            acrylicPreviews.Add(AssertAcrylicPreview(example, "Accent acrylic recipe",
+                                "AcrylicInAppAccentDefaultRecipe", "AcrylicInAppAccentBaseRecipe"));
+                        }
                     }
                 }
+
+                Assert.Equal(2, acrylicPreviews.Count);
+                Assert.All(acrylicPreviews, static preview => Assert.False(preview.IsLoaded));
             });
+        }
+
+        private static Controls.AcrylicElement AssertAcrylicPreview(ColorPageExample example, string selectorName,
+            string defaultRecipeKey, string baseRecipeKey)
+        {
+            Application application = WpfTestSta.EnsureApplication();
+            Controls.AcrylicElement acrylic = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(example));
+            FrameworkElement source = Assert.IsType<FrameworkElement>(acrylic.BackdropSource, exactMatch: false);
+            Assert.Same(VisualTreeHelper.GetParent(acrylic), VisualTreeHelper.GetParent(source));
+
+            acrylic.BringIntoView();
+            WpfTestSta.DrainDispatcher(example.Dispatcher);
+            example.UpdateLayout();
+            WpfTestSta.DrainDispatcher(example.Dispatcher);
+            Assert.Equal(AcrylicFallbackReason.None, AcrylicSourceMap.Evaluate(acrylic, source,
+                acrylic.RenderSize, AcrylicMaterialRenderer.BlurRadiusDip).Reason);
+
+            ComboBox recipeSelector = AcrylicRecipeSelector(example, selectorName);
+            Assert.Collection(recipeSelector.Items.Cast<object>(),
+                static item => Assert.Equal("Default", Assert.IsType<ComboBoxItem>(item).Content as string, StringComparer.Ordinal),
+                static item => Assert.Equal("Base", Assert.IsType<ComboBoxItem>(item).Content as string, StringComparer.Ordinal));
+            Assert.Equal(0, recipeSelector.SelectedIndex);
+            _ = AssertPublishedAcrylicRecipe(application, acrylic, defaultRecipeKey);
+
+            recipeSelector.SelectedIndex = 1;
+            WpfTestSta.DrainDispatcher(example.Dispatcher);
+            _ = AssertPublishedAcrylicRecipe(application, acrylic, baseRecipeKey);
+            Assert.Same(acrylic, Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(example)));
+            Assert.Same(source, acrylic.BackdropSource);
+            return acrylic;
+        }
+
+        private static ComboBox AcrylicRecipeSelector(ColorPageExample example, string selectorName)
+        {
+            Controls.ComboBox selector = Assert.Single(DemoTestHost.FindVisualChildren<Controls.ComboBox>(example));
+            Assert.Equal(selectorName, AutomationProperties.GetName(selector), StringComparer.Ordinal);
+            return selector;
+        }
+
+        private static AcrylicMaterialRecipe AssertPublishedAcrylicRecipe(Application application, Controls.AcrylicElement acrylic, string recipeKey)
+        {
+            AcrylicMaterialRecipe recipe = Assert.IsType<AcrylicMaterialRecipe>(application.TryFindResource(recipeKey));
+            Assert.Same(recipe, acrylic.Recipe);
+            return recipe;
         }
 
         /// <summary>
@@ -382,6 +444,10 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
 
                 Assert.Contains("TextFillColorPrimaryBrush", copiedKeys);
                 Assert.Contains("AccentFillColorDefaultBrush", copiedKeys);
+                Assert.Contains("AcrylicBackgroundFillColorBaseBrush", copiedKeys);
+                Assert.Contains("AcrylicBackgroundFillColorDefaultBrush", copiedKeys);
+                Assert.Contains("AccentAcrylicBackgroundFillColorBaseBrush", copiedKeys);
+                Assert.Contains("AccentAcrylicBackgroundFillColorDefaultBrush", copiedKeys);
                 Assert.Contains("SystemColorWindowTextColorBrush", copiedKeys);
             });
         }
@@ -421,6 +487,15 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     ColorTile[] micaBackgroundTiles = [.. DemoTestHost.FindVisualChildren<ColorTile>(SectionPanel(page))
                         .Where(static tile => tile.IsBackdropReference)];
                     Assert.Equal(2, micaBackgroundTiles.Length);
+                    ColorPageExample[] backgroundExamples = [.. DemoTestHost.FindVisualChildren<ColorPageExample>(SectionPanel(page))];
+                    ColorPageExample acrylicExample = Assert.Single(backgroundExamples, static example => string.Equals(example.Title, "Acrylic Background", StringComparison.Ordinal));
+                    Controls.AcrylicElement acrylic = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(acrylicExample));
+                    ComboBox acrylicRecipeSelector = AcrylicRecipeSelector(acrylicExample, "Acrylic recipe");
+                    acrylicRecipeSelector.SelectedIndex = 1;
+                    ColorPageExample accentAcrylicExample = Assert.Single(backgroundExamples, static example => string.Equals(example.Title, "Accent Acrylic Background", StringComparison.Ordinal));
+                    Controls.AcrylicElement accentAcrylic = Assert.Single(DemoTestHost.FindVisualChildren<Controls.AcrylicElement>(accentAcrylicExample));
+                    ComboBox accentAcrylicRecipeSelector = AcrylicRecipeSelector(accentAcrylicExample, "Accent acrylic recipe");
+                    accentAcrylicRecipeSelector.SelectedIndex = 1;
 
                     ApplicationTheme[] themes =
                     [
@@ -450,11 +525,23 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                         Assert.Same(application.TryFindResource("SolidBackgroundFillColorBaseBrush"), micaBackgroundTiles[0].Background);
                         Assert.Same(application.TryFindResource("SolidBackgroundFillColorBaseAltBrush"), micaBackgroundTiles[1].Background);
                         AssertBackdropLinkForegrounds(application, micaBackgroundTiles);
+                        Assert.Equal(1, acrylicRecipeSelector.SelectedIndex);
+                        _ = AssertPublishedAcrylicRecipe(application, acrylic, "AcrylicInAppBaseRecipe");
+                        Assert.Equal(1, accentAcrylicRecipeSelector.SelectedIndex);
+                        AcrylicMaterialRecipe accentRecipe = AssertPublishedAcrylicRecipe(application, accentAcrylic, "AcrylicInAppAccentBaseRecipe");
+                        Assert.Equal(theme is ApplicationTheme.HighContrast, accentRecipe.AlwaysUseFallback);
+                        Assert.Equal(byte.MaxValue, accentRecipe.FallbackColor.A);
 
-                        // An accent publication must not leave either the preview backing or a tile
-                        // bound to a stale brush instance.
+                        // Check the preview recipe and solid swatches after accent publication.
                         ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x22, 0x44, 0x66));
                         WpfTestSta.DrainDispatcher(window.Dispatcher);
+                        Assert.Equal(1, accentAcrylicRecipeSelector.SelectedIndex);
+                        AcrylicMaterialRecipe refreshedAccentRecipe = AssertPublishedAcrylicRecipe(application, accentAcrylic, "AcrylicInAppAccentBaseRecipe");
+                        if (theme is not ApplicationTheme.HighContrast)
+                        {
+                            Assert.NotEqual(accentRecipe.TintColor, refreshedAccentRecipe.TintColor);
+                        }
+
                         Assert.Same(application.TryFindResource("SolidBackgroundFillColorTransparentBrush"), micaAltSurface.Background);
                         Assert.Same(micaAltSurface.Background, micaAltExample.Background);
                         Assert.Same(application.TryFindResource("LayerOnMicaBaseAltFillColorDefaultBrush"), tab.Background);

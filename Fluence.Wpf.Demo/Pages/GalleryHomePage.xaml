@@ -3,241 +3,323 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:fluence="http://schemas.fluencewpf.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
-    <!--
-        This landing/catalog page renders directly, outside the DemoSampleControl
-        teaching-sample contract. The SVG-derived banner leads into the control catalog;
-        all gallery destinations use the shell's route tags.
-        The SVG-derived native WPF banner follows the theme, including high-contrast polarity,
-        without code-behind theme subscriptions.
-    -->
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluence.Wpf.Demo;component/Resources/BannerDrawings.xaml" />
                 <fluence:ThemeDictionary>
                     <fluence:ThemeDictionary.ThemeDictionaries>
-                        <fluence:ThemeResourceDictionary ThemeKey="Light">
-                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeBannerLightDrawingImage}" />
-                            </Style>
+                        <fluence:ThemeResourceDictionary ThemeKey="Default">
+                            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="{DynamicResource SolidBackgroundFillColorTertiary}" />
                         </fluence:ThemeResourceDictionary>
-                        <fluence:ThemeResourceDictionary ThemeKey="Dark">
-                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeBannerDarkDrawingImage}" />
-                            </Style>
-                        </fluence:ThemeResourceDictionary>
-                        <fluence:ThemeResourceDictionary ThemeKey="HighContrastBlack">
-                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeBannerDarkDrawingImage}" />
-                            </Style>
-                        </fluence:ThemeResourceDictionary>
-                        <fluence:ThemeResourceDictionary ThemeKey="HighContrastWhite">
-                            <Style x:Key="HomeHeroImageStyle" TargetType="{x:Type Image}">
-                                <Setter Property="Source" Value="{DynamicResource HomeBannerLightDrawingImage}" />
-                            </Style>
+                        <fluence:ThemeResourceDictionary ThemeKey="HighContrast">
+                            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
                         </fluence:ThemeResourceDictionary>
                     </fluence:ThemeDictionary.ThemeDictionaries>
                 </fluence:ThemeDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    <fluence:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
-        <StackPanel
-            x:Name="PageContent"
-            SizeChanged="PageContent_SizeChanged"
-            Style="{StaticResource GalleryPageContentStackStyle}">
-            <StackPanel x:Name="HeroContent" Margin="{DynamicResource HomeHeroMargin}">
-                <Grid HorizontalAlignment="Stretch" MaxWidth="620">
-                    <Image
-                        x:Name="BrandHeroImage"
-                        AutomationProperties.Name="Fluence.WPF banner"
-                        AutomationProperties.HelpText="Fluent design controls and theming for WPF and PowerShell. Supports .NET 4.7.2, 8, and 10 or later; Windows PowerShell 5.1 and PowerShell 7.4 or later."
-                        HorizontalAlignment="Stretch"
-                        MaxWidth="620"
-                        Stretch="Uniform"
-                        Style="{DynamicResource HomeHeroImageStyle}" />
+
+    <!--  The Home catalog renders directly and uses the shell's route tags.  -->
+    <fluence:SmoothScrollViewer
+        x:Name="HomeScroll"
+        Style="{StaticResource GalleryPageScrollViewerStyle}">
+        <Grid>
+            <!--  Sample the artwork separately from the text and cards. The fade reveals the window backdrop.  -->
+            <Canvas x:Name="HeroBackdropCanvas" IsHitTestVisible="False">
+                <Grid
+                    x:Name="HeroBackdropSource"
+                    Width="{Binding ActualWidth, ElementName=HeroBackdropCanvas}"
+                    Height="0"
+                    Background="Transparent">
+                    <Grid
+                        x:Name="HeroArtwork"
+                        Height="0"
+                        VerticalAlignment="Top"
+                        ClipToBounds="True">
+                        <Grid.OpacityMask>
+                            <LinearGradientBrush
+                                x:Name="HeroVerticalFade"
+                                MappingMode="Absolute"
+                                StartPoint="0,0"
+                                EndPoint="0,1">
+                                <GradientStop Offset="0" Color="White" />
+                                <GradientStop Offset="0.6667" Color="White" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </LinearGradientBrush>
+                        </Grid.OpacityMask>
+                        <Canvas Opacity="0.28">
+                            <Image
+                                x:Name="BrandHeroImage"
+                                RenderTransformOrigin="0.5,0.5"
+                                Source="{DynamicResource FluenceIconBrandDrawingImage}"
+                                Stretch="Uniform">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="-8" />
+                                </Image.RenderTransform>
+                            </Image>
+                        </Canvas>
+                    </Grid>
                 </Grid>
+            </Canvas>
+
+            <StackPanel
+                x:Name="PageContent"
+                SizeChanged="PageContent_SizeChanged"
+                Style="{StaticResource GalleryPageContentStackStyle}">
+                <StackPanel
+                    x:Name="HeroContent"
+                    MaxWidth="{StaticResource HomeHeroTextMaxWidth}"
+                    Margin="{StaticResource HomeHeroContentMargin}"
+                    HorizontalAlignment="Left">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle
+                            x:Name="HeroLockupMark"
+                            Height="{Binding ActualHeight, ElementName=HeroHeadingText}"
+                            IsHitTestVisible="False"
+                            Style="{StaticResource HomeHeroMarkStyle}">
+                            <Rectangle.Fill>
+                                <ImageBrush
+                                    AlignmentX="Left"
+                                    ImageSource="{DynamicResource FluenceIconBrandDrawingImage}"
+                                    Stretch="Uniform"
+                                    Viewbox="0.041,0.20,0.919,0.60" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <StackPanel
+                            x:Name="HeroHeadingText"
+                            Grid.Column="1"
+                            VerticalAlignment="Top">
+                            <TextBlock
+                                x:Name="HeroTitle"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Style="{StaticResource HomeHeroTitleStyle}"
+                                Text="Fluence.WPF"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                x:Name="HeroDescription"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Style="{StaticResource HomeHeroSubtitleStyle}"
+                                Text="Fluent design controls and theming for WPF and PowerShell."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock
+                        x:Name="HeroCompatibility"
+                        Margin="{StaticResource DemoMediumTopGapMargin}"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        Text=".NET Framework 4.7.2, .NET 8, and .NET 10 or later &#xB7; Windows PowerShell 5.1 and PowerShell 7.4 or later" />
+                </StackPanel>
+
+                <Grid Margin="{DynamicResource HomeCatalogGridMargin}">
+                    <controls:AcrylicElement
+                        x:Name="FeaturedRowAcrylic"
+                        Height="0"
+                        VerticalAlignment="Top"
+                        BackdropSource="{Binding ElementName=HeroBackdropSource}"
+                        IsHitTestVisible="False"
+                        Recipe="{DynamicResource AcrylicInAppDefaultRecipe}" />
+                    <UniformGrid
+                        x:Name="FeaturedControlsGrid"
+                        Columns="3"
+                        Rows="1"
+                        LayoutUpdated="FeaturedControlsGrid_LayoutUpdated">
+                        <fluence:Card
+                            x:Name="ButtonsCard"
+                            AutomationProperties.Name="Explore buttons"
+                            Click="Card_Click"
+                            Style="{StaticResource HomeFeaturedCardStyle}"
+                            Tag="buttons"
+                            Variant="Outlined">
+                            <fluence:Card.Icon>
+                                <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/Button.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                            </fluence:Card.Icon>
+                            <fluence:Card.Header>
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Buttons" />
+                            </fluence:Card.Header>
+                            <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Actions, links, and split buttons." />
+                        </fluence:Card>
+
+                        <fluence:Card
+                            x:Name="SelectionCard"
+                            AutomationProperties.Name="Explore selection"
+                            Click="Card_Click"
+                            Style="{StaticResource HomeFeaturedCardStyle}"
+                            Tag="selection"
+                            Variant="Outlined">
+                            <fluence:Card.Icon>
+                                <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/Checkbox.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                            </fluence:Card.Icon>
+                            <fluence:Card.Header>
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Selection" />
+                            </fluence:Card.Header>
+                            <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Checkboxes, radio buttons, and toggles." />
+                        </fluence:Card>
+
+                        <fluence:Card
+                            x:Name="InputsCard"
+                            AutomationProperties.Name="Explore inputs"
+                            Click="Card_Click"
+                            Style="{StaticResource HomeFeaturedCardStyle}"
+                            Tag="inputs"
+                            Variant="Outlined">
+                            <fluence:Card.Icon>
+                                <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TextBox.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                            </fluence:Card.Icon>
+                            <fluence:Card.Header>
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Inputs" />
+                            </fluence:Card.Header>
+                            <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Text fields, sliders, and numbers." />
+                        </fluence:Card>
+                    </UniformGrid>
+                </Grid>
+
+                <TextBlock
+                    x:Name="ControlsCatalogHeading"
+                    Margin="{StaticResource HomeSectionHeadingMargin}"
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="Explore the controls" />
+                <UniformGrid
+                    x:Name="ControlsCatalogGrid"
+                    Columns="3"
+                    Margin="{DynamicResource HomeCatalogGridMargin}">
+                    <fluence:Card
+                        AutomationProperties.Name="Explore navigation"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="navigation">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/NavigationView.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Navigation" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Panes, destinations, and app structure." />
+                    </fluence:Card>
+
+                    <fluence:Card
+                        AutomationProperties.Name="Explore tabs"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="tabs">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TabView.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Tabs" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Switch views and manage open tabs." />
+                    </fluence:Card>
+
+                    <fluence:Card
+                        AutomationProperties.Name="Explore menus"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="menus">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/MenuFlyout.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Menus" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Context menus, commands, and flyouts." />
+                    </fluence:Card>
+
+                    <fluence:Card
+                        AutomationProperties.Name="Explore collections"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="data">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ListView.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Collections" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Lists, cards, and data presentation." />
+                    </fluence:Card>
+
+                    <fluence:Card
+                        AutomationProperties.Name="Explore trees"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="trees">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TreeView.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Trees" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Expandable items and hierarchies." />
+                    </fluence:Card>
+
+                    <fluence:Card
+                        AutomationProperties.Name="Explore status"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeCatalogCardStyle}"
+                        Tag="status">
+                        <fluence:Card.Icon>
+                            <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/InfoBar.png" Style="{StaticResource HomeCatalogImageStyle}" />
+                        </fluence:Card.Icon>
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Status" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Feedback, progress, and notifications." />
+                    </fluence:Card>
+                </UniformGrid>
+
+                <TextBlock
+                    Margin="{StaticResource HomeFoundationHeadingMargin}"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="Make it yours" />
+                <UniformGrid
+                    x:Name="FoundationLinksGrid"
+                    Columns="3"
+                    Margin="{DynamicResource HomeCatalogGridMargin}">
+                    <fluence:Card
+                        AutomationProperties.Name="Open appearance settings"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeFoundationCardStyle}"
+                        Tag="settings">
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Appearance" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Theme, accent, and window backdrop." />
+                    </fluence:Card>
+                    <fluence:Card
+                        AutomationProperties.Name="Explore color tokens"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeFoundationCardStyle}"
+                        Tag="colors">
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Color" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="A palette that follows Windows." />
+                    </fluence:Card>
+                    <fluence:Card
+                        AutomationProperties.Name="Explore typography"
+                        Click="Card_Click"
+                        Style="{StaticResource HomeFoundationCardStyle}"
+                        Tag="typography">
+                        <fluence:Card.Header>
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Typography" />
+                        </fluence:Card.Header>
+                        <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="The Fluent type scale, at a glance." />
+                    </fluence:Card>
+                </UniformGrid>
             </StackPanel>
-
-            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Explore the controls" />
-            <TextBlock
-                Margin="{DynamicResource HomeSectionDescriptionMargin}"
-                Style="{StaticResource HomeSecondaryTextStyle}"
-                Text="From the everyday essentials to the details that make an app feel complete." />
-            <UniformGrid
-                x:Name="FeaturedControlsGrid"
-                Columns="3"
-                Margin="{DynamicResource HomeCatalogGridMargin}">
-                <fluence:Card
-                    AutomationProperties.Name="Explore buttons"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="buttons">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/Button.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Buttons" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Actions, links, and split buttons." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore selection"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="selection">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/Checkbox.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Selection" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Checkboxes, radio buttons, and toggles." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore inputs"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="inputs">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TextBox.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Inputs" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Text fields, sliders, and numbers." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore navigation"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="navigation">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/NavigationView.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Navigation" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Panes, destinations, and app structure." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore tabs"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="tabs">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TabView.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Tabs" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Switch views and manage open tabs." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore menus"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="menus">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/MenuFlyout.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Menus" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Context menus, commands, and flyouts." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore collections"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="data">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/ListView.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Collections" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Lists, cards, and data presentation." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore trees"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="trees">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/TreeView.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Trees" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Expandable items and hierarchies." />
-                </fluence:Card>
-
-                <fluence:Card
-                    AutomationProperties.Name="Explore status"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeCatalogCardStyle}"
-                    Tag="status">
-                    <fluence:Card.Icon>
-                        <Image Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/InfoBar.png" Style="{StaticResource HomeCatalogImageStyle}" />
-                    </fluence:Card.Icon>
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Status" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Feedback, progress, and notifications." />
-                </fluence:Card>
-            </UniformGrid>
-
-            <TextBlock
-                Margin="16,8,16,16"
-                Style="{StaticResource SubtitleTextBlockStyle}"
-                Text="Make it yours" />
-            <UniformGrid
-                x:Name="FoundationLinksGrid"
-                Columns="3"
-                Margin="{DynamicResource HomeCatalogGridMargin}">
-                <fluence:Card
-                    AutomationProperties.Name="Open appearance settings"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeFoundationCardStyle}"
-                    Tag="settings">
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Appearance" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="Theme, accent, and window backdrop." />
-                </fluence:Card>
-                <fluence:Card
-                    AutomationProperties.Name="Explore color tokens"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeFoundationCardStyle}"
-                    Tag="colors">
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Color" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="A palette that follows Windows." />
-                </fluence:Card>
-                <fluence:Card
-                    AutomationProperties.Name="Explore typography"
-                    Click="Card_Click"
-                    Style="{StaticResource HomeFoundationCardStyle}"
-                    Tag="typography">
-                    <fluence:Card.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Typography" />
-                    </fluence:Card.Header>
-                    <TextBlock Style="{StaticResource HomeCardDescriptionStyle}" Text="The Fluent type scale, at a glance." />
-                </fluence:Card>
-            </UniformGrid>
-        </StackPanel>
+        </Grid>
     </fluence:SmoothScrollViewer>
 </Page>

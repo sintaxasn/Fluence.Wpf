@@ -47,6 +47,14 @@
     <Resource Include="Themes\Icons\Fluence_Lockup_Horizontal_Dark.png" />
   </ItemGroup>
 
+  <ItemGroup Label="Acrylic shader">
+    <Resource Include="Shaders\AcrylicBlend.ps" />
+    <Resource Include="Shaders\AcrylicNoise.png" />
+    <None Update="Shaders\AcrylicBlend.fx" Pack="true" PackagePath="shaders/" />
+    <None Update="Shaders\AcrylicNoiseGenerator.py" Pack="true" PackagePath="shaders/" />
+    <None Update="Shaders\AcrylicNoise.json" Pack="true" PackagePath="shaders/" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Tasks.Git">
       <PrivateAssets>all</PrivateAssets>
@@ -86,6 +94,15 @@
     <AdditionalFiles Include="PublicAPI\PublicAPI.Shipped.txt" />
     <AdditionalFiles Include="PublicAPI\PublicAPI.Unshipped.txt" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <MeziantouPolyfill_IncludedPolyfills>
+      $(MeziantouPolyfill_IncludedPolyfills)
+      M:System.ObjectDisposedException.ThrowIf(System.Boolean,System.Type)|
+      T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute|
+      T:System.Diagnostics.StackTraceHiddenAttribute|
+    </MeziantouPolyfill_IncludedPolyfills>
+  </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Meziantou.Polyfill">

@@ -8,13 +8,25 @@ Version headings are the SemVer version. The git tag for a version is `v` plus t
 
 ## [Unreleased]
 
+### Added
+
+- Added opt-in same-window in-app acrylic with `AcrylicMaterialRecipe`, a direct brush for concrete border and shape fills, and the bindable `AcrylicElement` host. The gallery and PowerShell Controls Tour show an explicit moving source and an opaque fallback. Light and Dark publish neutral and accent Default and Base recipes; High Contrast and unsupported rendering use a solid fallback. The WPF material is an approximation of WinUI acrylic. These changes add 182 ordinary test cases and two opt-in screenshot facts per full test target framework.
+
 ### Changed
 
-- Reorganized the PowerShell Controls Tour into nine labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
+- Gallery Home uses a full-width crop of the Fluence fan behind the title and a raised row of live Default in-app acrylic cards. A separate solid card catalog begins below the artwork. High Contrast uses solid card surfaces and hides the decorative mark.
+- The Colors gallery's Acrylic Background and Accent Acrylic Background examples switch between their live Default and Base recipes. Accent Acrylic follows the selected application accent.
+- Reorganized the PowerShell Controls Tour into ten labeled categories with working callbacks, visible field labels, and layouts for its default and minimum window sizes.
 - Gallery capture coverage now follows the navigation and sample catalogs, waits for selection indicators to settle, and records source, binary, state, and image hashes. Image review and website sync validate that provenance before accepting new captures.
 
 ### Fixed
 
+- In-app acrylic safely releases sources that freeze after observation starts. Added one regression case on each full test target framework.
+- In Multiple mode, TreeView preserves bound checked state when root and nested item containers are recreated. Added two regression cases on each full test target framework.
+- In Multiple mode, `TreeView` applies a collapsed branch's pending check or uncheck as WPF generates its existing descendants. Checking the branch leaves it closed, and `SelectedItems` updates in place. Added eight regression cases on each full test target framework.
+- Fluent `PasswordBox` avoids creating a plaintext string during masked editing and clears revealed text when reveal is disabled or the overlay is retired. Added one regression case on each full test target framework.
+- In-app acrylic uses a lower-contrast noise tile with linear sampling for grain closer to WinUI.
+- In-app acrylic uses a wider Gaussian blur to bring its backdrop colors closer to WinUI. It combines two smaller blur stages at display scales where WPF would cap a single pass.
 - `TextBox` preserves consumer-supplied automation HelpText through loading, templates, and validation, including bindings, dynamic resources, and styles applied after validation begins. Validation messages provide fallback HelpText only when none was supplied. Five regression cases were added on each full test target framework.
 - `BreadcrumbBar` keeps the current location in view at narrow widths. An overflow menu lists the full trail and reports the selected original item and index through `ItemClicked`.
 - `NavigationView` Top overflow remeasures an item when its content is replaced or the `Text` of a hidden `TextBlock` changes. Overflow entries keep data-item templates and use readable text or an automation name for content.

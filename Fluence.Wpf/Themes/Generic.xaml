@@ -62,6 +62,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/Image.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/SelectorBar.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/SlideNavigationPresenter.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/AcrylicElement.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

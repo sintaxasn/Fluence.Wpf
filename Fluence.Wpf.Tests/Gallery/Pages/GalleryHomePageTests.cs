@@ -29,15 +29,16 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Tests.Infrastructure;
 using Xunit;
 
@@ -59,7 +60,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
         }
 
         [Fact]
-        public Task GalleryHomePage_HeroSwapsSvgDerivedBannerWithThemeAsync()
+        public Task GalleryHomePage_HeroUsesThemeAcrylicWithHighContrastFallbackAsync()
         {
             return WpfTestSta.RunOnStaAsync(static () =>
             {
@@ -67,39 +68,53 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Image image = Find<Image>(page, "BrandHeroImage");
-                    DrawingImage banner = Assert.IsType<DrawingImage>(image.Source);
-                    Assert.Equal(new Rect(0, 0, 4800, 2521), banner.Drawing.Bounds);
-                    DrawingImage brandIcon = Assert.IsType<DrawingImage>(
+                    Image mark = Find<Image>(page, "BrandHeroImage");
+                    Rectangle lockupMark = Find<Rectangle>(page, "HeroLockupMark");
+                    DrawingImage drawing = Assert.IsType<DrawingImage>(
                         Application.Current.TryFindResource("FluenceIconBrandDrawingImage"));
-                    Assert.InRange(brandIcon.Drawing.Bounds.Width, 1024, 1025);
-                    Assert.Equal(1024, brandIcon.Drawing.Bounds.Height);
+                    Controls.AcrylicElement acrylic = Find<Controls.AcrylicElement>(page, "FeaturedRowAcrylic");
+                    FrameworkElement source = Find<FrameworkElement>(page, "HeroBackdropSource");
+                    FrameworkElement artwork = Find<FrameworkElement>(page, "HeroArtwork");
+                    UniformGrid lowerCatalog = Find<UniformGrid>(page, "ControlsCatalogGrid");
+                    TextBlock title = Find<TextBlock>(page, "HeroTitle");
+                    TextBlock description = Find<TextBlock>(page, "HeroDescription");
+                    TextBlock compatibility = Find<TextBlock>(page, "HeroCompatibility");
 
-                    // The hero uses native WPF drawings generated from the supplied
-                    // SVG banners and swaps via the page's ThemeDictionary.
-                    Assert.Same(page.TryFindResource("HomeBannerLightDrawingImage"), banner);
+                    Assert.Same(source, acrylic.BackdropSource);
+                    Assert.False(acrylic.IsHitTestVisible);
+                    Assert.Equal(AcrylicFallbackReason.None, AcrylicSourceMap.Evaluate(
+                        acrylic, source, acrylic.RenderSize, AcrylicMaterialRenderer.BlurRadiusDip).Reason);
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.None);
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(page.TryFindResource("HomeBannerDarkDrawingImage"), image.Source);
+                    foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                    {
+                        ApplicationThemeManager.Apply(theme, WindowBackdropType.None);
+                        Settle(window);
 
-                    // High contrast has no fixed polarity, so the page picks whichever
-                    // variant reads against the live system window color.
-                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, WindowBackdropType.None);
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Color background = SystemColors.WindowColor;
-                    double luminance = (0.299 * background.R) + (0.587 * background.G) + (0.114 * background.B);
-                    Assert.Same(page.TryFindResource(luminance < 128.0 ? "HomeBannerDarkDrawingImage" : "HomeBannerLightDrawingImage"), image.Source);
+                        Assert.Same(drawing, mark.Source);
+                        if (theme is ApplicationTheme.Light)
+                        {
+                            ImageBrush lockup = Assert.IsType<ImageBrush>(lockupMark.Fill);
+                            Assert.Same(drawing, lockup.ImageSource);
+                            Assert.True(lockup.Viewbox.Height < 1);
+                            Assert.True(lockupMark.IsVisible);
+                            Assert.False(lockupMark.IsHitTestVisible);
+                        }
+                        Assert.Same(Assert.IsType<AcrylicMaterialRecipe>(page.TryFindResource("AcrylicInAppDefaultRecipe")), acrylic.Recipe);
+                        Color expected = Assert.IsType<SolidColorBrush>(
+                            page.TryFindResource("TextFillColorPrimaryBrush"), exactMatch: false).Color;
+                        Assert.Equal(theme is not ApplicationTheme.HighContrast, artwork.IsVisible);
+                        foreach (TextBlock text in new[] { title, description, compatibility })
+                        {
+                            Assert.Equal(expected, Assert.IsType<SolidColorBrush>(text.Foreground, exactMatch: false).Color);
+                        }
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-                    WpfTestSta.DrainDispatcher(window.Dispatcher);
-                    Assert.Same(page.TryFindResource("HomeBannerLightDrawingImage"), image.Source);
+                        AssertOpaqueBackground(Assert.IsType<Controls.Card>(lowerCatalog.Children[0]));
+                        if (theme is ApplicationTheme.HighContrast)
+                        {
+                            Assert.True(acrylic.IsUsingFallback);
+                            Assert.Equal(AcrylicFallbackReason.HighContrast, acrylic.FallbackReason);
+                        }
+                    }
                 }
                 finally
                 {
@@ -118,21 +133,47 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 try
                 {
                     Image brand = Find<Image>(page, "BrandHeroImage");
-                    Assert.InRange(brand.ActualWidth, 560, 640);
+                    DrawingImage drawing = Assert.IsType<DrawingImage>(brand.Source);
+                    Assert.InRange(drawing.Drawing.Bounds.Width, 1024, 1025);
+                    Assert.Equal(1024, drawing.Drawing.Bounds.Height);
                     Assert.Equal(Stretch.Uniform, brand.Stretch);
-                    Assert.Equal("Fluence.WPF banner", AutomationProperties.GetName(brand), StringComparer.Ordinal);
-                    Assert.Contains(".NET 4.7.2, 8, and 10 or later", AutomationProperties.GetHelpText(brand), StringComparison.Ordinal);
                     Assert.True(brand.IsVisible);
-                    Assert.InRange(brand.ActualHeight, 310, 340);
-                    RenderTargetBitmap renderedBrand = new(620, 326, 96, 96, PixelFormats.Pbgra32);
-                    renderedBrand.Render(brand);
-                    byte[] pixels = new byte[620 * 326 * 4];
-                    renderedBrand.CopyPixels(pixels, 620 * 4, 0);
-                    Assert.True(HasVisiblePixels(pixels, 620, 210, 20, 410, 150), "The embedded fan should render.");
-                    Assert.True(HasVisiblePixels(pixels, 620, 100, 150, 520, 215), "The Fluence.WPF wordmark should render.");
-                    Assert.True(HasVisiblePixels(pixels, 620, 5, 260, 615, 325), "The banner support line should render.");
-                    UniformGrid catalog = Find<UniformGrid>(page, "FeaturedControlsGrid");
-                    Assert.True(catalog.TranslatePoint(default, page).Y >= brand.TranslatePoint(default, page).Y + brand.ActualHeight);
+                    Assert.False(brand.IsHitTestVisible);
+
+                    FrameworkElement artworkLayer = Find<FrameworkElement>(page, "HeroArtwork");
+                    Assert.True(artworkLayer.ClipToBounds);
+                    Assert.NotEqual(0, Assert.IsType<RotateTransform>(brand.RenderTransform).Angle);
+                    Rect artworkLayerBounds = new(artworkLayer.RenderSize);
+                    Rect markBounds = brand.TransformToAncestor(artworkLayer).TransformBounds(new Rect(brand.RenderSize));
+                    Assert.True(artworkLayerBounds.IntersectsWith(markBounds));
+                    Assert.True(markBounds.Left < artworkLayerBounds.Left);
+                    Assert.True(markBounds.Right > artworkLayerBounds.Right);
+                    Assert.True(markBounds.Top < artworkLayerBounds.Top);
+                    Assert.True(markBounds.Width > artworkLayerBounds.Width * 2);
+                    LinearGradientBrush fade = Assert.IsType<LinearGradientBrush>(artworkLayer.OpacityMask);
+                    Assert.Equal(BrushMappingMode.Absolute, fade.MappingMode);
+                    Assert.InRange(fade.EndPoint.Y, artworkLayer.ActualHeight - 1, artworkLayer.ActualHeight + 1);
+                    Assert.Equal(fade.StartPoint.X, fade.EndPoint.X);
+                    Assert.True(fade.StartPoint.Y < fade.EndPoint.Y);
+                    Assert.Contains(fade.GradientStops, static stop => stop.Offset is > 0.66 and < 0.68 && stop.Color.A is 255);
+                    Assert.Contains(fade.GradientStops, static stop => stop.Offset > 0.999 && stop.Color.A is 0);
+
+                    TextBlock title = Find<TextBlock>(page, "HeroTitle");
+                    TextBlock description = Find<TextBlock>(page, "HeroDescription");
+                    TextBlock compatibility = Find<TextBlock>(page, "HeroCompatibility");
+                    Assert.True(title.IsVisible);
+                    Assert.True(description.IsVisible);
+                    Assert.True(compatibility.IsVisible);
+                    Assert.Equal("Fluence.WPF", title.Text, StringComparer.Ordinal);
+                    Assert.Equal(title.Text, UIElementAutomationPeer.CreatePeerForElement(title).GetName(), StringComparer.Ordinal);
+                    Assert.Contains("WPF and PowerShell", description.Text, StringComparison.Ordinal);
+                    Assert.Contains(".NET Framework 4.7.2", compatibility.Text, StringComparison.Ordinal);
+                    Assert.Contains(".NET 8", compatibility.Text, StringComparison.Ordinal);
+                    Assert.Contains(".NET 10", compatibility.Text, StringComparison.Ordinal);
+                    Assert.Contains("PowerShell 5.1", compatibility.Text, StringComparison.Ordinal);
+                    Assert.Contains("PowerShell 7.4", compatibility.Text, StringComparison.Ordinal);
+                    UniformGrid featured = Find<UniformGrid>(page, "FeaturedControlsGrid");
+                    Assert.True(featured.TranslatePoint(default, page).Y >= compatibility.TranslatePoint(default, page).Y + compatibility.ActualHeight);
 
                     (string Route, string FileName)[] artwork =
                     [
@@ -148,7 +189,7 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                     ];
                     foreach ((string route, string fileName) in artwork)
                     {
-                        Controls.Card card = Assert.Single(DemoTestHost.FindVisualChildren<Controls.Card>(catalog),
+                        Controls.Card card = Assert.Single(DemoTestHost.FindVisualChildren<Controls.Card>(page),
                             candidate => string.Equals(candidate.Tag as string, route, StringComparison.Ordinal));
                         Image illustration = Assert.IsType<Image>(card.Icon);
                         BitmapSource bitmap = Assert.IsType<BitmapSource>(illustration.Source, exactMatch: false);
@@ -232,25 +273,106 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
                 Window window = DemoTestHost.CreateHostWindow(page);
                 try
                 {
-                    Image brand = Find<Image>(page, "BrandHeroImage");
-                    UniformGrid catalog = Find<UniformGrid>(page, "FeaturedControlsGrid");
+                    Controls.AcrylicElement acrylic = Find<Controls.AcrylicElement>(page, "FeaturedRowAcrylic");
+                    FrameworkElement source = Find<FrameworkElement>(page, "HeroBackdropSource");
+                    FrameworkElement artwork = Find<FrameworkElement>(page, "HeroArtwork");
+                    string[] routes =
+                    [
+                        "buttons", "selection", "inputs", "navigation", "tabs", "menus", "data", "trees", "status",
+                    ];
+                    TextBlock title = Find<TextBlock>(page, "HeroTitle");
+                    TextBlock description = Find<TextBlock>(page, "HeroDescription");
+                    TextBlock compatibility = Find<TextBlock>(page, "HeroCompatibility");
+                    Rectangle lockupMark = Find<Rectangle>(page, "HeroLockupMark");
+                    StackPanel heading = Find<StackPanel>(page, "HeroHeadingText");
+                    UniformGrid featured = Find<UniformGrid>(page, "FeaturedControlsGrid");
+                    UniformGrid catalog = Find<UniformGrid>(page, "ControlsCatalogGrid");
+                    TextBlock catalogHeading = Find<TextBlock>(page, "ControlsCatalogHeading");
                     UniformGrid foundations = Find<UniformGrid>(page, "FoundationLinksGrid");
                     Controls.SmoothScrollViewer scroll = Assert.Single(DemoTestHost.FindVisualChildren<Controls.SmoothScrollViewer>(page));
-                    (double Width, int Columns)[] sizes = [(1100, 3), (720, 2), (460, 1), (1100, 3)];
+                    window.Height = 700;
+                    (double Width, int Columns)[] sizes = [(1100, 3), (720, 2), (410, 1), (1100, 3)];
                     foreach ((double width, int columns) in sizes)
                     {
                         window.Width = width;
                         Settle(window);
+                        Assert.Equal(columns, featured.Columns);
                         Assert.Equal(columns, catalog.Columns);
                         Assert.Equal(columns is 3 ? 3 : 1, foundations.Columns);
-                        Assert.InRange(brand.ActualWidth, 1, 640);
-                        Assert.InRange(brand.ActualHeight / brand.ActualWidth, 0.52, 0.53);
-                        Assert.True(brand.ActualWidth <= scroll.ViewportWidth);
+                        Assert.Equal(columns, featured.Children.Count);
+                        Assert.Equal(routes.Length - columns, catalog.Children.Count);
+                        Assert.InRange(source.ActualWidth, scroll.ViewportWidth - 1, scroll.ViewportWidth + 1);
+                        Assert.True(acrylic.ActualWidth <= scroll.ViewportWidth + 1);
+                        Assert.Equal(AcrylicFallbackReason.None, AcrylicSourceMap.Evaluate(
+                            acrylic, source, acrylic.RenderSize, AcrylicMaterialRenderer.BlurRadiusDip).Reason);
+
+                        DrawingBrush mask = Assert.IsType<DrawingBrush>(acrylic.OpacityMask);
+                        DrawingGroup cardSilhouettes = Assert.IsType<DrawingGroup>(mask.Drawing);
+                        Assert.Equal(columns, cardSilhouettes.Children.Count);
+                        Controls.Card firstCard = Assert.IsType<Controls.Card>(featured.Children[0]);
+                        double firstRowTop = firstCard.TranslatePoint(default, source).Y;
+                        double firstRowBottom = firstRowTop + firstCard.ActualHeight;
+                        Assert.InRange(artwork.ActualHeight, firstRowTop + 1, firstRowBottom - 1);
+
+                        double lowerHeadingTop = catalogHeading.TranslatePoint(default, source).Y;
+                        Assert.True(lowerHeadingTop >= firstRowBottom + 24);
+                        Assert.True(catalog.TranslatePoint(default, source).Y >= lowerHeadingTop + catalogHeading.ActualHeight);
+
+                        for (int index = 0; index < catalog.Children.Count; index++)
+                        {
+                            Controls.Card card = Assert.IsType<Controls.Card>(catalog.Children[index]);
+                            Assert.Equal(routes[index + columns], card.Tag as string, StringComparer.Ordinal);
+                            Assert.Equal(CardVariant.Default, card.Variant);
+                            AssertOpaqueBackground(card);
+                        }
+
+                        for (int index = 0; index < featured.Children.Count; index++)
+                        {
+                            Controls.Card card = Assert.IsType<Controls.Card>(featured.Children[index]);
+                            Assert.Equal(routes[index], card.Tag as string, StringComparer.Ordinal);
+                            Assert.Equal(CardVariant.Outlined, card.Variant);
+                            Assert.InRange(card.TranslatePoint(default, source).Y - firstRowTop, -1, 1);
+                            GeometryDrawing silhouette = Assert.IsType<GeometryDrawing>(cardSilhouettes.Children[index]);
+                            RectangleGeometry roundedCard = Assert.IsType<RectangleGeometry>(silhouette.Geometry);
+                            Assert.True(roundedCard.RadiusX > 0 && roundedCard.RadiusY > 0);
+                            Point origin = card.TranslatePoint(default, acrylic);
+                            Assert.InRange(roundedCard.Rect.X - origin.X, -1, 1);
+                            Assert.InRange(roundedCard.Rect.Y - origin.Y, -1, 1);
+                            Assert.InRange(roundedCard.Rect.Width - card.ActualWidth, -1, 1);
+                            Assert.InRange(roundedCard.Rect.Height - card.ActualHeight, -1, 1);
+                        }
                         Assert.True(scroll.ExtentWidth <= scroll.ViewportWidth + 1,
                             "The home page must fit the viewport without horizontal clipping.");
-                        if (columns is 3)
+                        Assert.Equal(TextWrapping.Wrap, description.TextWrapping);
+                        Assert.Equal(TextWrapping.Wrap, compatibility.TextWrapping);
+                        double cardLeft = firstCard.TranslatePoint(default, source).X;
+                        Point markOrigin = lockupMark.TranslatePoint(default, source);
+                        Point headingOrigin = heading.TranslatePoint(default, source);
+                        Point titleOrigin = title.TranslatePoint(default, source);
+                        Point subtitleOrigin = description.TranslatePoint(default, source);
+                        Point runtimeOrigin = compatibility.TranslatePoint(default, source);
+
+                        Assert.True(lockupMark.ActualWidth > 0);
+                        Assert.InRange(markOrigin.X - cardLeft, -1, 1);
+                        Assert.InRange(markOrigin.Y - headingOrigin.Y, -1, 1);
+                        Assert.InRange(lockupMark.ActualHeight - heading.ActualHeight, -1, 1);
+                        Assert.InRange(heading.ActualHeight - title.ActualHeight - description.ActualHeight, -1, 1);
+                        Assert.True(titleOrigin.X >= markOrigin.X + lockupMark.ActualWidth - 1);
+                        Assert.InRange(subtitleOrigin.X - titleOrigin.X, -1, 1);
+                        Assert.InRange(runtimeOrigin.X - markOrigin.X, -1, 1);
+                        Assert.True(runtimeOrigin.Y >= markOrigin.Y + lockupMark.ActualHeight - 1);
+
+                        foreach (TextBlock text in new[] { title, description, compatibility })
                         {
-                            Assert.InRange(brand.ActualWidth, 560, 640);
+                            Point origin = text.TranslatePoint(default, source);
+                            Assert.InRange(origin.X, 0, source.ActualWidth);
+                            Assert.True(origin.X + text.ActualWidth <= source.ActualWidth + 1);
+                        }
+
+                        if (columns is 1)
+                        {
+                            Assert.True(compatibility.ActualHeight > compatibility.LineHeight,
+                                "The compatibility text must wrap at the narrow width.");
                         }
                     }
                 }
@@ -261,27 +383,18 @@ namespace Fluence.Wpf.Tests.Gallery.Pages
             });
         }
 
+        private static void AssertOpaqueBackground(Controls.Card card)
+        {
+            Border border = Assert.IsType<Border>(card.Template.FindName("OuterBorder", card), exactMatch: false);
+            SolidColorBrush brush = Assert.IsType<SolidColorBrush>(border.Background, exactMatch: false);
+            Assert.Equal(byte.MaxValue, brush.Color.A);
+            Assert.Equal(1d, brush.Opacity);
+        }
+
         private static T Find<T>(DependencyObject root, string name)
             where T : FrameworkElement
         {
             return Assert.IsType<T>(DemoTestHost.FindByName<T>(root, name), exactMatch: false);
-        }
-
-        private static bool HasVisiblePixels(byte[] pixels, int stridePixels, int left, int top, int right, int bottom)
-        {
-            for (int y = top; y < bottom; y++)
-            {
-                for (int x = left; x < right; x++)
-                {
-                    int pixelIndex = (y * stridePixels) + x;
-                    if (pixels[(pixelIndex * 4) + 3] > 20)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         private static void Invoke(UIElement element)

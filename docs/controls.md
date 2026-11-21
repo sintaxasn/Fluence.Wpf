@@ -48,7 +48,7 @@ Give each editor a visible label and connect it with `AutomationProperties.Label
 | Types | Use them for | Key detail |
 | --- | --- | --- |
 | [ListBox](controls/list-box.md), [ListBoxItem](controls/list-box.md#list-box-item), [ListView](controls/list-view.md) | Data-bound item lists | Familiar WPF items, templates, and selection; `ListView.ItemsLayout` chooses layout |
-| [TreeView](controls/tree-view.md), [TreeViewItem](controls/tree-view.md#tree-view-item) | Hierarchical collections | Expansion and selection; `TreeView.SelectedItems` for multiple selection |
+| [TreeView](controls/tree-view.md), [TreeViewItem](controls/tree-view.md#tree-view-item) | Hierarchical collections | Expansion and selection. In Multiple mode, a collapsed branch's check or uncheck applies to data-bound descendants as their containers are generated, and `SelectedItems` updates in place. |
 | [DataGrid](controls/data-grid.md) | Tables with sorting, grouping, editing, and validation | WPF columns, sorting, and editing; `ICollectionView` for grouping and filtering |
 | [PersonPicture](controls/person-picture.md) | Initials or avatar imagery | Person representation |
 
@@ -85,3 +85,56 @@ Give each editor a visible label and connect it with `AutomationProperties.Label
 Custom controls expose UI Automation peers under `Fluence.Wpf.Automation`. The gallery includes focus, keyboard, high contrast, and right-to-left examples. Use the [accessibility reference](reference/accessibility.md) when checking an interaction. `Fluence.Wpf.Markup` adds `ThemeResourceExtension` and theme dictionaries for app-authored theme values; see the [theme guide](theming.md#theme-aware-markup).
 
 The `Fluence.Wpf` namespace also contains theme managers, enums, and typed event arguments used by these controls. The [API reference](api/index.md) explains where to look them up.
+
+## Acrylic materials
+
+Apply the theme before creating the first window. Place an explicit backdrop source and every acrylic output in the same WPF window, with the source in a separate sibling subtree. This example uses a fixed recipe for a direct `Border.Background` brush and a published Light/Dark recipe for a host whose content stays sharp:
+
+```xml
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:fluence="http://schemas.fluencewpf.com">
+  <Grid.Resources>
+    <fluence:AcrylicMaterialRecipe x:Key="FixedAcrylic"
+                                   TintColor="#CCFFFFFF"
+                                   TintOpacity="1"
+                                   FallbackColor="#FFF9F9F9" />
+  </Grid.Resources>
+
+  <Grid x:Name="BackdropRoot" Background="DarkSlateBlue">
+    <Rectangle Width="160" HorizontalAlignment="Left" Fill="Coral" />
+    <Rectangle Width="160" HorizontalAlignment="Right" Fill="MediumAquamarine" />
+  </Grid>
+
+  <Grid Margin="24">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Border Grid.Column="0" Margin="8" Padding="20"
+            Background="{fluence:AcrylicBrush BackdropSourceName=BackdropRoot, Recipe={StaticResource FixedAcrylic}}">
+      <TextBlock Text="Fixed direct brush" />
+    </Border>
+    <fluence:AcrylicElement Grid.Column="1" Margin="8"
+                            BackdropSource="{Binding ElementName=BackdropRoot}"
+                            Recipe="{DynamicResource AcrylicInAppDefaultRecipe}">
+      <TextBlock Text="Theme-aware host" />
+    </fluence:AcrylicElement>
+  </Grid>
+</Grid>
+```
+
+The direct extension creates a separate `VisualBrush` for each concrete `Border.Background`, `Rectangle.Fill`, or `Ellipse.Fill` use. Its `StaticResource` recipe is fixed for that use; a markup-extension property cannot take a live `DynamicResource`. Set `DynamicResource` on the host's `Recipe` property to follow theme and accent changes for the published neutral and accent recipes. The five recipe values are `TintColor`, `TintOpacity`, `TintLuminosityOpacity` (null for automatic), `FallbackColor`, and `AlwaysUseFallback`. The host exposes read-only `IsUsingFallback` for a visible state indicator. Set `AlwaysUseFallback` on a recipe to request the solid mode. See [theme resources](theming.md#acrylic-recipes) for the published values.
+
+| Source or target | Result |
+| --- | --- |
+| Separate source and output siblings in one `HwndSource`, with translation or axis-aligned scale | Live in-app material when graphics and policy permit |
+| Missing or detached source, source/host cycle, rotated or skewed mapping, or nonrectangular source clip | Opaque fallback |
+| Source in a `Popup`, another window, or an `HwndHost` airspace region | Opaque fallback; no desktop or cross-window sampling |
+| Direct brush in a style setter, shared extension resource, or unsupported deferred target | Unsupported XAML target; use a concrete target or `AcrylicElement` |
+
+High Contrast uses the live opaque system window color. Design mode, `AlwaysUseFallback`, disabled Windows transparency effects, Battery Saver or unknown power state, unsupported source or graphics, and blend/device failure use an opaque, noise-free fallback. Software rendering cannot run this PS 3.0 material shader. The material uses a WPF blur and blend approximation; exact WinUI acrylic pixel parity is unverified. Keep text and controls in the host content or an unaffected sibling, outside the backdrop effect. The [PowerShell Controls Tour](../Fluence.Wpf.PowerShell.Module/examples/README.md) has a moving same-window source and fallback switch.
+
+Windows Energy Saver can report a separate state from Battery Saver, so enabling Energy Saver may leave acrylic active. Set `AlwaysUseFallback` to `True` on the recipe to keep the material disabled regardless of either setting.
+
+Material is also bounded across all windows in the process: at most two live acrylic surfaces, at most 2,146,176 padded physical pixels for one surface, and at most 2,172,672 padded physical pixels for both together. The source map counts the visible target plus blur padding at its actual DPI. A host that exceeds either limit switches to its opaque, noise-free fallback and can recover when another host unloads, closes, shrinks, loses its source, or enters fallback. These limits contain the measured workload; they do not promise a frame rate. Budget releases queue a retry. Transitions switch directly between the material and its solid fallback. See the [acrylic budget limits](../KNOWN_ISSUES.md#large-or-competing-acrylic-surfaces-can-become-opaque).

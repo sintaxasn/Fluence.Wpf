@@ -1,370 +1,517 @@
-﻿# Known issues and follow-ups
+﻿# Known issues
 
-See the [documentation site](https://fluencewpf.com) for usage, [CHANGELOG.md](CHANGELOG.md) for release and breaking-change notes, and [support](SUPPORT.md) to report a reproducible issue.
+These issues track limitations in Fluence.Wpf and gaps in WinUI behavior that need further investigation or implementation.
 
-This file tracks optional follow-ups and deliberate non-features. Filed bugs with
-reproductions live on the issue tracker; this is the consolidated view for
-maintainers.
+Last reviewed: 2026-11-19
 
-## Tree selection and unrealized data-bound branches
+Start with [AGENTS.md](AGENTS.md) and the nearest guidance for files you change. Open the technical brief for the assigned issue. Reproduce it with the stated runtime and settings, check the linked tests, and record whether your evidence came from source, automation, or the native desktop. Use [CONTRIBUTING.md](CONTRIBUTING.md) for verification commands. Update the status when the documented completion criteria are met.
 
-Multiple-selection cascading follows existing `TreeViewItem` containers. For a
-collapsed data-bound branch whose descendant containers have not been created,
-checking the parent does not select those unrealized data items, and newly
-realized child containers do not inherit that earlier checked state. Applications
-that need selection of an entire data hierarchy should maintain that selection in
-their data model. The removal/reset reconciliation in this branch removes detached
-containers from `SelectedItems`; it does not add data-model selection propagation. 
-A checked collapsed parent keeps its state when its bound children change but 
-remain unrealized; only a genuinely empty child collection clears that parent state. 
-This limitation needs a separate API and realization-policy decision before 
-any claim of complete data-bound cascading support.
+Start at the top of the list when choosing work. **P1** covers credential handling, host stability, state correctness, and accessibility. **P2** covers shared rendering and layout work and prerequisites for reliable verification. **P3** covers targeted visual and interaction differences. Dependency links identify the work that must come first.
 
-The shipped template supports opt-in virtualization only in Single and None
-modes. Multiple mode deliberately retains physical scrolling, including when
-the parent requests logical scrolling or a virtualizing ItemsPanel.
-Full template replacement can also write a checked container's teardown default
-through an automatic TwoWay binding. Applications requiring checked-state
-retention across that replacement should own the state in their model and
-control source updates explicitly. The completed-generation refresh restores
-those bound root values and reconciles the existing live SelectedItems list;
-it does not introduce an independent hierarchy-wide selection model.
+## An embedded PowerShell UI host can fail during shutdown
 
-## Selected text rendering in native WPF editors
+Priority: P1.
 
-`TextBox`, `PasswordBox`, and the native text editor inside `NumberBox` use WPF's
-selection renderer. Their Fluence templates set a theme-aware `SelectionBrush`
-but retain WPF's default `SelectionOpacity` of 0.4. The selection highlight is
-therefore translucent, and selected-text foreground rendering follows WPF rather
-than a separate WinUI text-on-selection brush. WPF's `SelectionTextBrush` was
-added in .NET Framework 4.8 and is unavailable to the library's `net472`
-compile target. Setting `SelectionOpacity` to 1 is not a compatible substitute:
-WPF documents that an opaque selection brush hides the selected text.
+Summary: Leaving an owned WPF dispatcher running during runspace disposal can trigger a shutdown assertion.
 
-The shared templates retain this idiomatic WPF fallback across target
-frameworks. Resource-key parity for selected-text colors does not guarantee
-identical rendered selection to WinUI in every theme or high-contrast scheme.
-See Microsoft's documentation for [TextBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.primitives.textboxbase.selectionopacity?view=netframework-4.8.1),
-[PasswordBox selection opacity](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.passwordbox.selectionopacity?view=netframework-4.8.1), and the [.NET Framework 4.8 SelectionTextBrush addition](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility).
+Affects: Inline STA, child-runspace, and custom PowerShell hosts.
 
-## Current follow-ups (not defects)
+Status: Investigating.
 
-- **Inline STA and embedded hosts own final dispatcher cleanup** - removing the
-  module preserves WPF's process-wide Application so later imports can reuse it.
-  A host using its own STA thread must finish all UI work and shut down its WPF
-  dispatcher on that thread before terminating the runspace. Embedded scripts must
-  leave this decision to the host. An idle live dispatcher can otherwise cause a
-  CLR shutdown assertion after successful UI work. This was reproduced with the
-  standalone PowerShell 7 STA test runner; its terminal finally block now checks
-  for leaked windows and shuts down the owned dispatcher before exiting.
-  The module automatically retires its secondary UI dispatcher during orderly exit
-  of the primary, unpushed ConsoleHost session. Child runspaces and custom hosts do
-  not register this hook, because their closure must not retire a shared process
-  application. Forced process termination is outside this cleanup contract.
-  Both passing Pester assertions and a zero process exit code are required for a
-  successful render gate; a shutdown assertion must never be treated as a pass.
+Workaround: Finish UI work and close owned windows. Shut down the dispatcher on the STA thread that owns it before disposing that runspace. Leave shared dispatcher shutdown to its owner.
 
-- **A single-process `net472` run of the whole test assembly aborts** - two
-  attempts at running `Fluence.Wpf.Tests\bin\Debug\net472\Fluence.Wpf.Tests.exe`
-  with no class filter both died with exit `-1`, no failure output, no crash
-  dump and no Application event-log entry. The first died after 48 seconds; the
-  second after 1 minute 56 seconds, about 591 tests in. The abort point moved
-  between runs, so it is non-deterministic, and neither run named a test. Class
-  filtering is unaffected: the same assembly completes when it is split, and the
-  two complementary lanes described in Fluence.Wpf.Tests/AGENTS.md cover all cases in about
-  2 minutes 57 seconds. CI and the pull-request template therefore run both TFMs
-  as two lanes and sum the case counts, which keeps the union provably equal to
-  the whole assembly. Nothing here is known to be a product defect; the
-  suspicion is a WPF or dispatcher resource exhaustion late in a very long
-  single-process `net472` run, and confirming that needs a dump captured at the
-  abort, which no attempt has produced yet.
+[Technical brief](docs/known-issues/reliability-and-accessibility.md#an-embedded-powershell-ui-host-can-fail-during-shutdown)
 
-- **`TimePicker_Cancel_RevertsPendingSelectionAsync` is flaky on `net472`** -
-  `Fluence.Wpf.Tests/Control/TimePickerTests.cs` fails there with "The selector
-  flyout must open before the cancel scenario" after about 2.45 seconds, and
-  passes on `net10`. It passes in isolation. This is flyout-open timing, not a
-  product defect: the test asserts the flyout is open before it clicks Cancel,
-  and on `net472` the popup occasionally has not composited by the time the
-  dispatcher drain returns. Do not treat a failure of this test alone as a
-  regression, and do not add a fixed delay to hide it; the fix is a
-  condition-based wait on the popup's `IsOpen`, which is a follow-up.
+Last updated: 2026-11-19.
 
-- **`RadioButton_Checked_HasAccentFillAsync` fails in a `net472` whole-suite
-  run and passes in isolation** - `Fluence.Wpf.Tests/Control/RadioButtonTests.cs`
-  failed during a single-process `net472` run of the whole assembly twice
-  while this branch was executing, once during Task 4 and again during
-  Task 5. Both times, running the test alone immediately afterward reproduced
-  the same isolated-pass result, so the whole-suite-only pattern was confirmed
-  on both occasions rather than observed once. Nothing in the project's prior
-  flaky-test notes named this test. This is grouped with the whole-assembly
-  abort above as a suspected symptom of the same `net472` resource pressure
-  late in a long single-process run, not a defect in the accent-fill
-  assertion; the two-lane split in Fluence.Wpf.Tests/AGENTS.md covers this test
-  without reproducing the failure.
+## TreeView selection can omit unrealized descendants
 
-- **`GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggleAsync`
-  failed once in a Lane A run and has not reproduced** -
-  `Fluence.Wpf.Tests/Gallery/DemoShellTests.cs` failed once during the Lane A
-  run in Task 24 of this branch's own execution; a subsequent Lane A run did
-  not reproduce the failure, and it has not failed again since. This is
-  recorded as a single unreproduced observation, not an established flake:
-  do not treat one failure of this test as a regression by itself, but do
-  not dismiss a second occurrence either.
+Priority: P1.
 
-- **`NavigationView_Automation_FooterSupportsSelectionAndInvocationAsync`
-  can time out connecting UI Automation in CI Lane A on `net472`** -
-  `Fluence.Wpf.Tests/Control/NavigationViewTests.cs` failed in the GitHub
-  Actions `net472` Lane A run for pull request #89 with "UI Automation did not
-  connect the window root. Client task status: Running." The test calls
-  `AutomationElement.FromHandle` on a dedicated MTA thread and allows the
-  handshake 5 seconds; on the hosted runner the call was still running when
-  that wait expired. The same commit passed an earlier CI run, the failed job
-  passed on re-run, and locally the test passed alone three times, with its
-  class (72 cases), and with the whole of Lane A (262 cases). This is UI
-  Automation client timing on a loaded runner, not a `NavigationView` defect:
-  re-run the job before treating a failure of this test alone as a
-  regression. Do not hide it by raising the timeout without evidence that the
-  handshake needs longer; a repeat failure is a reason to make the wait
-  condition-based or move the root connection out of the timed section.
+Summary: Checking or unchecking a collapsed branch takes effect as WPF generates its data-bound descendants. Until then, their bound model values and membership in `SelectedItems` can remain unchanged.
 
-- **Windows 10 legacy acrylic is unverified on real hardware** - the
-  `SetWindowCompositionAttribute` acrylic path (`WindowBackdropType.Acrylic` on
-  Windows 10 build 17063+) is covered by pure policy tests only. The resolution
-  rules, the plan values, and the `0xAABBGGRR` tint packing are pinned by
-  `WindowPolicyTests` and `NativeMethodsTests`, but nothing in the suite can
-  exercise the accent policy itself, because every CI and development machine
-  here runs Windows 11, where the path is deliberately unreachable. Three things
-  need a look on a real Windows 10 box before this is considered done: whether
-  the tint alpha taken straight from `AcrylicBackgroundFillColorDefault` reads
-  correctly (some reference implementations scale it by a further 0.8 to
-  compensate for the weaker legacy blur); whether the drag downgrade to
-  `ACCENT_ENABLE_BLURBEHIND` is enough on low-end hardware or whether the
-  opaque `ACCENT_ENABLE_GRADIENT` fallback documented in
-  `FluenceWindow.DowngradeLegacyAcrylicForDrag` is needed; and whether the
-  `-1` glass frame thickness that `WindowPolicy.GetGlassFrameThickness` returns
-  for a requested backdrop produces a visible artifact around an
-  accent-blurred window, in which case that method should be driven by the
-  effective backdrop instead of the requested one.
+Affects: Data-bound `TreeView` in `Multiple` selection mode.
 
-- **Peeking at a password materializes it as a managed string** - the Fluent
-  `PasswordBox` chrome reads `PasswordBox.Password` in two places: to paint the
-  peek overlay while the reveal button is held or toggled, and to score the
-  strength meter after each change. Both allocate an immutable managed string
-  that cannot be zeroed on demand, so a revealed or scored password is
-  recoverable from a process dump until the garbage collector reclaims it. The
-  native `SecurePassword` store remains authoritative and is never replaced; the
-  overlay is emptied the moment the peek ends. An application handling
-  high-value secrets can avoid the exposure by setting
-  `PasswordBoxExtensions.RevealButtonEnabled` and
-  `PasswordBoxExtensions.ShowPasswordStrength` to `False`, which is the default
-  for the strength meter.
+Status: Investigating.
 
-- **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
-  tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
-  modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**
-  implemented; consumers that need it should handle `PreviewMouseMove` / drag-drop
-  themselves. This is the main remaining gap vs. WinUI 3 `TabView`.
-- **Navigation back-stack** - `NavigationView.IsBackButtonVisible` +
-  `IsBackEnabled` + `BackRequested` are exposed, but the library does **not**
-  track page history. The demo does not use the back button; consumers are
-  expected to own their own back stack and route `BackRequested`.
-- **DWM backdrop alpha precision varies by display path** - a historical
-  measurement on a desktop whose active display path reported
-  `bitsPerColorChannel = 10` (`DisplayConfigGetDeviceInfo`, SDR, HDR off)
-  found that a plain WPF window with `WindowChrome` and `DWMSBT_MAINWINDOW`
-  composited client alpha over Mica in Light using two-bit alpha steps
-  `{0, 1/3, 2/3, 1}`. In that measurement, the `#80FFFFFF` content layer read
-  darker than expected, `#24000000` was invisible, and `#60FFFFFF` saturated
-  to white, while colour channels kept full precision. The same figures were
-  observed with iNKORE.UI.WPF.Modern, and the quantisation was absent under
-  `WindowBackdropType.None`, where WPF blends the layer itself. A likely
-  `R10G10B10A2` composition surface is an inference from that measurement, not
-  documented Microsoft behavior. Enabling the GPU driver's 10-bit pixel format
-  reported advanced color enabled (`DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO`
-  flags `0x7`); Mica, Acrylic, and Tabbed read full precision in that
-  comparison. A later comparison did not reproduce the severe failure, so
-  these observations do not establish a universal driver fix or full-precision
-  behavior across display paths. No equivalent 8 bpc measurement is recorded.
-  Dark Mica is excluded from the opaque compensation on displays reporting
-  more than 8 bits per channel with advanced color off: it retains the
-  canonical translucent `NavigationViewContentBackgroundBrush`
-  (`#4C3A3A3A`) instead of substituting an opaque pre-blend, while preserving
-  source header tint. Light Mica keeps its existing fallback. High Contrast is
-  unchanged, and Tabbed keeps its existing behavior; its inclusion in earlier
-  compensation was based on DWM material-family inference, not measurement.
-  Acrylic was measured only with advanced color enabled, so there is no basis
-  to include or exclude it under the `0x4` flags.
-- **`RenderTargetBitmap` vs DWM backdrop** - DWM Mica / Acrylic is composed by
-  the window manager and is **not** visible to `RenderTargetBitmap`. The
-  screenshot harness hosts the gallery inside a plain `Window` with a solid
-  `SolidBackgroundFillColorBaseBrush`. Automated capture of the full
-  `FluenceWindow` chrome needs a different approach (e.g. `PrintWindow` /
-  GDI screen capture).
-- **`DatePicker` / `TimePicker` highlight band during a scroll** - the flyouts
-  now use WinUI's looping selector columns under a centered accent highlight
-  band (`DatePicker_themeresources.xaml` `HighlightRect`), but the band is a
-  plain `Border` painted behind the columns and the row on it flips its whole
-  foreground to `TextOnAccentFillColorPrimaryBrush`. WinUI instead draws the
-  row glyphs through a `MonochromaticOverlayPresenter`, which splits a glyph at
-  the band boundary so the part inside the band is painted on-accent and the
-  part outside it is not. WPF has no equivalent presenter, so mid-scroll a row
-  straddling the band edge flips as a whole glyph rather than pixel by pixel.
-  At rest the two are indistinguishable.
-- **`ColorPicker` spectrum permutations and layout options** - the picker now
-  carries the WinUI gallery-default option surface (preview, color slider, hex,
-  More/Less toggle, alpha slider/text, and the RGB/HSV channel text inputs),
-  but `ColorSpectrumShape` (the Ring spectrum), the `ColorSpectrumComponents`
-  permutations, `Orientation`, and the Min/Max channel range properties remain
-  deliberately omitted; the spectrum is fixed to saturation (x) by value (y)
-  with hue as the third-dimension slider. Two deviations from WinUI: the hex
-  input commits on Enter / focus loss rather than live per keystroke, and the
-  hue text input accepts 0-360 (WinUI caps at 359) because the picker's model
-  and slider use 360 inclusive.
-- **`ContentDialog` smoke layer and sizing** - the dialog always paints its
-  smoke (dimming) layer; there is **no** WinUI `DialogShowingWithoutSmokeLayer`
-  state, and **no** `FullDialogSizing` stretch mode. The entrance and the
-  `DialogHidden` exit animations are both implemented.
-- **`BreadcrumbBar` constrained-width behavior** - WPF keeps the original
-  trail in a horizontal scrolling viewport and provides an overflow button with
-  a menu of the full trail. The viewport scrolls to keep the current location in
-  view and resizing updates the visible trail. Unlike WinUI, WPF does not replace
-  the leading crumbs with an ellipsis item; the overflow menu is a WPF context
-  menu over the original trail.
-- **`PipsPager` edge-pip scale and nav-button scale** - the pager realizes every
-  pip and scrolls them inside the stationary edge-scrolling viewport WinUI
-  describes, but it does **not** scale the pips down as they approach the
-  viewport edges, and the navigation buttons do **not** use WinUI's pressed
-  `0.875` scale.
-- **`AutoSuggestBox` raises `TextChanged` per keystroke** - WinUI defers the
-  `TextChanged` event through a 150 ms `DispatcherTimer`
-  (`AutoSuggestBox_Partial.cpp`, `s_textChangedEventTimerDuration`), coalescing a
-  fast typing burst into one event. Fluence raises `TextChanged` synchronously on
-  every edit. For in-memory filtering (the demo, most consumers) the difference
-  is invisible; a consumer wiring `TextChanged` to an async or remote lookup gets
-  per-keystroke churn WinUI would coalesce and should debounce in the handler.
-  Adding the timer would change the event timing every existing `AutoSuggestBox`
-  test observes, so it is deferred until a consumer needs it.
-- **`NavigationView` Top-overflow fitting** - the WPF adaptation measures the
-  available width after arrange, keeps items in first-fit order, and uses a 5px
-  recovery grace before returning an item from the overflow menu to the strip.
-  If a hidden item's `Content` is replaced, or its direct WPF `TextBlock` content's
-  `Text` changes, Fluence evicts the cached width and measures the item again.
-  Other changes inside arbitrary visual content, custom templates, and text in
-  `TextBlock.Inlines` are not observed automatically. For those cases, set an
-  explicit `AutomationProperties.Name` when the overflow menu needs a readable
-  label. A `TextBlock` content item uses its `Text` as the menu label.
-- **Pressed states are absent on stock WPF item containers** -
-  `ListViewItem`, `ListBoxItem`, `TreeViewItem`, and `TabViewItem` derive from
-  WPF base classes with no `IsPressed` concept the way `ButtonBase` has, so
-  none of them draw a pressed visual state, unlike their WinUI counterparts.
-- **`NumberBox` `Compact` mode is a hover-reveal panel, not a popup** - WinUI's
-  `Compact` spin-button mode opens an acrylic popup with 36px increment and
-  decrement buttons; Fluence instead reveals an inline panel on hover.
-- **Text controls have no `Header` or `Description` template parts** -
-  `TextBox` and `PasswordBox` carry neither slot, so a consumer wanting a
-  label or helper text above or below the field must add its own
-  `TextBlock`. Connect the visible label with `AutomationProperties.LabeledBy`
-  and expose supplementary instructions through `AutomationProperties.HelpText`.
-- **`TreeView` and `TabView` geometry follow-ups** - remaining TreeView
-  selection metrics and TabView selected-tab bottom-corner fillets still
-  need comparison with the current WinUI reference before claiming geometry
-  parity. TabView inter-tab separators and PipsPager hover sizing are already
-  implemented; the remaining pager edge-pip and pressed navigation-button
-  scales are listed above.
-- **`DataGrid` nonselectable mode and grouping** - `IsItemSelectable="False"`
-  clears selection, keeps `SelectedItem`, `SelectedIndex`, and `SelectedValue`
-  empty, and suppresses public and UI Automation selection events for rejected row or cell selections.
-  Turning the property off still reports removal of a selection that was
-  already active. WPF may briefly add a rejected entry to its native
-  `SelectedItems` or `SelectedCells` collection before Fluence clears it; those
-  collections are not guaranteed to remain unchanged at every instant. The
-  grid retains its native current-cell state and editing APIs, including
-  programmatic `BeginEdit()`. Mouse and keyboard input behavior in nonselectable mode remains
-  a separate acceptance check. The Fluent group header is added as the first
-  `GroupStyle` when
-  the grid loads with no group style, so set an application group style before
-  the grid loads, usually in XAML; one added later applies only to the second
-  grouping level and below. Grouping turns off row virtualization unless
-  `VirtualizingPanel.IsVirtualizingWhenGrouping` is set, so a large grouped
-  source realizes every row.
+Workaround: Keep hierarchy-wide checked state in the data model when a command needs to act on the entire selection before branches expand.
 
-## net472 accessibility API gaps
+Unblocks: [TreeView multiple selection can realize every root item](#treeview-multiple-selection-can-realize-every-root-item) needs selection state that can outlive a generated container.
 
-The following Windows Presentation Foundation accessibility APIs were introduced
-in .NET Framework 4.8 and are **not available on the `net472` TFM** this library
-supports. Each entry documents the chosen fallback and why the gap is acceptable.
-Reference: <https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-accessibility>
+[Technical brief](docs/known-issues/control-behavior.md#treeview-selection-can-omit-unrealized-descendants)
 
-- **`AutomationPeer.RaiseNotificationEvent`** (available from .NET Framework 4.8) - this
-  API pushes an ad-hoc text announcement to assistive technologies without a
-  corresponding UI Automation element. All live-region controls in this library
-  (`InfoBar`, `ProgressBar`, `ProgressRing`, `TeachingTip`, and `TextBox`
-  validation) use the net472-safe substitute: the element sets
-  `AutomationProperties.LiveSetting` to `Polite` or `Assertive` in its template
-  or peer constructor, and the peer calls
-  `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)` when state changes.
-  Screen readers that honour `LiveRegionChanged` (Narrator, NVDA, JAWS) announce
-  the current `GetNameCore` text of the peer on that event, which is equivalent
-  for the controlled-status use cases in this library.
+Last updated: 2026-11-20.
 
-- **`AutomationProperties.IsDialog`** (available from .NET Framework 4.8) - this
-  property marks an element as a modal dialog surface so screen readers announce
-  it as such when focus enters. `ContentDialog` does not set this property on
-  net472. The fallback used is: the `ContentDialogAutomationPeer` returns
-  `AutomationControlType.Window` from `GetAutomationControlTypeCore`, the dialog
-  traps Tab focus inside its bounds during `ShowAsync`, and on open it declares
-  an assertive UI Automation live region (`AutomationProperties.LiveSetting`) and
-  raises `LiveRegionChanged` so Narrator, NVDA, and JAWS read the dialog `Title`
-  as it appears. Assistive technologies therefore observe a Window-role boundary,
-  focus containment, and an explicit open announcement, which together characterise
-  a modal dialog. The behaviour gap is limited to the literal "dialog" role phrase
-  that Narrator and JAWS emit when `IsDialog=true`; the structural, focus, and
-  announcement semantics are present. Without the live region the overlay-hosted
-  dialog (not a separate HWND) raised no event for assistive technologies to act
-  on, so it was not read on open.
+## DataGrid can briefly report a rejected selection in native collections
 
-- **`AutomationProperties.HeadingLevel`** (available from .NET Framework 4.8) - this
-  property allows elements to be reported as heading levels H1-H9 to assistive
-  technologies, enabling document-style navigation with Narrator's heading-scan
-  mode. Fluence controls do not use heading levels internally; applications
-  consuming the library on net10.0-windows10.0.26100.0 may set this property
-  freely. On net472 the property is absent and any XAML that references it will
-  fail to compile unless guarded. The gap is acceptable because Fluence is a
-  controls library, not a document renderer; section headings in consuming
-  applications are app-layer concerns.
+Priority: P1.
 
-- **Automatic `PositionInSet` and `SizeOfSet` for `ItemsControl`** (available from
-  .NET Framework 4.8) - on 4.8+ WPF automatically computes and exposes
-  `PositionInSet` and `SizeOfSet` UI Automation properties for items inside an
-  `ItemsControl`, so screen readers can announce "item 2 of 5" without explicit
-  annotation. On net472 these values are not computed automatically. Fluence's
-  automation peers do not currently override `GetPositionInSetCore` /
-  `GetSizeOfSetCore`, so set position is not annotated explicitly on either TFM;
-  on net472, controls such as `NavigationViewItem` inside a `NavigationView`,
-  `TabViewItem` inside a `TabView`, and `PipsPager` dots therefore do not
-  announce set position, and the application-item controls (`ListBox`,
-  `ListView`, `TreeView`, `ComboBox`) rely solely on the 4.8+ automatic
-  computation. Applications that require position announcements on net472 (or for
-  any control) should set `AutomationProperties.PositionInSet` and
-  `AutomationProperties.SizeOfSet` explicitly on each item in XAML or code.
+Summary: WPF can add a rejected native row or cell selection before Fluence clears it. The single-selection properties stay empty.
 
-## Deferred runtime test coverage
+Affects: `DataGrid` with `IsItemSelectable=False`. Current-cell state and programmatic editing remain available.
 
-The following accessibility items are XAML-verified (the names and parts exist in
-the committed templates) but do not have automated runtime interaction tests
-because their rendering depends on host shell state that is difficult to
-reproduce in the headless test harness:
+Status: Investigating.
 
-- **`TeachingTip` `PART_AlternateCloseButton`** - the alternate close button lives
-  inside a `Popup` subtree that is only in the visual tree while the tip is
-  open and the primary close button is hidden. Its `AutomationProperties.Name`
-  is verified by inspection of `TeachingTip.xaml`; an automated test would
-  require the popup to be open, the primary close hidden, and Narrator focus
-  routed into the popup subtree.
+Workaround: Use the single-selection properties or application-owned state when selection is disabled. Avoid acting on transient changes to the native selection collections. Call `BeginEdit()` when the application owns the edit action.
 
-- **`TabView` scroll buttons** (`PART_ScrollDecreaseButton`, `PART_ScrollIncreaseButton`) -
-  these buttons appear only when the tab strip overflows its container. Their
-  `AutomationProperties.Name` values are verified by inspection of `TabView.xaml`;
-  an automated test would require a `TabView` with enough tabs to trigger
-  overflow in a measured layout pass, which the current STA test infrastructure
-  does not size windows to guarantee.
+[Technical brief](docs/known-issues/control-behavior.md#datagrid-can-briefly-report-a-rejected-selection-in-native-collections)
+
+Last updated: 2026-11-19.
+
+## A screen reader can announce ContentDialog as a window
+
+Priority: P1.
+
+Summary: The peer reports a Window role. The overlay contains tab focus and announces its title through a live region.
+
+Affects: `ContentDialog` and assistive technology that uses the WPF peer's dialog metadata.
+
+Status: Investigating.
+
+Workaround: In an application that targets WPF with `AutomationProperties.IsDialog`, set it on the dialog. Use a descriptive dialog title on legacy hosts.
+
+[Technical brief](docs/known-issues/reliability-and-accessibility.md#a-screen-reader-can-announce-contentdialog-as-a-window)
+
+Last updated: 2026-11-19.
+
+## Screen readers can miss structured item positions on older WPF
+
+Priority: P1.
+
+Summary: Legacy WPF can omit structured item position and count. A pager button's name can still contain an ordinal.
+
+Affects: Framework 4.7.2 item hosts and the custom `PipsPager` button panel.
+
+Status: Investigating.
+
+Workaround: Use newer WPF for automatic metadata on standard item controls, or use the documented accessibility switches when a legacy-targeted app runs on .NET Framework 4.8. See [Microsoft's WPF accessibility guidance](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility#whats-new-in-accessibility-in-net-framework-48).
+
+[Technical brief](docs/known-issues/reliability-and-accessibility.md#screen-readers-can-miss-structured-item-positions-on-older-wpf)
+
+Last updated: 2026-11-19.
+
+## TextBox and PasswordBox need a separate field label
+
+Priority: P1.
+
+Summary: The default templates have no header slot. Fluence `TextBox` supplies `HelperText`.
+
+Affects: Fluence `TextBox` and decorated native WPF `PasswordBox` in labeled forms.
+
+Status: Investigating.
+
+Workaround: Add a visible label, connect it using `AutomationProperties.LabeledBy`, and use `HelperText` on Fluence `TextBox` or visible help with `AutomationProperties.HelpText` on native `PasswordBox`.
+
+[Technical brief](docs/known-issues/reliability-and-accessibility.md#textbox-and-passwordbox-need-a-separate-field-label)
+
+Last updated: 2026-11-19.
+
+<a id="in-app-acrylic-source-and-rendering-limits"></a>
+
+## Acrylic uses a solid fill with an unsupported source
+
+Priority: P2.
+
+Summary: Live blur requires an explicit source that is a separate visual subtree in the same WPF window.
+
+Affects: In-app acrylic over a `Popup`, desktop, native `HwndHost`, detached or cyclic source, unsupported transform, or nonrectangular source clip.
+
+Status: Investigating.
+
+Workaround: Place the source and `AcrylicElement` in separate subtrees of the same WPF window. Use a solid fill for a separate popup. See the [in-app acrylic examples](docs/controls.md#acrylic-materials).
+
+Verification prerequisite: establish source ownership and overlap before diagnosing [Large or competing acrylic surfaces can become opaque](#large-or-competing-acrylic-surfaces-can-become-opaque) or [Acrylic blur can look sharper at higher display scales](#acrylic-blur-can-look-sharper-at-higher-display-scales).
+
+[Technical brief](docs/known-issues/material-and-windowing.md#acrylic-uses-a-solid-fill-with-an-unsupported-source)
+
+Last updated: 2026-11-19.
+
+## In-app acrylic can become opaque under rendering restrictions
+
+Priority: P2.
+
+Summary: Acrylic uses opaque fallback when rendering or system policy disallows live material. High Contrast uses the system Window color.
+
+Affects: Software rendering, High Contrast, transparency settings, unreadable power status, missing blend resources, and device or shader limitations.
+
+Status: Investigating.
+
+Workaround: Use a hardware-rendered session with transparency effects enabled where appropriate. Choose an opaque `FallbackColor` in a custom or cloned recipe for modes other than High Contrast.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#in-app-acrylic-can-become-opaque-under-rendering-restrictions)
+
+Last updated: 2026-11-19.
+
+## Windows Energy Saver can leave in-app acrylic active
+
+Priority: P2.
+
+Summary: The policy listens to Battery Saver. A separate Energy Saver state may leave the blur active.
+
+Affects: Windows systems that expose Energy Saver separately from Battery Saver.
+
+Status: Investigating.
+
+Workaround: Assign a custom or cloned recipe with `AlwaysUseFallback=True` when the application needs to disable live acrylic regardless of power mode.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#windows-energy-saver-can-leave-in-app-acrylic-active)
+
+Last updated: 2026-11-19.
+
+## Large or competing acrylic surfaces can become opaque
+
+Priority: P2.
+
+Summary: Two live surfaces share a padded physical-pixel budget. A wide blur can move a full-size pane over the limit.
+
+Affects: Large or competing live acrylic surfaces, especially on scaled displays.
+
+Status: Investigating.
+
+Workaround: Reduce the acrylic area, use one live surface, or use an opaque fallback for larger surfaces.
+
+Unblocks: [Acrylic blur can look sharper at higher display scales](#acrylic-blur-can-look-sharper-at-higher-display-scales) needs bounded allocation and timing measurements before changing blur stages.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#large-or-competing-acrylic-surfaces-can-become-opaque)
+
+Last updated: 2026-11-19.
+
+## Acrylic blur can look sharper at higher display scales
+
+Priority: P2.
+
+Summary: Both Gaussian stages can hit WPF's per-pass radius cap at high DPI.
+
+Affects: In-app acrylic at higher display scales. The Default Light comparison at 150% met the color and cyan-edge tolerances.
+
+Status: Investigating.
+
+Workaround: Use the solid fallback where a consistent appearance matters across display scales.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#acrylic-blur-can-look-sharper-at-higher-display-scales)
+
+Last updated: 2026-11-19.
+
+## RenderTargetBitmap screenshots omit window backdrop effects
+
+Priority: P2.
+
+Summary: A visual-tree snapshot omits the DWM-composed material behind an HWND.
+
+Affects: `RenderTargetBitmap` captures and the ordinary gallery screenshot route.
+
+Status: Investigating.
+
+Workaround: Capture the composed on-screen window when verifying a native window backdrop.
+
+Verification prerequisite: use a composed-window capture for [Window acrylic uses a different effect on Windows 10](#window-acrylic-uses-a-different-effect-on-windows-10) and [Mica layer colors can vary by display path](#mica-layer-colors-can-vary-by-display-path).
+
+[Technical brief](docs/known-issues/material-and-windowing.md#rendertargetbitmap-screenshots-omit-window-backdrop-effects)
+
+Last updated: 2026-11-19.
+
+## Window acrylic uses a different effect on Windows 10
+
+Priority: P2.
+
+Summary: Windows 10 can take the legacy accent route, which uses fixed alpha and simpler blur during window moves or resizes.
+
+Affects: `FluenceWindow` on eligible Windows 10 builds. Native tint, drag, and glass-frame qualification is open.
+
+Status: Investigating.
+
+Workaround: Use `SystemBackdropType="None"` with a solid background when the window must look consistent across systems.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#window-acrylic-uses-a-different-effect-on-windows-10)
+
+Last updated: 2026-11-19.
+
+## Mica layer colors can vary by display path
+
+Priority: P2.
+
+Summary: An SDR 10-bit path with advanced color off showed coarse alpha blending over Mica. Results depend on the reported display path.
+
+Affects: Window Mica and translucent content layers on affected Windows display paths.
+
+Status: Investigating.
+
+Workaround: Use a solid content layer or set `SystemBackdropType="None"` when exact layer colors matter.
+
+[Technical brief](docs/known-issues/material-and-windowing.md#mica-layer-colors-can-vary-by-display-path)
+
+Last updated: 2026-11-19.
+
+## TreeView multiple selection can realize every root item
+
+Priority: P2.
+
+Summary: The stock Multiple template uses physical scrolling even when a virtualizing panel is requested.
+
+Affects: Large `TreeView` data sets in `Multiple` selection mode.
+
+Status: Investigating.
+
+Workaround: Use `Single` or `None` with `VirtualizingPanel.IsVirtualizing=True` when virtualization is needed. Limit the loaded branches when multiple selection is needed.
+
+Depends on: [TreeView selection can omit unrealized descendants](#treeview-selection-can-omit-unrealized-descendants) before enabling virtualization for Multiple selection.
+
+[Technical brief](docs/known-issues/control-behavior.md#treeview-multiple-selection-can-realize-every-root-item)
+
+Last updated: 2026-11-19.
+
+## Hidden NavigationView items can keep a stale width
+
+Priority: P2.
+
+Summary: The strip remeasures supported changes such as content replacement or direct TextBlock text. Hidden nested visuals can keep a stale cached width.
+
+Affects: `NavigationView` Top mode with overflowed custom visual content.
+
+Status: Investigating.
+
+Workaround: Replace the hidden item's `Content` or update a direct `TextBlock.Text` when its label changes. Set `AutomationProperties.Name` when a custom visual needs a readable overflow label.
+
+[Technical brief](docs/known-issues/control-behavior.md#hidden-navigationview-items-can-keep-a-stale-width)
+
+Last updated: 2026-11-19.
+
+## Adding a DataGrid group style after load can miss the first group level
+
+Priority: P2.
+
+Summary: A grid that loads without an application group style inserts Fluence's default first.
+
+Affects: Grouped `DataGrid` when the first app-defined style is appended after load.
+
+Status: Investigating.
+
+Workaround: Supply the first group style in XAML or before the grid loads.
+
+[Technical brief](docs/known-issues/control-behavior.md#adding-a-datagrid-group-style-after-load-can-miss-the-first-group-level)
+
+Last updated: 2026-11-19.
+
+## Grouping a DataGrid can realize every row
+
+Priority: P2.
+
+Summary: Grouping requires a virtualization opt-in to keep the realized row count bounded.
+
+Affects: Large grouped `DataGrid` sources with standard WPF virtualization settings.
+
+Status: Investigating.
+
+Workaround: Enable row virtualization and set `VirtualizingPanel.IsVirtualizingWhenGrouping=True`.
+
+[Technical brief](docs/known-issues/control-behavior.md#grouping-a-datagrid-can-realize-every-row)
+
+Last updated: 2026-11-19.
+
+## AutoSuggestBox raises TextChanged for each edit
+
+Priority: P2.
+
+Summary: The synchronous event can start multiple requests during a fast edit sequence.
+
+Affects: `AutoSuggestBox.TextChanged` handlers that query a remote or slow provider.
+
+Status: Investigating.
+
+Workaround: Debounce the lookup in the handler and cancel or discard stale results.
+
+[Technical brief](docs/known-issues/control-behavior.md#autosuggestbox-raises-textchanged-for-each-edit)
+
+Last updated: 2026-11-19.
+
+## TabView tabs cannot be reordered or torn off by dragging
+
+Priority: P3.
+
+Summary: Built-in tabs can be closed and added. Drag reordering and tear-out are missing.
+
+Affects: Fluence `TabView` tab strip.
+
+Status: Investigating.
+
+Workaround: Provide application commands to reorder the tab collection or move tab content to another window. Provide custom drag handling if the workflow requires it.
+
+[Technical brief](docs/known-issues/control-behavior.md#tabview-tabs-cannot-be-reordered-or-torn-off-by-dragging)
+
+Last updated: 2026-11-19.
+
+## Selected text can look different from WinUI
+
+Priority: P3.
+
+Summary: Fluence supplies the selection background and WPF draws the selected glyphs and opacity.
+
+Affects: Fluence `TextBox`, native `PasswordBox`, and the `NumberBox` inner editor.
+
+Status: Investigating.
+
+Workaround: On WPF versions that support `SelectionTextBrush`, set it with non-adorner selection enabled. For `NumberBox`, style the inner editor. On .NET Framework 4.7.2, use the native selection appearance. See [Microsoft's WPF selection guidance](https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility#whats-new-in-accessibility-in-net-framework-48).
+
+[Technical brief](docs/known-issues/visual-parity.md#selected-text-can-look-different-from-winui)
+
+Last updated: 2026-11-19.
+
+## Picker text changes color as a whole row while scrolling
+
+Priority: P3.
+
+Summary: A whole picker row changes foreground as it crosses the accent band.
+
+Affects: Scrolling `DatePicker` and `TimePicker` looping selectors.
+
+Status: Investigating.
+
+Workaround: No workaround.
+
+[Technical brief](docs/known-issues/visual-parity.md#picker-text-changes-color-as-a-whole-row-while-scrolling)
+
+Last updated: 2026-11-19.
+
+## ColorPicker has one spectrum shape and layout
+
+Priority: P3.
+
+Summary: The picker uses a rectangular saturation-by-value spectrum and a hue slider.
+
+Affects: ColorPicker layouts that need a ring, another orientation, component order, or custom range.
+
+Status: Investigating.
+
+Workaround: Use the supported channel inputs, or provide a custom picker when a different spectrum or constrained ranges are required.
+
+[Technical brief](docs/known-issues/visual-parity.md#colorpicker-has-one-spectrum-shape-and-layout)
+
+Last updated: 2026-11-19.
+
+## ColorPicker hex edits apply when committed
+
+Priority: P3.
+
+Summary: Hex edits commit on Enter or focus loss. Hue text also accepts 360 as equivalent to zero.
+
+Affects: `ColorPicker` text entry and app logic that expects live updates.
+
+Status: Investigating.
+
+Workaround: Use the spectrum or sliders for live updates. Press Enter to apply a hex edit while keeping focus.
+
+[Technical brief](docs/known-issues/visual-parity.md#colorpicker-hex-edits-apply-when-committed)
+
+Last updated: 2026-11-19.
+
+## ContentDialog always dims surrounding content and uses bounded sizing
+
+Priority: P3.
+
+Summary: The stock overlay creates a smoke layer and uses bounded dialog sizing.
+
+Affects: `ContentDialog` hosts that need transparent smoke or full-window layout.
+
+Status: Investigating.
+
+Workaround: Override `SmokeFillColorDefaultBrush` in the enclosing window or application resources to adjust dimming. Use a separate dialog host for full-window layout.
+
+[Technical brief](docs/known-issues/visual-parity.md#contentdialog-always-dims-surrounding-content-and-uses-bounded-sizing)
+
+Last updated: 2026-11-19.
+
+## BreadcrumbBar overflow keeps the original trail scrollable
+
+Priority: P3.
+
+Summary: Fluence scrolls the trail and opens the full list from a separate overflow button.
+
+Affects: Narrow `BreadcrumbBar` layouts.
+
+Status: Investigating.
+
+Workaround: Use the overflow button to reach any location in the trail.
+
+[Technical brief](docs/known-issues/visual-parity.md#breadcrumbbar-overflow-keeps-the-original-trail-scrollable)
+
+Last updated: 2026-11-19.
+
+## PipsPager arrows do not shrink when pressed
+
+Priority: P3.
+
+Summary: The default previous and next glyphs change their colors when pressed and keep the same scale.
+
+Affects: Stock `PipsPager` navigation buttons.
+
+Status: Investigating.
+
+Workaround: Customize the pager's navigation button template when that press animation is required.
+
+[Technical brief](docs/known-issues/visual-parity.md#pipspager-arrows-do-not-shrink-when-pressed)
+
+Last updated: 2026-11-19.
+
+## Stock list, tree, and tab item backgrounds lack distinct press feedback
+
+Priority: P3.
+
+Summary: Stock item backgrounds have hover and selection styling but no distinct pressed background.
+
+Affects: Default list box, list view, tree view, and tab item backgrounds.
+
+Status: Investigating.
+
+Workaround: Use an application item template and supply the pointer state for the pressed visual.
+
+[Technical brief](docs/known-issues/visual-parity.md#stock-list-tree-and-tab-item-backgrounds-lack-distinct-press-feedback)
+
+Last updated: 2026-11-19.
+
+## NumberBox Compact shows spin buttons inline
+
+Priority: P3.
+
+Summary: Hover or keyboard focus reveals an inline spin panel.
+
+Affects: `NumberBox` Compact mode.
+
+Status: Investigating.
+
+Workaround: Set `SpinButtonPlacementMode=Inline` if the spin buttons should stay visible.
+
+[Technical brief](docs/known-issues/visual-parity.md#numberbox-compact-shows-spin-buttons-inline)
+
+Last updated: 2026-11-19.
+
+## TreeView rows can be taller than WinUI rows
+
+Priority: P3.
+
+Summary: The default Fluence row minimum is 32 DIPs. The comparable WinUI resource uses 28 DIPs.
+
+Affects: Stock `TreeViewItem` geometry.
+
+Status: Investigating.
+
+Workaround: Apply an item style with the row height your layout requires.
+
+[Technical brief](docs/known-issues/visual-parity.md#treeview-rows-can-be-taller-than-winui-rows)
+
+Last updated: 2026-11-19.
+
+## Selected TabView tabs have square lower corners
+
+Priority: P3.
+
+Summary: The default selected tab uses square lower corners at its join with the content pane.
+
+Affects: Stock `TabViewItem` geometry.
+
+Status: Investigating.
+
+Workaround: Supply a custom tab item template if the curved join is required.
+
+[Technical brief](docs/known-issues/visual-parity.md#selected-tabview-tabs-have-square-lower-corners)
+
+Last updated: 2026-11-19.

@@ -466,10 +466,17 @@ namespace Fluence.Wpf.Tests.Control
                     };
                     editor.RaiseEvent(pressed);
                     RecordSelection("after down", pressed.Handled);
+
+                    // Control the focus -> popup capture -> editor capture sequence for this synthetic click.
+                    // A prior gesture can leave capture on another element, preventing the popup from taking it.
+                    _ = Mouse.Capture(element: null);
                     _ = editor.Focus();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
                     RecordSelection("after focus");
                     Assert.True(editor.IsKeyboardFocused);
                     Assert.True(popup.IsOpen, "Focus opens the popup during the mouse-down path.");
+                    Assert.True(Mouse.Captured is System.Windows.Media.Visual popupCapture && popup.Child is not null && popupCapture.IsAncestorOf(popup.Child),
+                        "The light-dismiss popup must own mouse capture before the editor transfers it.");
 
                     Assert.True(Mouse.Capture(editor), "The editor takes mouse capture for its click/selection gesture.");
                     WpfTestSta.DrainDispatcher(window.Dispatcher);

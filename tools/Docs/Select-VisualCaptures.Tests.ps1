@@ -156,6 +156,106 @@ Describe 'Select-VisualCaptures' {
         @($defaults | Where-Object { $expected -cnotcontains $_ }) | Should -Be @()
     }
 
+    It 'declares acrylic software fallback and native material scenes separately' {
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        foreach ($theme in @('light', 'dark')) {
+            foreach ($id in @("gallery/acrylic-$theme.png", "gallery/acrylic-sample-01-$theme.png", "gallery/acrylic-sample-02-$theme.png", "controls/acrylic-$theme-fallback.png")) {
+                $entry = @($map.Captures | Where-Object Id -CEQ $id)
+                $entry.Count | Should -Be 1
+                $entry[0].Mode | Should -Be 'WpfRenderFallback'
+            }
+            foreach ($id in @("controls/acrylic-page-$theme-native.png", "controls/acrylic-direct-$theme-native.png", "controls/acrylic-host-$theme-native.png")) {
+                $entry = @($map.Captures | Where-Object Id -CEQ $id)
+                $entry.Count | Should -Be 1
+                $entry[0].Mode | Should -Be 'NativeScreen'
+            }
+        }
+    }
+
+    It 'tracks the material controller, source map, budget, policy, and recipe inputs in every Acrylic scene' {
+        $map = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'VisualCaptureMap.psd1') -SkipLimitCheck
+        $acrylic = @($map.Captures | Where-Object { $_.Id -like 'controls/acrylic-*' -or $_.Id -like 'gallery/acrylic-*' })
+        $acrylic.Count | Should -Be 14
+        $required = @(
+            'Fluence.Wpf/AcrylicMaterialRecipe.cs',
+            'Fluence.Wpf/Theming/AcrylicRecipeFactory.cs',
+            'Fluence.Wpf/Theming/ColorMap.cs',
+            'Fluence.Wpf/ApplicationThemeManager.cs',
+            'Fluence.Wpf/Theming/ThemeResolver.cs',
+            'Fluence.Wpf/Theming/BaseColorTables.cs',
+            'Fluence.Wpf/Theming/PublishFingerprint.cs',
+            'Fluence.Wpf/Theming/BrushFactory.cs',
+            'Fluence.Wpf/Theming/SpecialBrushes.cs',
+            'Fluence.Wpf/Helpers/AcrylicRecipeSnapshot.cs',
+            'Fluence.Wpf/Helpers/AcrylicMaterialController.cs',
+            'Fluence.Wpf/Helpers/AcrylicSourceMap.cs',
+            'Fluence.Wpf/Helpers/AcrylicSourceMapResult.cs',
+            'Fluence.Wpf/Helpers/AcrylicMaterialBudget.cs',
+            'Fluence.Wpf/Helpers/IAcrylicBudgetParticipant.cs',
+            'Fluence.Wpf/Helpers/AcrylicEnvironmentMonitor.cs',
+            'Fluence.Wpf/Helpers/RegistryHelper.cs',
+            'Fluence.Wpf/Helpers/AcrylicMaterialPolicy.cs',
+            'Fluence.Wpf/Helpers/AcrylicPolicySnapshot.cs',
+            'Fluence.Wpf/Helpers/AcrylicPolicyResult.cs',
+            'Fluence.Wpf/Helpers/AcrylicBlendEffect.cs',
+            'Fluence.Wpf/Helpers/AcrylicNoiseHelper.cs',
+            'Fluence.Wpf/Helpers/AcrylicMaterialMath.cs',
+            'Fluence.Wpf/Helpers/AcrylicSourceReferenceWatcher.cs',
+            'Fluence.Wpf/Helpers/AcrylicSourceRegistration.cs',
+            'Fluence.Wpf/Native/NativeMethods.cs',
+            'Fluence.Wpf/NativeMethods.txt',
+            'Fluence.Wpf/Theming/FluenceThemeEngine.cs',
+            'Fluence.Wpf/Helpers/AcrylicFallbackReason.cs',
+            'Fluence.Wpf/Helpers/IAcrylicPowerNative.cs',
+            'Fluence.Wpf/Native/NonOwningWindowHandle.cs'
+        )
+        foreach ($entry in $acrylic) {
+            foreach ($input in $required) {
+                @($entry.Inputs) | Should -Contain $input -Because "$($entry.Id) must be recaptured when $input changes"
+            }
+        }
+    }
+
+    It 'nominates only the Acrylic family when a core file or binary shader changes' {
+        $miniRoot = Join-Path $TestDrive 'acrylic-inputs'
+        New-Item -ItemType Directory -Path $miniRoot -Force | Out-Null
+        $controller = Join-Path $miniRoot 'AcrylicMaterialController.cs'
+        $shader = Join-Path $miniRoot 'AcrylicBlend.ps'
+        'controller-v1' | Set-Content -LiteralPath $controller -Encoding utf8
+        [IO.File]::WriteAllBytes($shader, [byte[]]@(0, 255, 254, 1))
+        '<Root />' | Set-Content -LiteralPath (Join-Path $miniRoot 'other.xaml') -Encoding utf8
+        $miniMap = Join-Path $TestDrive 'acrylic-map.psd1'
+        $miniManifest = Join-Path $TestDrive 'acrylic-manifest.json'
+        @'
+@{ SchemaVersion=1; Captures=@(
+  @{ Id='controls/acrylic-light-fallback.png'; Path='docs/screenshots/controls/acrylic-light-fallback.png'; SourceRelativePath='screenshots/controls/acrylic-light-fallback.png'; Inputs=@('AcrylicMaterialController.cs','AcrylicBlend.ps'); Family='controls/acrylic'; Theme='light'; State='forced-fallback'; Mode='WpfRenderFallback' },
+  @{ Id='controls/acrylic-dark-fallback.png'; Path='docs/screenshots/controls/acrylic-dark-fallback.png'; SourceRelativePath='screenshots/controls/acrylic-dark-fallback.png'; Inputs=@('AcrylicMaterialController.cs','AcrylicBlend.ps'); Family='controls/acrylic'; Theme='dark'; State='forced-fallback'; Mode='WpfRenderFallback' },
+  @{ Id='gallery/other-light.png'; Path='docs/screenshots/gallery/other-light.png'; SourceRelativePath='screenshots/gallery/other-light.png'; Inputs=@('other.xaml'); Family='gallery/other'; Theme='light'; State='default'; Mode='WpfRender' }
+) }
+'@ | Set-Content -LiteralPath $miniMap -Encoding utf8
+        $getMini = { & $selector -RepositoryRoot $miniRoot -MapPath $miniMap -WebsiteManifestPath $miniManifest }
+        $baseline = & $getMini
+        @{ schemaVersion=1; files=@($baseline.candidates | ForEach-Object { @{ path=$_.path; checkedVisualInputSha256=$_.checkedVisualInputSha256 } }) } |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $miniManifest -Encoding utf8
+        'controller-v2' | Set-Content -LiteralPath $controller -Encoding utf8
+        @((& $getMini).candidates.id | Sort-Object) | Should -Be @('controls/acrylic-dark-fallback.png','controls/acrylic-light-fallback.png')
+        Remove-Item -LiteralPath $miniManifest
+        $baseline = & $getMini
+        @{ schemaVersion=1; files=@($baseline.candidates | ForEach-Object { @{ path=$_.path; checkedVisualInputSha256=$_.checkedVisualInputSha256 } }) } |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $miniManifest -Encoding utf8
+        [IO.File]::WriteAllBytes($shader, [byte[]]@(0, 255, 254, 2))
+        @((& $getMini).candidates.id | Sort-Object) | Should -Be @('controls/acrylic-dark-fallback.png','controls/acrylic-light-fallback.png')
+    }
+
+    It 'selects the real Acrylic map with its binary shader and noise inputs' {
+        $repo = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+        $map = Join-Path $PSScriptRoot 'VisualCaptureMap.psd1'
+        $result = & $selector -RepositoryRoot $repo -MapPath $map -CaptureId 'controls/acrylic-direct-light-native.png'
+        @($result.candidates).Count | Should -Be 8
+        @($result.candidates | Where-Object { $_.family -cne 'controls/acrylic' }).Count | Should -Be 0
+        @($result.candidates | Where-Object { $_.mode -cne 'NativeScreen' -and $_.mode -cne 'WpfRenderFallback' }).Count | Should -Be 0
+    }
+
     It 'nominates a mapped family after a shared XAML edit' {
         $sharedRoot = Join-Path $root 'Fluence.Wpf/Themes'
         New-Item -ItemType Directory -Path $sharedRoot -Force | Out-Null

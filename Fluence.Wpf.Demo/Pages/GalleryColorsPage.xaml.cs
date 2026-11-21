@@ -467,10 +467,11 @@ namespace Fluence.Wpf.Demo.Pages
                         ]),
                     new(
                         "Acrylic Background",
-                        "Acrylic background colors to place layers, cards, or controls on.",
+                        "Choose a live acrylic recipe over the image. The swatches show the solid paint tokens.",
                         QuarternarySurface,
                         foregroundKey: null,
-                        static () => CreateSurface("AcrylicBackgroundFillColorBaseBrush", CardStroke, OverlayRadius, SurfaceWidth, SurfaceHeight),
+                        static () => CreateAcrylicBackgroundExample(
+                            "Acrylic recipe", "AcrylicInAppDefaultRecipe", "AcrylicInAppBaseRecipe"),
                         [
                             new(rows: 1,
                             [
@@ -480,10 +481,11 @@ namespace Fluence.Wpf.Demo.Pages
                         ]),
                     new(
                         "Accent Acrylic Background",
-                        "Acrylic background colors to place layers, cards, or controls on.",
+                        "Choose a live acrylic recipe tinted by the current accent. The swatches show the solid paint tokens.",
                         QuarternarySurface,
                         foregroundKey: null,
-                        static () => CreateSurface("AccentAcrylicBackgroundFillColorBaseBrush", CardStroke, OverlayRadius, SurfaceWidth, SurfaceHeight),
+                        static () => CreateAcrylicBackgroundExample(
+                            "Accent acrylic recipe", "AcrylicInAppAccentDefaultRecipe", "AcrylicInAppAccentBaseRecipe"),
                         [
                             new(rows: 1,
                             [
@@ -915,6 +917,47 @@ namespace Fluence.Wpf.Demo.Pages
             StackPanel panel = new();
             _ = panel.Children.Add(rest);
             _ = panel.Children.Add(hover);
+            return panel;
+        }
+
+        private static StackPanel CreateAcrylicBackgroundExample(string selectorName, string defaultRecipeKey, string baseRecipeKey)
+        {
+            Grid source = new() { ClipToBounds = true, IsHitTestVisible = false };
+            _ = source.Children.Add(new Image { Source = ControlOnImageSample, Stretch = Stretch.UniformToFill });
+
+            Controls.AcrylicElement material = new()
+            {
+                BackdropSource = source,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                IsHitTestVisible = false,
+            };
+            material.SetResourceReference(WidthProperty, SurfaceWidth);
+            material.SetResourceReference(MarginProperty, "DemoColorExampleOnImageBadgeMargin");
+
+            Grid preview = new();
+            preview.SetResourceReference(WidthProperty, "DemoColorExampleImageWidth");
+            preview.SetResourceReference(HeightProperty, "DemoColorExampleImageHeight");
+            _ = preview.Children.Add(source);
+            _ = preview.Children.Add(material);
+
+            Controls.ComboBox selector = new();
+            AutomationProperties.SetName(selector, selectorName);
+            selector.SetResourceReference(MarginProperty, "DemoTextTopGapMargin");
+            _ = selector.Items.Add(new ComboBoxItem { Content = "Default", Tag = defaultRecipeKey });
+            _ = selector.Items.Add(new ComboBoxItem { Content = "Base", Tag = baseRecipeKey });
+            selector.SelectedIndex = 0;
+            material.SetResourceReference(Controls.AcrylicElement.RecipeProperty, defaultRecipeKey);
+            selector.SelectionChanged += (_, _) =>
+            {
+                if (selector.SelectedItem is ComboBoxItem { Tag: string recipeKey })
+                {
+                    material.SetResourceReference(Controls.AcrylicElement.RecipeProperty, recipeKey);
+                }
+            };
+
+            StackPanel panel = new();
+            _ = panel.Children.Add(preview);
+            _ = panel.Children.Add(selector);
             return panel;
         }
 

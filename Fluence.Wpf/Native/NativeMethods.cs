@@ -37,6 +37,7 @@ using Windows.Win32.Devices.Display;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.System.Power;
 using Windows.Win32.System.SystemInformation;
 using Windows.Win32.System.Threading;
 using Windows.Win32.UI.Controls;
@@ -113,7 +114,56 @@ namespace Fluence.Wpf.Native
         [DllImport("user32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data);
 
+
         #endregion P/Invoke declarations
+
+        private static readonly Guid PowerSavingStatusGuid = new(
+            unchecked((int)0xE00958C0), unchecked((short)0xC213), 0x4ACE,
+            0xAC, 0x77, 0xFE, 0xCC, 0xED, 0x2E, 0xEE, 0xA5);
+
+        internal static bool TryGetPowerSaving(out bool enabled)
+        {
+            enabled = false;
+            if (!PInvoke.GetSystemPowerStatus(out SYSTEM_POWER_STATUS status))
+            {
+                return false;
+            }
+
+            if (status.SystemStatusFlag is not (0 or 1))
+            {
+                return false;
+            }
+
+            enabled = status.SystemStatusFlag is 1;
+            return true;
+        }
+
+        internal static IDisposable? RegisterPowerSaving(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            using NonOwningWindowHandle recipient = new(hwnd);
+            UnregisterPowerSettingNotificationSafeHandle registration =
+                PInvoke.RegisterPowerSettingNotification(
+                    recipient, in PowerSavingStatusGuid,
+                    REGISTER_NOTIFICATION_FLAGS.DEVICE_NOTIFY_WINDOW_HANDLE);
+            if (registration.IsInvalid)
+            {
+                registration.Dispose();
+                return null;
+            }
+
+            return registration;
+        }
+
+        internal static void UnregisterPowerSaving(IDisposable registration)
+        {
+            // The generated safe handle calls UnregisterPowerSettingNotification once.
+            registration.Dispose();
+        }
 
         #region Legacy Windows 10 accent policy
 

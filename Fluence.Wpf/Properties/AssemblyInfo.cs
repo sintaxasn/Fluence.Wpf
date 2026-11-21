@@ -33,6 +33,7 @@ using System.Windows.Markup;
 
 [assembly: ComVisible(false)]
 [assembly: InternalsVisibleTo("Fluence.Wpf.Tests")]
+[assembly: InternalsVisibleTo("Fluence.Wpf.Demo")]
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 [assembly: XmlnsDefinition("http://schemas.fluencewpf.com", "Fluence.Wpf")]
 [assembly: XmlnsDefinition("http://schemas.fluencewpf.com", "Fluence.Wpf.Controls")]

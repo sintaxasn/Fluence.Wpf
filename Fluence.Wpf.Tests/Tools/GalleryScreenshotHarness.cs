@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +39,9 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Fluence.Wpf.Tests.Infrastructure;
@@ -56,10 +60,10 @@ namespace Fluence.Wpf.Tests.Tools
     /// normal test run reports these tests as inconclusive and never writes capture candidates;
     /// set the variable to <c language="text">1</c> to render them. Set
     /// <c language="text">FLUENCE_CAPTURE_OUTPUT_DIRECTORY</c> to render into a separate directory.
-    /// Only the WPF visual tree is
-    /// captured. DWM Mica / Acrylic backdrops and transparent window shadows are composited
-    /// outside WPF and are not included in <see cref="RenderTargetBitmap"/> output. The harness
-    /// does not simulate them. These screenshots document control surfaces and theme resources.
+    /// Ordinary captures contain only the WPF visual tree. DWM Mica / Acrylic backdrops and
+    /// transparent window shadows are composited outside WPF and are not included in
+    /// <see cref="RenderTargetBitmap"/> output. The harness does not simulate them. The separate
+    /// native Acrylic scene opt-in reads the foreground desktop with ownership checks.
     /// </remarks>
     [Trait("Category", "Screenshots")]
     public class GalleryScreenshotHarness
@@ -68,6 +72,7 @@ namespace Fluence.Wpf.Tests.Tools
         private const string ControlsOnlyEnvironmentVariable = "FLUENCE_CAPTURE_CONTROLS_ONLY";
         private const string OutputDirectoryEnvironmentVariable = "FLUENCE_CAPTURE_OUTPUT_DIRECTORY";
         private const string IncludeEnvironmentVariable = "FLUENCE_CAPTURE_INCLUDE";
+        private const string NativeAcrylicEnvironmentVariable = "FLUENCE_CAPTURE_NATIVE_ACRYLIC";
         private const int GalleryCaptureWidth = 1280;
         private const int GalleryCaptureHeight = 900;
         private const double CardCaptureScale = 0.8;
@@ -180,6 +185,12 @@ namespace Fluence.Wpf.Tests.Tools
                     || string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
             }
         }
+
+        /// <summary>
+        /// Native acrylic capture requires an explicit foreground desktop opt-in.
+        /// </summary>
+        public static bool NativeAcrylicCaptureEnabled => ScreenshotCaptureEnabled &&
+            string.Equals(Environment.GetEnvironmentVariable(NativeAcrylicEnvironmentVariable), "1", StringComparison.Ordinal);
 
         private static bool ControlsOnlyCaptureEnabled =>
             string.Equals(Environment.GetEnvironmentVariable(ControlsOnlyEnvironmentVariable), "1", StringComparison.Ordinal);
@@ -352,7 +363,7 @@ namespace Fluence.Wpf.Tests.Tools
         }
 
         private sealed class CaptureEntry(string kind, string route, string title, string theme, string state, string file,
-            CaptureState? observed = null)
+            CaptureState? observed = null, string mode = "WpfRender")
         {
             public string Kind { get; } = kind;
             public string Route { get; } = route;
@@ -361,6 +372,7 @@ namespace Fluence.Wpf.Tests.Tools
             public string State { get; } = state;
             public string File { get; } = file;
             public CaptureState? Observed { get; } = observed;
+            public string Mode { get; } = mode;
         }
 
         private static string JsonString(string value)
@@ -480,7 +492,7 @@ namespace Fluence.Wpf.Tests.Tools
             _ = json.Append("  \"partial\": ").Append(filtered || failure is not null ? "true" : "false").Append(",\n");
             _ = json.Append("  \"capturedUtc\": ").Append(JsonString(DateTimeOffset.UtcNow.ToString("O"))).Append(",\n");
             _ = json.Append("  \"environment\": {\"os\": ").Append(JsonString(Environment.OSVersion.VersionString))
-                .Append(", \"runtime\": ").Append(JsonString(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription))
+                .Append(", \"runtime\": ").Append(JsonString(RuntimeInformation.FrameworkDescription))
                 .Append(", \"is64BitProcess\": ").Append(Environment.Is64BitProcess ? "true" : "false")
                 .Append(", \"captureDpi\": ").Append(Invariant("{0}", BaseDpi)).Append("},\n");
             _ = json.Append("  \"requestedIds\": ");
@@ -522,7 +534,8 @@ namespace Fluence.Wpf.Tests.Tools
                     .Append(", \"theme\": ").Append(JsonString(entry.Theme))
                     .Append(", \"state\": ").Append(JsonString(entry.State))
                     .Append(", \"requestedState\": ").Append(JsonString(entry.State))
-                    .Append(", \"file\": ").Append(JsonString(entry.File));
+                    .Append(", \"file\": ").Append(JsonString(entry.File))
+                    .Append(", \"mode\": ").Append(JsonString(entry.Mode));
                 if (entry.Observed is CaptureState observed)
                 {
                     _ = json.Append(", \"observedState\": {\"selectedItem\": ").Append(JsonString(observed.SelectedItem))
@@ -1185,7 +1198,8 @@ namespace Fluence.Wpf.Tests.Tools
                 Invariant("Gallery card {0}/{1} lacks a loaded page or settled navigation selection.", route, ordinal));
             Assert.True(card.ActualWidth > 0 && card.ActualHeight > 0, Invariant("Card {0} on {1} has no rendered area.", ordinal, route));
             await SaveElementPngAsync(card, CardCaptureScale, Path.Join(directory, file)).ConfigureAwait(true);
-            entries.Add(new CaptureEntry("card", route, card.SampleDescription, theme, state, file, observed));
+            entries.Add(new CaptureEntry("card", route, card.SampleDescription, theme, state, file, observed,
+                string.Equals(route, "acrylic", StringComparison.Ordinal) ? "WpfRenderFallback" : "WpfRender"));
         }
 
         private static void DisableButtonThroughSample(Demo.Pages.DemoSampleControl card)
@@ -2069,15 +2083,39 @@ namespace Fluence.Wpf.Tests.Tools
                         continue;
                     }
 
+                    bool acrylicFallback = string.Equals(route, "acrylic", StringComparison.Ordinal);
+                    if (acrylicFallback)
+                    {
+                        // RenderTargetBitmap is a software route. Force the real policy fallback
+                        // before constructing either direct brush or host; PS 3.0 cannot render here.
+                        RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+                    }
                     // Capture IDs hyphenate the catalog route; two-word routes such as "data grid" navigate by the original.
                     window.NavigateTo(route.Replace('-', ' '));
                     CaptureState routeState = await WaitForGalleryRouteAsync(window, route).ConfigureAwait(true);
+                    if (acrylicFallback)
+                    {
+                        if (window.PageFrame.Content is not Demo.Pages.GalleryAcrylicPage acrylicPage ||
+                            acrylicPage.FindName("FallbackCheckBox") is not CheckBox fallbackCheckBox ||
+                            acrylicPage.FindName("DynamicAcrylicHost") is not Controls.AcrylicElement host)
+                        {
+                            throw new InvalidOperationException("Acrylic fallback capture lacks its page controls.");
+                        }
+
+                        fallbackCheckBox.IsChecked = true;
+                        await SettleGalleryAsync(window).ConfigureAwait(true);
+                        if (!host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.Always)
+                        {
+                            throw new InvalidOperationException("Acrylic host did not enter the forced solid fallback scene.");
+                        }
+                    }
                     string routeFile = Invariant("{0}-{1}.png", route, themeSlug);
                     _ = expectedIds.Add("gallery/" + routeFile);
                     if (ShouldCapture("gallery/" + routeFile))
                     {
                         await SaveElementPngAsync(window, ReferenceScale, Path.Join(outputDirectory, routeFile)).ConfigureAwait(true);
-                        entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile, routeState));
+                        entries.Add(new CaptureEntry("route", route, title, themeSlug, "default", routeFile, routeState,
+                            acrylicFallback ? "WpfRenderFallback" : "WpfRender"));
                     }
 
                     if (window.PageFrame.Content is not DependencyObject page)
@@ -2136,10 +2174,16 @@ namespace Fluence.Wpf.Tests.Tools
                     {
                         await CaptureGalleryPopupStatesAsync(window, cards, themeSlug, outputDirectory, entries).ConfigureAwait(true);
                     }
+
+                    if (acrylicFallback)
+                    {
+                        RenderOptions.ProcessRenderMode = RenderMode.Default;
+                    }
                 }
             }
             finally
             {
+                RenderOptions.ProcessRenderMode = RenderMode.Default;
                 window.Close();
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
@@ -2200,6 +2244,322 @@ namespace Fluence.Wpf.Tests.Tools
                 throw new InvalidOperationException("Gallery coverage failed: " + string.Join("; ", issues));
             }
         }
+
+        private static async Task CaptureAcrylicScenesAtAsync(ApplicationTheme theme, string themeSlug,
+            string directory, IList<CaptureEntry> entries)
+        {
+            _ = ResetApplication(theme, includeDemoSharedStyles: true);
+            Demo.MainWindow window = new()
+            {
+                Width = GalleryCaptureWidth,
+                Height = GalleryCaptureHeight,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ShowActivated = true,
+                ShowInTaskbar = true,
+                ResizeMode = ResizeMode.NoResize,
+                SystemBackdropType = WindowBackdropType.None,
+            };
+            try
+            {
+                RenderOptions.ProcessRenderMode = RenderMode.Default;
+                window.Show();
+                _ = window.Activate();
+                window.NavigateTo("acrylic");
+                _ = await WaitForGalleryRouteAsync(window, "acrylic").ConfigureAwait(true);
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+                if (window.PageFrame.Content is not Demo.Pages.GalleryAcrylicPage page ||
+                    page.FindName("DirectAcrylicBorder") is not Border direct ||
+                    page.FindName("DynamicAcrylicHost") is not Controls.AcrylicElement host ||
+                    page.FindName("FallbackCheckBox") is not CheckBox fallbackCheckBox)
+                {
+                    throw new InvalidOperationException("Native acrylic capture lacks the page, direct brush, or host.");
+                }
+
+                fallbackCheckBox.IsChecked = false;
+                await SettleGalleryAsync(window).ConfigureAwait(true);
+
+                (FrameworkElement element, string slug)[] scenes =
+                [
+                    (page, "acrylic-page"),
+                    (direct, "acrylic-direct"),
+                    (host, "acrylic-host"),
+                ];
+                foreach ((FrameworkElement element, string slug) in scenes)
+                {
+                    string file = Invariant("{0}-{1}-native.png", slug, themeSlug);
+                    if (!ShouldCapture("controls/" + file)) { continue; }
+                    element.BringIntoView();
+                    await SettleGalleryAsync(window).ConfigureAwait(true);
+                    RequireNativeAcrylicMaterial(page, direct, host);
+                    await WaitForNativeForegroundAsync(window).ConfigureAwait(true);
+                    RequireNativeAcrylicMaterial(page, direct, host);
+                    await CaptureNativeElementPngAsync(window, element, Path.Join(directory, file)).ConfigureAwait(true);
+                    entries.Add(new CaptureEntry("acrylic", "acrylic", slug, themeSlug, "material", file,
+                        mode: "NativeScreen"));
+                }
+            }
+            finally
+            {
+                window.Close();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
+            }
+        }
+
+        private static void RequireNativeAcrylicMaterial(Demo.Pages.GalleryAcrylicPage page,
+            Border direct, Controls.AcrylicElement host)
+        {
+            if (page.FindName("BackdropSource") is not Grid source ||
+                typeof(Helpers.AcrylicMaterialController).GetField(
+                    "DirectControllerProperty", BindingFlags.Static | BindingFlags.NonPublic)?.GetValue(null)
+                    is not DependencyProperty controllerProperty ||
+                direct.GetValue(controllerProperty) is not Helpers.AcrylicMaterialController directController)
+            {
+                throw new InvalidOperationException("Native acrylic scene lacks the direct material controller or source.");
+            }
+
+            bool retainedMaterialGraph = direct.Background is VisualBrush { Visual: Canvas directVisual }
+                && directVisual.Children.Count is 2
+                && directVisual.Children[0] is System.Windows.Shapes.Rectangle { Fill: VisualBrush { Visual: System.Windows.Shapes.Rectangle colorPass } }
+                && colorPass.Effect is Helpers.AcrylicBlendEffect
+                && colorPass.Fill is VisualBrush { Visual: System.Windows.Shapes.Rectangle luminosityPass }
+                && luminosityPass.Fill is VisualBrush { Visual: Canvas paddedSource }
+                && paddedSource.Effect is BlurEffect;
+            if (host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.None ||
+                directController.IsUsingFallback || directController.Reason is not Helpers.AcrylicFallbackReason.None ||
+                !ReferenceEquals(directController.CurrentSource, source) || !retainedMaterialGraph)
+            {
+                throw new InvalidOperationException(Invariant(
+                    "Acrylic material scene is unavailable: host fallback={0}, host reason={1}, direct fallback={2}, direct reason={3}, direct source matches={4}, direct graph={5}.",
+                    host.IsUsingFallback, host.FallbackReason, directController.IsUsingFallback, directController.Reason,
+                    ReferenceEquals(directController.CurrentSource, source), retainedMaterialGraph));
+            }
+        }
+
+        private static async Task WaitForNativeForegroundAsync(Window window)
+        {
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+            Stopwatch timeout = Stopwatch.StartNew();
+            while (timeout.Elapsed < TimeSpan.FromSeconds(30))
+            {
+                if (NativeMethods.GetForegroundWindow() == hwnd)
+                {
+                    return;
+                }
+
+                _ = window.Activate();
+                await Task.Delay(200, TestContext.Current.CancellationToken).ConfigureAwait(true);
+            }
+
+            throw new InvalidOperationException(Invariant(
+                "Gallery never became the exact foreground HWND for native acrylic capture: expected 0x{0:X}, observed 0x{1:X}, WPF IsActive={2}.",
+                hwnd.ToInt64(), NativeMethods.GetForegroundWindow().ToInt64(), window.IsActive));
+        }
+
+        private static async Task CaptureAcrylicFallbackAtAsync(ApplicationTheme theme, string themeSlug,
+            string directory, IList<CaptureEntry> entries)
+        {
+            string fallbackFile = Invariant("acrylic-{0}-fallback.png", themeSlug);
+            if (!ShouldCapture("controls/" + fallbackFile)) { return; }
+            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+            _ = ResetApplication(theme, includeDemoSharedStyles: true);
+            Demo.MainWindow fallbackWindow = new();
+            try
+            {
+                PrepareCaptureWindow(fallbackWindow, GalleryCaptureWidth, GalleryCaptureHeight);
+                fallbackWindow.Show();
+                fallbackWindow.NavigateTo("acrylic");
+                _ = await WaitForGalleryRouteAsync(fallbackWindow, "acrylic").ConfigureAwait(true);
+                if (fallbackWindow.PageFrame.Content is not Demo.Pages.GalleryAcrylicPage page ||
+                    page.FindName("FallbackCheckBox") is not CheckBox forceFallback ||
+                    page.FindName("DynamicAcrylicHost") is not Controls.AcrylicElement host)
+                {
+                    throw new InvalidOperationException("Acrylic fallback scene lacks its host and switch.");
+                }
+
+                forceFallback.IsChecked = true;
+                await SettleGalleryAsync(fallbackWindow).ConfigureAwait(true);
+                if (!host.IsUsingFallback || host.FallbackReason is not Helpers.AcrylicFallbackReason.Always)
+                {
+                    throw new InvalidOperationException("Acrylic fallback scene did not select its forced opaque recipe.");
+                }
+
+                await SaveElementPngAsync(page, ReferenceScale, Path.Join(directory, fallbackFile)).ConfigureAwait(true);
+                entries.Add(new CaptureEntry("acrylic", "acrylic", "Forced solid fallback", themeSlug,
+                    "forced-fallback", fallbackFile, mode: "WpfRenderFallback"));
+            }
+            finally
+            {
+                fallbackWindow.Close();
+                RenderOptions.ProcessRenderMode = RenderMode.Default;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.None);
+            }
+        }
+
+        private static async Task CaptureNativeElementPngAsync(Window window, FrameworkElement element, string path)
+        {
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero || NativeMethods.GetForegroundWindow() != hwnd)
+            {
+                throw new InvalidOperationException("Acrylic native capture requires the Gallery to own the foreground HWND.");
+            }
+
+            Point topLeft = element.PointToScreen(new Point());
+            Point bottomRight = element.PointToScreen(new Point(element.ActualWidth, element.ActualHeight));
+            int left = (int)Math.Ceiling(topLeft.X);
+            int top = (int)Math.Ceiling(topLeft.Y);
+            int right = (int)Math.Floor(bottomRight.X);
+            int bottom = (int)Math.Floor(bottomRight.Y);
+            int width = right - left;
+            int height = bottom - top;
+            if (width < 8 || height < 8)
+            {
+                throw new InvalidOperationException("Acrylic native capture target has no visible pixel area.");
+            }
+
+            foreach (NativePoint point in new[]
+            {
+                new NativePoint(left + 4, top + 4),
+                new NativePoint(right - 4, top + 4),
+                new NativePoint(left + (width / 2), top + (height / 2)),
+                new NativePoint(left + 4, bottom - 4),
+                new NativePoint(right - 4, bottom - 4),
+            })
+            {
+                IntPtr hit = NativeMethods.WindowFromPoint(point);
+                if (hit == IntPtr.Zero || NativeMethods.GetAncestor(hit, 2) != hwnd)
+                {
+                    throw new InvalidOperationException("Acrylic native capture pixels are obscured or belong to another HWND.");
+                }
+            }
+
+            IntPtr screen = NativeMethods.GetDC(IntPtr.Zero);
+            if (screen == IntPtr.Zero) { throw new InvalidOperationException("Cannot read the desktop DC."); }
+            IntPtr memory = IntPtr.Zero;
+            IntPtr bitmap = IntPtr.Zero;
+            IntPtr prior = IntPtr.Zero;
+            try
+            {
+                if (NativeMethods.GetPixel(screen, left + (width / 2), top + (height / 2)) == uint.MaxValue)
+                {
+                    throw new InvalidOperationException("Acrylic native desktop pixels are unreadable.");
+                }
+
+                memory = NativeMethods.CreateCompatibleDC(screen);
+                bitmap = NativeMethods.CreateCompatibleBitmap(screen, width, height);
+                if (memory == IntPtr.Zero || bitmap == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException("Cannot allocate the acrylic desktop capture bitmap.");
+                }
+
+                prior = NativeMethods.SelectObject(memory, bitmap);
+                if (prior == IntPtr.Zero || !NativeMethods.BitBlt(memory, 0, 0, width, height, screen, left, top, 0x00CC0020))
+                {
+                    throw new InvalidOperationException("Acrylic native desktop BitBlt failed.");
+                }
+
+                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(bitmap, IntPtr.Zero,
+                    Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                PngBitmapEncoder encoder = new();
+                encoder.Frames.Add(BitmapFrame.Create(source));
+                FileStream stream = File.Create(path);
+#if NET10_0_OR_GREATER
+                await using (stream.ConfigureAwait(false))
+#else
+                using (stream)
+#endif
+                {
+                    encoder.Save(stream);
+                    await stream.FlushAsync(TestContext.Current.CancellationToken).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                if (prior != IntPtr.Zero) { _ = NativeMethods.SelectObject(memory, prior); }
+                if (bitmap != IntPtr.Zero) { _ = NativeMethods.DeleteObject(bitmap); }
+                if (memory != IntPtr.Zero) { _ = NativeMethods.DeleteDC(memory); }
+                _ = NativeMethods.ReleaseDC(IntPtr.Zero, screen);
+            }
+        }
+
+        private static async Task WriteAcrylicCaptureManifestAsync(string directory, IList<CaptureEntry> entries)
+        {
+            string root = FindRepoRoot();
+            StringBuilder json = new("{\n  \"captureMethod\": \"NativeScreen or WpfRenderFallback per entry\",\n");
+            _ = json.Append("  \"capturedUtc\": ").Append(JsonString(DateTimeOffset.UtcNow.ToString("O"))).Append(",\n");
+            await AppendHashObjectAsync(json, "sourceInputRawSha256", [
+                "Fluence.Wpf.Tests/Tools/GalleryScreenshotHarness.cs",
+                "tools/Docs/VisualCaptureMap.psd1",
+                "Fluence.Wpf.Demo/Pages/GalleryAcrylicPage.xaml",
+                "Fluence.Wpf.Demo/Pages/GalleryAcrylicPage.xaml.cs",
+                "Fluence.Wpf/Helpers/AcrylicMaterialRenderer.cs",
+            ], root).ConfigureAwait(false);
+            await AppendHashObjectAsync(json, "producerBinarySha256", [
+                typeof(GalleryScreenshotHarness).Assembly.Location,
+                typeof(Demo.MainWindow).Assembly.Location,
+                typeof(Controls.AcrylicElement).Assembly.Location,
+            ], root).ConfigureAwait(false);
+            _ = json.Append("  \"entries\": [\n");
+            for (int index = 0; index < entries.Count; index++)
+            {
+                CaptureEntry entry = entries[index];
+                string path = Path.Join(directory, entry.File);
+                _ = json.Append("    {\"id\": ").Append(JsonString("controls/" + entry.File))
+                    .Append(", \"mode\": ").Append(JsonString(entry.Mode))
+                    .Append(", \"theme\": ").Append(JsonString(entry.Theme))
+                    .Append(", \"state\": ").Append(JsonString(entry.State))
+                    .Append(", \"foregroundOwned\": ").Append(string.Equals(entry.Mode, "NativeScreen", StringComparison.Ordinal) ? "true" : "null")
+                    .Append(", \"outputSha256\": ").Append(JsonString(await Sha256FileAsync(path).ConfigureAwait(false)))
+                    .Append('}');
+                if (index + 1 < entries.Count) { _ = json.Append(','); }
+                _ = json.Append('\n');
+            }
+
+            _ = json.Append("  ]\n}\n");
+            string manifestFile = entries.Count > 0 && string.Equals(entries[0].Mode, "NativeScreen", StringComparison.Ordinal)
+                ? "acrylic-native-manifest.json" : "acrylic-fallback-manifest.json";
+            await File.WriteAllTextAsync(Path.Join(directory, manifestFile), json.ToString(),
+                TestContext.Current.CancellationToken).ConfigureAwait(false);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct NativePoint(int x, int y)
+        {
+            public readonly int X = x;
+            public readonly int Y = y;
+        }
+
+        // The screenshot harness targets both .NET Framework and .NET 10; this private interop
+        // is confined to opt-in test tooling and has no library or consumer API surface.
+#pragma warning disable SYSLIB1054
+        private static class NativeMethods
+        {
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetForegroundWindow();
+            [DllImport("user32.dll")]
+            internal static extern IntPtr WindowFromPoint(NativePoint point);
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+            [DllImport("user32.dll")]
+            internal static extern IntPtr GetDC(IntPtr hwnd);
+            [DllImport("user32.dll")]
+            internal static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
+            [DllImport("gdi32.dll")]
+            internal static extern uint GetPixel(IntPtr dc, int x, int y);
+            [DllImport("gdi32.dll")]
+            internal static extern IntPtr CreateCompatibleDC(IntPtr dc);
+            [DllImport("gdi32.dll")]
+            internal static extern IntPtr CreateCompatibleBitmap(IntPtr dc, int width, int height);
+            [DllImport("gdi32.dll")]
+            internal static extern IntPtr SelectObject(IntPtr dc, IntPtr bitmap);
+            [DllImport("gdi32.dll")]
+            internal static extern bool DeleteObject(IntPtr bitmap);
+            [DllImport("gdi32.dll")]
+            internal static extern bool DeleteDC(IntPtr dc);
+            [DllImport("gdi32.dll")]
+            internal static extern bool BitBlt(IntPtr destination, int x, int y, int width, int height,
+                IntPtr source, int sourceX, int sourceY, uint rasterOperation);
+        }
+#pragma warning restore SYSLIB1054
 
         /// <summary>
         /// Delegates to the single Controls Tour producer, which runs the real PowerShell
@@ -2397,6 +2757,46 @@ namespace Fluence.Wpf.Tests.Tools
                 {
                     await WriteGalleryManifestAsync(output, entries, filtered, failure).ConfigureAwait(true);
                 }
+            });
+        }
+
+        [Fact(SkipUnless = nameof(NativeAcrylicCaptureEnabled), Skip = "Native acrylic capture requires FLUENCE_CAPTURE_SCREENSHOTS=1 and FLUENCE_CAPTURE_NATIVE_ACRYLIC=1 on an unobscured interactive desktop.")]
+        public Task CaptureAcrylicNativeScenesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(async static () =>
+            {
+                string directory = EnsureControlOutputDirectory();
+                List<CaptureEntry> entries = [];
+                foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
+                {
+                    if (ShouldCapture("controls/acrylic-page-" + themeSlug + "-native.png") ||
+                        ShouldCapture("controls/acrylic-direct-" + themeSlug + "-native.png") ||
+                        ShouldCapture("controls/acrylic-host-" + themeSlug + "-native.png"))
+                    {
+                        await CaptureAcrylicScenesAtAsync(theme, themeSlug, directory, entries).ConfigureAwait(true);
+                    }
+                }
+
+                await WriteAcrylicCaptureManifestAsync(directory, entries).ConfigureAwait(true);
+            });
+        }
+
+        [Fact(SkipUnless = nameof(ScreenshotCaptureEnabled), Skip = "Screenshot capture is opt-in; set FLUENCE_CAPTURE_SCREENSHOTS=1 for solid acrylic fallback candidates.")]
+        public Task CaptureAcrylicFallbackScenesAsync()
+        {
+            return WpfTestSta.RunOnStaAsync(async static () =>
+            {
+                string directory = EnsureControlOutputDirectory();
+                List<CaptureEntry> entries = [];
+                foreach ((ApplicationTheme theme, string themeSlug) in DocumentationThemes)
+                {
+                    if (ShouldCapture("controls/" + Invariant("acrylic-{0}-fallback.png", themeSlug)))
+                    {
+                        await CaptureAcrylicFallbackAtAsync(theme, themeSlug, directory, entries).ConfigureAwait(true);
+                    }
+                }
+
+                await WriteAcrylicCaptureManifestAsync(directory, entries).ConfigureAwait(true);
             });
         }
 

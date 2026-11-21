@@ -22,6 +22,7 @@ This file sets repository-wide rules and routes work to the smallest relevant gu
 | XAML templates, theme resources, or color tables | [Fluence.Wpf/Themes/AGENTS.md](Fluence.Wpf/Themes/AGENTS.md) |
 | Controls, dependency properties, window chrome, or control behavior | [Fluence.Wpf/Controls/AGENTS.md](Fluence.Wpf/Controls/AGENTS.md) |
 | .NET tests | [Fluence.Wpf.Tests/AGENTS.md](Fluence.Wpf.Tests/AGENTS.md) |
+| Known issue investigation or fix | [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for the priority, workaround, and linked technical brief |
 | Gallery application | [Fluence.Wpf.Demo/AGENTS.md](Fluence.Wpf.Demo/AGENTS.md) |
 | MVVM sample application | [Fluence.Wpf.Demo.Mvvm/AGENTS.md](Fluence.Wpf.Demo.Mvvm/AGENTS.md) |
 | PowerShell module | [Fluence.Wpf.PowerShell.Module/AGENTS.md](Fluence.Wpf.PowerShell.Module/AGENTS.md) |

@@ -153,6 +153,38 @@ namespace Fluence.Wpf.Tests.Smoke
             });
         }
 
+        [Fact]
+        public Task AcrylicElement_UsesTheShippedTemplateAndOpaqueFallbackAsync()
+        {
+            return RunOnStaAsync(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                AcrylicElement host = new()
+                {
+                    Width = 100,
+                    Height = 60,
+                    Recipe = new AcrylicMaterialRecipe { AlwaysUseFallback = true },
+                    Content = new System.Windows.Controls.TextBlock { Text = "Sharp content" },
+                };
+                Window window = new() { Content = host, Width = 220, Height = 160, ShowInTaskbar = false };
+                try
+                {
+                    window.Show();
+                    Drain(window.Dispatcher);
+                    _ = host.ApplyTemplate();
+                    System.Windows.Controls.Border backdrop = Assert.IsType<System.Windows.Controls.Border>(host.Template.FindName("PART_Backdrop", host));
+                    _ = Assert.IsType<VisualBrush>(backdrop.Background);
+                    Assert.True(host.IsUsingFallback);
+                    _ = Assert.IsType<System.Windows.Controls.TextBlock>(host.Content);
+                }
+                finally
+                {
+                    window.Close();
+                    Drain(window.Dispatcher);
+                }
+            });
+        }
+
         /// <summary>
         /// Runs the test body on the lane's STA dispatcher, the way Fluence.Wpf.Tests does through
         /// its own WpfTestSta helper. That helper lives in a project targeting the other two

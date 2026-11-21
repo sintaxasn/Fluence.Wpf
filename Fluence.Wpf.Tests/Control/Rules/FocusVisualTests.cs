@@ -321,8 +321,79 @@ namespace Fluence.Wpf.Tests.Control.Rules
             });
         }
 
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public Task TabHeader_SyntheticUnmodifiedTabIgnoresThreadLocalControlAsync(bool useTabView)
+        {
+            return WpfTestSta.RunOnStaAsync(() =>
+            {
+                System.Windows.Controls.TabItem first = useTabView
+                    ? new TabViewItem { Header = "First", Content = new System.Windows.Controls.TextBlock { Text = "One" } }
+                    : new System.Windows.Controls.TabItem { Header = "First", Content = new System.Windows.Controls.TextBlock { Text = "One" } };
+                System.Windows.Controls.TabItem second = useTabView
+                    ? new TabViewItem { Header = "Second", Content = new System.Windows.Controls.TextBlock { Text = "Two" } }
+                    : new System.Windows.Controls.TabItem { Header = "Second", Content = new System.Windows.Controls.TextBlock { Text = "Two" } };
+                System.Windows.Controls.TabControl tabs = useTabView
+                    ? new TabView { Width = 340, Height = 150, IsAddTabButtonVisible = false }
+                    : new System.Windows.Controls.TabControl { Width = 320, Height = 140 };
+                _ = tabs.Items.Add(first);
+                _ = tabs.Items.Add(second);
+                System.Windows.Controls.Button afterButton = new() { Content = "After" };
+                System.Windows.Controls.StackPanel root = new();
+                _ = root.Children.Add(tabs);
+                _ = root.Children.Add(afterButton);
+                Window window = new() { Content = root, Width = 440, Height = 250 };
+
+                try
+                {
+                    window.Show();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Same(first, tabs.ItemContainerGenerator.ContainerFromIndex(0));
+                    Assert.Same(second, tabs.ItemContainerGenerator.ContainerFromIndex(1));
+                    _ = Keyboard.Focus(first);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(first, Keyboard.FocusedElement);
+
+                    ModifierKeys beforeFirst = Keyboard.Modifiers;
+                    using (WpfTestSta.UseSyntheticKeyModifiers(ModifierKeys.Control))
+                    {
+                        Assert.Equal(ModifierKeys.Control, Keyboard.Modifiers);
+                        KeyEventArgs firstTab = RaiseTabKey(first, window);
+                        Assert.True(firstTab.Handled, "Unmodified Tab should navigate to the next header even if the STA thread had Control down.");
+                        Assert.Equal(ModifierKeys.Control, Keyboard.Modifiers);
+                    }
+                    Assert.Equal(beforeFirst, Keyboard.Modifiers);
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    Assert.Same(second, Keyboard.FocusedElement);
+                    Assert.Same(second, tabs.SelectedItem);
+
+                    ModifierKeys beforeSecond = Keyboard.Modifiers;
+                    using (WpfTestSta.UseSyntheticKeyModifiers(ModifierKeys.Control))
+                    {
+                        Assert.Equal(ModifierKeys.Control, Keyboard.Modifiers);
+                        KeyEventArgs secondTab = RaiseTabKey(second, window);
+                        Assert.False(secondTab.Handled, "Tab on the final header should remain available for normal focus navigation.");
+                        Assert.Equal(ModifierKeys.Control, Keyboard.Modifiers);
+                    }
+                    Assert.Equal(beforeSecond, Keyboard.Modifiers);
+                    Assert.True(second.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)));
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+                    Assert.Same(afterButton, Keyboard.FocusedElement);
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    window.Close();
+                }
+            });
+        }
+
         private static KeyEventArgs RaiseTabKey(UIElement target, Window window)
         {
+            using IDisposable keyModifiers = WpfTestSta.UseSyntheticKeyModifiers(ModifierKeys.None);
             PresentationSource source = PresentationSource.FromVisual(window)
                 ?? throw new InvalidOperationException("Window must have a presentation source before raising keyboard input.");
             KeyEventArgs args = new(Keyboard.PrimaryDevice, source, 0, Key.Tab)
